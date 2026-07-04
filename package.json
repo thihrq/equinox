@@ -1,0 +1,41 @@
+{
+  "name": "pokemon-builder",
+  "version": "1.0.1",
+  "description": "Equinox v1.0.1 competitive and scenario-aware Pokémon team builder API",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "prod:check": "npm run preflight && npm --prefix frontend run build",
+    "data:check": "ts-node src/scripts/validateDataPacks.ts",
+    "release:check": "npm run preflight && npm --prefix frontend run build",
+    "format:check": "ts-node src/scripts/auditFormatScope.ts",
+    "preflight": "npm run typecheck && npm run data:check && npm run format:check",
+    "release:build": "npm run build && npm --prefix frontend run build"
+  },
+  "keywords": [
+    "pokemon",
+    "team-builder",
+    "equinox"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@pkmn/dex": "^0.10.11",
+    "axios": "^1.18.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.7.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}
