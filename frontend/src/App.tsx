@@ -225,7 +225,7 @@ export default function App() {
           <YinYangMark className="eq-brand-orb" />
           <div>
             <strong>EQUINOX</strong>
-            <span>Team Builder</span>
+            <span>{t(locale, 'appRole')}</span>
           </div>
         </div>
 
@@ -373,7 +373,7 @@ export default function App() {
 
       <main className="eq-main-v2">
         <header className="eq-header-v2 eq-header-v3">
-          <div>
+          <div className="eq-header-copy">
             <span className="eq-kicker-v2">{t(locale, 'appKicker')}</span>
             <h1>{t(locale, 'appTitle')}</h1>
             <p>{t(locale, 'appSubtitle')}</p>
@@ -482,6 +482,16 @@ export default function App() {
           </div>
         )}
       </main>
+
+      <aside className="eq-ad-rail" aria-label={t(locale, 'supportArea')}>
+        <div className="eq-ad-rail__panel">
+          <span>{t(locale, 'sponsoredLabel')}</span>
+          <div className="eq-ad-rail__slot">
+            <strong>{t(locale, 'supportTitle')}</strong>
+            <p>{t(locale, 'supportText')}</p>
+          </div>
+        </div>
+      </aside>
     </div>
   );
 }
@@ -502,9 +512,29 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 function EmptyState({ locale }: { locale: Locale }) {
   return (
     <section className="eq-empty-v2">
-      <YinYangMark className="eq-empty-symbol" />
-      <h2>{t(locale, 'emptyTitle')}</h2>
-      <p>{t(locale, 'emptyText')}</p>
+      <div className="eq-empty-v2__copy">
+        <YinYangMark className="eq-empty-symbol" />
+        <span className="eq-empty-v2__label">{t(locale, 'emptyLabel')}</span>
+        <h2>{t(locale, 'emptyTitle')}</h2>
+        <p>{t(locale, 'emptyText')}</p>
+      </div>
+      <div className="eq-empty-v2__steps" aria-label={t(locale, 'identityPrinciples')}>
+        <article>
+          <span>01</span>
+          <strong>{t(locale, 'emptyStepCore')}</strong>
+          <p>{t(locale, 'emptyStepCoreText')}</p>
+        </article>
+        <article>
+          <span>02</span>
+          <strong>{t(locale, 'emptyStepContext')}</strong>
+          <p>{t(locale, 'emptyStepContextText')}</p>
+        </article>
+        <article>
+          <span>03</span>
+          <strong>{t(locale, 'emptyStepDirection')}</strong>
+          <p>{t(locale, 'emptyStepDirectionText')}</p>
+        </article>
+      </div>
     </section>
   );
 }
