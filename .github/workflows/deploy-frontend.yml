@@ -41,7 +41,7 @@ jobs:
         run: npm --prefix frontend run build
         env:
           VITE_BASE_PATH: /equinox/
-          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'https://equinox-api.onrender.com' }}
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'https://equinox-api-c7zy.onrender.com' }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

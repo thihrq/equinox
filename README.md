@@ -83,13 +83,13 @@ CORS_ORIGIN=https://thihrq.github.io
 A URL esperada da API e:
 
 ```txt
-https://equinox-api.onrender.com
+https://equinox-api-c7zy.onrender.com
 ```
 
 Se o Render gerar outra URL, configure no GitHub em **Settings > Secrets and variables > Actions > Variables**:
 
 ```env
-VITE_API_BASE_URL=https://sua-api.onrender.com
+VITE_API_BASE_URL=https://equinox-api-c7zy.onrender.com
 ```
 
 Depois rode novamente o workflow **Deploy frontend** em **Actions**.
