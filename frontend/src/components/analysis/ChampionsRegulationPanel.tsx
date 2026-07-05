@@ -23,7 +23,7 @@ export function ChampionsRegulationPanel({ option, locale }: ChampionsRegulation
           <span>{t(locale, 'championsRegulationSet')}</span>
           <strong>{translateContent(regulation.label, locale)}</strong>
           <p>
-            {regulation.seasonLabel} · {regulation.startDate} — {regulation.endDate} · {translateContent(regulation.dataStatus, locale)}
+            {translateContent(regulation.seasonLabel, locale)} · {regulation.startDate} — {regulation.endDate} · {translateContent(regulation.dataStatus, locale)}
           </p>
         </div>
 

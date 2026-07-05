@@ -135,6 +135,9 @@ const dictionaries: Record<Locale, Record<string, string>> = {
     aiScore: 'Pontuação Equinox',
     decisionConfidence: 'Confiança da decisão',
     riskLevel: 'Nível de risco',
+    aiScoreTooltip: 'Índice geral que combina sinergia, cobertura, funções, velocidade, ameaças e aderência ao formato selecionado.',
+    decisionConfidenceTooltip: 'Mostra quão consistente é a recomendação com base nos dados disponíveis e na clareza das respostas do time.',
+    riskLevelTooltip: 'Resume a fragilidade individual da decisão, considerando lacunas de função, ameaças sem resposta e dependência de peças específicas.',
     riskLevelLow: 'Baixo',
     riskLevelMedium: 'Médio',
     riskLevelHigh: 'Alto',
@@ -226,6 +229,24 @@ const dictionaries: Record<Locale, Record<string, string>> = {
     formatScarletViolet: 'Scarlet / Violet',
     formatScarletVioletShort: 'Lista Gen IX',
     championsMode: 'Modo Champions',
+    competitiveFormat: 'Formato Pokémon Showdown',
+    competitiveFormatNote: 'Formatos de time construído do Pokémon Showdown.',
+    showdownGroupSingles: 'S/V Singles',
+    showdownGroupDoubles: 'S/V Doubles',
+    showdownGroupDraft: 'Draft League',
+    showdownStandardSingles: 'Singles padrão competitivo',
+    showdownRestrictedSingles: 'Singles com lendários restritos',
+    showdownTieredSingles: 'Tier competitivo singles',
+    showdownLittleCup: 'Formato Little Cup',
+    showdownSpecialRules: 'Regras especiais de ladder',
+    showdownCommunityFormat: 'Formato mantido pela comunidade',
+    showdownOpenRules: 'Regras abertas',
+    showdownStandardDoubles: 'Doubles padrão competitivo',
+    showdownRestrictedDoubles: 'Doubles com lendários restritos',
+    showdownTieredDoubles: 'Tier competitivo doubles',
+    showdownVgc: 'Regras VGC oficiais no Showdown',
+    showdownBattleStadium: 'Battle Stadium Singles',
+    showdownDraft: 'Formato de draft league',
     formatFireRed: 'FireRed / LeafGreen',
     formatFireRedShort: 'Pokédex de Kanto',
     formatEmerald: 'Emerald',
@@ -461,6 +482,9 @@ const dictionaries: Record<Locale, Record<string, string>> = {
     aiScore: 'Equinox score',
     decisionConfidence: 'Decision confidence',
     riskLevel: 'Risk level',
+    aiScoreTooltip: 'Overall index combining synergy, coverage, roles, speed, threats, and fit for the selected format.',
+    decisionConfidenceTooltip: 'Shows how consistent the recommendation is based on available data and the clarity of the team answers.',
+    riskLevelTooltip: 'Summarizes the individual fragility of the decision, considering role gaps, unanswered threats, and dependency on specific pieces.',
     riskLevelLow: 'Low',
     riskLevelMedium: 'Medium',
     riskLevelHigh: 'High',
@@ -552,6 +576,24 @@ const dictionaries: Record<Locale, Record<string, string>> = {
     formatScarletViolet: 'Scarlet / Violet',
     formatScarletVioletShort: 'Gen IX pool',
     championsMode: 'Champions mode',
+    competitiveFormat: 'Pokémon Showdown format',
+    competitiveFormatNote: 'Built-team formats from Pokémon Showdown.',
+    showdownGroupSingles: 'S/V Singles',
+    showdownGroupDoubles: 'S/V Doubles',
+    showdownGroupDraft: 'Draft League',
+    showdownStandardSingles: 'Standard competitive singles',
+    showdownRestrictedSingles: 'Restricted legendary singles',
+    showdownTieredSingles: 'Competitive singles tier',
+    showdownLittleCup: 'Little Cup format',
+    showdownSpecialRules: 'Special ladder rules',
+    showdownCommunityFormat: 'Community-maintained format',
+    showdownOpenRules: 'Open rules',
+    showdownStandardDoubles: 'Standard competitive doubles',
+    showdownRestrictedDoubles: 'Restricted legendary doubles',
+    showdownTieredDoubles: 'Competitive doubles tier',
+    showdownVgc: 'Official VGC rules on Showdown',
+    showdownBattleStadium: 'Battle Stadium Singles',
+    showdownDraft: 'Draft league format',
     formatFireRed: 'FireRed / LeafGreen',
     formatFireRedShort: 'Kanto Dex',
     formatEmerald: 'Emerald',
@@ -855,6 +897,22 @@ function isCanonicalBattleTerm(value: string): boolean {
 }
 
 const ptReplacements: Array<[RegExp, string]> = [
+  [/Revalidate this profile whenever Pokémon Champions publishes a new Regulation Set or season update\./gi, 'Revalide este perfil sempre que Pokémon Champions publicar um novo Regulation Set ou atualização de temporada.'],
+  [/This profile is source-aware, but still not a fully roster-locked output until eligible Pokémon and allowed Mega lists are imported as structured data packs\./gi, 'Este perfil considera as fontes disponíveis, mas ainda não é uma saída totalmente travada por lista até que Pokémon elegíveis e Megas permitidas sejam importados como pacotes de dados estruturados.'],
+  [/meta source pack is not the same as official usage statistics; refresh when reliable usage or event results are imported\./gi, 'O pacote de fontes meta não equivale a estatísticas oficiais de uso; atualize quando dados confiáveis de uso ou resultados de eventos forem importados.'],
+  [/Refresh whenever Pokémon Champions publishes a new Regulation Set, when Victory Road updates regulation\/team resources, or when usage data becomes available\./gi, 'Atualizar sempre que Pokémon Champions publicar um novo Regulation Set, quando a Victory Road atualizar recursos de regulação ou times, ou quando dados de uso estiverem disponíveis.'],
+  [/Update when the ladder, tier list, or regulation threat profile changes materially\./gi, 'Atualizar quando a ladder, tier list ou perfil de ameaças da regulação mudar de forma relevante.'],
+  [/Use ([^\.]+) as source context, not as final official usage data\./gi, 'Use $1 como contexto de fonte, não como dado oficial final de uso.'],
+  [/Full official allowed-list import is not loaded yet; treat this as a Regulation M-B source-aware profile, not a roster-locked output\./gi, 'A lista oficial completa de permitidos ainda não foi carregada; trate isto como um perfil da Regulation M-B sensível às fontes, não como uma saída travada por lista.'],
+  [/([A-Za-z0-9 .%'’:-]+) is immune to ([A-Za-z0-9 .%'’:-]+)'s main STAB pressure\.?/gi, '$1 é imune à pressão principal de STAB de $2.'],
+  [/([A-Za-z0-9 .%'’:-]+) resists ([A-Za-z0-9 .%'’:-]+)'s main STAB pressure\.?/gi, '$1 resiste à pressão principal de STAB de $2.'],
+  [/([A-Za-z0-9 .%'’:-]+) has an immunity against part of ([A-Za-z0-9 .%'’:-]+)'s pressure\.?/gi, '$1 possui imunidade contra parte da pressão de $2.'],
+  [/([A-Za-z0-9 .%'’:-]+) resists part of ([A-Za-z0-9 .%'’:-]+)'s pressure\.?/gi, '$1 resiste a parte da pressão de $2.'],
+  [/([A-Za-z0-9 .%'’:-]+) can outspeed this answer without speed control\.?/gi, '$1 pode ultrapassar essa resposta sem controle de velocidade.'],
+  [/([A-Za-z0-9 .%'’:-]+) is vulnerable to ([A-Za-z0-9 .%'’:-]+)'s STAB pressure\.?/gi, '$1 é vulnerável à pressão de STAB de $2.'],
+  [/([A-Za-z0-9 .%'’:-]+) has a severe weakness to ([A-Za-z0-9 .%'’:-]+)'s STAB pressure\.?/gi, '$1 possui fraqueza severa à pressão de STAB de $2.'],
+  [/([A-Za-z0-9 .%'’:-]+) can naturally contest ([A-Za-z0-9 .%'’:-]+)'s speed tier\.?/gi, '$1 consegue disputar naturalmente a faixa de velocidade de $2.'],
+  [/([A-Za-z0-9 .%'’:-]+) can offset ([A-Za-z0-9 .%'’:-]+)'s speed with priority or speed control\.?/gi, '$1 consegue compensar a velocidade de $2 com prioridade ou controle de velocidade.'],
   [/Scout during the early turns to identify items, speed, and possible coverage moves\./gi, 'Faça scouting nos primeiros turnos para descobrir itens, velocidade e possíveis golpes de cobertura.'],
   [/Replace this bootstrap profile with a versioned encounter\/story data pack when exact availability is imported\./gi, 'Substituir este perfil dados-base por um pacote de dados versionado de encontros/história quando a disponibilidade exata for importada.'],
   [/Import a roster data pack for each official Regulation Set before treating the format as fully locked\./gi, 'Importar um pacote de dados da lista elegível para cada Regulation Set oficial antes de tratar o formato como totalmente travado.'],
@@ -1469,6 +1527,31 @@ export function translateContent(value: string | undefined, locale: Locale): str
       .replace(/\bcommunity\b/gi, 'comunitário')
       .replace(/\bunknown\b/gi, 'pendente')
       .replace(/\boutdated\b/gi, 'desatualizado')
+      .replace(/\bExcellent\b/g, 'Excelente')
+      .replace(/\bStrong\b/g, 'Forte')
+      .replace(/\bpending\b/gi, 'pendente')
+      .replace(/\bsource-aware\b/gi, 'sensível às fontes')
+      .replace(/\broster-locked\b/gi, 'travada por lista')
+      .replace(/\blista-locked\b/gi, 'travada por lista')
+      .replace(/\ballowed-list\b/gi, 'lista de permitidos')
+      .replace(/\beligible lista\b/gi, 'lista elegível')
+      .replace(/\bO lista\b/g, 'A lista')
+      .replace(/\bPacote de dadoss\b/g, 'pacotes de dados')
+      .replace(/\bdata-base de pressão singles\b/gi, 'dados-base de pressão singles')
+      .replace(/\britmorada\b/gi, 'temporada')
+      .replace(/\bControlee\b/g, 'controle')
+      .replace(/\boutVelocidade\b/gi, 'ultrapassar')
+      .replace(/\boficial usage\b/gi, 'uso oficial')
+      .replace(/\busage data\b/gi, 'dados de uso')
+      .replace(/\bsource context\b/gi, 'contexto de fonte')
+      .replace(/\bPokémon champions\b/g, 'Pokémon Champions')
+      .replace(/Revalidate this profile whenever Pok.?mon Champions publishes a new Regulation Set or season update\./gi, 'Revalide este perfil sempre que Pokémon Champions publicar um novo Regulation Set ou atualização de temporada.')
+      .replace(/Revalidate against Regulation ([A-Z-]+) after every Pok.?mon Champions season update\./gi, 'Revalide contra a Regulation $1 após cada atualização de temporada do Pokémon Champions.')
+      .replace(/This profile is sensível às fontes, but still not a fully travada por lista output until eligible Pok.?mon and allowed Mega lists are imported as structured pacotes de dados\./gi, 'Este perfil considera as fontes disponíveis, mas ainda não é uma saída totalmente travada por lista até que Pokémon elegíveis e Megas permitidas sejam importados como pacotes de dados estruturados.')
+      .replace(/Use Pok.?mon Champions M-B singles meta Source Pack como contexto de fonte, não como dado oficial final de uso\./gi, 'Use o pacote de fontes meta Pokémon Champions M-B Singles como contexto de fonte, não como dado oficial final de uso.')
+      .replace(/([A-Za-z0-9 .%'’:-]+) Resiste a part of ([A-Za-z0-9 .%'’:-]+)'s pressão\.?/gi, '$1 resiste a parte da pressão de $2.')
+      .replace(/([A-Za-z0-9 .%'’:-]+) Resiste a ([A-Za-z0-9 .%'’:-]+)'s main STAB pressão\.?/gi, '$1 resiste à pressão principal de STAB de $2.')
+      .replace(/([A-Za-z0-9 .%'’:-]+) has an immunity against part of ([A-Za-z0-9 .%'’:-]+)'s pressão\.?/gi, '$1 possui imunidade contra parte da pressão de $2.')
       .replace(/Scenario-aware scoring is prioritizing gauntlet consistency over .*?meta fit\./gi, 'A pontuação sensível ao cenário está priorizando a consistência da gauntlet acima do ajuste ao meta genérico.');
   }
 

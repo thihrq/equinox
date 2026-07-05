@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Loader2, Moon, Sun } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import type { ExplanationEntry, SuggestionResponse, TeamIdentity, TeamOption } from './types/equinox';
 import type { Locale } from './i18n/equinoxI18n';
 import { t } from './i18n/equinoxI18n';
@@ -80,6 +80,34 @@ const getChampionsOptions = (locale: Locale): Array<PickerOption> => [
   { value: 'champions_reg_m_b_doubles', label: t(locale, 'formatChampionsDoubles'), short: t(locale, 'formatChampionsDoublesShort') },
 ];
 
+const getCompetitiveFormatOptions = (locale: Locale): VanillaGamePickerOption[] => [
+  { group: t(locale, 'showdownGroupSingles'), value: 'gen9ou', label: '[Gen 9] OU', short: t(locale, 'showdownStandardSingles') },
+  { group: t(locale, 'showdownGroupSingles'), value: 'gen9ubers', label: '[Gen 9] Ubers', short: t(locale, 'showdownRestrictedSingles') },
+  { group: t(locale, 'showdownGroupSingles'), value: 'gen9uu', label: '[Gen 9] UU', short: t(locale, 'showdownTieredSingles') },
+  { group: t(locale, 'showdownGroupSingles'), value: 'gen9ru', label: '[Gen 9] RU', short: t(locale, 'showdownTieredSingles') },
+  { group: t(locale, 'showdownGroupSingles'), value: 'gen9nu', label: '[Gen 9] NU', short: t(locale, 'showdownTieredSingles') },
+  { group: t(locale, 'showdownGroupSingles'), value: 'gen9pu', label: '[Gen 9] PU', short: t(locale, 'showdownTieredSingles') },
+  { group: t(locale, 'showdownGroupSingles'), value: 'gen9zu', label: '[Gen 9] ZU', short: t(locale, 'showdownTieredSingles') },
+  { group: t(locale, 'showdownGroupSingles'), value: 'gen9lc', label: '[Gen 9] LC', short: t(locale, 'showdownLittleCup') },
+  { group: t(locale, 'showdownGroupSingles'), value: 'gen9monotype', label: '[Gen 9] Monotype', short: t(locale, 'showdownSpecialRules') },
+  { group: t(locale, 'showdownGroupSingles'), value: 'gen9cap', label: '[Gen 9] CAP', short: t(locale, 'showdownCommunityFormat') },
+  { group: t(locale, 'showdownGroupSingles'), value: 'gen9anythinggoes', label: '[Gen 9] Anything Goes', short: t(locale, 'showdownOpenRules') },
+  { group: t(locale, 'showdownGroupSingles'), value: 'gen91v1', label: '[Gen 9] 1v1', short: t(locale, 'showdownSpecialRules') },
+  { group: t(locale, 'showdownGroupSingles'), value: 'national_dex', label: 'National Dex', short: t(locale, 'formatNationalDexShort') },
+  { group: t(locale, 'showdownGroupDoubles'), value: 'gen9doublesou', label: '[Gen 9] Doubles OU', short: t(locale, 'showdownStandardDoubles') },
+  { group: t(locale, 'showdownGroupDoubles'), value: 'gen9doublesubers', label: '[Gen 9] Doubles Ubers', short: t(locale, 'showdownRestrictedDoubles') },
+  { group: t(locale, 'showdownGroupDoubles'), value: 'gen9doublesuu', label: '[Gen 9] Doubles UU', short: t(locale, 'showdownTieredDoubles') },
+  { group: t(locale, 'showdownGroupDoubles'), value: 'gen9doubleslc', label: '[Gen 9] Doubles LC', short: t(locale, 'showdownLittleCup') },
+  { group: t(locale, 'showdownGroupDoubles'), value: 'gen9vgc2025regi', label: '[Gen 9] VGC 2025 Reg I', short: t(locale, 'showdownVgc') },
+  { group: t(locale, 'showdownGroupDoubles'), value: 'gen9bssregi', label: '[Gen 9] BSS Reg I', short: t(locale, 'showdownBattleStadium') },
+  { group: t(locale, 'showdownGroupDraft'), value: 'gen9draft', label: '[Gen 9] Draft', short: t(locale, 'showdownDraft') },
+  { group: t(locale, 'showdownGroupDraft'), value: 'gen96v6doublesdraft', label: '[Gen 9] 6v6 Doubles Draft', short: t(locale, 'showdownDraft') },
+  { group: t(locale, 'showdownGroupDraft'), value: 'gen94v4doublesdraft', label: '[Gen 9] 4v4 Doubles Draft', short: t(locale, 'showdownDraft') },
+  { group: t(locale, 'showdownGroupDraft'), value: 'gen9natdexdraft', label: '[Gen 9] NatDex Draft', short: t(locale, 'showdownDraft') },
+  { group: t(locale, 'showdownGroupDraft'), value: 'gen9natdex6v6doublesdraft', label: '[Gen 9] NatDex 6v6 Doubles Draft', short: t(locale, 'showdownDraft') },
+  { group: t(locale, 'showdownGroupDraft'), value: 'gen9natdexlcdraft', label: '[Gen 9] NatDex LC Draft', short: t(locale, 'showdownDraft') },
+];
+
 const getFormatFamily = (format: string): FormatFamily => {
   if (format.startsWith('vanilla_') || format === 'vanilla') return 'vanilla';
   if (format.startsWith('champions_')) return 'champions';
@@ -92,6 +120,8 @@ const exampleCores = [
   ['Garchomp', 'Rotom-Wash', 'Scizor'],
   ['Venusaur', 'Arcanine', 'Gyarados'],
 ];
+
+const teamPlaceholders = ['Ex: Charizard', 'Ex: Blastoise', 'Ex: Venusaur'];
 
 export default function App() {
   const [team, setTeam] = useState(['', '', '']);
@@ -109,6 +139,7 @@ export default function App() {
   const formatFamilies = useMemo(() => getFormatFamilies(locale), [locale]);
   const vanillaGameOptions = useMemo(() => getVanillaGameOptions(locale), [locale]);
   const championsOptions = useMemo(() => getChampionsOptions(locale), [locale]);
+  const competitiveFormatOptions = useMemo(() => getCompetitiveFormatOptions(locale), [locale]);
   const activeFormatFamily = useMemo(() => getFormatFamily(format), [format]);
   const vanillaGamesByGroup = useMemo(() => {
     return vanillaGameOptions.reduce<Record<string, VanillaGamePickerOption[]>>((groups, option) => {
@@ -119,6 +150,15 @@ export default function App() {
   const selectedVanillaGame = useMemo(() => {
     return vanillaGameOptions.find(option => option.value === format);
   }, [format, vanillaGameOptions]);
+  const competitiveFormatsByGroup = useMemo(() => {
+    return competitiveFormatOptions.reduce<Record<string, VanillaGamePickerOption[]>>((groups, option) => {
+      groups[option.group] = [...(groups[option.group] ?? []), option];
+      return groups;
+    }, {});
+  }, [competitiveFormatOptions]);
+  const selectedCompetitiveFormat = useMemo(() => {
+    return competitiveFormatOptions.find(option => option.value === format);
+  }, [format, competitiveFormatOptions]);
 
   const selectedOption = useMemo(() => {
     if (!result?.topTeams?.length) return null;
@@ -156,7 +196,7 @@ export default function App() {
     }
 
     if (family === 'competitive') {
-      setFormat('national_dex');
+      setFormat('gen9ou');
       return;
     }
 
@@ -277,7 +317,7 @@ export default function App() {
                   <span className="eq-team-field">
                     <input
                       type="text"
-                      placeholder="Ex: Charizard"
+                      placeholder={teamPlaceholders[index]}
                       value={team[index]}
                       list={`eq-pokemon-suggestions-${index}`}
                       onChange={event => handleInputChange(index, event.target.value)}
@@ -302,7 +342,8 @@ export default function App() {
             <button className="eq-generate-button" type="submit" disabled={loading}>
               {loading ? (
                 <>
-                  <Loader2 className="eq-spin" size={18} /> {t(locale, 'calculating')}
+                  <span className="eq-loader-ring eq-loader-ring--button" aria-hidden="true" />
+                  {t(locale, 'calculating')}
                 </>
               ) : (
                 t(locale, 'generate')
@@ -360,6 +401,32 @@ export default function App() {
                       {selectedVanillaGame.short}
                     </p>
                   )}
+                </div>
+              )}
+
+              {activeFormatFamily === 'competitive' && (
+                <div className="eq-format-subpanel eq-format-subpanel--select">
+                  <span>{t(locale, 'competitiveFormat')}</span>
+                  <label className="eq-format-select">
+                    <select
+                      value={format}
+                      onChange={event => setFormat(event.target.value)}
+                      aria-label={t(locale, 'competitiveFormat')}
+                    >
+                      {Object.entries(competitiveFormatsByGroup).map(([group, options]) => (
+                        <optgroup key={group} label={group}>
+                          {options.map(option => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ))}
+                    </select>
+                  </label>
+                  <p className="eq-format-selected-note">
+                    {selectedCompetitiveFormat?.short ?? t(locale, 'competitiveFormatNote')}
+                  </p>
                 </div>
               )}
 
@@ -499,13 +566,17 @@ export default function App() {
                 <DataSourcePanel option={selectedOption} locale={locale} />
               </DetailsBlock>
 
-              <DetailsBlock title={t(locale, 'radicalRedGauntlet')} subtitle={t(locale, 'radicalRedGauntletSubtitle')} count={selectedOption.radicalRedGauntlet?.bossReports.length ?? 0} locale={locale}>
-                <RadicalRedGauntletPanel option={selectedOption} locale={locale} />
-              </DetailsBlock>
+              {activeFormatFamily === 'radical_red' && (
+                <DetailsBlock title={t(locale, 'radicalRedGauntlet')} subtitle={t(locale, 'radicalRedGauntletSubtitle')} count={selectedOption.radicalRedGauntlet?.bossReports.length ?? 0} locale={locale}>
+                  <RadicalRedGauntletPanel option={selectedOption} locale={locale} />
+                </DetailsBlock>
+              )}
 
-              <DetailsBlock title={t(locale, 'championsRegulation')} subtitle={t(locale, 'championsRegulationSubtitle')} count={selectedOption.championsRegulation ? 1 : 0} locale={locale}>
-                <ChampionsRegulationPanel option={selectedOption} locale={locale} />
-              </DetailsBlock>
+              {activeFormatFamily === 'champions' && (
+                <DetailsBlock title={t(locale, 'championsRegulation')} subtitle={t(locale, 'championsRegulationSubtitle')} count={selectedOption.championsRegulation ? 1 : 0} locale={locale}>
+                  <ChampionsRegulationPanel option={selectedOption} locale={locale} />
+                </DetailsBlock>
+              )}
 
               <DetailsBlock title={t(locale, 'threatIntelligence')} subtitle={t(locale, 'threatIntelligenceSubtitle')} count={selectedOption.threatAnalysis?.matchups.length ?? 0} locale={locale}>
                 <ThreatReport option={selectedOption} locale={locale} />
@@ -612,10 +683,9 @@ function EmptyState({ locale, onUseExampleCore }: { locale: Locale; onUseExample
 function LoadingState({ locale }: { locale: Locale }) {
   return (
     <section className="eq-loading-v2">
-      <Loader2 className="eq-spin" size={30} />
+      <span className="eq-loader-ring eq-loader-ring--stage" aria-hidden="true" />
       <h2>{t(locale, 'loadingTitle')}</h2>
       <p>{t(locale, 'loadingText')}</p>
-      <div className="eq-loading-bars"><span /><span /><span /></div>
     </section>
   );
 }

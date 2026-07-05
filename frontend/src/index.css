@@ -429,10 +429,33 @@ img { display: block; }
 .eq-empty-v2 p,
 .eq-loading-v2 p { margin: 0; color: var(--eq-muted); max-width: 420px; }
 
-.eq-loading-bars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: min(360px, 80%); margin-top: 28px; }
-.eq-loading-bars span { height: 8px; border-radius: 999px; background: var(--eq-surface-soft); animation: eqPulse 1.1s infinite ease-in-out; }
-.eq-loading-bars span:nth-child(2) { animation-delay: 120ms; }
-.eq-loading-bars span:nth-child(3) { animation-delay: 240ms; }
+.eq-loader-ring {
+  --eq-loader-size: 22px;
+  --eq-loader-track: color-mix(in srgb, currentColor 18%, transparent);
+  --eq-loader-arc: currentColor;
+  display: inline-block;
+  width: var(--eq-loader-size);
+  height: var(--eq-loader-size);
+  flex: 0 0 auto;
+  border: 2px solid var(--eq-loader-track);
+  border-top-color: var(--eq-loader-arc);
+  border-right-color: var(--eq-loader-arc);
+  border-radius: 999px;
+  transform-origin: center;
+  animation: eqLoaderRotate 780ms linear infinite;
+  will-change: transform;
+}
+
+.eq-loader-ring--button {
+  --eq-loader-size: 20px;
+  color: var(--eq-inverse);
+}
+
+.eq-loader-ring--stage {
+  --eq-loader-size: 42px;
+  border-width: 3px;
+  color: var(--eq-text);
+}
 
 .eq-results-v2 { display: grid; gap: 20px; }
 
@@ -775,10 +798,7 @@ img { display: block; }
 
 .eq-explanations-v2 strong { color: var(--eq-text); white-space: nowrap; }
 .eq-muted-v2 { margin: 0; color: var(--eq-muted); }
-.eq-spin { animation: eqSpin 0.9s linear infinite; }
-
-@keyframes eqSpin { to { transform: rotate(360deg); } }
-@keyframes eqPulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+@keyframes eqLoaderRotate { to { transform: rotate(360deg); } }
 
 @media (max-width: 1180px) {
   .eq-app-shell { grid-template-columns: 1fr; }
@@ -1508,11 +1528,66 @@ img { display: block; }
 }
 
 .eq-ai-builder-metrics article {
+  position: relative;
   padding: 16px;
 }
 
 .eq-ai-builder-metrics article strong {
   font-size: clamp(18px, 1.4vw, 24px);
+}
+
+.eq-metric-info {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--eq-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--eq-muted);
+  cursor: help;
+  transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.eq-metric-info:hover,
+.eq-metric-info:focus-visible {
+  border-color: var(--eq-text);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--eq-text);
+  outline: none;
+}
+
+.eq-metric-tooltip {
+  position: absolute;
+  z-index: 20;
+  right: 0;
+  top: calc(100% + 8px);
+  width: min(260px, 72vw);
+  padding: 10px 11px;
+  border: 1px solid var(--eq-border);
+  border-radius: 12px;
+  background: var(--eq-panel);
+  color: var(--eq-text);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.45;
+  letter-spacing: 0;
+  text-align: left;
+  text-transform: none;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-2px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.eq-metric-info:hover .eq-metric-tooltip,
+.eq-metric-info:focus-visible .eq-metric-tooltip {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .eq-ai-builder-tags {
@@ -3689,9 +3764,16 @@ img { display: block; }
   place-items: center;
 }
 
-.eq-loading-bars span {
-  height: 5px;
-  border-radius: 999px;
+.eq-generate-button:disabled {
+  cursor: progress;
+  opacity: 0.82;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eq-loader-ring {
+    animation-duration: 1.6s;
+    animation-timing-function: steps(12, end);
+  }
 }
 
 .eq-results-v3 {
@@ -4007,6 +4089,8 @@ img { display: block; }
 
 .eq-builder-disclosure {
   grid-column: 1 / -1;
+  display: grid;
+  gap: 0;
   border-top: 1px solid var(--eq-border-subtle);
 }
 
@@ -4066,6 +4150,14 @@ img { display: block; }
   display: grid;
   gap: 12px;
   padding: 2px 0 14px;
+}
+
+.eq-builder-disclosure:not([open]) > .eq-builder-disclosure__body {
+  display: none;
+}
+
+.eq-builder-disclosure[open] > .eq-builder-disclosure__body {
+  display: grid;
 }
 
 .eq-builder-disclosure__body .eq-section-label {

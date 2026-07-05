@@ -1,3 +1,4 @@
+import { CircleAlert } from 'lucide-react';
 import type { Locale } from '../../i18n/equinoxI18n';
 import { t, translateContent } from '../../i18n/equinoxI18n';
 import type { AIBuilderAnalysis, TeamOption } from '../../types/equinox';
@@ -51,9 +52,9 @@ export function AIBuilderDecision({ option, locale }: AIBuilderDecisionProps) {
         </div>
 
         <div className="eq-ai-builder-metrics">
-          <Metric label={t(locale, 'aiScore')} value={`${analysis.scores.total}%`} />
-          <Metric label={t(locale, 'decisionConfidence')} value={`${analysis.confidence}%`} />
-          <Metric label={t(locale, 'riskLevel')} value={getRiskLabel(analysis, locale)} />
+          <Metric label={t(locale, 'aiScore')} value={`${analysis.scores.total}%`} tooltip={t(locale, 'aiScoreTooltip')} />
+          <Metric label={t(locale, 'decisionConfidence')} value={`${analysis.confidence}%`} tooltip={t(locale, 'decisionConfidenceTooltip')} />
+          <Metric label={t(locale, 'riskLevel')} value={getRiskLabel(analysis, locale)} tooltip={t(locale, 'riskLevelTooltip')} />
         </div>
       </div>
 
@@ -82,10 +83,16 @@ export function AIBuilderDecision({ option, locale }: AIBuilderDecisionProps) {
   );
 }
 
-function Metric({ label, value }: { label: string; value: string }) {
+function Metric({ label, value, tooltip }: { label: string; value: string; tooltip?: string }) {
   return (
-    <article>
+    <article className={tooltip ? 'eq-metric-with-info' : undefined}>
       <span>{label}</span>
+      {tooltip && (
+        <button className="eq-metric-info" type="button" aria-label={`${label}: ${tooltip}`}>
+          <CircleAlert size={14} strokeWidth={2.1} />
+          <span className="eq-metric-tooltip" role="tooltip">{tooltip}</span>
+        </button>
+      )}
       <strong>{value}</strong>
     </article>
   );

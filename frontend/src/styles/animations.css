@@ -21,11 +21,23 @@
   transition-duration: 0.01ms !important;
 }
 
+.eq-reduce-motion .eq-loader-ring {
+  animation-duration: 1.6s !important;
+  animation-iteration-count: infinite !important;
+  animation-timing-function: steps(12, end) !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .eq-loader-ring {
+    animation-duration: 1.6s !important;
+    animation-iteration-count: infinite !important;
+    animation-timing-function: steps(12, end) !important;
   }
 }
