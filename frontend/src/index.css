@@ -3964,3 +3964,236 @@ img { display: block; }
     min-height: 0;
   }
 }
+
+/* Equinox guided UX pass */
+.eq-mobile-builder-intro {
+  display: none;
+}
+
+.eq-mobile-builder-intro h1 {
+  margin: 4px 0 0;
+  color: var(--eq-text-strong);
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.eq-mobile-builder-intro p {
+  margin: 0;
+  color: var(--eq-text-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.eq-team-field {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.eq-team-field small {
+  min-height: 14px;
+  padding-left: 2px;
+  color: var(--eq-subtle);
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.eq-team-field small.is-known {
+  color: var(--eq-text-muted);
+}
+
+.eq-builder-disclosure {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--eq-border-subtle);
+}
+
+.eq-builder-disclosure summary {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 0;
+  color: var(--eq-text);
+  cursor: pointer;
+  list-style: none;
+}
+
+.eq-builder-disclosure summary::-webkit-details-marker {
+  display: none;
+}
+
+.eq-builder-disclosure summary::after {
+  content: '+';
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--eq-border);
+  border-radius: 999px;
+  color: var(--eq-text-muted);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.eq-builder-disclosure[open] summary::after {
+  content: '-';
+}
+
+.eq-builder-disclosure summary span {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.eq-builder-disclosure summary strong {
+  color: var(--eq-text-strong);
+  font-size: 13px;
+  font-weight: 760;
+}
+
+.eq-builder-disclosure summary small {
+  color: var(--eq-subtle);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.eq-builder-disclosure__body {
+  display: grid;
+  gap: 12px;
+  padding: 2px 0 14px;
+}
+
+.eq-builder-disclosure__body .eq-section-label {
+  letter-spacing: 0.12em;
+}
+
+.eq-empty-v2__examples {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.3fr);
+  gap: 18px;
+  align-items: start;
+  padding-top: 18px;
+  border-top: 1px solid var(--eq-border);
+}
+
+.eq-empty-v2__examples > div:first-child {
+  display: grid;
+  gap: 5px;
+}
+
+.eq-empty-v2__examples strong {
+  color: var(--eq-text-strong);
+  font-size: 14px;
+  font-weight: 760;
+}
+
+.eq-empty-v2__examples p {
+  margin: 0;
+  color: var(--eq-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.eq-empty-core-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.eq-empty-core-button {
+  min-height: 76px;
+  display: grid;
+  align-content: center;
+  gap: 7px;
+  padding: 12px;
+  border: 1px solid var(--eq-border);
+  border-radius: var(--eq-radius-control);
+  background: var(--eq-panel);
+  color: var(--eq-text);
+  text-align: left;
+  cursor: pointer;
+  transition: 180ms ease;
+}
+
+.eq-empty-core-button:hover {
+  border-color: var(--eq-border-strong);
+}
+
+.eq-empty-core-button span {
+  color: var(--eq-subtle);
+  font-size: 11px;
+  font-weight: 740;
+}
+
+.eq-empty-core-button strong {
+  color: var(--eq-text);
+  font-size: 12px;
+  font-weight: 760;
+  line-height: 1.35;
+}
+
+@media (max-width: 1180px) {
+  .eq-builder-disclosure {
+    grid-column: 1 / -1;
+  }
+
+  .eq-empty-core-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .eq-sidebar-v2 {
+    display: grid;
+    gap: 18px;
+  }
+
+  .eq-mobile-builder-intro {
+    display: grid;
+    gap: 8px;
+    padding: 2px 2px 4px;
+  }
+
+  .eq-sidebar-brand {
+    display: none;
+  }
+
+  .eq-sidebar-poem {
+    display: none;
+  }
+
+  .eq-builder-panel {
+    gap: 12px;
+  }
+
+  .eq-sidebar-actions {
+    padding-bottom: 2px;
+  }
+
+  .eq-main-v2 > .eq-header-v2 {
+    padding-top: 0;
+  }
+
+  .eq-main-v2 > .eq-header-v2 .eq-header-copy {
+    display: none;
+  }
+
+  .eq-builder-disclosure summary {
+    min-height: 50px;
+  }
+
+  .eq-empty-v2__examples {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .eq-empty-core-list {
+    grid-template-columns: 1fr;
+  }
+}

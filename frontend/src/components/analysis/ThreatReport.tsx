@@ -20,7 +20,7 @@ export function ThreatReport({ option, locale }: { option: TeamOption; locale: L
         <article key={matchup.threat.name}>
           <span>{translateThreatLevel(matchup.level, locale)}</span>
           <strong>{matchup.threat.name}</strong>
-          <p>{translateContent(matchup.answers[0] ?? matchup.problems[0], locale) || (locale === 'pt-BR' ? 'Matchup analisado pelo Equinox.' : 'Matchup analyzed by Equinox.')}</p>
+          <p>{translateContent(matchup.answers[0] ?? matchup.problems[0], locale) || t(locale, 'matchupAnalyzed')}</p>
           <small>{matchup.score}/100</small>
         </article>
       ))}

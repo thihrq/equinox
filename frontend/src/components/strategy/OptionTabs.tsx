@@ -20,11 +20,11 @@ const labelKeys = [
 
 export function OptionTabs({ options, selectedIndex, locale, onSelect, formatScore }: OptionTabsProps) {
   return (
-    <nav className="eq-option-tabs-v3" aria-label={locale === 'pt-BR' ? 'Opções sugeridas' : 'Suggested options'}>
+    <nav className="eq-option-tabs-v3" aria-label={t(locale, 'suggestedOptions')}>
       {options.map((option, index) => {
         const label = labelKeys[index];
-        const title = label ? t(locale, label.title) : `${locale === 'pt-BR' ? 'Opção' : 'Option'} ${index + 1}`;
-        const note = label ? t(locale, label.note) : (locale === 'pt-BR' ? 'Composição alternativa' : 'Alternative composition');
+        const title = label ? t(locale, label.title) : `${t(locale, 'optionFallback')} ${index + 1}`;
+        const note = label ? t(locale, label.note) : t(locale, 'alternativeComposition');
         return (
           <button
             key={`option-${index}`}

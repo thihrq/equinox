@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: equinox-api
+    runtime: node
+    plan: free
+    region: oregon
+    autoDeploy: true
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: APP_NAME
+        value: Equinox API
+      - key: APP_VERSION
+        value: 1.0.1
+      - key: NODE_ENV
+        value: production
+      - key: CORS_ORIGIN
+        value: https://thihrq.github.io
+      - key: JSON_LIMIT
+        value: 1mb
+      - key: EQUINOX_RECOMMENDATION_CACHE_TTL_MS
+        value: 900000
+      - key: EQUINOX_RECOMMENDATION_CACHE_MAX_ENTRIES
+        value: 100
+      - key: MONGO_URI
+        sync: false

@@ -57,6 +57,43 @@ npm run format:check
 npm run release:check
 ```
 
+## Publicacao gratuita
+
+O projeto esta preparado para uma publicacao gratuita usando:
+
+- Frontend: GitHub Pages
+- API: Render Free Web Service
+- Banco: MongoDB Atlas M0
+
+### API no Render
+
+O arquivo `render.yaml` define o servico `equinox-api`. No Render, use **New > Blueprint**, conecte este repositorio e informe a variavel obrigatoria:
+
+```env
+MONGO_URI=mongodb+srv://...
+```
+
+O blueprint ja configura:
+
+```env
+NODE_ENV=production
+CORS_ORIGIN=https://thihrq.github.io
+```
+
+A URL esperada da API e:
+
+```txt
+https://equinox-api.onrender.com
+```
+
+Se o Render gerar outra URL, configure no GitHub em **Settings > Secrets and variables > Actions > Variables**:
+
+```env
+VITE_API_BASE_URL=https://sua-api.onrender.com
+```
+
+Depois rode novamente o workflow **Deploy frontend** em **Actions**.
+
 Endpoints úteis:
 
 ```powershell
