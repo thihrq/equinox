@@ -121,7 +121,7 @@ const exampleCores = [
   ['Venusaur', 'Arcanine', 'Gyarados'],
 ];
 
-const teamPlaceholders = ['Ex: Charizard', 'Ex: Blastoise', 'Ex: Venusaur'];
+const teamPlaceholders = ['Ex: Charizard'];
 
 export default function App() {
   const [team, setTeam] = useState(['', '', '']);
