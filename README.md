@@ -1,3 +1,9 @@
+Este projeto foi escrito 95% pelo Codex I.A. 
+Estava curioso para criar algo com a I.A e enfrentava algumas dificuldades para buildar times competitivos principalmente no RadicalRed, então acabei entrando de cabeça nisso, perdendo alguns dias, tokens e por ai vai.
+Foi extremamente interessante descobrir como podemos chegar longe com a I.A mesmo tendo apenas um conhecimento básico de lógica de programação.
+
+**Todo o projeto está hospedado em serviços Free, então divirtam-se.**
+
 # Equinox v1.0.1
 
 Equinox é um team builder competitivo e scenario-aware de Pokémon. A versão 1.0 combina análise de sinergia, ameaças, matchups qualitativos, AI Builder, cache inteligente, escopo por formato e auditoria de data packs.
