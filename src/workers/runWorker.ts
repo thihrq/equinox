@@ -5,17 +5,21 @@ import { RadicalRedWorker } from './etl/RadicalRedWorker';
 
 dotenv.config();
 
+export const runDatabaseSeed = async (): Promise<void> => {
+  // Roda a extração Vanilla base.
+  await SmogonWorker.run();
+
+  // Roda a extração Radical Red
+  await RadicalRedWorker.run();
+};
+
 const run = async () => {
   try {
     const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/pokemon_teambuilder';
     await mongoose.connect(mongoUri);
     console.log('📦 Conectado ao MongoDB.');
 
-    // Roda a extração Vanilla base.
-    await SmogonWorker.run(); 
-    
-    // Roda a extração Radical Red
-    await RadicalRedWorker.run();
+    await runDatabaseSeed();
 
     await mongoose.disconnect();
     console.log('🔌 Desconectado do MongoDB.');
@@ -26,4 +30,6 @@ const run = async () => {
   }
 };
 
-run();
+if (require.main === module) {
+  run();
+}

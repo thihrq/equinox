@@ -10,6 +10,8 @@ export interface AppConfig {
   mongoUri: string;
   corsOrigins: string[];
   jsonLimit: string;
+  seedOnStartup: boolean;
+  forceSeedOnStartup: boolean;
   isProduction: boolean;
 }
 
@@ -44,6 +46,10 @@ function parseCorsOrigins(value: string | undefined, isProduction: boolean): str
     .filter(Boolean);
 }
 
+function parseBoolean(value: string | undefined): boolean {
+  return value === 'true' || value === '1' || value === 'yes';
+}
+
 const nodeEnv = parseNodeEnv(process.env.NODE_ENV);
 const isProduction = nodeEnv === 'production';
 
@@ -55,5 +61,7 @@ export const appConfig: AppConfig = {
   mongoUri: process.env.MONGO_URI || 'mongodb://localhost:27017/pokemon_teambuilder',
   corsOrigins: parseCorsOrigins(process.env.CORS_ORIGIN, isProduction),
   jsonLimit: process.env.JSON_LIMIT || '1mb',
+  seedOnStartup: parseBoolean(process.env.EQUINOX_SEED_ON_START),
+  forceSeedOnStartup: parseBoolean(process.env.EQUINOX_FORCE_SEED_ON_START),
   isProduction,
 };
