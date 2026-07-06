@@ -16,7 +16,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: CORS_ORIGIN
-        value: https://thihrq.github.io
+        value: https://thihrq.github.io,https://thihrq.github.io/equinox
       - key: JSON_LIMIT
         value: 1mb
       - key: EQUINOX_RECOMMENDATION_CACHE_TTL_MS

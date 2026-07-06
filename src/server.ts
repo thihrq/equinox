@@ -13,8 +13,9 @@ function createCorsOptions(): CorsOptions {
   return {
     origin(origin, callback) {
       const allowedOrigins = appConfig.corsOrigins;
+      const normalizedOrigin = origin?.replace(/\/+$/, '');
 
-      if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+      if (!normalizedOrigin || allowedOrigins.includes('*') || allowedOrigins.includes(normalizedOrigin)) {
         callback(null, true);
         return;
       }

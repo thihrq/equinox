@@ -42,7 +42,7 @@ function parseCorsOrigins(value: string | undefined, isProduction: boolean): str
 
   return value
     .split(',')
-    .map(origin => origin.trim())
+    .map(origin => origin.trim().replace(/\/+$/, ''))
     .filter(Boolean);
 }
 
