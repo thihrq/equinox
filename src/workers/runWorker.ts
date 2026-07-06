@@ -11,8 +11,8 @@ const run = async () => {
     await mongoose.connect(mongoUri);
     console.log('📦 Conectado ao MongoDB.');
 
-    // Roda a extração Vanilla (já fizemos)
-    // await SmogonWorker.run(); 
+    // Roda a extração Vanilla base.
+    await SmogonWorker.run(); 
     
     // Roda a extração Radical Red
     await RadicalRedWorker.run();
