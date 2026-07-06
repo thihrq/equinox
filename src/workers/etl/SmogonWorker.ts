@@ -2,6 +2,10 @@
 import { Pokemon } from '../../models/Pokemon';
 
 export class SmogonWorker {
+  private static isUnsupportedSpecies(species: ReturnType<typeof Dex.species.get>): boolean {
+    return species.isNonstandard === 'Future';
+  }
+
   private static isLegendarySpecies(tags: string[]): boolean {
     return tags.some(tag => /legendary|mythical/i.test(tag));
   }
@@ -11,9 +15,14 @@ export class SmogonWorker {
     
     const allSpecies = Array.from(Dex.species.all());
     const bulkOperations: any[] = [];
+    const unsupportedSpeciesNames: string[] = [];
 
     for (const species of allSpecies) {
       if (species.num <= 0) continue;
+      if (SmogonWorker.isUnsupportedSpecies(species)) {
+        unsupportedSpeciesNames.push(species.name);
+        continue;
+      }
 
       const vanillaVariant = {
         formatId: 'vanilla',
@@ -54,6 +63,11 @@ export class SmogonWorker {
     }
 
     try {
+      if (unsupportedSpeciesNames.length > 0) {
+        await Pokemon.deleteMany({ name: { $in: unsupportedSpeciesNames } });
+        console.log(`Removidos ${unsupportedSpeciesNames.length} registros Future/Illegal do MongoDB.`);
+      }
+
       console.log(`Preparando inserção de ${bulkOperations.length / 2} Pokémons no MongoDB...`);
       await Pokemon.bulkWrite(bulkOperations);
       console.log('✅ ETL Vanilla finalizado com sucesso!');

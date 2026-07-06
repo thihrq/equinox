@@ -121,7 +121,7 @@ const exampleCores = [
   ['Venusaur', 'Arcanine', 'Gyarados'],
 ];
 
-const teamPlaceholders = ['Ex: Charizard'];
+const teamPlaceholders = ['Ex: Charizard', 'Ex: Blastoise', 'Ex: Venusaur'];
 
 export default function App() {
   const [team, setTeam] = useState(['', '', '']);
@@ -159,6 +159,15 @@ export default function App() {
   const selectedCompetitiveFormat = useMemo(() => {
     return competitiveFormatOptions.find(option => option.value === format);
   }, [format, competitiveFormatOptions]);
+  const selectedChampionsFormat = useMemo(() => {
+    return championsOptions.find(option => option.value === format);
+  }, [format, championsOptions]);
+  const selectedFormatLabel = useMemo(() => {
+    if (activeFormatFamily === 'vanilla') return selectedVanillaGame?.label ?? t(locale, 'formatFamilyVanilla');
+    if (activeFormatFamily === 'competitive') return selectedCompetitiveFormat?.label ?? t(locale, 'formatFamilyCompetitive');
+    if (activeFormatFamily === 'champions') return selectedChampionsFormat?.label ?? t(locale, 'formatFamilyChampions');
+    return t(locale, 'formatFamilyRadicalRed');
+  }, [activeFormatFamily, locale, selectedChampionsFormat, selectedCompetitiveFormat, selectedVanillaGame]);
 
   const selectedOption = useMemo(() => {
     if (!result?.topTeams?.length) return null;
@@ -361,7 +370,7 @@ export default function App() {
             <summary>
               <span>
                 <strong>{t(locale, 'advancedContext')}</strong>
-                <small>{t(locale, 'advancedContextHint')}</small>
+                <small>{t(locale, 'formatCurrent')}: {selectedFormatLabel}</small>
               </span>
             </summary>
             <div className="eq-builder-disclosure__body">
@@ -526,6 +535,7 @@ export default function App() {
 
         {!result && !loading && <EmptyState locale={locale} onUseExampleCore={handleUseExampleCore} />}
         {loading && <LoadingState locale={locale} />}
+        {result && !selectedOption && !loading && <NoResultsState locale={locale} />}
 
         {result && selectedOption && !loading && (
           <div className="eq-results-v3">
@@ -690,6 +700,36 @@ function LoadingState({ locale }: { locale: Locale }) {
       <span className="eq-loader-ring eq-loader-ring--stage" aria-hidden="true" />
       <h2>{t(locale, 'loadingTitle')}</h2>
       <p>{t(locale, 'loadingText')}</p>
+    </section>
+  );
+}
+
+function NoResultsState({ locale }: { locale: Locale }) {
+  return (
+    <section className="eq-empty-v2 eq-empty-v2--compact">
+      <div className="eq-empty-v2__copy">
+        <YinYangMark className="eq-empty-symbol" />
+        <span className="eq-empty-v2__label">{t(locale, 'noResultsLabel')}</span>
+        <h2>{t(locale, 'noResultsTitle')}</h2>
+        <p>{t(locale, 'noResultsText')}</p>
+      </div>
+      <div className="eq-empty-v2__steps" aria-label={t(locale, 'noResultsLabel')}>
+        <article>
+          <span>01</span>
+          <strong>{t(locale, 'noResultsStepFormat')}</strong>
+          <p>{t(locale, 'noResultsStepFormatText')}</p>
+        </article>
+        <article>
+          <span>02</span>
+          <strong>{t(locale, 'noResultsStepDirection')}</strong>
+          <p>{t(locale, 'noResultsStepDirectionText')}</p>
+        </article>
+        <article>
+          <span>03</span>
+          <strong>{t(locale, 'noResultsStepCore')}</strong>
+          <p>{t(locale, 'noResultsStepCoreText')}</p>
+        </article>
+      </div>
     </section>
   );
 }

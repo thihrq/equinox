@@ -1,4 +1,4 @@
-// TODO: Implementar a classe/módulo CandidateSelector.ts
+import { Dex } from '@pkmn/dex';
 import { PokemonData } from '../core/AnalysisContext';
 import { VanillaGameProfileRegistry } from '../formats/VanillaGameProfiles';
 import { calculateBST, getVariant } from '../utils/PokemonUtils';
@@ -32,6 +32,7 @@ export class CandidateSelector {
         const normalizedName = pokemon.name.toLowerCase().trim();
 
         if (this.isBanned(normalizedName)) return false;
+        if (this.isUnsupportedSpecies(pokemon.name)) return false;
         if (currentNames.has(normalizedName)) return false;
         if (!allowLegendaries && pokemon.isLegendary) return false;
         if (!this.vanillaGameProfiles.isPokemonAllowed(format, pokemon)) return false;
@@ -110,5 +111,11 @@ export class CandidateSelector {
     ];
 
     return ubers.some(uber => name.startsWith(uber));
+  }
+
+  private isUnsupportedSpecies(name: string): boolean {
+    const species = Dex.species.get(name);
+
+    return species.exists && species.isNonstandard === 'Future';
   }
 }
