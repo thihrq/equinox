@@ -2,6 +2,10 @@
 import { Pokemon } from '../../models/Pokemon';
 
 export class SmogonWorker {
+  private static isLegendarySpecies(tags: string[]): boolean {
+    return tags.some(tag => /legendary|mythical/i.test(tag));
+  }
+
   public static async run() {
     console.log('Iniciando extração de dados (Formato: Vanilla)...');
     
@@ -30,7 +34,8 @@ export class SmogonWorker {
             $set: {
               dexNumber: species.num,
               name: species.name,
-              baseForme: species.baseForme || species.name
+              baseForme: species.baseForme || species.name,
+              isLegendary: SmogonWorker.isLegendarySpecies(species.tags ?? []),
             },
             $pull: { variants: { formatId: 'vanilla' } } 
           },

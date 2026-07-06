@@ -37,6 +37,7 @@ import { RecommendationCache } from '../equinox/cache/RecommendationCache';
 import { VanillaGameProfileRegistry } from '../equinox/formats/VanillaGameProfiles';
 import { FormatPerformanceProfileRegistry } from '../equinox/performance/FormatPerformanceProfile';
 import { RadicalRedGauntletScorer } from '../equinox/radicalred/RadicalRedGauntletScorer';
+import { appConfig } from '../config/env';
 
 
 export type TeamSuggestionInputErrorCode =
@@ -154,12 +155,13 @@ export class TeamService {
     console.timeEnd('MongoCandidates');
 
     console.time('CandidateSelector');
+    const candidateLimit = appConfig.runtimeProfile === 'render_free' ? 180 : 300;
     const validCandidates = new CandidateSelector().select({
       allPokemon: allCandidates,
       currentMembers,
       format,
       allowLegendaries,
-      limit: 300,
+      limit: candidateLimit,
     });
     console.timeEnd('CandidateSelector');
 

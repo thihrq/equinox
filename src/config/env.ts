@@ -87,7 +87,7 @@ function parseCorsOrigins(isProduction: boolean): string[] {
     ? [
         // GitHub Pages origin used by the public Equinox frontend.
         // This keeps deploys safe when Render env vars are not applied yet.
-        'https://thiihrq.github.io',
+        'https://thihrq.github.io',
       ]
     : [
         '*',
@@ -95,7 +95,7 @@ function parseCorsOrigins(isProduction: boolean): string[] {
         'http://127.0.0.1:5173',
         'http://localhost:4173',
         'http://127.0.0.1:4173',
-        'https://thiihrq.github.io',
+        'https://thihrq.github.io',
       ];
 
   return unique([...configured, ...fallbackOrigins]);

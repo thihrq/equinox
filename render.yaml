@@ -16,7 +16,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: CORS_ORIGIN
-        value: https://thiihrq.github.io
+        value: https://thihrq.github.io
       - key: EQUINOX_RUNTIME_PROFILE
         value: render_free
       - key: JSON_LIMIT
