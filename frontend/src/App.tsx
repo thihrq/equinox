@@ -266,6 +266,7 @@ export default function App() {
 
       setResult(response);
     } catch (err: unknown) {
+      console.log('Error analyzing team:', err);
       setError(getFriendlyApiError(err as ApiErrorShape));
     } finally {
       setLoading(false);
