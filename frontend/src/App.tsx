@@ -238,6 +238,9 @@ export default function App() {
     if (status === 0 || code === 'NETWORK_ERROR') return t(locale, 'networkError');
     if (status === 404 || code === 'ROUTE_NOT_FOUND') return t(locale, 'routeError');
     if (status === 403 || code === 'CORS_ORIGIN_NOT_ALLOWED') return t(locale, 'corsError');
+    if (status === 502 || status === 503 || status === 504 || code === 'DEPLOYMENT_GATEWAY_ERROR') {
+      return t(locale, 'gatewayError');
+    }
 
     return apiError.response?.data?.message || t(locale, 'serverError');
   };

@@ -1,4 +1,4 @@
-const RAW_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const RAW_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://equinox-api-c7zy.onrender.com';
 
 export const API_BASE_URL = RAW_API_BASE_URL.replace(/\/+$/, '');
 
@@ -38,13 +38,40 @@ function buildFetchError(error: unknown): ApiErrorShape {
   };
 }
 
+function resolveGatewayErrorCode(status: number): string | undefined {
+  if (status === 502 || status === 503 || status === 504) return 'DEPLOYMENT_GATEWAY_ERROR';
+  return undefined;
+}
+
+async function readErrorPayload(response: Response): Promise<Record<string, unknown>> {
+  const contentType = response.headers.get('content-type') ?? '';
+
+  if (contentType.includes('application/json')) {
+    try {
+      return await response.json();
+    } catch (_error) {
+      return {};
+    }
+  }
+
+  try {
+    const text = await response.text();
+    return text ? { message: text.slice(0, 280) } : {};
+  } catch (_error) {
+    return {};
+  }
+}
+
 export async function apiPost<TResponse>(url: string, data: unknown): Promise<TResponse> {
   let response: Response;
 
   try {
     response = await fetch(buildApiUrl(url), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(data),
     });
   } catch (error) {
@@ -52,18 +79,17 @@ export async function apiPost<TResponse>(url: string, data: unknown): Promise<TR
   }
 
   if (!response.ok) {
-    let errorData = {};
-
-    try {
-      errorData = await response.json();
-    } catch (_error) {
-      errorData = { message: response.statusText };
-    }
+    const errorData = await readErrorPayload(response);
+    const gatewayCode = resolveGatewayErrorCode(response.status);
 
     throw {
       response: {
         status: response.status,
-        data: errorData,
+        data: {
+          ...errorData,
+          code: typeof errorData.code === 'string' ? errorData.code : gatewayCode,
+          message: typeof errorData.message === 'string' ? errorData.message : response.statusText,
+        },
       },
       message: response.statusText,
     } satisfies ApiErrorShape;

@@ -1,7 +1,7 @@
 {
   "name": "pokemon-builder",
-  "version": "1.0.1",
-  "description": "Equinox v1.0.1 competitive and scenario-aware Pokémon team builder API",
+  "version": "1.0.2",
+  "description": "Equinox v1.0.2 competitive and scenario-aware Pokémon team builder API",
   "main": "dist/server.js",
   "scripts": {
     "dev": "ts-node src/server.ts",

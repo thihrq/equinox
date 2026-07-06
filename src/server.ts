@@ -9,26 +9,40 @@ import routes from './apiRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { runDatabaseSeed } from './workers/runWorker';
 
+function isOriginAllowed(origin: string | undefined): boolean {
+  if (!origin) return true;
+
+  const normalizedOrigin = origin.replace(/\/+$/, '');
+  const allowedOrigins = appConfig.corsOrigins;
+
+  if (allowedOrigins.includes('*')) return true;
+  if (allowedOrigins.includes(normalizedOrigin)) return true;
+
+  return appConfig.corsOriginPatterns.some(pattern => pattern.test(normalizedOrigin));
+}
+
 function createCorsOptions(): CorsOptions {
   return {
     origin(origin, callback) {
-      const allowedOrigins = appConfig.corsOrigins;
-      const normalizedOrigin = origin?.replace(/\/+$/, '');
-
-      if (!normalizedOrigin || allowedOrigins.includes('*') || allowedOrigins.includes(normalizedOrigin)) {
+      if (isOriginAllowed(origin)) {
         callback(null, true);
         return;
       }
 
+      console.warn(`[Equinox] CORS bloqueado para origem: ${origin}`);
       callback(new Error(`Origem não permitida pelo CORS: ${origin}`));
     },
-    credentials: true,
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Accept'],
+    optionsSuccessStatus: 204,
+    credentials: false,
   };
 }
 
 const app = express();
 
 app.disable('x-powered-by');
+app.set('trust proxy', 1);
 app.use(cors(createCorsOptions()));
 app.use(express.json({ limit: appConfig.jsonLimit }));
 app.use(routes);
@@ -61,6 +75,8 @@ const startServer = async () => {
     const server = app.listen(appConfig.port, () => {
       console.log(`🚀 ${appConfig.appName} rodando na porta ${appConfig.port}`);
       console.log(`🌱 Ambiente: ${appConfig.nodeEnv}`);
+      console.log(`⚙️ Runtime profile: ${appConfig.runtimeProfile}`);
+      console.log(`🌐 CORS origins: ${appConfig.corsOrigins.length > 0 ? appConfig.corsOrigins.join(', ') : 'none'}`);
     });
 
     void runStartupSeedIfNeeded();
