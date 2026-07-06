@@ -83,28 +83,35 @@ function parseCorsOrigins(isProduction: boolean): string[] {
     .map(normalizeOrigin)
     .filter((origin): origin is string => Boolean(origin));
 
-  if (configured.length > 0) {
-    return unique(configured);
-  }
+  const fallbackOrigins = isProduction
+    ? [
+        // GitHub Pages origin used by the public Equinox frontend.
+        // This keeps deploys safe when Render env vars are not applied yet.
+        'https://thiihrq.github.io',
+      ]
+    : [
+        '*',
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        'http://localhost:4173',
+        'http://127.0.0.1:4173',
+        'https://thiihrq.github.io',
+      ];
 
-  if (!isProduction) {
-    return [
-      '*',
-      'http://localhost:5173',
-      'http://127.0.0.1:5173',
-      'http://localhost:4173',
-      'http://127.0.0.1:4173',
-    ];
-  }
-
-  return [];
+  return unique([...configured, ...fallbackOrigins]);
 }
 
 function parseCorsOriginPatterns(): RegExp[] {
-  return splitEnvList(process.env.CORS_ORIGIN_PATTERNS)
+  const configuredPatterns = splitEnvList(process.env.CORS_ORIGIN_PATTERNS);
+  const defaultPatterns = [
+    // Allows project pages such as https://user.github.io while still requiring HTTPS.
+    '^https:\\/\\/[a-z0-9-]+\\.github\\.io$',
+  ];
+
+  return [...configuredPatterns, ...defaultPatterns]
     .map(pattern => {
       try {
-        return new RegExp(pattern);
+        return new RegExp(pattern, 'i');
       } catch (_error) {
         console.warn(`[Equinox] Ignorando CORS_ORIGIN_PATTERNS inválido: ${pattern}`);
         return undefined;
@@ -122,7 +129,7 @@ const isProduction = nodeEnv === 'production';
 
 export const appConfig: AppConfig = {
   appName: process.env.APP_NAME || 'Equinox API',
-  version: process.env.APP_VERSION || '1.0.2',
+  version: process.env.APP_VERSION || '1.0.3',
   nodeEnv,
   port: parsePort(process.env.PORT, 3000),
   mongoUri: process.env.MONGO_URI || 'mongodb://localhost:27017/pokemon_teambuilder',

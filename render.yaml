@@ -12,7 +12,7 @@ services:
       - key: APP_NAME
         value: Equinox API
       - key: APP_VERSION
-        value: 1.0.2
+        value: 1.0.3
       - key: NODE_ENV
         value: production
       - key: CORS_ORIGIN

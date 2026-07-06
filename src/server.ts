@@ -1,5 +1,4 @@
 import express from 'express';
-import cors, { CorsOptions } from 'cors';
 import mongoose from 'mongoose';
 
 import { connectDatabase } from './config/database';
@@ -9,41 +8,85 @@ import routes from './apiRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { runDatabaseSeed } from './workers/runWorker';
 
+function normalizeRequestOrigin(origin: string | undefined): string | undefined {
+  if (!origin) return undefined;
+
+  const trimmed = origin.trim().replace(/\/+$/, '');
+
+  try {
+    return new URL(trimmed).origin;
+  } catch (_error) {
+    return trimmed;
+  }
+}
+
 function isOriginAllowed(origin: string | undefined): boolean {
   if (!origin) return true;
 
-  const normalizedOrigin = origin.replace(/\/+$/, '');
+  const normalizedOrigin = normalizeRequestOrigin(origin);
   const allowedOrigins = appConfig.corsOrigins;
 
+  if (!normalizedOrigin) return true;
   if (allowedOrigins.includes('*')) return true;
   if (allowedOrigins.includes(normalizedOrigin)) return true;
 
   return appConfig.corsOriginPatterns.some(pattern => pattern.test(normalizedOrigin));
 }
 
-function createCorsOptions(): CorsOptions {
-  return {
-    origin(origin, callback) {
-      if (isOriginAllowed(origin)) {
-        callback(null, true);
-        return;
-      }
+function applyCorsHeaders(req: express.Request, res: express.Response): boolean {
+  const origin = normalizeRequestOrigin(req.headers.origin);
 
-      console.warn(`[Equinox] CORS bloqueado para origem: ${origin}`);
-      callback(new Error(`Origem não permitida pelo CORS: ${origin}`));
-    },
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Accept'],
-    optionsSuccessStatus: 204,
-    credentials: false,
-  };
+  if (!origin) return true;
+
+  if (!isOriginAllowed(origin)) {
+    console.warn(`[Equinox] CORS bloqueado para origem: ${origin}`);
+    return false;
+  }
+
+  const allowAnyOrigin = appConfig.corsOrigins.includes('*');
+
+  res.setHeader('Access-Control-Allow-Origin', allowAnyOrigin ? '*' : origin);
+  res.setHeader('Vary', 'Origin');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type,Accept,Authorization,X-Requested-With',
+  );
+  res.setHeader('Access-Control-Max-Age', '86400');
+
+  return true;
+}
+
+function corsMiddleware(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+): void {
+  const allowed = applyCorsHeaders(req, res);
+
+  if (req.method === 'OPTIONS') {
+    res.status(allowed ? 204 : 403).end();
+    return;
+  }
+
+  if (!allowed) {
+    res.status(403).json({
+      status: 'error',
+      code: 'CORS_ORIGIN_BLOCKED',
+      message: 'Origem não permitida pela API do Equinox.',
+      origin: normalizeRequestOrigin(req.headers.origin),
+    });
+    return;
+  }
+
+  next();
 }
 
 const app = express();
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
-app.use(cors(createCorsOptions()));
+app.use(corsMiddleware);
 app.use(express.json({ limit: appConfig.jsonLimit }));
 app.use(routes);
 app.use(notFoundHandler);
