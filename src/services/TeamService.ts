@@ -61,6 +61,21 @@ export class TeamSuggestionInputError extends Error {
 export class TeamService {
   private static readonly vanillaGameProfiles = new VanillaGameProfileRegistry();
 
+  private static getCandidateLimitForProfile(profileId: string): number {
+    if (appConfig.runtimeProfile !== 'render_free') return 300;
+
+    const limits: Record<string, number> = {
+      'radical-red-gauntlet-performance': 36,
+      'champions-doubles-performance': 42,
+      'champions-singles-performance': 42,
+      'vanilla-game-performance': 54,
+      'meta-ladder-performance': 60,
+      'default-performance': 48,
+    };
+
+    return limits[profileId] ?? limits['default-performance'];
+  }
+
   public static getDamageMultiplier(
     defTypes: string[],
     atkType: string,
@@ -154,8 +169,10 @@ export class TeamService {
     const allCandidates = (await Pokemon.find({}).lean()) as unknown as PokemonData[];
     console.timeEnd('MongoCandidates');
 
+    const performanceProfile = new FormatPerformanceProfileRegistry().getProfile(format);
+
     console.time('CandidateSelector');
-    const candidateLimit = appConfig.runtimeProfile === 'render_free' ? 180 : 300;
+    const candidateLimit = this.getCandidateLimitForProfile(performanceProfile.id);
     const validCandidates = new CandidateSelector().select({
       allPokemon: allCandidates,
       currentMembers,
@@ -273,7 +290,6 @@ export class TeamService {
       ]),
     );
 
-    const performanceProfile = new FormatPerformanceProfileRegistry().getProfile(format);
     console.log(
       `[Equinox] PerformanceGuardrail=${performanceProfile.label} | maxPipeline=${performanceProfile.maxPipelineEvaluations}, keep=${performanceProfile.maxCombinationsToKeep}, note=${performanceProfile.note}`,
     );
