@@ -4,7 +4,7 @@ Foi extremamente interessante descobrir como podemos chegar longe com a I.A mesm
 
 **Todo o projeto está hospedado em serviços Free, então divirtam-se.**
 
-# Equinox v1.0.1
+# Equinox Beta v1.0.1
 
 Equinox é um team builder competitivo e scenario-aware de Pokémon. A versão 1.0 combina análise de sinergia, ameaças, matchups qualitativos, AI Builder, cache inteligente, escopo por formato e auditoria de data packs.
 
