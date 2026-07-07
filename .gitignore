@@ -1,10 +1,10 @@
 ﻿node_modules/
 dist/
 .env
+.env.example
 
 # Local automation/tooling artifacts
 .agents/
 .codex/
 .impeccable/
 frontend-vite*.log
-.env.example
