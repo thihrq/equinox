@@ -1,4 +1,8 @@
-const RAW_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://equinox-api-c7zy.onrender.com';
+const DEFAULT_API_BASE_URL = import.meta.env.DEV
+  ? 'http://localhost:3000'
+  : 'https://equinox-api-c7zy.onrender.com';
+
+const RAW_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
 
 export const API_BASE_URL = RAW_API_BASE_URL.replace(/\/+$/, '');
 
@@ -49,7 +53,7 @@ async function readErrorPayload(response: Response): Promise<Record<string, unkn
   if (contentType.includes('application/json')) {
     try {
       return await response.json();
-    } catch (_error) {
+    } catch {
       return {};
     }
   }
@@ -57,7 +61,7 @@ async function readErrorPayload(response: Response): Promise<Record<string, unkn
   try {
     const text = await response.text();
     return text ? { message: text.slice(0, 280) } : {};
-  } catch (_error) {
+  } catch {
     return {};
   }
 }
