@@ -38,12 +38,14 @@ import { VanillaGameProfileRegistry } from '../equinox/formats/VanillaGameProfil
 import { FormatPerformanceProfileRegistry } from '../equinox/performance/FormatPerformanceProfile';
 import { RadicalRedGauntletScorer } from '../equinox/radicalred/RadicalRedGauntletScorer';
 import { appConfig } from '../config/env';
+import { FormatLegalityRules } from '../equinox/recommendation/FormatLegalityRules';
 
 
 export type TeamSuggestionInputErrorCode =
   | 'INVALID_TEAM_SIZE'
   | 'POKEMON_NOT_FOUND'
-  | 'VANILLA_POOL_INCOMPATIBLE';
+  | 'VANILLA_POOL_INCOMPATIBLE'
+  | 'FORMAT_RULE_INCOMPATIBLE';
 
 export class TeamSuggestionInputError extends Error {
   public readonly statusCode = 400;
@@ -60,6 +62,7 @@ export class TeamSuggestionInputError extends Error {
 
 export class TeamService {
   private static readonly vanillaGameProfiles = new VanillaGameProfileRegistry();
+  private static readonly formatLegalityRules = new FormatLegalityRules();
 
   private static getCandidateLimitForProfile(profileId: string): number {
     if (appConfig.runtimeProfile !== 'render_free') return 300;
@@ -143,6 +146,23 @@ export class TeamService {
     }
 
     const validCurrentTeam = currentTeam as PokemonData[];
+
+    const incompatibleBasePokemon = validCurrentTeam.filter(
+      pokemon => !this.formatLegalityRules.isEligible({ pokemon, format }),
+    );
+
+    if (incompatibleBasePokemon.length > 0) {
+      const incompatibleNames = incompatibleBasePokemon.map(pokemon => pokemon.name);
+
+      throw new TeamSuggestionInputError(
+        'FORMAT_RULE_INCOMPATIBLE',
+        `Pokémon não compatível com as regras do formato selecionado: ${incompatibleNames.join(', ')}.`,
+        {
+          pokemonNames: incompatibleNames,
+          format,
+        },
+      );
+    }
 
     const vanillaGameProfile = this.vanillaGameProfiles.getProfile(format);
     if (vanillaGameProfile?.strictPool) {

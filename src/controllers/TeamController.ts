@@ -68,6 +68,12 @@ function localizeSuggestionInputError(error: TeamSuggestionInputError, locale: u
       : `Pokémon não é compatível com a geração selecionada: ${pokemonNames}. Digite um Pokémon compatível com ${formatLabel} (${poolLabel}).`;
   }
 
+  if (error.code === 'FORMAT_RULE_INCOMPATIBLE') {
+    return isEnglish
+      ? `This Pokémon is not compatible with the selected format rules: ${pokemonNames}. Change the core or choose a compatible format.`
+      : `Pokémon não é compatível com as regras do formato selecionado: ${pokemonNames}. Troque o core ou escolha um formato compatível.`;
+  }
+
   return isEnglish
     ? 'Please provide exactly 3 valid Pokémon to build the base team.'
     : 'Informe exatamente 3 Pokémon válidos para montar a base do time.';

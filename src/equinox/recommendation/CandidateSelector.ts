@@ -2,6 +2,7 @@ import { Dex } from '@pkmn/dex';
 import { PokemonData } from '../core/AnalysisContext';
 import { VanillaGameProfileRegistry } from '../formats/VanillaGameProfiles';
 import { calculateBST, getVariant } from '../utils/PokemonUtils';
+import { FormatLegalityRules } from './FormatLegalityRules';
 
 interface CandidateSelectorParams {
   allPokemon: PokemonData[];
@@ -13,6 +14,7 @@ interface CandidateSelectorParams {
 
 export class CandidateSelector {
   private readonly vanillaGameProfiles = new VanillaGameProfileRegistry();
+  private readonly legalityRules = new FormatLegalityRules();
 
   public select(params: CandidateSelectorParams): PokemonData[] {
     const {
@@ -33,6 +35,7 @@ export class CandidateSelector {
 
         if (this.isBanned(normalizedName)) return false;
         if (this.isUnsupportedSpecies(pokemon.name)) return false;
+        if (!this.legalityRules.isEligible({ pokemon, format })) return false;
         if (currentNames.has(normalizedName)) return false;
         if (!allowLegendaries && pokemon.isLegendary) return false;
         if (!this.vanillaGameProfiles.isPokemonAllowed(format, pokemon)) return false;
@@ -42,7 +45,9 @@ export class CandidateSelector {
 
         const bst = calculateBST(variant.baseStats);
 
-        return bst >= 450 && bst <= 700;
+        const bstRange = this.legalityRules.getBstRange(format);
+
+        return bst >= bstRange.min && bst <= bstRange.max;
       })
       .sort((a, b) => {
         const bstA = calculateBST(getVariant(a, format)?.baseStats);
