@@ -93,3 +93,72 @@ export function generateBasicKit(pokemon: PokemonData, format: string) {
 
   return { nature: 'Sassy / Relaxed', role: 'Suporte Robusto (Bulky Pivot)' };
 }
+
+/**
+ * Extrai o nome base de uma forma Mega para busca no banco de sets.
+ * Ex: "Charizard-Mega-Y" → "Charizard", "Salamence-Mega" → "Salamence"
+ */
+export function getMegaBaseName(name: string): string {
+  return name.replace(/-Mega(-[XY])?$/i, '');
+}
+
+/**
+ * Mapeamento completo de formas Mega → Mega Stone obrigatória.
+ * Em competitivo, um Pokémon Mega DEVE segurar sua respectiva Mega Stone.
+ */
+const MEGA_STONES: Record<string, string> = {
+  'Venusaur-Mega': 'Venusaurite',
+  'Charizard-Mega-X': 'Charizardite X',
+  'Charizard-Mega-Y': 'Charizardite Y',
+  'Blastoise-Mega': 'Blastoisinite',
+  'Beedrill-Mega': 'Beedrillite',
+  'Pidgeot-Mega': 'Pidgeotite',
+  'Alakazam-Mega': 'Alakazite',
+  'Slowbro-Mega': 'Slowbronite',
+  'Gengar-Mega': 'Gengarite',
+  'Kangaskhan-Mega': 'Kangaskhanite',
+  'Pinsir-Mega': 'Pinsirite',
+  'Gyarados-Mega': 'Gyaradosite',
+  'Aerodactyl-Mega': 'Aerodactylite',
+  'Mewtwo-Mega-X': 'Mewtwonite X',
+  'Mewtwo-Mega-Y': 'Mewtwonite Y',
+  'Ampharos-Mega': 'Ampharosite',
+  'Scizor-Mega': 'Scizorite',
+  'Heracross-Mega': 'Heracronite',
+  'Houndoom-Mega': 'Houndoominite',
+  'Tyranitar-Mega': 'Tyranitarite',
+  'Sceptile-Mega': 'Sceptilite',
+  'Blaziken-Mega': 'Blazikenite',
+  'Swampert-Mega': 'Swampertite',
+  'Gardevoir-Mega': 'Gardevoirite',
+  'Sableye-Mega': 'Sablenite',
+  'Mawile-Mega': 'Mawilite',
+  'Aggron-Mega': 'Aggronite',
+  'Medicham-Mega': 'Medichamite',
+  'Manectric-Mega': 'Manectite',
+  'Sharpedo-Mega': 'Sharpedonite',
+  'Camerupt-Mega': 'Cameruptite',
+  'Altaria-Mega': 'Altarianite',
+  'Banette-Mega': 'Banettite',
+  'Absol-Mega': 'Absolite',
+  'Glalie-Mega': 'Glalitite',
+  'Salamence-Mega': 'Salamencite',
+  'Metagross-Mega': 'Metagrossite',
+  'Latias-Mega': 'Latiasite',
+  'Latios-Mega': 'Latiosite',
+  'Garchomp-Mega': 'Garchompite',
+  'Lucario-Mega': 'Lucarionite',
+  'Abomasnow-Mega': 'Abomasite',
+  'Gallade-Mega': 'Galladite',
+  'Audino-Mega': 'Audinite',
+  'Diancie-Mega': 'Diancite',
+  'Lopunny-Mega': 'Lopunnite',
+  'Steelix-Mega': 'Steelixite',
+};
+
+/**
+ * Retorna a Mega Stone obrigatória para um Pokémon Mega, ou null se não for Mega.
+ */
+export function getMegaStone(name: string): string | null {
+  return MEGA_STONES[name] ?? null;
+}

@@ -410,6 +410,18 @@ export class CombinationSearchEngine {
       return false;
     }
 
+    // Item Clause: nenhum item pode se repetir no time completo
+    // Só aplica se o trio adicionou a violação (baseTeam pode já ter itens únicos)
+    const teamItems = team.map(p => p.item).filter(Boolean) as string[];
+    if (teamItems.length > 0 && new Set(teamItems).size < teamItems.length) {
+      // Verifica se o baseTeam já tinha a violação antes de culpar o trio
+      const baseItems = baseTeam.map(p => p.item).filter(Boolean) as string[];
+      const baseHasItemDuplicate = new Set(baseItems).size < baseItems.length;
+      if (!baseHasItemDuplicate) {
+        return false;
+      }
+    }
+
     // Filtra se introduziu um novo conflito que o baseTeam não tinha
     const baseHasConflict = this.hasConflict(baseTeam, format);
     if (!baseHasConflict && this.hasConflict(team, format)) {

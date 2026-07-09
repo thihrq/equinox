@@ -1,6 +1,8 @@
 import { PokemonService } from './PokemonService';
 import { Pokemon } from '../models/Pokemon';
 import { PokemonSet } from '../models/PokemonSet';
+import { generateBasicKit, getMegaBaseName, getMegaStone } from '../equinox/utils/PokemonUtils';
+import { CompetitiveKitGenerator } from '../equinox/utils/CompetitiveKitGenerator';
 
 import { AnalysisPipeline } from '../equinox/core/AnalysisPipeline';
 import { PokemonData } from '../equinox/core/AnalysisContext';
@@ -150,14 +152,30 @@ export class TeamService {
     const rawCurrentTeam = currentTeam as PokemonData[];
     const validCurrentTeam: PokemonData[] = [];
     for (const pokemon of rawCurrentTeam) {
-      const set = await PokemonSet.findOne({ pokemonName: pokemon.name, formatId: format }).lean();
+      // Normaliza nome Mega para busca de sets (ex: "Charizard-Mega-Y" → "Charizard")
+      const baseName = getMegaBaseName(pokemon.name);
+      let set = await PokemonSet.findOne({ pokemonName: pokemon.name, formatId: format }).lean();
+      if (!set && baseName !== pokemon.name) {
+        set = await PokemonSet.findOne({ pokemonName: baseName, formatId: format }).lean();
+      }
+      if (!set) {
+        set = await PokemonSet.findOne({ pokemonName: pokemon.name }).lean();
+      }
+      if (!set && baseName !== pokemon.name) {
+        set = await PokemonSet.findOne({ pokemonName: baseName }).lean();
+      }
+      const defaultKit = set ? null : CompetitiveKitGenerator.generate(pokemon, format);
+      const basicKit = generateBasicKit(pokemon, format);
+
+      // Mega Pokémon DEVE segurar a Mega Stone correta
+      const megaStone = getMegaStone(pokemon.name);
       validCurrentTeam.push({
         ...pokemon,
-        ability: pokemon.ability || set?.ability,
-        item: pokemon.item || set?.item,
-        moves: pokemon.moves && pokemon.moves.length > 0 ? pokemon.moves : set?.moves,
-        nature: pokemon.nature || set?.nature,
-        role: pokemon.role || set?.role,
+        ability: pokemon.ability || set?.ability || defaultKit?.ability,
+        item: megaStone || pokemon.item || set?.item || defaultKit?.item,
+        moves: pokemon.moves && pokemon.moves.length > 0 ? pokemon.moves : (set?.moves || defaultKit?.moves),
+        nature: pokemon.nature || set?.nature || basicKit.nature,
+        role: pokemon.role || set?.role || basicKit.role,
       });
     }
 
@@ -328,25 +346,48 @@ export class TeamService {
     const candidateNames = diversifiedCandidates.map(c => c.name);
     const candidateSets = await PokemonSet.find({
       pokemonName: { $in: candidateNames },
-      formatId: format,
     }).lean();
 
     const finalCandidates: PokemonData[] = [];
     for (const candidate of diversifiedCandidates) {
-      const sets = candidateSets.filter(s => s.pokemonName === candidate.name);
+      // Normaliza nome Mega para busca de sets (ex: "Salamence-Mega" → "Salamence")
+      const baseCandidateName = getMegaBaseName(candidate.name);
+      let sets = candidateSets.filter(s => s.pokemonName === candidate.name && s.formatId === format);
+      if (sets.length === 0 && baseCandidateName !== candidate.name) {
+        sets = candidateSets.filter(s => s.pokemonName === baseCandidateName && s.formatId === format);
+      }
+      if (sets.length === 0) {
+        sets = candidateSets.filter(s => s.pokemonName === candidate.name);
+      }
+      if (sets.length === 0 && baseCandidateName !== candidate.name) {
+        sets = candidateSets.filter(s => s.pokemonName === baseCandidateName);
+      }
+
+      // Mega Pokémon DEVE segurar a Mega Stone correta
+      const megaStone = getMegaStone(candidate.name);
+
       if (sets.length > 0) {
         for (const set of sets) {
           finalCandidates.push({
             ...candidate,
             ability: set.ability,
-            item: set.item,
+            item: megaStone ?? set.item,
             moves: set.moves,
             nature: set.nature,
             role: set.role,
           });
         }
       } else {
-        finalCandidates.push(candidate);
+        const defaultKit = CompetitiveKitGenerator.generate(candidate, format);
+        const basicKit = generateBasicKit(candidate, format);
+        finalCandidates.push({
+          ...candidate,
+          ability: defaultKit.ability,
+          item: megaStone ?? defaultKit.item,
+          moves: defaultKit.moves,
+          nature: basicKit.nature,
+          role: basicKit.role,
+        });
       }
     }
 
