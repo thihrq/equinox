@@ -61,7 +61,8 @@ export class SynergyEngine implements AnalysisEngine {
     // Se estiver nas habilidades possíveis (abilities record)
     if (pokemon.abilities) {
       for (const key in pokemon.abilities) {
-        if (this.normalize(pokemon.abilities[key]) === target) {
+        const val = pokemon.abilities[key];
+        if (typeof val === 'string' && this.normalize(val) === target) {
           return true;
         }
       }
