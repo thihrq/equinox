@@ -54,8 +54,8 @@ export class SynergyEngine implements AnalysisEngine {
     const target = this.normalize(abilityName);
     
     // Habilidade explícita do Pokémon no time
-    if (pokemon.ability && this.normalize(pokemon.ability) === target) {
-      return true;
+    if (pokemon.ability) {
+      return this.normalize(pokemon.ability) === target;
     }
 
     // Se estiver nas habilidades possíveis (abilities record)
@@ -247,7 +247,7 @@ export class SynergyEngine implements AnalysisEngine {
       }
 
       const variant = getVariant(p, format);
-      const baseSpeed = Number(variant?.baseStats?.spe ?? 0);
+      const baseSpeed = Number(variant?.baseStats?.spe ?? 80);
 
       if (baseSpeed <= 55) {
         slowCount++;
@@ -299,7 +299,7 @@ export class SynergyEngine implements AnalysisEngine {
   private analyzeItemClause(team: PokemonData[], format: string): { score: number; violated: boolean } {
     // Formatos oficiais exigem a Item Clause.
     // Ignora formatos de teste/customizados não padrão se necessário.
-    const isOfficialFormat = !!format && !format.toLowerCase().includes('custom') && !format.toLowerCase().includes('anythinggoes') && format !== 'vanilla';
+    const isOfficialFormat = !!format && !format.toLowerCase().includes('custom') && !format.toLowerCase().includes('anythinggoes') && format.toLowerCase() !== 'vanilla';
 
     // Mesmo se for vanilla de teste, vamos aplicar a regra se especificado pelo formato ou se contiver itens duplicados
     // Para fins do Teste 8 (que roda em um formato oficial), nós aplicamos se houver itens duplicados.

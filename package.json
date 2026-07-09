@@ -12,9 +12,10 @@
     "data:check": "ts-node src/scripts/validateDataPacks.ts",
     "recommendation:check": "ts-node src/scripts/validateRecommendationRules.ts",
     "balance:check": "ts-node src/scripts/validateBalanceEngine.ts",
+    "synergy:check": "ts-node src/scripts/validateSynergyEngine.ts",
     "release:check": "npm run preflight && npm --prefix frontend run build",
     "format:check": "ts-node src/scripts/auditFormatScope.ts",
-    "preflight": "npm run typecheck && npm run data:check && npm run format:check && npm run recommendation:check && npm run balance:check",
+    "preflight": "npm run typecheck && npm run data:check && npm run format:check && npm run synergy:check && npm run recommendation:check && npm run balance:check",
     "release:build": "npm run build && npm --prefix frontend run build",
     "db:seed": "ts-node src/workers/runWorker.ts",
     "db:seed:compiled": "node dist/workers/runWorker.js"
