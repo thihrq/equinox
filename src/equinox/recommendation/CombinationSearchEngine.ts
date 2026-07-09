@@ -430,6 +430,8 @@ export class CombinationSearchEngine {
       { setters: ['snowwarning'], beneficiaries: ['slushrush', 'icebody', 'snowcloak'], name: 'Neve' }
     ];
 
+
+
     for (const w of weatherTypes) {
       for (const p of team) {
         if (this.checkAbility(p, w.setters, format)) {
@@ -481,10 +483,14 @@ export class CombinationSearchEngine {
 
   private checkAbility(pokemon: PokemonData, names: string[], format: string): boolean {
     const targetNames = names.map(n => n.toLowerCase().replace(/[^a-z0-9]/g, ''));
+
+    // Quando temos a habilidade ativa do set, ela é definitiva — não verificar outras possíveis
     if (pokemon.ability) {
       const norm = pokemon.ability.toLowerCase().replace(/[^a-z0-9]/g, '');
-      if (targetNames.includes(norm)) return true;
+      return targetNames.includes(norm);
     }
+
+    // Sem habilidade ativa definida: consultar o variant do formato
     const variant = getVariant(pokemon, format);
     if (variant?.abilities) {
       for (const key in variant.abilities) {
@@ -494,16 +500,15 @@ export class CombinationSearchEngine {
           if (targetNames.includes(norm)) return true;
         }
       }
+      return false;
     }
-    if (pokemon.abilities) {
-      for (const key in pokemon.abilities) {
-        const val = pokemon.abilities[key];
-        if (typeof val === 'string') {
-          const norm = val.toLowerCase().replace(/[^a-z0-9]/g, '');
-          if (targetNames.includes(norm)) return true;
-        }
-      }
+
+    // Último recurso: habilidade principal do banco (apenas slot "0", nunca a oculta)
+    if (pokemon.abilities?.['0']) {
+      const norm = (pokemon.abilities['0'] as string).toLowerCase().replace(/[^a-z0-9]/g, '');
+      return targetNames.includes(norm);
     }
+
     return false;
   }
 
