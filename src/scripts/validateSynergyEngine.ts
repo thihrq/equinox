@@ -171,7 +171,39 @@ async function runTests() {
     console.log('✅ Teste 8 (Violação de Item Clause) Passou!');
   }
 
-  console.log('🎉 Todos os 8 testes da SynergyEngine passaram com sucesso!');
+  // --- Teste 9: Conflito de Abusador com Clima Concorrente (Tyranitar/Sand Stream + Charizard/Solar Power) -> score deve ser -40.
+  {
+    const team = [
+      mockPokemon({ name: 'Tyranitar', ability: 'Sand Stream' }),
+      mockPokemon({ name: 'Charizard', ability: 'Solar Power' }),
+      filler('Pikachu'),
+      filler('Bulbasaur'),
+      filler('Charmander'),
+      filler('Squirtle'),
+    ];
+    const context = new AnalysisContext({ format: 'gen9ou', selectedPokemon: team });
+    engine.execute(context);
+    assert(context.score.synergy === -40, `Teste 9 Falhou: Score de conflito abuser/clima esperado -40, obtido ${context.score.synergy}`);
+    console.log('✅ Teste 9 (Conflito Abusador/Clima) Passou!');
+  }
+
+  // --- Teste 10: Conflito de Abusador com Terreno Concorrente (Rillaboom/Grassy Surge + Alakazam/Expanding Force) -> score deve ser -30.
+  {
+    const team = [
+      mockPokemon({ name: 'Rillaboom', ability: 'Grassy Surge' }),
+      mockPokemon({ name: 'Alakazam', moves: ['Expanding Force'] }),
+      filler('Pikachu'),
+      filler('Bulbasaur'),
+      filler('Charmander'),
+      filler('Squirtle'),
+    ];
+    const context = new AnalysisContext({ format: 'gen9ou', selectedPokemon: team });
+    engine.execute(context);
+    assert(context.score.synergy === -30, `Teste 10 Falhou: Score de conflito abuser/terreno esperado -30, obtido ${context.score.synergy}`);
+    console.log('✅ Teste 10 (Conflito Abusador/Terreno) Passou!');
+  }
+
+  console.log('🎉 Todos os 10 testes da SynergyEngine passaram com sucesso!');
 }
 
 runTests().catch(err => {

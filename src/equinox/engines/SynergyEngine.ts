@@ -162,6 +162,24 @@ export class SynergyEngine implements AnalysisEngine {
       conflicts.push(...activeSetters);
     }
 
+    // Conflito entre Abusador de um clima e Gerador de outro clima
+    const settersWeathers = new Set<string>();
+    const abusersWeathers = new Set<string>();
+    for (const w of weatherTypes) {
+      for (const p of team) {
+        if (w.setters.some(s => this.hasAbility(p, s))) settersWeathers.add(w.name);
+        if (w.beneficiaries.some(b => this.hasAbility(p, b))) abusersWeathers.add(w.name);
+      }
+    }
+    for (const setterWeather of settersWeathers) {
+      for (const abuserWeather of abusersWeathers) {
+        if (setterWeather !== abuserWeather) {
+          score -= 40;
+          conflicts.push(`${abuserWeather} (Abusador) vs ${setterWeather} (Gerador)`);
+        }
+      }
+    }
+
     return { score, activeSynergies, conflicts };
   }
 
@@ -229,6 +247,24 @@ export class SynergyEngine implements AnalysisEngine {
     if (activeSetters.length >= 2) {
       score -= 35;
       conflicts.push(...activeSetters);
+    }
+
+    // Conflito entre Abusador de um terreno e Gerador de outro terreno
+    const settersTerrains = new Set<string>();
+    const abusersTerrains = new Set<string>();
+    for (const t of terrainTypes) {
+      for (const p of team) {
+        if (t.setters.some(s => this.hasAbility(p, s))) settersTerrains.add(t.name);
+        if (t.beneficiaries.some(b => this.hasMove(p, b) || this.hasAbility(p, b))) abusersTerrains.add(t.name);
+      }
+    }
+    for (const setterTerrain of settersTerrains) {
+      for (const abuserTerrain of abusersTerrains) {
+        if (setterTerrain !== abuserTerrain) {
+          score -= 30;
+          conflicts.push(`${abuserTerrain} (Abusador) vs ${setterTerrain} (Gerador)`);
+        }
+      }
     }
 
     return { score, activeSynergies, conflicts };
