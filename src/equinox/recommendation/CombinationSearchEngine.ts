@@ -397,6 +397,11 @@ export class CombinationSearchEngine {
   }
 
   private isValidTeam(team: PokemonData[]): boolean {
+    const names = new Set(team.map(pokemon => pokemon.name));
+    if (names.size !== team.length) {
+      return false;
+    }
+
     const megaCount = team.filter(pokemon =>
       pokemon.name.toLowerCase().includes('-mega'),
     ).length;
@@ -488,7 +493,10 @@ export class CombinationSearchEngine {
 
   private getSignature(team: PokemonData[]): string {
     return team
-      .map(pokemon => pokemon.name)
+      .map(pokemon => {
+        const setSuffix = pokemon.ability || pokemon.item ? `-${pokemon.ability || ''}-${pokemon.item || ''}` : '';
+        return `${pokemon.name}${setSuffix}`;
+      })
       .sort()
       .join('|');
   }
