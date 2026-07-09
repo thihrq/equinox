@@ -1,5 +1,6 @@
 import { PokemonService } from './PokemonService';
 import { Pokemon } from '../models/Pokemon';
+import { PokemonSet } from '../models/PokemonSet';
 
 import { AnalysisPipeline } from '../equinox/core/AnalysisPipeline';
 import { PokemonData } from '../equinox/core/AnalysisContext';
@@ -19,6 +20,7 @@ import { AIBuilderEngine } from '../equinox/engines/AIBuilderEngine';
 import { MetaEngine } from '../equinox/meta/MetaEngine';
 import { CoachEngine } from '../equinox/coach/CoachEngine';
 import { FinalScoreEngine } from '../equinox/engines/FinalScoreEngine';
+import { SynergyEngine } from '../equinox/engines/SynergyEngine';
 
 import { CandidateSelector } from '../equinox/recommendation/CandidateSelector';
 import {
@@ -145,7 +147,23 @@ export class TeamService {
       );
     }
 
-    const validCurrentTeam = currentTeam as PokemonData[];
+    const rawCurrentTeam = currentTeam as PokemonData[];
+    const validCurrentTeam: PokemonData[] = [];
+    for (const pokemon of rawCurrentTeam) {
+      const set = await PokemonSet.findOne({ pokemonName: pokemon.name, formatId: format }).lean();
+      if (set) {
+        validCurrentTeam.push({
+          ...pokemon,
+          ability: set.ability,
+          item: set.item,
+          moves: set.moves,
+          nature: set.nature,
+          role: set.role,
+        });
+      } else {
+        validCurrentTeam.push(pokemon);
+      }
+    }
 
     const incompatibleBasePokemon = validCurrentTeam.filter(
       pokemon => !this.formatLegalityRules.isEligible({ pokemon, format }),
@@ -295,6 +313,7 @@ export class TeamService {
       .use(new DataSourceEngine())
       .use(new ThreatEngine())
       .use(new DamageEngine())
+      .use(new SynergyEngine())
       .use(new CoachEngine())
       .use(new AIBuilderEngine())
       .use(new FinalScoreEngine());
@@ -309,6 +328,31 @@ export class TeamService {
         },
       ]),
     );
+
+    const candidateNames = diversifiedCandidates.map(c => c.name);
+    const candidateSets = await PokemonSet.find({
+      pokemonName: { $in: candidateNames },
+      formatId: format,
+    }).lean();
+
+    const finalCandidates: PokemonData[] = [];
+    for (const candidate of diversifiedCandidates) {
+      const sets = candidateSets.filter(s => s.pokemonName === candidate.name);
+      if (sets.length > 0) {
+        for (const set of sets) {
+          finalCandidates.push({
+            ...candidate,
+            ability: set.ability,
+            item: set.item,
+            moves: set.moves,
+            nature: set.nature,
+            role: set.role,
+          });
+        }
+      } else {
+        finalCandidates.push(candidate);
+      }
+    }
 
     console.log(
       `[Equinox] PerformanceGuardrail=${performanceProfile.label} | maxPipeline=${performanceProfile.maxPipelineEvaluations}, keep=${performanceProfile.maxCombinationsToKeep}, note=${performanceProfile.note}`,
@@ -326,7 +370,7 @@ export class TeamService {
       },
     ).findBestTrios({
       baseTeam: validCurrentTeam,
-      candidates: diversifiedCandidates,
+      candidates: finalCandidates,
       format,
       teamIdentity,
       candidateProfiles,

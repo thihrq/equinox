@@ -43,6 +43,8 @@ export interface PokemonData {
   ability?: string;
   item?: string;
   moves?: string[];
+  nature?: string;
+  role?: string;
 }
 
 export interface DefensiveTypeSummary {

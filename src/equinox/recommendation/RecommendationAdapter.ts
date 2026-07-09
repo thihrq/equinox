@@ -101,11 +101,25 @@ export class RecommendationAdapter {
         : `Opção ${index + 1}: Equilíbrio Estratégico. Restaram ${context.analysis.fatalUncovered} falha(s) 4x e ${context.analysis.normalUncovered} falha(s) 2x expostas.`;
 
     return {
-      suggestedPokemons: combination.team.map(pokemon => ({
-        name: pokemon.name,
-        kit: generateBasicKit(pokemon, format),
-        battleInsight: this.buildBattleInsight(pokemon, format),
-      })),
+      suggestedPokemons: combination.team.map(pokemon => {
+        const basicKit = generateBasicKit(pokemon, format);
+        return {
+          name: pokemon.name,
+          kit: {
+            nature: pokemon.nature || basicKit.nature,
+            role: pokemon.role || basicKit.role,
+            ability: pokemon.ability,
+            item: pokemon.item,
+            moves: pokemon.moves,
+          },
+          nature: pokemon.nature || basicKit.nature,
+          role: pokemon.role || basicKit.role,
+          ability: pokemon.ability,
+          item: pokemon.item,
+          moves: pokemon.moves,
+          battleInsight: this.buildBattleInsight(pokemon, format),
+        };
+      }),
       reasoning,
       stats: {
         fatalUncovered: context.analysis.fatalUncovered,
@@ -131,18 +145,19 @@ export class RecommendationAdapter {
 
   private buildBattleInsight(pokemon: PokemonData, format: string): BattleInsight {
     const types = getPokemonTypes(pokemon, format);
-    const kit = generateBasicKit(pokemon, format);
+    const basicKit = generateBasicKit(pokemon, format);
+    const kitRole = pokemon.role || basicKit.role;
 
     const offers = this.getDefensiveOffers(types);
     const pressures = this.getOffensivePressures(types);
     const risks = this.getDefensiveRisks(types);
 
     return {
-      practicalRole: this.getPracticalRole(kit.role, types),
+      practicalRole: this.getPracticalRole(kitRole, types),
       offers: offers.slice(0, 5),
       pressures: pressures.slice(0, 5),
       risks: risks.slice(0, 4),
-      usageTip: this.getUsageTip(kit.role, offers, pressures, risks),
+      usageTip: this.getUsageTip(kitRole, offers, pressures, risks),
     };
   }
 
