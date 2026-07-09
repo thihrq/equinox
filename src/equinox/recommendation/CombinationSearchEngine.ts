@@ -118,7 +118,7 @@ export class CombinationSearchEngine {
   private buildOptimizedSearchSpace(
     params: FindBestTriosParams,
   ): { trios: OptimizedTrioCandidate[]; stats: OptimizerStats } {
-    const { baseTeam, candidates } = params;
+    const { baseTeam, candidates, format } = params;
     const len = candidates.length;
     const totalPossible = this.combinationCount(len, 3);
     const allValid: OptimizedTrioCandidate[] = [];
@@ -130,7 +130,7 @@ export class CombinationSearchEngine {
           const trio = [candidates[i], candidates[j], candidates[k]];
           const fullTeam = [...baseTeam, ...trio];
 
-          if (!this.isValidTeam(fullTeam)) {
+          if (!this.isValidTeam(fullTeam, baseTeam, format)) {
             skippedInvalid++;
             continue;
           }
@@ -396,7 +396,7 @@ export class CombinationSearchEngine {
     return penalty;
   }
 
-  private isValidTeam(team: PokemonData[]): boolean {
+  private isValidTeam(team: PokemonData[], baseTeam: PokemonData[], format: string): boolean {
     const names = new Set(team.map(pokemon => pokemon.name));
     if (names.size !== team.length) {
       return false;
@@ -406,7 +406,114 @@ export class CombinationSearchEngine {
       pokemon.name.toLowerCase().includes('-mega'),
     ).length;
 
-    return megaCount <= 1;
+    if (megaCount > 1) {
+      return false;
+    }
+
+    // Filtra se introduziu um novo conflito que o baseTeam não tinha
+    const baseHasConflict = this.hasConflict(baseTeam, format);
+    if (!baseHasConflict && this.hasConflict(team, format)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private hasConflict(team: PokemonData[], format: string): boolean {
+    // 1. Climas conflituosos (gerador vs gerador de climas diferentes ou gerador vs abusador de clima diferente)
+    const weatherSetters = new Set<string>();
+    const weatherAbusers = new Set<string>();
+    const weatherTypes = [
+      { setters: ['drizzle', 'primordialsea'], beneficiaries: ['swiftswim', 'raindish', 'dryskin', 'hydration'], name: 'Chuva' },
+      { setters: ['drought', 'orichalcumpulse', 'desolateland'], beneficiaries: ['chlorophyll', 'solarpower', 'protosynthesis', 'flowergift', 'harvest'], name: 'Sol' },
+      { setters: ['sandstream', 'sandspit'], beneficiaries: ['sandrush', 'sandforce', 'sandveil', 'overcoat'], name: 'Areia' },
+      { setters: ['snowwarning'], beneficiaries: ['slushrush', 'icebody', 'snowcloak'], name: 'Neve' }
+    ];
+
+    for (const w of weatherTypes) {
+      for (const p of team) {
+        if (this.checkAbility(p, w.setters, format)) {
+          weatherSetters.add(w.name);
+        }
+        if (this.checkAbility(p, w.beneficiaries, format)) {
+          weatherAbusers.add(w.name);
+        }
+      }
+    }
+
+    if (weatherSetters.size >= 2) return true; // Conflito de 2+ geradores
+    for (const setter of weatherSetters) {
+      for (const abuser of weatherAbusers) {
+        if (setter !== abuser) return true; // Gerador vs Abusador de outro clima
+      }
+    }
+
+    // 2. Terrenos conflituosos
+    const terrainSetters = new Set<string>();
+    const terrainAbusers = new Set<string>();
+    const terrainTypes = [
+      { setters: ['psychicsurge'], beneficiaries: ['expandingforce'], name: 'Terreno Psíquico' },
+      { setters: ['grassysurge'], beneficiaries: ['grassglide'], name: 'Terreno de Grama' },
+      { setters: ['electricsurge'], beneficiaries: ['risingvoltage', 'quarkdrive'], name: 'Terreno Elétrico' },
+      { setters: ['mistysurge'], beneficiaries: ['mistyexplosion'], name: 'Terreno de Névoa' }
+    ];
+
+    for (const t of terrainTypes) {
+      for (const p of team) {
+        if (this.checkAbility(p, t.setters, format)) {
+          terrainSetters.add(t.name);
+        }
+        if (this.checkAbility(p, t.beneficiaries, format) || this.checkMove(p, t.beneficiaries)) {
+          terrainAbusers.add(t.name);
+        }
+      }
+    }
+
+    if (terrainSetters.size >= 2) return true; // Conflito de 2+ geradores de terreno
+    for (const setter of terrainSetters) {
+      for (const abuser of terrainAbusers) {
+        if (setter !== abuser) return true; // Gerador vs Abusador de outro terreno
+      }
+    }
+
+    return false;
+  }
+
+  private checkAbility(pokemon: PokemonData, names: string[], format: string): boolean {
+    const targetNames = names.map(n => n.toLowerCase().replace(/[^a-z0-9]/g, ''));
+    if (pokemon.ability) {
+      const norm = pokemon.ability.toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (targetNames.includes(norm)) return true;
+    }
+    const variant = getVariant(pokemon, format);
+    if (variant?.abilities) {
+      for (const key in variant.abilities) {
+        const val = variant.abilities[key];
+        if (typeof val === 'string') {
+          const norm = val.toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (targetNames.includes(norm)) return true;
+        }
+      }
+    }
+    if (pokemon.abilities) {
+      for (const key in pokemon.abilities) {
+        const val = pokemon.abilities[key];
+        if (typeof val === 'string') {
+          const norm = val.toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (targetNames.includes(norm)) return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private checkMove(pokemon: PokemonData, names: string[]): boolean {
+    if (!pokemon.moves) return false;
+    const targetNames = names.map(n => n.toLowerCase().replace(/[^a-z0-9]/g, ''));
+    return pokemon.moves.some(move => {
+      const norm = move.toLowerCase().replace(/[^a-z0-9]/g, '');
+      return targetNames.includes(norm);
+    });
   }
 
   private insertIfRelevant(
