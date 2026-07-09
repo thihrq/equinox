@@ -15,7 +15,7 @@ async function testSync() {
   
   const count = await PokemonSet.countDocuments({});
   if (count === 0) {
-    throw new Error('Falha no seed local dos conjuntos competetivos.');
+    throw new Error('Falha no seed local dos conjuntos competitivos.');
   }
 
   console.log(`✅ Sincronização carregou ${count} conjuntos com sucesso!`);
