@@ -40,6 +40,9 @@ export interface PokemonData {
   types?: string[];
   abilities?: Record<string, string>;
   competitive?: CompetitiveMetadata;
+  ability?: string;
+  item?: string;
+  moves?: string[];
 }
 
 export interface DefensiveTypeSummary {
@@ -73,6 +76,15 @@ export interface RoleAnalysis {
   roleCoverageRatio: number;
 }
 
+export interface SynergyAnalysis {
+  weatherScore: number;
+  terrainScore: number;
+  trickRoomScore: number;
+  momentumScore: number;
+  itemClauseScore: number;
+  totalSynergyScore: number;
+}
+
 export interface SpeedMemberAnalysis {
   name: string;
   baseSpeed: number;
@@ -99,6 +111,7 @@ export interface TeamAnalysis {
   offensiveCoverage?: OffensiveCoverageAnalysis;
   roles?: RoleAnalysis;
   speed?: SpeedAnalysis;
+  synergy?: SynergyAnalysis;
   threats?: ThreatAnalysis;
   meta?: MetaAnalysis;
   coach?: CoachAnalysis;

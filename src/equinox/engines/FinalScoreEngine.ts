@@ -14,7 +14,8 @@ export class FinalScoreEngine implements AnalysisEngine {
       context.score.speed +
       context.score.meta +
       context.score.threats +
-      context.score.cores;
+      context.score.cores +
+      context.score.synergy;
 
     const gauntlet = context.analysis.radicalRedGauntlet;
     const championsRegulation = context.analysis.championsRegulation;
