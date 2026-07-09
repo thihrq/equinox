@@ -1,40 +1,28 @@
 /// <reference types="node" />
 import mongoose from 'mongoose';
 import { PokemonSet } from '../models/PokemonSet';
+import { DataSyncService } from '../services/DataSyncService';
 import 'dotenv/config';
 
-async function testModel() {
+async function testSync() {
   const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/pokemon-builder';
   await mongoose.connect(MONGO_URI);
-  console.log('📦 Conectado ao MongoDB para testes de modelo.');
+  console.log('📦 Conectado ao MongoDB para testes de sincronização.');
 
-  await PokemonSet.deleteMany({ pokemonName: 'Charizard-Test' });
-
-  const testSet = new PokemonSet({
-    pokemonName: 'Charizard-Test',
-    formatId: 'radical_red',
-    setName: 'Test Set',
-    item: 'Charizardite Y',
-    ability: 'Drought',
-    nature: 'Timid',
-    evs: { hp: 0, atk: 0, def: 0, spa: 252, spd: 4, spe: 252 },
-    moves: ['Flamethrower', 'Solar Beam', 'Focus Blast', 'Roost'],
-    role: 'Wallbreaker',
-    synergyTags: ['sun_setter', 'sun_abuser']
-  });
-
-  await testSet.save();
-  const retrieved = await PokemonSet.findOne({ pokemonName: 'Charizard-Test' });
-  if (!retrieved || retrieved.setName !== 'Test Set') {
-    throw new Error('Falha ao salvar ou recuperar PokemonSet');
+  await PokemonSet.deleteMany({});
+  
+  await DataSyncService.bootstrap();
+  
+  const count = await PokemonSet.countDocuments({});
+  if (count === 0) {
+    throw new Error('Falha no seed local dos conjuntos competetivos.');
   }
 
-  await PokemonSet.deleteMany({ pokemonName: 'Charizard-Test' });
-  console.log('✅ Teste do modelo PokemonSet concluído com sucesso!');
+  console.log(`✅ Sincronização carregou ${count} conjuntos com sucesso!`);
   process.exit(0);
 }
 
-testModel().catch(err => {
-  console.error('❌ Erro no teste do modelo:', err);
+testSync().catch(err => {
+  console.error('❌ Erro no teste de sincronização:', err);
   process.exit(1);
 });

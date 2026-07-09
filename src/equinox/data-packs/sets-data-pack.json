@@ -1,0 +1,90 @@
+{
+  "version": "2026.07.09.01",
+  "formatsSupported": ["vanilla_scarlet_violet", "radical_red"],
+  "sets": [
+    {
+      "pokemonName": "Meganium",
+      "formatId": "radical_red",
+      "setName": "RR Triage Bulky Sweeper",
+      "item": "Leftovers",
+      "ability": "Triage",
+      "nature": "Bold",
+      "evs": { "hp": 252, "def": 252, "spd": 4 },
+      "moves": ["Giga Drain", "Draining Kiss", "Synthesis", "Calm Mind"],
+      "role": "Pivot",
+      "synergyTags": ["triage_user", "bulky_setup"]
+    },
+    {
+      "pokemonName": "Charizard",
+      "formatId": "radical_red",
+      "setName": "Mega Charizard Y Attacker",
+      "item": "Charizardite Y",
+      "ability": "Drought",
+      "nature": "Timid",
+      "evs": { "spa": 252, "spd": 4, "spe": 252 },
+      "moves": ["Flamethrower", "Solar Beam", "Focus Blast", "Roost"],
+      "role": "Wallbreaker",
+      "synergyTags": ["sun_setter", "sun_abuser", "special_attacker"]
+    },
+    {
+      "pokemonName": "Torkoal",
+      "formatId": "radical_red",
+      "setName": "Sun Pivot Setter",
+      "item": "Heat Rock",
+      "ability": "Drought",
+      "nature": "Relaxed",
+      "evs": { "hp": 252, "def": 252, "spd": 4 },
+      "moves": ["Stealth Rock", "Rapid Spin", "Yawn", "Lava Plume"],
+      "role": "Hazard Setter",
+      "synergyTags": ["sun_setter", "pivot"]
+    },
+    {
+      "pokemonName": "Venusaur",
+      "formatId": "radical_red",
+      "setName": "Chlorophyll Special Sweeper",
+      "item": "Life Orb",
+      "ability": "Chlorophyll",
+      "nature": "Modest",
+      "evs": { "spa": 252, "spd": 4, "spe": 252 },
+      "moves": ["Growth", "Giga Drain", "Weather Ball", "Sludge Bomb"],
+      "role": "Wallbreaker",
+      "synergyTags": ["sun_abuser", "special_attacker"]
+    },
+    {
+      "pokemonName": "Tyranitar",
+      "formatId": "radical_red",
+      "setName": "Sand Stream Bulky Attacker",
+      "item": "Chople Berry",
+      "ability": "Sand Stream",
+      "nature": "Adamant",
+      "evs": { "hp": 252, "atk": 252, "spd": 4 },
+      "moves": ["Stone Edge", "Knock Off", "Earthquake", "Stealth Rock"],
+      "role": "Hazard Setter",
+      "synergyTags": ["sand_setter", "physical_attacker"]
+    },
+    {
+      "pokemonName": "Pelipper",
+      "formatId": "radical_red",
+      "setName": "Drizzle Pivot Rain Setter",
+      "item": "Damp Rock",
+      "ability": "Drizzle",
+      "nature": "Relaxed",
+      "evs": { "hp": 252, "def": 252, "spd": 4 },
+      "moves": ["Scald", "U-turn", "Hurricane", "Roost"],
+      "role": "Pivot",
+      "synergyTags": ["rain_setter", "pivot"]
+    },
+    {
+      "pokemonName": "Kingdra",
+      "formatId": "radical_red",
+      "setName": "Swift Swim Special Sweeper",
+      "item": "Choice Specs",
+      "ability": "Swift Swim",
+      "nature": "Modest",
+      "evs": { "spa": 252, "spd": 4, "spe": 252 },
+      "moves": ["Hydro Pump", "Draco Meteor", "Surf", "Ice Beam"],
+      "role": "Wallbreaker",
+      "synergyTags": ["rain_abuser", "special_attacker"]
+    }
+  ]
+}
