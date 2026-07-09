@@ -165,7 +165,7 @@ async function runTests() {
       filler('Charmander', 'Charcoal'),
       filler('Squirtle', 'Choice Band'),
     ];
-    const context = new AnalysisContext({ format: 'gen9ou', selectedPokemon: team });
+    const context = new AnalysisContext({ format: 'vgc2026', selectedPokemon: team });
     engine.execute(context);
     assert(context.score.synergy === -50, `Teste 8 Falhou: Score de violação de Item Clause esperado -50, obtido ${context.score.synergy}`);
     console.log('✅ Teste 8 (Violação de Item Clause) Passou!');

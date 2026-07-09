@@ -7,6 +7,8 @@ import { Pokemon } from './models/Pokemon';
 import routes from './apiRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { runDatabaseSeed } from './workers/runWorker';
+import { DataSyncService } from './services/DataSyncService';
+import { PokemonSet } from './models/PokemonSet';
 
 function normalizeRequestOrigin(origin: string | undefined): string | undefined {
   if (!origin) return undefined;
@@ -100,6 +102,11 @@ const runStartupSeedIfNeeded = async (): Promise<void> => {
 
     if (existingPokemonCount > 0 && !appConfig.forceSeedOnStartup) {
       console.log(`[Equinox] Seed automático ignorado: banco já tem ${existingPokemonCount} Pokémon.`);
+      const existingSetsCount = await PokemonSet.estimatedDocumentCount();
+      if (existingSetsCount === 0) {
+        console.log('[Equinox] Nenhum set competitivo encontrado. Inicializando bootstrap local...');
+        await DataSyncService.bootstrap();
+      }
       return;
     }
 
@@ -114,6 +121,7 @@ const runStartupSeedIfNeeded = async (): Promise<void> => {
 const startServer = async () => {
   try {
     await connectDatabase();
+    void DataSyncService.syncRemote().catch(err => console.warn('[Equinox] Erro na sincronização remota inicial:', err));
 
     const server = app.listen(appConfig.port, () => {
       console.log(`🚀 ${appConfig.appName} rodando na porta ${appConfig.port}`);

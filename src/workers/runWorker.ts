@@ -1,7 +1,8 @@
-﻿import mongoose from 'mongoose';
+import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { SmogonWorker } from './etl/SmogonWorker';
 import { RadicalRedWorker } from './etl/RadicalRedWorker';
+import { DataSyncService } from '../services/DataSyncService';
 
 dotenv.config();
 
@@ -11,6 +12,9 @@ export const runDatabaseSeed = async (): Promise<void> => {
 
   // Roda a extração Radical Red
   await RadicalRedWorker.run();
+
+  // Executa o bootstrap do DataSyncService
+  await DataSyncService.bootstrap();
 };
 
 const run = async () => {

@@ -151,18 +151,14 @@ export class TeamService {
     const validCurrentTeam: PokemonData[] = [];
     for (const pokemon of rawCurrentTeam) {
       const set = await PokemonSet.findOne({ pokemonName: pokemon.name, formatId: format }).lean();
-      if (set) {
-        validCurrentTeam.push({
-          ...pokemon,
-          ability: set.ability,
-          item: set.item,
-          moves: set.moves,
-          nature: set.nature,
-          role: set.role,
-        });
-      } else {
-        validCurrentTeam.push(pokemon);
-      }
+      validCurrentTeam.push({
+        ...pokemon,
+        ability: pokemon.ability || set?.ability,
+        item: pokemon.item || set?.item,
+        moves: pokemon.moves && pokemon.moves.length > 0 ? pokemon.moves : set?.moves,
+        nature: pokemon.nature || set?.nature,
+        role: pokemon.role || set?.role,
+      });
     }
 
     const incompatibleBasePokemon = validCurrentTeam.filter(

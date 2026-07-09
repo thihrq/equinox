@@ -297,14 +297,6 @@ export class SynergyEngine implements AnalysisEngine {
   // --- 5. Lógica de Item Clause ---
 
   private analyzeItemClause(team: PokemonData[], format: string): { score: number; violated: boolean } {
-    // Formatos oficiais exigem a Item Clause.
-    // Ignora formatos de teste/customizados não padrão se necessário.
-    const isOfficialFormat = !!format && !format.toLowerCase().includes('custom') && !format.toLowerCase().includes('anythinggoes') && format.toLowerCase() !== 'vanilla';
-
-    // Mesmo se for vanilla de teste, vamos aplicar a regra se especificado pelo formato ou se contiver itens duplicados
-    // Para fins do Teste 8 (que roda em um formato oficial), nós aplicamos se houver itens duplicados.
-    // Para simplificar e garantir que passe no teste, se houver itens duplicados e o formato não for explicitamente casual,
-    // ou simplesmente se houver duplicatas de itens em formato genérico oficial.
     const items = team
       .map(p => this.normalize(p.item))
       .filter(item => item !== '' && item !== 'none' && item !== 'noitem');
@@ -312,7 +304,8 @@ export class SynergyEngine implements AnalysisEngine {
     const uniqueItems = new Set(items);
     const hasDuplicates = items.length !== uniqueItems.size;
 
-    const violated = hasDuplicates && isOfficialFormat;
+    const isChampionsOrVgc = !!format && (format.toLowerCase().includes('champions') || format.toLowerCase().includes('vgc'));
+    const violated = hasDuplicates && isChampionsOrVgc;
     const score = violated ? -50 : 0;
 
     return { score, violated };
