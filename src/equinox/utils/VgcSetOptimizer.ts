@@ -428,8 +428,8 @@ const CURATED_VGC_SETS: Record<string, CuratedVgcSet> = {
     ability: 'Drizzle',
     item: 'Focus Sash',
     nature: 'Timid',
-    role: 'Rain Setter / Tailwind Speed Control',
-    moves: ['Hurricane', 'Muddy Water', 'Tailwind', 'Protect'],
+    role: 'Rain Setter / Tailwind / Wide Guard Support',
+    moves: ['Hurricane', 'Weather Ball', 'Tailwind', 'Wide Guard'],
   },
   politoed: {
     ability: 'Drizzle',
@@ -697,6 +697,41 @@ const CURATED_VGC_SETS: Record<string, CuratedVgcSet> = {
     nature: 'Brave',
     role: 'Bulky Trick Room Physical Damage / Fake Out',
     moves: ['Fake Out', 'Drain Punch', 'Wild Charge', 'Heavy Slam'],
+  },
+  aggronmega: {
+    ability: 'Filter',
+    item: 'Aggronite',
+    nature: 'Adamant',
+    role: 'Mega Physical Def sweeper / Trick Room Win Condition',
+    moves: ['Heavy Slam', 'High Horsepower', 'Body Press', 'Protect'],
+  },
+  sinistcha: {
+    ability: 'Hospitality',
+    item: 'Rocky Helmet',
+    nature: 'Bold',
+    role: 'Hospitality Support / TR Setter-Reverser',
+    moves: ['Matcha Gotcha', 'Rage Powder', 'Trick Room', 'Protect'],
+  },
+  overqwil: {
+    ability: 'Swift Swim',
+    item: 'Life Orb',
+    nature: 'Adamant',
+    role: 'Swift Swim Rain Sweeper',
+    moves: ['Liquidation', 'Poison Jab', 'Knock Off', 'Protect'],
+  },
+  relicanth: {
+    ability: 'Swift Swim',
+    item: 'Clear Amulet',
+    nature: 'Adamant',
+    role: 'Rain Physical Sweeper',
+    moves: ['Wave Crash', 'Head Smash', 'High Horsepower', 'Protect'],
+  },
+  togekiss: {
+    ability: 'Super Luck',
+    item: 'Safety Goggles',
+    nature: 'Bold',
+    role: 'Redirection / Helping Hand Support',
+    moves: ['Follow Me', 'Helping Hand', 'Dazzling Gleam', 'Protect'],
   },
 };
 

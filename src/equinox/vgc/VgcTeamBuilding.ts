@@ -1121,6 +1121,16 @@ function evaluateFour(four: PokemonData[], format: string, archetype: VgcArchety
     score -= 6;
   }
 
+  // Penalidade por excesso de redundância de golpes físicos de mesma cobertura
+  if (countMove(four, 'Rock Slide') >= 2) {
+    score -= 8;
+    reasons.push('Redundância de cobertura Rock Slide detectada.');
+  }
+  if (countMove(four, 'High Horsepower') >= 2) {
+    score -= 8;
+    reasons.push('Redundância de cobertura High Horsepower detectada.');
+  }
+
   if (roleCoverage.detectedRoles['Speed Control'].length) reasons.push('Tem controle de velocidade dentro dos 4 escolhidos.');
   if (roleCoverage.detectedRoles['Turn Control'].length) reasons.push('Tem controle de turno para comprar ações-chave.');
   if (roleCoverage.detectedRoles['Physical Damage'].length && roleCoverage.detectedRoles['Special Damage'].length) reasons.push('Combina pressão física e especial.');
@@ -1129,7 +1139,7 @@ function evaluateFour(four: PokemonData[], format: string, archetype: VgcArchety
 
   return {
     selectedFour: four.map(pokemon => pokemon.name),
-    score: clamp(score),
+    score: Math.min(95, clamp(score)),
     leadOptions: leads.slice(0, 3),
     reasons: reasons.slice(0, 4),
   };
