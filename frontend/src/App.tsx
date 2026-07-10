@@ -470,6 +470,14 @@ export default function App() {
 
         {result && selectedOption && !loading && (
           <div className="eq-results-v3">
+            <OptionTabs
+              options={result.topTeams}
+              selectedIndex={selectedOptionIndex}
+              locale={locale}
+              onSelect={setSelectedOptionIndex}
+              formatScore={formatScore}
+            />
+
             <BattlePlanHero
               option={selectedOption}
               identityLabel={identityLabel}
@@ -481,7 +489,7 @@ export default function App() {
 
             <SectionHeader title={t(locale, 'coreTitle')} eyebrow={t(locale, 'coreEyebrow')} />
             <PokemonGrid
-              pokemons={selectedOption.suggestedPokemons}
+              pokemons={selectedOption.fullTeam && selectedOption.fullTeam.length > 0 ? selectedOption.fullTeam : selectedOption.suggestedPokemons}
               locale={locale}
               getSpriteUrl={getSpriteUrl}
               getSmogonUrl={getSmogonUrl}
@@ -491,14 +499,6 @@ export default function App() {
               <ShowdownExport team={selectedOption.fullTeam} locale={locale} />
             )}
 
-            <OptionTabs
-              options={result.topTeams}
-              selectedIndex={selectedOptionIndex}
-              locale={locale}
-              onSelect={setSelectedOptionIndex}
-              formatScore={formatScore}
-            />
-
             <CoachTimeline coach={selectedOption.coach} suggestedPokemons={selectedOption.suggestedPokemons} locale={locale} />
 
             <SectionHeader title={t(locale, 'quickTitle')} eyebrow={t(locale, 'quickEyebrow')} />
@@ -507,23 +507,9 @@ export default function App() {
             <section className="eq-details-v3">
               <SectionHeader title={t(locale, 'detailsTitle')} eyebrow={t(locale, 'detailsEyebrow')} />
 
-              <DetailsBlock title={t(locale, 'formatIntelligence')} subtitle={t(locale, 'formatIntelligenceSubtitle')} count={selectedOption.formatIntelligence ? 1 : 0} locale={locale}>
-                <FormatIntelligencePanel option={selectedOption} locale={locale} />
-              </DetailsBlock>
-
-              <DetailsBlock title={t(locale, 'dataSources')} subtitle={t(locale, 'dataSourcesSubtitle')} count={selectedOption.dataSourceReport?.entries.length ?? 0} locale={locale}>
-                <DataSourcePanel option={selectedOption} locale={locale} />
-              </DetailsBlock>
-
               {activeFormatFamily === 'radical_red' && (
                 <DetailsBlock title={t(locale, 'radicalRedGauntlet')} subtitle={t(locale, 'radicalRedGauntletSubtitle')} count={selectedOption.radicalRedGauntlet?.bossReports.length ?? 0} locale={locale}>
                   <RadicalRedGauntletPanel option={selectedOption} locale={locale} />
-                </DetailsBlock>
-              )}
-
-              {activeFormatFamily === 'champions' && (
-                <DetailsBlock title={t(locale, 'championsRegulation')} subtitle={t(locale, 'championsRegulationSubtitle')} count={selectedOption.championsRegulation ? 1 : 0} locale={locale}>
-                  <ChampionsRegulationPanel option={selectedOption} locale={locale} />
                 </DetailsBlock>
               )}
 
@@ -543,16 +529,8 @@ export default function App() {
                 <MatchupAnalysis option={selectedOption} locale={locale} />
               </DetailsBlock>
 
-              <DetailsBlock title={t(locale, 'coverageSpeed')} subtitle={t(locale, 'coverageSpeedSubtitle')} count={(selectedOption.offensiveCoverage?.uniqueAttackTypes.length ?? 0) + 1} locale={locale}>
-                <CoverageSpeed option={selectedOption} locale={locale} formatPercent={formatPercent} formatAverageSpeed={formatAverageSpeed} />
-              </DetailsBlock>
-
               <DetailsBlock title={t(locale, 'performanceMetrics')} subtitle={t(locale, 'performanceMetricsSubtitle')} count={6} locale={locale}>
                 <ScoreBreakdownView option={selectedOption} locale={locale} normalizeScore={normalizeScore} formatScore={formatScore} />
-              </DetailsBlock>
-
-              <DetailsBlock title={t(locale, 'candidateDiversity')} subtitle={t(locale, 'candidateDiversitySubtitle')} count={result.candidateDiversity?.diversifiedCandidates ?? 0} locale={locale}>
-                <CandidateDiversity diversity={result.candidateDiversity} locale={locale} />
               </DetailsBlock>
 
               <DetailsBlock title={t(locale, 'decisionReasons')} subtitle={t(locale, 'decisionReasonsSubtitle')} count={getTopExplanations(selectedOption).length} locale={locale}>
