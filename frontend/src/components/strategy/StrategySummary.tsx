@@ -7,10 +7,107 @@ interface StrategySummaryProps {
   locale: Locale;
 }
 
-const getTacticalGuide = (option: TeamOption, format: string, locale: Locale): { name: string; strategy: string; roleLabel: string }[] => {
+interface ModeValidationResult {
+  viable: boolean;
+  score: number;
+  errors: string[];
+}
+
+const validateModeA = (fullTeam: any[], locale: Locale): ModeValidationResult => {
+  const errors: string[] = [];
+  const pelipper = fullTeam.find(p => p.name.toLowerCase().includes('pelipper'));
+  const waterAbuser = fullTeam.find(p => p.name.toLowerCase().includes('overqwil') || p.name.toLowerCase().includes('relicanth'));
+
+  if (!pelipper) {
+    errors.push(locale === 'pt-BR' ? 'Pelipper não encontrado no time.' : 'Pelipper not found in team.');
+  } else {
+    const moves = (pelipper.moves ?? []).map((m: string) => m.toLowerCase());
+    if (!moves.includes('tailwind')) {
+      errors.push(locale === 'pt-BR' ? 'Pelipper não possui Tailwind no set atual.' : 'Pelipper lacks Tailwind in the current set.');
+    }
+  }
+
+  if (!waterAbuser) {
+    errors.push(locale === 'pt-BR' ? 'Nenhum abuser de chuva (Overqwil/Relicanth) encontrado.' : 'No rain abuser (Overqwil/Relicanth) found.');
+  } else {
+    const moves = (waterAbuser.moves ?? []).map((m: string) => m.toLowerCase());
+    const hasWaterMove = moves.includes('liquidation') || moves.includes('wave crash') || moves.includes('muddy water') || moves.includes('surf') || moves.includes('hydro pump');
+    if (!hasWaterMove) {
+      errors.push(locale === 'pt-BR' ? `${waterAbuser.name} não possui golpe Water STAB (como Liquidation/Wave Crash) para aproveitar a chuva.` : `${waterAbuser.name} lacks a Water STAB move to abuse rain.`);
+    }
+  }
+
+  return {
+    viable: errors.length === 0,
+    score: errors.length > 0 ? 0 : 85,
+    errors
+  };
+};
+
+const validateModeB = (fullTeam: any[], locale: Locale): ModeValidationResult => {
+  const errors: string[] = [];
+  const sinistcha = fullTeam.find(p => p.name.toLowerCase().includes('sinistcha'));
+  const aggron = fullTeam.find(p => p.name.toLowerCase().includes('aggron'));
+
+  if (!sinistcha) {
+    errors.push(locale === 'pt-BR' ? 'Sinistcha não encontrado no time.' : 'Sinistcha not found in team.');
+  } else {
+    const moves = (sinistcha.moves ?? []).map((m: string) => m.toLowerCase());
+    if (!moves.includes('rage powder')) {
+      errors.push(locale === 'pt-BR' ? 'Sinistcha não possui Rage Powder para redirecionamento.' : 'Sinistcha lacks Rage Powder for redirection.');
+    }
+    if (!moves.includes('trick room')) {
+      errors.push(locale === 'pt-BR' ? 'Sinistcha não possui Trick Room para inverter velocidade.' : 'Sinistcha lacks Trick Room for speed control.');
+    }
+  }
+
+  if (!aggron) {
+    errors.push(locale === 'pt-BR' ? 'Aggron-Mega não encontrado no time.' : 'Aggron-Mega not found in team.');
+  } else {
+    const moves = (aggron.moves ?? []).map((m: string) => m.toLowerCase());
+    if (!moves.includes('heavy slam')) {
+      errors.push(locale === 'pt-BR' ? 'Aggron-Mega não possui Heavy Slam para causar pressão sob TR.' : 'Aggron-Mega lacks Heavy Slam for Trick Room damage.');
+    }
+    if (!moves.includes('body press')) {
+      errors.push(locale === 'pt-BR' ? 'Aggron-Mega não possui Body Press para aproveitar sua defesa.' : 'Aggron-Mega lacks Body Press to leverage its defense.');
+    }
+  }
+
+  return {
+    viable: errors.length === 0,
+    score: errors.length > 0 ? 0 : 80,
+    errors
+  };
+};
+
+const validateModeC = (fullTeam: any[], locale: Locale): ModeValidationResult => {
+  const errors: string[] = [];
+  const togekiss = fullTeam.find(p => p.name.toLowerCase().includes('togekiss'));
+
+  if (!togekiss) {
+    errors.push(locale === 'pt-BR' ? 'Togekiss não encontrado no time.' : 'Togekiss not found in team.');
+  } else {
+    const moves = (togekiss.moves ?? []).map((m: string) => m.toLowerCase());
+    if (!moves.includes('follow me')) {
+      errors.push(locale === 'pt-BR' ? 'Togekiss não possui Follow Me para redirecionar golpes.' : 'Togekiss lacks Follow Me for redirection.');
+    }
+    if (!moves.includes('helping hand')) {
+      errors.push(locale === 'pt-BR' ? 'Togekiss não possui Helping Hand para apoiar o parceiro.' : 'Togekiss lacks Helping Hand for support.');
+    }
+  }
+
+  return {
+    viable: errors.length === 0,
+    score: errors.length > 0 ? 0 : 80,
+    errors
+  };
+};
+
+const getTacticalGuide = (option: TeamOption, format: string, locale: Locale): { name: string; strategy: string; roleLabel: string; score: number; errors: string[] }[] => {
   const isVgc = !!option.vgcTeamPlan;
   const plan = option.vgcTeamPlan;
-  const fullNames = option.fullTeam?.map(p => p.name).filter(Boolean) ?? [];
+  const fullTeam = option.fullTeam && option.fullTeam.length > 0 ? option.fullTeam : option.suggestedPokemons;
+  const fullNames = fullTeam.map(p => p.name).filter(Boolean);
   
   if (isVgc && plan) {
     const archetypeId = plan.archetype.id.toLowerCase();
@@ -25,28 +122,38 @@ const getTacticalGuide = (option: TeamOption, format: string, locale: Locale): {
 
     // Caso Especial: O time de Chuva de Megas do Usuário
     if (hasPelipper && (hasOverqwil || hasRelicanth) && (hasAggron || hasSinistcha || hasTogekiss)) {
+      const vA = validateModeA(fullTeam, locale);
+      const vB = validateModeB(fullTeam, locale);
+      const vC = validateModeC(fullTeam, locale);
+
       const modeA = {
         name: locale === 'pt-BR' ? 'Pressão sob Chuva Ofensiva (Swift Swim Sweep)' : 'Offensive Swift Swim Sweep',
         roleLabel: locale === 'pt-BR' ? 'Modo Principal (Modo A)' : 'Primary Mode (Mode A)',
+        score: vA.score,
+        errors: vA.errors,
         strategy: locale === 'pt-BR'
-          ? `Abertura: Pelipper + Overqwil (ou Relicanth). O objetivo é ativar a chuva (Drizzle) e pressionar imediatamente com golpes potentes de água (Liquidation / Wave Crash) aproveitando a velocidade dobrada do Swift Swim. Use Tailwind com Pelipper apenas se o oponente possuir controle de velocidade concorrente, e mantenha Hurricane e Weather Ball ativos para enfraquecer counters de Grass/Fighting.`
-          : `Lead: Pelipper + Overqwil (or Relicanth). The goal is to set rain (Drizzle) and apply high immediate pressure with water attacks (Liquidation / Wave Crash) leveraging the doubled Swift Swim speed. Only set Tailwind if the opponent has speed control, keeping Hurricane/Weather Ball active to weaken Grass/Fighting counters.`
+          ? `Abertura: Pelipper + Overqwil (ou Relicanth). O objetivo é ativar a chuva (Drizzle) e pressionar imediatamente com golpes potentes de água (como Liquidation ou Wave Crash) aproveitando a velocidade dobrada do Swift Swim. Use Tailwind com Pelipper apenas se o oponente possuir controle de velocidade concorrente, e mantenha Hurricane e Weather Ball ativos para enfraquecer counters de Grass/Fighting.`
+          : `Lead: Pelipper + Overqwil (or Relicanth). The goal is to set rain (Drizzle) and apply high immediate pressure with water attacks (like Liquidation or Wave Crash) leveraging the doubled Swift Swim speed. Only set Tailwind if the opponent has speed control, keeping Hurricane/Weather Ball active to weaken Grass/Fighting counters.`
       };
 
       const modeB = {
         name: locale === 'pt-BR' ? 'Aggron sob Controle Defensivo (Trick Room Mode)' : 'Defensive Trick Room & Pivot Mode',
         roleLabel: locale === 'pt-BR' ? 'Modo Alternativo (Modo B)' : 'Alternative Mode (Mode B)',
+        score: vB.score,
+        errors: vB.errors,
         strategy: locale === 'pt-BR'
-          ? `Abertura: Sinistcha + Aggron-Mega. Usado contra equipes de alta velocidade ou quando a chuva pura é neutralizada. Sinistcha oferece suporte vital com Rage Powder para redirecionar ataques, ou ativa o Trick Room para inverter a ordem de velocidade. A habilidade Hospitality cura o Aggron em trocas, permitindo que ele bata pesado com Heavy Slam e Body Press sob a proteção da chuva (que reduz seu dano de fogo).`
-          : `Lead: Sinistcha + Aggron-Mega. Used against fast teams or when weather setup is neutralized. Sinistcha provides crucial support with Rage Powder or sets Trick Room to reverse turn order. Hospitality recovers Aggron on pivots, allowing it to strike with Heavy Slam/Body Press protected by rain (which cuts fire damage).`
+          ? `Abertura: Sinistcha + Aggron-Mega. Usado contra equipes de alta velocidade ou quando a chuva pura é neutralizada. Sinistcha oferece suporte vital com Rage Powder para redirecionar ataques, ou ativa o Trick Room para inverter a ordem de velocidade. A entrada em campo de Sinistcha ativa a habilidade Hospitality, restaurando parte da vida de Aggron-Mega em reposicionamentos estratégicos (pivot), permitindo que ele bata pesado com Heavy Slam e Body Press sob a proteção da chuva (que reduz seu dano de fogo).`
+          : `Lead: Sinistcha + Aggron-Mega. Used against fast teams or when weather setup is neutralized. Sinistcha provides crucial support with Rage Powder or sets Trick Room to reverse speed. Switching Sinistcha in triggers Hospitality, recovering Aggron-Mega on strategic pivots so it can strike with Heavy Slam/Body Press protected by rain (which cuts fire damage).`
       };
 
       const modeC = {
         name: locale === 'pt-BR' ? 'Redirecionamento e Suporte Ofensivo (Helping Hand Support)' : 'Redirection & Helping Hand Support',
         roleLabel: locale === 'pt-BR' ? 'Modo de Suporte (Modo C)' : 'Support Mode (Mode C)',
+        score: vC.score,
+        errors: vC.errors,
         strategy: locale === 'pt-BR'
-          ? `Abertura: Togekiss + Overqwil (ou Aggron-Mega). Foca em proteger um atacante de grande impacto contra ameaças de alvo único. Togekiss usa Follow Me (com Safety Goggles impedindo redirecionamentos por esporos) para absorver o dano, enquanto potencializa os ataques do parceiro usando Helping Hand. Ideal contra equipes agressivas sem alto dano em área.`
-          : `Lead: Togekiss + Overqwil (or Aggron-Mega). Focuses on protecting a single heavy hitter. Togekiss uses Follow Me (with Safety Goggles preventing spore sleep) to absorb single-target hits, while boosting the partner's damage with Helping Hand. Highly effective against hyper-offensive single-target teams.`
+          ? `Abertura: Togekiss + Overqwil (ou Aggron-Mega). Foca em proteger um atacante de grande impacto contra ameaças de alvo único. Togekiss usa Follow Me para redirecionar golpes, enquanto Safety Goggles protege Togekiss contra golpes de pó (como Spore) e permite que ele atue com mais segurança diante de usuários de Spore e Rage Powder. Aumenta o alcance dos nocautes com Helping Hand. Ideal contra equipes sem alto dano em área.`
+          : `Lead: Togekiss + Overqwil (or Aggron-Mega). Focuses on protecting a single heavy hitter. Togekiss uses Follow Me, while Safety Goggles protects Togekiss against powder moves (like Spore) allowing it to act safely in front of Spore and Rage Powder users. Boosts damage with Helping Hand. Best against teams without strong spread damage.`
       };
 
       return [modeA, modeB, modeC];
@@ -71,8 +178,8 @@ const getTacticalGuide = (option: TeamOption, format: string, locale: Locale): {
         } else if (archetypeId.includes('rain')) {
           modeName = locale === 'pt-BR' ? 'Modo de Pressão sob Chuva (Swift Swim Sweep)' : 'Swift Swim Rain Sweep Mode';
           strategy = locale === 'pt-BR'
-            ? `Drizzle ativa a habilidade Swift Swim, dobrando a velocidade do atacante. Abra com a dupla principal (${primaryLead.join(' + ')}) e aproveite o bônus de 50% em golpes do tipo Water (como Liquidation ou Muddy Water) sob a chuva para nocautear ameaças sem chance de resposta. Mantenha ${backline.join(' / ')} no banco para segurar contra-ataques.`
-            : `Drizzle activates the Swift Swim ability, doubling the speed of your attackers. Lead with the primary duo (${primaryLead.join(' + ')}) and leverage the 50% damage boost on Water-type attacks (like Liquidation or Muddy Water) to sweep opponents. Keep ${backline.join(' / ')} on the bench to absorb counters.`;
+            ? `Drizzle ativa a habilidade Swift Swim, dobrando a velocidade do atacante. Abra com a dupla principal (${primaryLead.join(' + ')}) e aproveite o bônus de 50% em golpes do tipo Water sob a chuva para nocautear ameaças sem chance de resposta. Mantenha ${backline.join(' / ')} no banco para segurar contra-ataques.`
+            : `Drizzle activates the Swift Swim ability, doubling the speed of your attackers. Lead with the primary duo (${primaryLead.join(' + ')}) and leverage the 50% damage boost on Water-type attacks to sweep opponents. Keep ${backline.join(' / ')} on the bench to absorb counters.`;
         } else if (archetypeId.includes('trick_room')) {
           modeName = locale === 'pt-BR' ? 'Inversão de Velocidade (Trick Room Mode)' : 'Trick Room Speed Control Mode';
           strategy = locale === 'pt-BR'
@@ -105,14 +212,15 @@ const getTacticalGuide = (option: TeamOption, format: string, locale: Locale): {
           : `Designed specifically to counter specific threats detected in the opponent's roster. The lead (${primaryLead.join(' + ')}) prioritizes status control, screens removal, or Wide Guard utility to lock down enemy spread attacks, allowing the backline (${backline.join(' / ')}) to sweep.`;
       }
 
-      return { name: modeName, strategy, roleLabel };
+      const score = Math.min(95, mode.score);
+
+      return { name: modeName, strategy, roleLabel, score, errors: [] };
     });
   } else {
     // Não-VGC (Vanilla / Radical Red - 3 Fases)
     const lead = option.coach?.leadSuggestions[0] ?? option.suggestedPokemons[0]?.name ?? 'Core';
     const winCondition = option.coach?.winConditions[0] ?? option.suggestedPokemons[1]?.name ?? 'sua condição de vitória';
-    const cleanNames = option.fullTeam?.map(p => p.name).filter(Boolean) ?? [];
-    const defenders = cleanNames.filter(name => name !== lead && name !== winCondition).slice(0, 2);
+    const defenders = fullNames.filter(name => name !== lead && name !== winCondition).slice(0, 2);
 
     const titleA = locale === 'pt-BR' ? 'Fase Inicial (Abertura e Hazards)' : 'Initial Phase (Lead & Hazards)';
     const strategyA = locale === 'pt-BR'
@@ -130,9 +238,9 @@ const getTacticalGuide = (option: TeamOption, format: string, locale: Locale): {
       : `Preserve ${winCondition} for the final stages of the match. Only send it to the field when the opponent's main answers and type counters are weakened or statused. With the lane clear, it can safely close the match without facing retaliations.`;
 
     return [
-      { name: titleA, strategy: strategyA, roleLabel: locale === 'pt-BR' ? 'Fase de Abertura' : 'Lead Phase' },
-      { name: titleB, strategy: strategyB, roleLabel: locale === 'pt-BR' ? 'Fase de Pivot' : 'Pivot Phase' },
-      { name: titleC, strategy: strategyC, roleLabel: locale === 'pt-BR' ? 'Fase de Fechamento' : 'Sweep Phase' }
+      { name: titleA, strategy: strategyA, roleLabel: locale === 'pt-BR' ? 'Fase de Abertura' : 'Lead Phase', score: 85, errors: [] },
+      { name: titleB, strategy: strategyB, roleLabel: locale === 'pt-BR' ? 'Fase de Pivot' : 'Pivot Phase', score: 80, errors: [] },
+      { name: titleC, strategy: strategyC, roleLabel: locale === 'pt-BR' ? 'Fase de Fechamento' : 'Sweep Phase', score: 85, errors: [] }
     ];
   }
 };
@@ -153,27 +261,44 @@ export function StrategySummary({ option, locale }: StrategySummaryProps) {
 
       <div className="eq-vgc-modes-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
         {guides.map((guide, index) => {
+          const hasErrors = guide.errors && guide.errors.length > 0;
           return (
-            <article key={index} className="eq-vgc-mode-card">
+            <article key={index} className={`eq-vgc-mode-card ${hasErrors ? 'is-invalid' : ''}`} style={hasErrors ? { borderColor: 'var(--eq-error, #ef4444)', background: 'rgba(239, 68, 68, 0.03)' } : {}}>
               <header className="eq-vgc-mode-header">
                 <div>
-                  <span className="eq-vgc-mode-kicker">
+                  <span className="eq-vgc-mode-kicker" style={hasErrors ? { color: 'var(--eq-error, #ef4444)' } : {}}>
                     {guide.roleLabel}
                   </span>
                   <h3 className="eq-vgc-mode-title">{guide.name}</h3>
                 </div>
                 {isVgc && option.vgcTeamPlan && (
-                  <span className="eq-vgc-mode-badge">
-                    {locale === 'pt-BR' ? 'Consistência:' : 'Consistency:'} <strong>{Math.min(95, option.vgcTeamPlan.modeAnalysis.viableModes[index]?.score ?? 0)}%</strong>
+                  <span className="eq-vgc-mode-badge" style={hasErrors ? { background: 'rgba(239, 68, 68, 0.1)', color: 'var(--eq-error, #ef4444)' } : {}}>
+                    {locale === 'pt-BR' ? 'Consistência:' : 'Consistency:'} <strong>{guide.score}%</strong>
                   </span>
                 )}
               </header>
 
               <div className="eq-vgc-mode-details">
-                <div className="eq-vgc-detail-row eq-vgc-detail-row--reasons" style={{ borderTop: 'none', paddingTop: 0 }}>
-                  <strong>{locale === 'pt-BR' ? 'Instruções estratégicas:' : 'Strategic instructions:'}</strong>
-                  <p>{guide.strategy}</p>
-                </div>
+                {hasErrors ? (
+                  <div className="eq-vgc-detail-row eq-vgc-detail-row--reasons" style={{ borderTop: 'none', paddingTop: 0 }}>
+                    <strong style={{ color: 'var(--eq-error, #ef4444)' }}>{locale === 'pt-BR' ? 'Erros de Validação Contratual:' : 'Contractual Validation Errors:'}</strong>
+                    <ul style={{ margin: '8px 0 0 0', paddingLeft: '20px', color: 'var(--eq-text-soft)', fontSize: '12px', display: 'grid', gap: '4px' }}>
+                      {guide.errors.map((err, idx) => (
+                        <li key={idx} style={{ listStyleType: 'disc' }}>{err}</li>
+                      ))}
+                    </ul>
+                    <p style={{ marginTop: '12px', fontSize: '11px', color: 'var(--eq-text-muted)', fontStyle: 'italic' }}>
+                      {locale === 'pt-BR' 
+                        ? '*Este modo foi invalidado pelo motor porque a composição do time atual não possui os golpes necessários descritos na estratégia.' 
+                        : '*This mode has been invalidated by the engine because the current team moveset lacks the necessary moves described in the strategy.'}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="eq-vgc-detail-row eq-vgc-detail-row--reasons" style={{ borderTop: 'none', paddingTop: 0 }}>
+                    <strong>{locale === 'pt-BR' ? 'Instruções estratégicas:' : 'Strategic instructions:'}</strong>
+                    <p>{guide.strategy}</p>
+                  </div>
+                )}
               </div>
             </article>
           );
