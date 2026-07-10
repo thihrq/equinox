@@ -1004,8 +1004,29 @@ function evaluateRoleCoverage(team: PokemonData[], format: string, archetype: Vg
 }
 
 function evaluateModes(team: PokemonData[], format: string, archetype: VgcArchetypeId): VgcModeAnalysis {
+  // Os 3 primeiros Pokémon são assumidos como as sementes inseridas pelo usuário
+  const userSeeds = team.slice(0, 3).map(p => p.name);
+
   const fours = combinations(team, Math.min(4, team.length));
-  const modes = fours.map(four => evaluateFour(four, format, archetype)).sort((a, b) => b.score - a.score);
+  const modes = fours.map(four => {
+    const evalResult = evaluateFour(four, format, archetype);
+    
+    // Contar quantas sementes do usuário estão presentes no modo de 4
+    const seedCount = four.filter(p => userSeeds.includes(p.name)).length;
+    
+    // Adicionar bônus de relevância para manter os Pokémon originais nas estratégias do Playbook
+    const seedBonus = seedCount * 12; // Ex: 3 sementes presentes = +36 pontos de score de modo
+    evalResult.score = clamp(evalResult.score + seedBonus);
+
+    // Ajustar também o score de cada opção de lead para herdar o bônus de semente correspondente
+    evalResult.leadOptions = evalResult.leadOptions.map(leadOpt => ({
+      ...leadOpt,
+      score: clamp(leadOpt.score + seedBonus)
+    }));
+
+    return evalResult;
+  }).sort((a, b) => b.score - a.score);
+
   const viableModes = modes.filter(mode => mode.score >= 62).slice(0, 5);
   const bestLeads = modes.flatMap(mode => mode.leadOptions).sort((a, b) => b.score - a.score).slice(0, 5);
   const averageTopModes = modes.slice(0, 5).reduce((sum, mode) => sum + mode.score, 0) / Math.max(1, Math.min(5, modes.length));
