@@ -1087,13 +1087,13 @@ img { display: block; }
 
 .eq-pokemon-card-v3 {
   border: 1px solid var(--eq-border);
-  border-radius: 30px;
+  border-radius: 22px;
   background:
     radial-gradient(circle at 45% 0%, rgba(255,255,255,0.12), transparent 13rem),
     linear-gradient(180deg, rgba(255,255,255,0.045), transparent),
     var(--eq-surface);
-  min-height: 390px;
-  padding: 22px;
+  min-height: 350px;
+  padding: 16px;
   display: grid;
   grid-template-rows: 140px 1fr auto;
   gap: 12px;

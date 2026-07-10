@@ -103,6 +103,12 @@ export default function App() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [locale, setLocale] = useState<Locale>('pt-BR');
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
+  const handleSelectOption = (index: number) => {
+    setSelectedOptionIndex(index);
+    setTimeout(() => {
+      document.getElementById('eq-pokemon-grid-v3')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 80);
+  };
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SuggestionResponse | null>(null);
   const [error, setError] = useState('');
@@ -259,69 +265,78 @@ export default function App() {
         </div>
 
         <form className="eq-builder-panel" onSubmit={analyzeTeam}>
-          {/* 1. Escolha de Regras e Formato (No Topo da Sidebar) */}
-          <SectionLabel>{t(locale, 'sidebarFormat')}</SectionLabel>
-          <div className="eq-format-picker eq-format-family-picker" style={{ marginBottom: '12px' }}>
-            {formatFamilies.map(option => (
-              <button
-                key={option.value}
-                type="button"
-                className={activeFormatFamily === option.value ? 'is-active' : ''}
-                onClick={() => handleFormatFamilyChange(option.value)}
-              >
-                <strong>{option.label}</strong>
-                <span>{option.short}</span>
-              </button>
-            ))}
-          </div>
-
-          {activeFormatFamily === 'vanilla' && (
-            <div className="eq-format-subpanel eq-format-subpanel--select" style={{ marginBottom: '16px' }}>
-              <span>{t(locale, 'vanillaGame')}</span>
-              <label className="eq-format-select">
-                <select
-                  value={format}
-                  onChange={event => setFormat(event.target.value)}
-                  aria-label={t(locale, 'vanillaGame')}
-                >
-                  {Object.entries(vanillaGamesByGroup).map(([group, options]) => (
-                    <optgroup key={group} label={group}>
-                      {options.map(option => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </optgroup>
-                  ))}
-                </select>
-              </label>
-              {selectedVanillaGame && (
-                <p className="eq-format-selected-note">
-                  {selectedVanillaGame.short}
-                </p>
-              )}
-            </div>
-          )}
-
-          {activeFormatFamily === 'champions' && (
-            <div className="eq-format-subpanel" style={{ marginBottom: '16px' }}>
-              <span>{t(locale, 'championsMode')}</span>
-              <p className="eq-format-selected-note">{t(locale, 'championsRegulationNote')}</p>
-              <div className="eq-format-suboptions">
-                {championsOptions.map(option => (
+          {/* 1. Escolha de Regras e Formato (No Topo da Sidebar, Colapsável) */}
+          <details className="eq-builder-disclosure" open style={{ marginBottom: '16px' }}>
+            <summary style={{ padding: '12px 16px' }}>
+              <span style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-start' }}>
+                <strong style={{ fontSize: '15px', fontWeight: 900 }}>{t(locale, 'sidebarFormat')}</strong>
+                <small>{t(locale, 'formatCurrent')}: {selectedFormatLabel}</small>
+              </span>
+            </summary>
+            <div className="eq-builder-disclosure__body" style={{ padding: '16px' }}>
+              <div className="eq-format-picker eq-format-family-picker" style={{ marginBottom: '12px' }}>
+                {formatFamilies.map(option => (
                   <button
                     key={option.value}
                     type="button"
-                    className={format === option.value ? 'is-active' : ''}
-                    onClick={() => setFormat(option.value)}
+                    className={activeFormatFamily === option.value ? 'is-active' : ''}
+                    onClick={() => handleFormatFamilyChange(option.value)}
                   >
                     <strong>{option.label}</strong>
                     <span>{option.short}</span>
                   </button>
                 ))}
               </div>
+
+              {activeFormatFamily === 'vanilla' && (
+                <div className="eq-format-subpanel eq-format-subpanel--select" style={{ marginBottom: '16px' }}>
+                  <span>{t(locale, 'vanillaGame')}</span>
+                  <label className="eq-format-select">
+                    <select
+                      value={format}
+                      onChange={event => setFormat(event.target.value)}
+                      aria-label={t(locale, 'vanillaGame')}
+                    >
+                      {Object.entries(vanillaGamesByGroup).map(([group, options]) => (
+                        <optgroup key={group} label={group}>
+                          {options.map(option => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ))}
+                    </select>
+                  </label>
+                  {selectedVanillaGame && (
+                    <p className="eq-format-selected-note">
+                      {selectedVanillaGame.short}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {activeFormatFamily === 'champions' && (
+                <div className="eq-format-subpanel" style={{ marginBottom: '16px' }}>
+                  <span>{t(locale, 'championsMode')}</span>
+                  <p className="eq-format-selected-note">{t(locale, 'championsRegulationNote')}</p>
+                  <div className="eq-format-suboptions">
+                    {championsOptions.map(option => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        className={format === option.value ? 'is-active' : ''}
+                        onClick={() => setFormat(option.value)}
+                      >
+                        <strong>{option.label}</strong>
+                        <span>{option.short}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </details>
 
           {/* 2. Seleção do Time Base (No Centro da Sidebar) */}
           <SectionLabel>{t(locale, 'timeBase')}</SectionLabel>
@@ -387,34 +402,42 @@ export default function App() {
 
           {error && <p className="eq-error-message" role="alert" style={{ marginBottom: '22px' }}>{error}</p>}
 
-          {/* 3. Direção da Equipe / Identidade (Na Parte Inferior da Sidebar) */}
-          <SectionLabel>{t(locale, 'sidebarIdentity')}</SectionLabel>
-          <div className="eq-identity-panel-flat" style={{ display: 'grid', gap: '12px', marginTop: '4px' }}>
-            <button
-              className={`eq-modern-toggle ${allowLegendaries ? 'is-active' : ''}`}
-              type="button"
-              onClick={() => setAllowLegendaries(!allowLegendaries)}
-              style={{ minHeight: '44px' }}
-            >
-              <span>{t(locale, 'allowLegendaries')}</span>
-              <i />
-            </button>
-
-            <div className="eq-identity-picker">
-              {identityOptions.map(option => (
+          {/* 3. Direção da Equipe / Identidade (Na Parte Inferior da Sidebar, Colapsável) */}
+          <details className="eq-builder-disclosure" open style={{ marginTop: '16px' }}>
+            <summary style={{ padding: '12px 16px' }}>
+              <span style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-start' }}>
+                <strong style={{ fontSize: '15px', fontWeight: 900 }}>{t(locale, 'sidebarIdentity')}</strong>
+                <small>{t(locale, 'advancedIdentityHint')}</small>
+              </span>
+            </summary>
+            <div className="eq-builder-disclosure__body" style={{ padding: '16px' }}>
+              <div className="eq-identity-panel-flat" style={{ display: 'grid', gap: '12px' }}>
                 <button
-                  key={option.value}
+                  className={`eq-modern-toggle ${allowLegendaries ? 'is-active' : ''}`}
                   type="button"
-                  className={teamIdentity === option.value ? 'is-active' : ''}
-                  onClick={() => setTeamIdentity(option.value)}
+                  onClick={() => setAllowLegendaries(!allowLegendaries)}
+                  style={{ minHeight: '44px' }}
                 >
-                  <strong>{option.label}</strong>
-                  <span>{option.short}</span>
+                  <span>{t(locale, 'allowLegendaries')}</span>
+                  <i />
                 </button>
-              ))}
+
+                <div className="eq-identity-picker">
+                  {identityOptions.map(option => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      className={teamIdentity === option.value ? 'is-active' : ''}
+                      onClick={() => setTeamIdentity(option.value)}
+                    >
+                      <strong>{option.label}</strong>
+                      <span>{option.short}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        </form>
+          </details>
 
         <div className="eq-sidebar-poem">
           <YinYangMark className="eq-sidebar-poem__mark" />
@@ -468,24 +491,26 @@ export default function App() {
               options={result.topTeams}
               selectedIndex={selectedOptionIndex}
               locale={locale}
-              onSelect={setSelectedOptionIndex}
+              onSelect={handleSelectOption}
               formatScore={formatScore}
             />
 
-            <SectionHeader title={t(locale, 'coreTitle')} eyebrow={t(locale, 'coreEyebrow')} />
-            <PokemonGrid
-              pokemons={selectedOption.fullTeam && selectedOption.fullTeam.length > 0 ? selectedOption.fullTeam : selectedOption.suggestedPokemons}
-              locale={locale}
-              getSpriteUrl={getSpriteUrl}
-              getSmogonUrl={getSmogonUrl}
-            />
+            <div id="eq-pokemon-grid-v3" style={{ scrollMarginTop: '24px', display: 'grid', gap: '22px' }}>
+              <SectionHeader title={t(locale, 'coreTitle')} eyebrow={t(locale, 'coreEyebrow')} />
+              <PokemonGrid
+                pokemons={selectedOption.fullTeam && selectedOption.fullTeam.length > 0 ? selectedOption.fullTeam : selectedOption.suggestedPokemons}
+                locale={locale}
+                getSpriteUrl={getSpriteUrl}
+                getSmogonUrl={getSmogonUrl}
+              />
+            </div>
+
+            <SectionHeader title={t(locale, 'playbookTitle')} eyebrow={t(locale, 'playbookEyebrow')} />
+            <StrategySummary option={selectedOption} locale={locale} />
 
             {selectedOption.fullTeam && selectedOption.fullTeam.length > 0 && (
               <ExportTeam team={selectedOption.fullTeam} locale={locale} />
             )}
-
-            <SectionHeader title={t(locale, 'playbookTitle')} eyebrow={t(locale, 'playbookEyebrow')} />
-            <StrategySummary option={selectedOption} locale={locale} />
 
             <section className="eq-details-v3">
               <SectionHeader title={t(locale, 'detailsTitle')} eyebrow={t(locale, 'detailsEyebrow')} />
