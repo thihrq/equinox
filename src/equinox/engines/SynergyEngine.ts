@@ -10,13 +10,13 @@ export class SynergyEngine implements AnalysisEngine {
     const team = context.selectedPokemon;
 
     // 1. Climas
-    const weatherAnalysis = this.analyzeWeather(team);
+    const weatherAnalysis = this.analyzeWeather(team, format);
     // 2. Terrenos
-    const terrainAnalysis = this.analyzeTerrain(team);
+    const terrainAnalysis = this.analyzeTerrain(team, format);
     // 3. Trick Room
     const trickRoomAnalysis = this.analyzeTrickRoom(team, format);
     // 4. Momentum (Volt-Turn)
-    const momentumAnalysis = this.analyzeMomentum(team);
+    const momentumAnalysis = this.analyzeMomentum(team, format);
     // 5. Item Clause
     const itemClauseAnalysis = this.analyzeItemClause(team, format);
 
@@ -50,12 +50,23 @@ export class SynergyEngine implements AnalysisEngine {
     return str.toLowerCase().replace(/[^a-z0-9]/g, '');
   }
 
-  private hasAbility(pokemon: PokemonData, abilityName: string): boolean {
+  private hasAbility(pokemon: PokemonData, abilityName: string, format: string): boolean {
     const target = this.normalize(abilityName);
     
     // Habilidade explícita do Pokémon no time
     if (pokemon.ability) {
       return this.normalize(pokemon.ability) === target;
+    }
+
+    // Tenta buscar no variant específico do formato
+    const variant = getVariant(pokemon, format);
+    if (variant?.abilities) {
+      for (const key in variant.abilities) {
+        const val = variant.abilities[key];
+        if (typeof val === 'string' && this.normalize(val) === target) {
+          return true;
+        }
+      }
     }
 
     // Se estiver nas habilidades possíveis (abilities record)
@@ -81,7 +92,7 @@ export class SynergyEngine implements AnalysisEngine {
     return false;
   }
 
-  private hasMove(pokemon: PokemonData, moveName: string): boolean {
+  private hasMove(pokemon: PokemonData, moveName: string, format: string): boolean {
     const target = this.normalize(moveName);
 
     if (pokemon.moves) {
@@ -98,7 +109,7 @@ export class SynergyEngine implements AnalysisEngine {
 
   // --- 1. Lógica de Climas (Weather) ---
 
-  private analyzeWeather(team: PokemonData[]): { score: number; activeSynergies: string[]; conflicts: string[] } {
+  private analyzeWeather(team: PokemonData[], format: string): { score: number; activeSynergies: string[]; conflicts: string[] } {
     let score = 0;
     const activeSynergies: string[] = [];
     const conflicts: string[] = [];
@@ -134,13 +145,13 @@ export class SynergyEngine implements AnalysisEngine {
 
       for (const p of team) {
         // Verifica se é setter
-        const isSetter = w.setters.some(s => this.hasAbility(p, s));
+        const isSetter = w.setters.some(s => this.hasAbility(p, s, format));
         if (isSetter) {
           hasSetter = true;
         }
 
         // Verifica se é beneficiário
-        const isBeneficiary = w.beneficiaries.some(b => this.hasAbility(p, b));
+        const isBeneficiary = w.beneficiaries.some(b => this.hasAbility(p, b, format));
         if (isBeneficiary) {
           hasBeneficiary = true;
         }
@@ -167,8 +178,8 @@ export class SynergyEngine implements AnalysisEngine {
     const abusersWeathers = new Set<string>();
     for (const w of weatherTypes) {
       for (const p of team) {
-        if (w.setters.some(s => this.hasAbility(p, s))) settersWeathers.add(w.name);
-        if (w.beneficiaries.some(b => this.hasAbility(p, b))) abusersWeathers.add(w.name);
+        if (w.setters.some(s => this.hasAbility(p, s, format))) settersWeathers.add(w.name);
+        if (w.beneficiaries.some(b => this.hasAbility(p, b, format))) abusersWeathers.add(w.name);
       }
     }
     for (const setterWeather of settersWeathers) {
@@ -185,7 +196,7 @@ export class SynergyEngine implements AnalysisEngine {
 
   // --- 2. Lógica de Terrenos (Terrain) ---
 
-  private analyzeTerrain(team: PokemonData[]): { score: number; activeSynergies: string[]; conflicts: string[] } {
+  private analyzeTerrain(team: PokemonData[], format: string): { score: number; activeSynergies: string[]; conflicts: string[] } {
     let score = 0;
     const activeSynergies: string[] = [];
     const conflicts: string[] = [];
@@ -221,13 +232,13 @@ export class SynergyEngine implements AnalysisEngine {
 
       for (const p of team) {
         // Verifica setter (habilidade)
-        const isSetter = t.setters.some(s => this.hasAbility(p, s));
+        const isSetter = t.setters.some(s => this.hasAbility(p, s, format));
         if (isSetter) {
           hasSetter = true;
         }
 
         // Verifica beneficiário (movimento ou habilidade)
-        const isBeneficiary = t.beneficiaries.some(b => this.hasMove(p, b) || this.hasAbility(p, b));
+        const isBeneficiary = t.beneficiaries.some(b => this.hasMove(p, b, format) || this.hasAbility(p, b, format));
         if (isBeneficiary) {
           hasBeneficiary = true;
         }
@@ -254,8 +265,8 @@ export class SynergyEngine implements AnalysisEngine {
     const abusersTerrains = new Set<string>();
     for (const t of terrainTypes) {
       for (const p of team) {
-        if (t.setters.some(s => this.hasAbility(p, s))) settersTerrains.add(t.name);
-        if (t.beneficiaries.some(b => this.hasMove(p, b) || this.hasAbility(p, b))) abusersTerrains.add(t.name);
+        if (t.setters.some(s => this.hasAbility(p, s, format))) settersTerrains.add(t.name);
+        if (t.beneficiaries.some(b => this.hasMove(p, b, format) || this.hasAbility(p, b, format))) abusersTerrains.add(t.name);
       }
     }
     for (const setterTerrain of settersTerrains) {
@@ -279,7 +290,7 @@ export class SynergyEngine implements AnalysisEngine {
 
     for (const p of team) {
       // Detector de Trick Room Setter
-      if (this.hasMove(p, 'Trick Room') || this.hasAbility(p, 'Trick Room')) {
+      if (this.hasMove(p, 'Trick Room', format) || this.hasAbility(p, 'Trick Room', format)) {
         hasSetter = true;
       }
 
@@ -316,12 +327,12 @@ export class SynergyEngine implements AnalysisEngine {
 
   // --- 4. Lógica de Momentum (Volt-Turn) ---
 
-  private analyzeMomentum(team: PokemonData[]): { score: number; count: number } {
+  private analyzeMomentum(team: PokemonData[], format: string): { score: number; count: number } {
     let pivotCount = 0;
     const pivotMoves = ['Volt Switch', 'U-turn', 'Flip Turn', 'Parting Shot'];
 
     for (const p of team) {
-      const hasPivot = pivotMoves.some(move => this.hasMove(p, move));
+      const hasPivot = pivotMoves.some(move => this.hasMove(p, move, format));
       if (hasPivot) {
         pivotCount++;
       }

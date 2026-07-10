@@ -1,7 +1,9 @@
 import { Dex } from '@pkmn/dex';
 import { PokemonData } from '../core/AnalysisContext';
 import { VanillaGameProfileRegistry } from '../formats/VanillaGameProfiles';
-import { calculateBST, getVariant } from '../utils/PokemonUtils';
+import { calculateBST, getSpeciesClauseKey, getVariant } from '../utils/PokemonUtils';
+import { EquinoxFormatMode } from '../format-solvers/FormatSolver';
+import { evaluateCandidateAgainstResolvedPlan, resolveFormatPlan } from '../format-solvers/FormatPlanResolver';
 import { FormatLegalityRules } from './FormatLegalityRules';
 
 interface CandidateSelectorParams {
@@ -10,6 +12,8 @@ interface CandidateSelectorParams {
   format: string;
   allowLegendaries: boolean;
   limit?: number;
+  baseTeam?: PokemonData[];
+  formatSolverMode?: EquinoxFormatMode;
 }
 
 export class CandidateSelector {
@@ -23,10 +27,15 @@ export class CandidateSelector {
       format,
       allowLegendaries,
       limit = 300,
+      baseTeam = [],
+      formatSolverMode = 'vanilla',
     } = params;
 
     const currentNames = new Set(
       currentMembers.map(name => name.toLowerCase().trim()),
+    );
+    const currentSpeciesKeys = new Set(
+      currentMembers.map(name => getSpeciesClauseKey(name)),
     );
 
     const filtered = allPokemon
@@ -37,6 +46,7 @@ export class CandidateSelector {
         if (this.isUnsupportedSpecies(pokemon.name)) return false;
         if (!this.legalityRules.isEligible({ pokemon, format })) return false;
         if (currentNames.has(normalizedName)) return false;
+        if (currentSpeciesKeys.has(getSpeciesClauseKey(pokemon.name))) return false;
         if (!allowLegendaries && pokemon.isLegendary) return false;
         if (!this.vanillaGameProfiles.isPokemonAllowed(format, pokemon)) return false;
 
@@ -48,24 +58,51 @@ export class CandidateSelector {
         const bstRange = this.legalityRules.getBstRange(format);
 
         return bst >= bstRange.min && bst <= bstRange.max;
-      })
-      .sort((a, b) => {
-        const bstA = calculateBST(getVariant(a, format)?.baseStats);
-        const bstB = calculateBST(getVariant(b, format)?.baseStats);
+      });
 
-        return bstB - bstA;
-      })
+    const plan = baseTeam.length > 0
+      ? resolveFormatPlan(baseTeam, format, formatSolverMode)
+      : null;
+
+    const ranked = filtered
+      .map(pokemon => ({
+        pokemon,
+        score: this.calculateSelectionScore(pokemon, format, plan, baseTeam),
+      }))
+      .sort((a, b) => b.score - a.score)
+      .map(item => item.pokemon)
       .slice(0, limit);
+
+    const selected = ranked;
 
     const vanillaProfile = this.vanillaGameProfiles.getProfile(format);
 
     if (vanillaProfile?.strictPool) {
       console.log(
-        `[Equinox] VanillaGamePool=${vanillaProfile.id} pool=${vanillaProfile.poolLabel} candidates=${filtered.length}`,
+        `[Equinox] VanillaGamePool=${vanillaProfile.id} pool=${vanillaProfile.poolLabel} candidates=${selected.length}`,
       );
     }
 
-    return filtered;
+    return selected;
+  }
+
+  private calculateSelectionScore(
+    pokemon: PokemonData,
+    format: string,
+    plan: ReturnType<typeof resolveFormatPlan> | null,
+    baseTeam: PokemonData[],
+  ): number {
+    const bst = calculateBST(getVariant(pokemon, format)?.baseStats);
+    if (!plan) return bst;
+
+    const objective = evaluateCandidateAgainstResolvedPlan({
+      plan,
+      baseTeam,
+      candidate: pokemon,
+      format,
+    });
+
+    return bst + objective.score - objective.hardFailures.length * 1000 - objective.warnings.length * 55;
   }
 
   private isBanned(name: string): boolean {

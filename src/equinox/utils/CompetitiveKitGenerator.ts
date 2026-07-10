@@ -1,5 +1,7 @@
+import { Dex } from '@pkmn/dex';
 import { PokemonData } from '../core/AnalysisContext';
-import { getVariant, getMegaStone } from './PokemonUtils';
+import { getMegaBaseName, getMegaStone, getVariant } from './PokemonUtils';
+import { getCuratedVgcSet, resolveLegalAbility } from './VgcSetOptimizer';
 
 export class CompetitiveKitGenerator {
   private static TYPE_MOVES: Record<string, string[]> = {
@@ -24,15 +26,23 @@ export class CompetitiveKitGenerator {
   };
 
   public static generate(pokemon: PokemonData, format: string) {
+    const curated = getCuratedVgcSet(pokemon.name);
+    if (curated) {
+      return {
+        ability: curated.ability,
+        item: getMegaStone(pokemon.name) ?? curated.item,
+        moves: curated.moves,
+      };
+    }
+
     const variant = getVariant(pokemon, format);
     const stats = variant?.baseStats ?? { hp: 80, atk: 80, def: 80, spa: 80, spd: 80, spe: 80 };
     const types = variant?.types ?? pokemon.types ?? [];
 
-    // 1. Resolver Habilidade
-    let ability = 'Blaze';
-    if (variant?.abilities) {
-      ability = variant.abilities.H || variant.abilities[0] || 'Intimidate';
-    }
+    // 1. Resolver habilidade sem fallback fixo. O fallback antigo era 'Blaze',
+    // o que gerava sets impossíveis em Pokémon sem set salvo no banco
+    // (ex: Tapu-Koko com Blaze).
+    const ability = this.resolveAbility(pokemon, format);
 
     // 2. Resolver Item — Mega Pokémon DEVEM segurar sua Mega Stone
     const isFast = Number(stats.spe) >= 95;
@@ -72,15 +82,39 @@ export class CompetitiveKitGenerator {
         }
       }
     }
-    if (moves.length < 3) {
-      moves.push(isPhysical ? 'Double-Edge' : 'Hyper Voice');
+    const fallbackMoves = isPhysical
+      ? ['Double-Edge', 'Rock Slide', 'Knock Off']
+      : ['Hyper Voice', 'Dazzling Gleam', 'Icy Wind'];
+
+    for (const move of fallbackMoves) {
+      if (moves.length >= 3) break;
+      if (!moves.includes(move)) moves.push(move);
     }
-    moves.push('Protect');
+
+    if (!moves.includes('Protect')) moves.push('Protect');
 
     return {
       ability,
       item,
-      moves: moves.slice(0, 4),
+      moves: [...new Set(moves)].slice(0, 4),
     };
   }
+
+  private static resolveAbility(pokemon: PokemonData, format: string): string {
+    const fromPokemon = resolveLegalAbility(pokemon, format, pokemon.ability);
+    if (fromPokemon && fromPokemon !== 'Nenhum') return fromPokemon;
+
+    const species = Dex.species.get(pokemon.name);
+    if (species.exists && species.abilities) {
+      return String(species.abilities.H ?? species.abilities['1'] ?? species.abilities['0']);
+    }
+
+    const baseSpecies = Dex.species.get(getMegaBaseName(pokemon.name));
+    if (baseSpecies.exists && baseSpecies.abilities) {
+      return String(baseSpecies.abilities.H ?? baseSpecies.abilities['1'] ?? baseSpecies.abilities['0']);
+    }
+
+    return 'Nenhum';
+  }
 }
+

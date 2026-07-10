@@ -98,6 +98,24 @@ export function generateBasicKit(pokemon: PokemonData, format: string) {
  * Extrai o nome base de uma forma Mega para busca no banco de sets.
  * Ex: "Charizard-Mega-Y" → "Charizard", "Salamence-Mega" → "Salamence"
  */
+
+/**
+ * Normaliza nomes vindos de fontes diferentes para evitar duplicidade como
+ * "Iron Boulder" vs "Iron-Boulder". Mantém formas como Mega-X/Y distintas
+ * quando usado diretamente.
+ */
+export function getCanonicalPokemonName(name: string): string {
+  return String(name ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+/**
+ * Chave de espécie para Species Clause e deduplicação competitiva.
+ * Mega forms contam como a mesma espécie base.
+ */
+export function getSpeciesClauseKey(name: string): string {
+  return getCanonicalPokemonName(getMegaBaseName(name));
+}
+
 export function getMegaBaseName(name: string): string {
   return name.replace(/-Mega(-[XY])?$/i, '');
 }

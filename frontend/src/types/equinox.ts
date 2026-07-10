@@ -58,6 +58,9 @@ export type TeamIdentity =
 export interface PokemonKit {
   role: string;
   nature: string;
+  ability?: string;
+  item?: string;
+  moves?: string[];
 }
 
 export interface BattleInsight {
@@ -72,6 +75,11 @@ export interface SuggestedPokemon {
   name: string;
   kit: PokemonKit;
   battleInsight?: BattleInsight;
+  ability?: string;
+  item?: string;
+  moves?: string[];
+  nature?: string;
+  role?: string;
 }
 
 export interface ScoreBreakdown {
@@ -531,8 +539,93 @@ export interface EquinoxDataSourceReport {
   generatedAt: string;
 }
 
+
+export type VgcRole =
+  | 'Weather Setter'
+  | 'Weather Abuser'
+  | 'Speed Control'
+  | 'Turn Control'
+  | 'Redirection'
+  | 'Pivot'
+  | 'Physical Damage'
+  | 'Special Damage'
+  | 'Spread Damage'
+  | 'Anti Trick Room'
+  | 'Anti Weather'
+  | 'Defensive Glue'
+  | 'Late Game Cleaner'
+  | 'Priority'
+  | 'Setup Pressure';
+
+export interface VgcArchetypeAnalysis {
+  id: string;
+  label: string;
+  confidence: number;
+  signals: string[];
+}
+
+export interface VgcRoleCoverageAnalysis {
+  detectedRoles: Record<VgcRole, string[]>;
+  missingCriticalRoles: VgcRole[];
+  missingImportantRoles: VgcRole[];
+  redundancyWarnings: string[];
+  coverageScore: number;
+}
+
+export interface VgcLeadEvaluation {
+  lead: string[];
+  score: number;
+  reasons: string[];
+}
+
+export interface VgcModeEvaluation {
+  selectedFour: string[];
+  score: number;
+  leadOptions: VgcLeadEvaluation[];
+  reasons: string[];
+}
+
+export interface VgcModeAnalysis {
+  modeConsistencyScore: number;
+  viableModeCount: number;
+  viableModes: VgcModeEvaluation[];
+  bestLeads: VgcLeadEvaluation[];
+}
+
+export interface VgcMatchupReadiness {
+  rain: number;
+  trickRoom: number;
+  tailwindOffense: number;
+  setupRedirection: number;
+  weatherWar: number;
+  overallScore: number;
+  notes: string[];
+}
+
+
+export interface VgcMechanicCoverage {
+  detectedSlots: Record<string, string[]>;
+  missingCriticalMechanics: string[];
+  missingImportantMechanics: string[];
+  conflictWarnings: string[];
+  score: number;
+}
+
+export interface VgcTeamPlanAnalysis {
+  archetype: VgcArchetypeAnalysis;
+  roleCoverage: VgcRoleCoverageAnalysis;
+  mechanicCoverage?: VgcMechanicCoverage;
+  modeAnalysis: VgcModeAnalysis;
+  matchupReadiness: VgcMatchupReadiness;
+  recommendations: string[];
+  concerns: string[];
+  planSummary: string;
+  score: number;
+}
+
 export interface TeamOption {
   suggestedPokemons: SuggestedPokemon[];
+  fullTeam?: SuggestedPokemon[];
   reasoning: string;
   stats: {
     fatalUncovered: number;
@@ -553,6 +646,7 @@ export interface TeamOption {
   radicalRedGauntlet?: RadicalRedGauntletAnalysis;
   championsRegulation?: ChampionsRegulationAnalysis;
   dataSourceReport?: EquinoxDataSourceReport;
+  vgcTeamPlan?: VgcTeamPlanAnalysis;
 }
 
 export interface SuggestionResponse {

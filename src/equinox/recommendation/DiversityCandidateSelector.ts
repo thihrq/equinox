@@ -1,3 +1,4 @@
+import { getCanonicalPokemonName } from '../utils/PokemonUtils';
 import { CandidateScoreResult } from './CandidateScoreEngine';
 
 interface DiversitySelectorOptions {
@@ -23,7 +24,7 @@ export class DiversityCandidateSelector {
 
     const add = (candidate: CandidateScoreResult) => {
       if (selected.size >= options.maxCandidates) return;
-      selected.set(candidate.pokemon.name, candidate);
+      selected.set(getCanonicalPokemonName(candidate.pokemon.name), candidate);
     };
 
     scoredCandidates.slice(0, options.topOverall).forEach(add);
@@ -61,7 +62,7 @@ export class DiversityCandidateSelector {
      */
     if (selected.size < 3) {
       scoredCandidates.slice(0, 3).forEach(candidate => {
-        selected.set(candidate.pokemon.name, candidate);
+        selected.set(getCanonicalPokemonName(candidate.pokemon.name), candidate);
       });
     }
 

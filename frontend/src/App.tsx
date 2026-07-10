@@ -7,7 +7,7 @@ import { findPokemonNameSuggestions, isKnownPokemonName } from './utils/pokemonN
 import { getNextPokemonSpriteUrl, getPokemonSpriteUrl, getSmogonPokemonSlug } from './utils/pokemonSprites';
 import { apiPost, type ApiErrorShape } from './services/api';
 import { BattlePlanHero, CoachTimeline, SectionHeader } from './components/coach';
-import { PokemonGrid } from './components/pokemon';
+import { PokemonGrid, ShowdownExport } from './components/pokemon';
 import { OptionTabs, StrategySummary } from './components/strategy';
 import {
   AIBuilderDecision,
@@ -22,9 +22,10 @@ import {
   RadicalRedGauntletPanel,
   ScoreBreakdownView,
   ThreatReport,
+  VgcTeamPlanPanel,
 } from './components/analysis';
 
-type FormatFamily = 'vanilla' | 'competitive' | 'radical_red' | 'champions';
+type FormatFamily = 'vanilla' | 'radical_red' | 'champions';
 
 interface PickerOption<TValue extends string = string> {
   value: TValue;
@@ -47,7 +48,6 @@ const getIdentityOptions = (locale: Locale): Array<PickerOption<TeamIdentity>> =
 
 const getFormatFamilies = (locale: Locale): Array<PickerOption<FormatFamily>> => [
   { value: 'vanilla', label: t(locale, 'formatFamilyVanilla'), short: t(locale, 'formatFamilyVanillaShort') },
-  { value: 'competitive', label: t(locale, 'formatFamilyCompetitive'), short: t(locale, 'formatFamilyCompetitiveShort') },
   { value: 'radical_red', label: t(locale, 'formatFamilyRadicalRed'), short: t(locale, 'formatFamilyRadicalRedShort') },
   { value: 'champions', label: t(locale, 'formatFamilyChampions'), short: t(locale, 'formatFamilyChampionsShort') },
 ];
@@ -80,39 +80,11 @@ const getChampionsOptions = (locale: Locale): Array<PickerOption> => [
   { value: 'champions_reg_m_b_doubles', label: t(locale, 'formatChampionsDoubles'), short: t(locale, 'formatChampionsDoublesShort') },
 ];
 
-const getCompetitiveFormatOptions = (locale: Locale): VanillaGamePickerOption[] => [
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9ou', label: '[Gen 9] OU', short: t(locale, 'showdownStandardSingles') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9ubers', label: '[Gen 9] Ubers', short: t(locale, 'showdownRestrictedSingles') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9uu', label: '[Gen 9] UU', short: t(locale, 'showdownTieredSingles') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9ru', label: '[Gen 9] RU', short: t(locale, 'showdownTieredSingles') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9nu', label: '[Gen 9] NU', short: t(locale, 'showdownTieredSingles') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9pu', label: '[Gen 9] PU', short: t(locale, 'showdownTieredSingles') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9zu', label: '[Gen 9] ZU', short: t(locale, 'showdownTieredSingles') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9lc', label: '[Gen 9] LC', short: t(locale, 'showdownLittleCup') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9monotype', label: '[Gen 9] Monotype', short: t(locale, 'showdownSpecialRules') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9cap', label: '[Gen 9] CAP', short: t(locale, 'showdownCommunityFormat') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9anythinggoes', label: '[Gen 9] Anything Goes', short: t(locale, 'showdownOpenRules') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen91v1', label: '[Gen 9] 1v1', short: t(locale, 'showdownSpecialRules') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'national_dex', label: 'National Dex', short: t(locale, 'formatNationalDexShort') },
-  { group: t(locale, 'showdownGroupDoubles'), value: 'gen9doublesou', label: '[Gen 9] Doubles OU', short: t(locale, 'showdownStandardDoubles') },
-  { group: t(locale, 'showdownGroupDoubles'), value: 'gen9doublesubers', label: '[Gen 9] Doubles Ubers', short: t(locale, 'showdownRestrictedDoubles') },
-  { group: t(locale, 'showdownGroupDoubles'), value: 'gen9doublesuu', label: '[Gen 9] Doubles UU', short: t(locale, 'showdownTieredDoubles') },
-  { group: t(locale, 'showdownGroupDoubles'), value: 'gen9doubleslc', label: '[Gen 9] Doubles LC', short: t(locale, 'showdownLittleCup') },
-  { group: t(locale, 'showdownGroupDoubles'), value: 'gen9vgc2025regi', label: '[Gen 9] VGC 2025 Reg I', short: t(locale, 'showdownVgc') },
-  { group: t(locale, 'showdownGroupDoubles'), value: 'gen9bssregi', label: '[Gen 9] BSS Reg I', short: t(locale, 'showdownBattleStadium') },
-  { group: t(locale, 'showdownGroupDraft'), value: 'gen9draft', label: '[Gen 9] Draft', short: t(locale, 'showdownDraft') },
-  { group: t(locale, 'showdownGroupDraft'), value: 'gen96v6doublesdraft', label: '[Gen 9] 6v6 Doubles Draft', short: t(locale, 'showdownDraft') },
-  { group: t(locale, 'showdownGroupDraft'), value: 'gen94v4doublesdraft', label: '[Gen 9] 4v4 Doubles Draft', short: t(locale, 'showdownDraft') },
-  { group: t(locale, 'showdownGroupDraft'), value: 'gen9natdexdraft', label: '[Gen 9] NatDex Draft', short: t(locale, 'showdownDraft') },
-  { group: t(locale, 'showdownGroupDraft'), value: 'gen9natdex6v6doublesdraft', label: '[Gen 9] NatDex 6v6 Doubles Draft', short: t(locale, 'showdownDraft') },
-  { group: t(locale, 'showdownGroupDraft'), value: 'gen9natdexlcdraft', label: '[Gen 9] NatDex LC Draft', short: t(locale, 'showdownDraft') },
-];
-
 const getFormatFamily = (format: string): FormatFamily => {
   if (format.startsWith('vanilla_') || format === 'vanilla') return 'vanilla';
   if (format.startsWith('champions_')) return 'champions';
   if (format === 'radical_red') return 'radical_red';
-  return 'competitive';
+  return 'champions';
 };
 
 const exampleCores = [
@@ -139,7 +111,6 @@ export default function App() {
   const formatFamilies = useMemo(() => getFormatFamilies(locale), [locale]);
   const vanillaGameOptions = useMemo(() => getVanillaGameOptions(locale), [locale]);
   const championsOptions = useMemo(() => getChampionsOptions(locale), [locale]);
-  const competitiveFormatOptions = useMemo(() => getCompetitiveFormatOptions(locale), [locale]);
   const activeFormatFamily = useMemo(() => getFormatFamily(format), [format]);
   const vanillaGamesByGroup = useMemo(() => {
     return vanillaGameOptions.reduce<Record<string, VanillaGamePickerOption[]>>((groups, option) => {
@@ -150,24 +121,14 @@ export default function App() {
   const selectedVanillaGame = useMemo(() => {
     return vanillaGameOptions.find(option => option.value === format);
   }, [format, vanillaGameOptions]);
-  const competitiveFormatsByGroup = useMemo(() => {
-    return competitiveFormatOptions.reduce<Record<string, VanillaGamePickerOption[]>>((groups, option) => {
-      groups[option.group] = [...(groups[option.group] ?? []), option];
-      return groups;
-    }, {});
-  }, [competitiveFormatOptions]);
-  const selectedCompetitiveFormat = useMemo(() => {
-    return competitiveFormatOptions.find(option => option.value === format);
-  }, [format, competitiveFormatOptions]);
   const selectedChampionsFormat = useMemo(() => {
     return championsOptions.find(option => option.value === format);
   }, [format, championsOptions]);
   const selectedFormatLabel = useMemo(() => {
     if (activeFormatFamily === 'vanilla') return selectedVanillaGame?.label ?? t(locale, 'formatFamilyVanilla');
-    if (activeFormatFamily === 'competitive') return selectedCompetitiveFormat?.label ?? t(locale, 'formatFamilyCompetitive');
     if (activeFormatFamily === 'champions') return selectedChampionsFormat?.label ?? t(locale, 'formatFamilyChampions');
     return t(locale, 'formatFamilyRadicalRed');
-  }, [activeFormatFamily, locale, selectedChampionsFormat, selectedCompetitiveFormat, selectedVanillaGame]);
+  }, [activeFormatFamily, locale, selectedChampionsFormat, selectedVanillaGame]);
 
   const selectedOption = useMemo(() => {
     if (!result?.topTeams?.length) return null;
@@ -201,11 +162,6 @@ export default function App() {
 
     if (family === 'vanilla') {
       setFormat('vanilla_fire_red');
-      return;
-    }
-
-    if (family === 'competitive') {
-      setFormat('gen9ou');
       return;
     }
 
@@ -417,31 +373,6 @@ export default function App() {
                 </div>
               )}
 
-              {activeFormatFamily === 'competitive' && (
-                <div className="eq-format-subpanel eq-format-subpanel--select">
-                  <span>{t(locale, 'competitiveFormat')}</span>
-                  <label className="eq-format-select">
-                    <select
-                      value={format}
-                      onChange={event => setFormat(event.target.value)}
-                      aria-label={t(locale, 'competitiveFormat')}
-                    >
-                      {Object.entries(competitiveFormatsByGroup).map(([group, options]) => (
-                        <optgroup key={group} label={group}>
-                          {options.map(option => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </optgroup>
-                      ))}
-                    </select>
-                  </label>
-                  <p className="eq-format-selected-note">
-                    {selectedCompetitiveFormat?.short ?? t(locale, 'competitiveFormatNote')}
-                  </p>
-                </div>
-              )}
 
               {activeFormatFamily === 'champions' && (
                 <div className="eq-format-subpanel">
@@ -556,6 +487,10 @@ export default function App() {
               getSmogonUrl={getSmogonUrl}
             />
 
+            {selectedOption.fullTeam && selectedOption.fullTeam.length > 0 && (
+              <ShowdownExport team={selectedOption.fullTeam} locale={locale} />
+            )}
+
             <OptionTabs
               options={result.topTeams}
               selectedIndex={selectedOptionIndex}
@@ -594,6 +529,10 @@ export default function App() {
 
               <DetailsBlock title={t(locale, 'threatIntelligence')} subtitle={t(locale, 'threatIntelligenceSubtitle')} count={selectedOption.threatAnalysis?.matchups.length ?? 0} locale={locale}>
                 <ThreatReport option={selectedOption} locale={locale} />
+              </DetailsBlock>
+
+              <DetailsBlock title={t(locale, 'vgcTeamPlan')} subtitle={t(locale, 'vgcTeamPlanSubtitle')} count={selectedOption.vgcTeamPlan ? 1 : 0} locale={locale}>
+                <VgcTeamPlanPanel option={selectedOption} locale={locale} />
               </DetailsBlock>
 
               <DetailsBlock title={t(locale, 'aiBuilderDecision')} subtitle={t(locale, 'aiBuilderDecisionSubtitle')} count={selectedOption.aiBuilder ? 1 : 0} locale={locale}>

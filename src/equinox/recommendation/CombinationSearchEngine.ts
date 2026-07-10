@@ -1,8 +1,30 @@
 import { AnalysisContext, PokemonData } from '../core/AnalysisContext';
 import { AnalysisPipeline } from '../core/AnalysisPipeline';
-import { getPokemonTypes, getVariant } from '../utils/PokemonUtils';
+import { getPokemonTypes, getSpeciesClauseKey, getVariant } from '../utils/PokemonUtils';
 import { RadicalRedGauntletScorer } from '../radicalred/RadicalRedGauntletScorer';
 import { ChampionsRegulationScorer } from '../champions/ChampionsRegulationScorer';
+import {
+  evaluateVgcTeamPlan,
+  hasActiveSunSetterForVgc,
+  isLikelyTrickRoomAbuserForVgc,
+  hasLikelyTrickRoomCoreForVgc,
+  hasPrimarySunAbuserForVgc,
+  isLikelyRedirectionSupportForVgc,
+  isLikelyTrickRoomSetterForVgc,
+  isPremiumTrickRoomRedirectionForVgc,
+} from '../vgc/VgcTeamBuilding';
+import { evaluateVgcArchetypeCompatibility, evaluateVgcMechanicBlueprint } from '../vgc/VgcArchetypeBlueprints';
+import { isAbilityLegalForPokemon, isMegaOption } from '../utils/VgcSetOptimizer';
+import {
+  hasTerrainSleepConflict,
+  isVgcMechanicTerrainAbuser,
+  isVgcMechanicTerrainSetter,
+  isVgcMechanicWeatherAbuser,
+  isVgcMechanicWeatherSetter,
+} from '../vgc/VgcMechanicProfiles';
+import type { FormatSolver } from '../format-solvers/FormatSolver';
+import { FormatSolverRegistry } from '../format-solvers/FormatSolverRegistry';
+import { evaluateFormatTeamObjective } from '../format-solvers/FormatObjectiveGuards';
 
 export interface EvaluatedCombination {
   team: PokemonData[];
@@ -21,6 +43,7 @@ interface FindBestTriosParams {
   format: string;
   teamIdentity?: string;
   candidateProfiles?: Record<string, CombinationCandidateProfile>;
+  formatSolver?: FormatSolver;
 }
 
 interface CombinationSearchOptions {
@@ -67,6 +90,7 @@ interface OptimizerStats {
 export class CombinationSearchEngine {
   private readonly radicalRedScorer = new RadicalRedGauntletScorer();
   private readonly championsScorer = new ChampionsRegulationScorer();
+  private readonly solverRegistry = new FormatSolverRegistry();
   private readonly options: CombinationSearchOptions;
 
   constructor(
@@ -86,6 +110,7 @@ export class CombinationSearchEngine {
     params: FindBestTriosParams,
   ): Promise<EvaluatedCombination[]> {
     const { baseTeam, candidates, format, teamIdentity = 'balanced' } = params;
+    const formatSolver = params.formatSolver ?? this.solverRegistry.getSolver(format);
     const best: EvaluatedCombination[] = [];
 
     const { trios, stats } = this.buildOptimizedSearchSpace(params);
@@ -95,7 +120,8 @@ export class CombinationSearchEngine {
     );
 
     for (const candidate of trios) {
-      const fullTeam = [...baseTeam, ...candidate.trio];
+      const fullTeam = formatSolver.normalizeFinalTeam([...baseTeam, ...candidate.trio], format);
+      const normalizedTrio = fullTeam.slice(baseTeam.length);
 
       const context = new AnalysisContext({
         format,
@@ -107,7 +133,7 @@ export class CombinationSearchEngine {
       await this.pipeline.run(context);
 
       this.insertIfRelevant(best, {
-        team: candidate.trio,
+        team: normalizedTrio,
         context,
       });
     }
@@ -119,6 +145,7 @@ export class CombinationSearchEngine {
     params: FindBestTriosParams,
   ): { trios: OptimizedTrioCandidate[]; stats: OptimizerStats } {
     const { baseTeam, candidates, format } = params;
+    const formatSolver = params.formatSolver ?? this.solverRegistry.getSolver(format);
     const len = candidates.length;
     const totalPossible = this.combinationCount(len, 3);
     const allValid: OptimizedTrioCandidate[] = [];
@@ -128,9 +155,15 @@ export class CombinationSearchEngine {
       for (let j = i + 1; j < len; j++) {
         for (let k = j + 1; k < len; k++) {
           const trio = [candidates[i], candidates[j], candidates[k]];
-          const fullTeam = [...baseTeam, ...trio];
+          const trioSpecies = new Set(trio.map(pokemon => getSpeciesClauseKey(pokemon.name)));
+          if (trioSpecies.size !== trio.length) {
+            skippedInvalid++;
+            continue;
+          }
 
-          if (!this.isValidTeam(fullTeam, baseTeam, format)) {
+          const fullTeam = formatSolver.normalizeFinalTeam([...baseTeam, ...trio], format);
+
+          if (!this.isValidTeam(fullTeam, baseTeam, format, formatSolver)) {
             skippedInvalid++;
             continue;
           }
@@ -138,7 +171,7 @@ export class CombinationSearchEngine {
           allValid.push({
             trio,
             signature: this.getSignature(trio),
-            heuristicScore: this.calculateHeuristicScore(trio, params),
+            heuristicScore: this.calculateHeuristicScore(trio, params, formatSolver),
           });
         }
       }
@@ -255,6 +288,7 @@ export class CombinationSearchEngine {
   private calculateHeuristicScore(
     trio: PokemonData[],
     params: FindBestTriosParams,
+    formatSolver: FormatSolver,
   ): number {
     const { baseTeam, format, candidateProfiles = {}, teamIdentity = 'balanced' } = params;
 
@@ -264,6 +298,10 @@ export class CombinationSearchEngine {
     );
 
     const fullTeam = [...baseTeam, ...trio];
+    const baseHasSunSetter = baseTeam.some(pokemon => hasActiveSunSetterForVgc(pokemon, format));
+    const baseHasPrimarySunAbuser = baseTeam.some(pokemon => hasPrimarySunAbuserForVgc(pokemon, format));
+    const fullHasPrimarySunAbuser = fullTeam.some(pokemon => hasPrimarySunAbuserForVgc(pokemon, format));
+    const baseHasLikelyTrickRoomCore = hasLikelyTrickRoomCoreForVgc(baseTeam, format);
     const uniqueTypes = new Set<string>();
     const allTypes: string[] = [];
     const roles = new Set<string>();
@@ -315,7 +353,64 @@ export class CombinationSearchEngine {
       format,
     });
 
-    if (this.radicalRedScorer.isApplicable(format)) {
+    if (formatSolver.usesDoublesMechanicContracts) {
+      if (baseHasSunSetter && !baseHasPrimarySunAbuser && !baseHasLikelyTrickRoomCore) {
+        score += fullHasPrimarySunAbuser ? 180 : -260;
+      }
+
+      const vgcPlan = evaluateVgcTeamPlan(fullTeam, format);
+      const mechanicContract = evaluateVgcMechanicBlueprint(fullTeam, format, vgcPlan.archetype.id);
+      const architectureCompatibility = evaluateVgcArchetypeCompatibility(fullTeam, format, vgcPlan.archetype.id);
+      score += (vgcPlan.score - 50) * 2.0;
+      score += (mechanicContract.score - 50) * 2.1;
+      score += architectureCompatibility.score;
+      score += Math.min(30, vgcPlan.modeAnalysis.viableModeCount * 6);
+      score -= vgcPlan.roleCoverage.missingCriticalRoles.length * 12;
+      score -= mechanicContract.missingCriticalMechanics.length * 45;
+      score -= mechanicContract.conflictWarnings.length * 24;
+      score -= architectureCompatibility.hardFailures.length * 95;
+      score -= architectureCompatibility.warnings.length * 32;
+      score -= vgcPlan.roleCoverage.redundancyWarnings.length * 6;
+
+      if (baseHasLikelyTrickRoomCore) {
+        const hasPremiumTrickRoomRedirection = fullTeam.some(pokemon => isPremiumTrickRoomRedirectionForVgc(pokemon));
+        const hasAnyRedirection = fullTeam.some(pokemon => isLikelyRedirectionSupportForVgc(pokemon));
+        const trickRoomSetterCount = fullTeam.filter(pokemon => isLikelyTrickRoomSetterForVgc(pokemon)).length;
+        const trickRoomAbuserCount = fullTeam.filter(pokemon => isLikelyTrickRoomAbuserForVgc(pokemon, format)).length;
+        const fastNonTrickRoomPieces = fullTeam.filter(pokemon => {
+          const key = pokemon.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const speed = Number(getVariant(pokemon, format)?.baseStats?.spe ?? 0);
+          return speed >= 90 &&
+            !isLikelyTrickRoomAbuserForVgc(pokemon, format) &&
+            !isLikelyRedirectionSupportForVgc(pokemon) &&
+            !['farigiraf'].includes(key);
+        }).length;
+        const disfavoredFastSetup = fullTeam.filter(pokemon => /volcarona|dragonite|salamence|gyarados/i.test(pokemon.name)).length;
+        const fireMembers = fullTeam.filter(pokemon => getPokemonTypes(pokemon, format).some(type => type.toLowerCase() === 'fire')).length;
+
+        if (hasPremiumTrickRoomRedirection) score += 180;
+        else if (hasAnyRedirection) score += 55;
+        else score -= 340;
+
+        if (trickRoomSetterCount >= 2) score += 70;
+        if (trickRoomAbuserCount >= 3) score += 55;
+        if (fastNonTrickRoomPieces > 0) score -= fastNonTrickRoomPieces * 60;
+        if (disfavoredFastSetup > 0) score -= disfavoredFastSetup * 75;
+        if (fireMembers >= 3) score -= 80;
+      }
+    }
+
+    const formatObjective = evaluateFormatTeamObjective({
+      mode: formatSolver.mode,
+      baseTeam,
+      team: fullTeam,
+      format,
+    });
+    score += formatObjective.score;
+    score -= formatObjective.hardFailures.length * 600;
+    score -= formatObjective.warnings.length * 80;
+
+    if (formatSolver.mode === 'radical_red') {
       const gauntlet = this.radicalRedScorer.scoreTeam(fullTeam, format);
       const gauntletObjective =
         gauntlet.worstBossScore * 2.35 +
@@ -326,14 +421,15 @@ export class CombinationSearchEngine {
       score = score * 0.35 + gauntletObjective;
     }
 
-    if (this.championsScorer.isApplicable(format)) {
+    const championsProfile = this.championsScorer.getProfile(format);
+    if (formatSolver.mode === 'champions_singles' && championsProfile && championsProfile.battleStyle !== 'doubles') {
       const regulation = this.championsScorer.scoreTeam(fullTeam, format);
       const regulationObjective =
         regulation.score * 2.1 +
         regulation.roleCoverage.threatCoverage * 1.35 +
         regulation.roleCoverage.speedControl * 1.15 +
         regulation.roleCoverage.roleCompression * 1.05 +
-        regulation.roleCoverage.fieldControl * (regulation.battleStyle === 'doubles' ? 1.25 : 0.55) +
+        regulation.roleCoverage.fieldControl * 0.55 +
         regulation.roleCoverage.megaReadiness * 0.75;
 
       score = score * 0.42 + regulationObjective;
@@ -396,39 +492,59 @@ export class CombinationSearchEngine {
     return penalty;
   }
 
-  private isValidTeam(team: PokemonData[], baseTeam: PokemonData[], format: string): boolean {
-    const names = new Set(team.map(pokemon => pokemon.name));
+  private isValidTeam(team: PokemonData[], baseTeam: PokemonData[], format: string, formatSolver: FormatSolver): boolean {
+    const names = new Set(team.map(pokemon => getSpeciesClauseKey(pokemon.name)));
     if (names.size !== team.length) {
       return false;
     }
 
-    const megaCount = team.filter(pokemon =>
-      pokemon.name.toLowerCase().includes('-mega'),
-    ).length;
-
+    const megaCount = team.filter(pokemon => isMegaOption(pokemon)).length;
     if (megaCount > 1) {
       return false;
     }
 
-    // Item Clause: nenhum item pode se repetir no time completo
-    // Só aplica se o trio adicionou a violação (baseTeam pode já ter itens únicos)
-    const teamItems = team.map(p => p.item).filter(Boolean) as string[];
-    if (teamItems.length > 0 && new Set(teamItems).size < teamItems.length) {
-      // Verifica se o baseTeam já tinha a violação antes de culpar o trio
-      const baseItems = baseTeam.map(p => p.item).filter(Boolean) as string[];
-      const baseHasItemDuplicate = new Set(baseItems).size < baseItems.length;
-      if (!baseHasItemDuplicate) {
+    if (team.some(pokemon => !isAbilityLegalForPokemon(pokemon, format, pokemon.ability))) {
+      return false;
+    }
+
+    if (formatSolver.usesItemClause) {
+      const teamItems = team.map(p => p.item).filter(Boolean) as string[];
+      if (teamItems.length > 0 && new Set(teamItems).size < teamItems.length) {
+        const baseItems = baseTeam.map(p => p.item).filter(Boolean) as string[];
+        const baseHasItemDuplicate = new Set(baseItems).size < baseItems.length;
+        if (!baseHasItemDuplicate) {
+          return false;
+        }
+      }
+    }
+
+    if (formatSolver.usesDoublesMechanicContracts) {
+      const baseHasConflict = this.hasConflict(baseTeam, format);
+      if (!baseHasConflict && this.hasConflict(team, format)) {
+        return false;
+      }
+
+      const baseHasSunSetter = baseTeam.some(pokemon => hasActiveSunSetterForVgc(pokemon, format));
+      const baseHasPrimarySunAbuser = baseTeam.some(pokemon => hasPrimarySunAbuserForVgc(pokemon, format));
+      const teamHasPrimarySunAbuser = team.some(pokemon => hasPrimarySunAbuserForVgc(pokemon, format));
+      const baseHasLikelyTrickRoomCore = hasLikelyTrickRoomCoreForVgc(baseTeam, format);
+
+      if (baseHasSunSetter && !baseHasPrimarySunAbuser && !teamHasPrimarySunAbuser && !baseHasLikelyTrickRoomCore) {
         return false;
       }
     }
 
-    // Filtra se introduziu um novo conflito que o baseTeam não tinha
-    const baseHasConflict = this.hasConflict(baseTeam, format);
-    if (!baseHasConflict && this.hasConflict(team, format)) {
-      return false;
-    }
+    const validation = formatSolver.validateFinalTeam(team, format);
+    if (!validation.valid) return false;
 
-    return true;
+    const objective = evaluateFormatTeamObjective({
+      mode: formatSolver.mode,
+      baseTeam,
+      team,
+      format,
+    });
+
+    return objective.hardFailures.length === 0;
   }
 
   private hasConflict(team: PokemonData[], format: string): boolean {
@@ -446,10 +562,10 @@ export class CombinationSearchEngine {
 
     for (const w of weatherTypes) {
       for (const p of team) {
-        if (this.checkAbility(p, w.setters, format)) {
+        if (this.checkAbility(p, w.setters, format) || this.isMechanicWeatherForName(p, w.name, 'setter')) {
           weatherSetters.add(w.name);
         }
-        if (this.checkAbility(p, w.beneficiaries, format)) {
+        if (this.checkAbility(p, w.beneficiaries, format) || this.isMechanicWeatherForName(p, w.name, 'abuser')) {
           weatherAbusers.add(w.name);
         }
       }
@@ -474,10 +590,10 @@ export class CombinationSearchEngine {
 
     for (const t of terrainTypes) {
       for (const p of team) {
-        if (this.checkAbility(p, t.setters, format)) {
+        if (this.checkAbility(p, t.setters, format) || this.isMechanicTerrainForName(p, t.name, 'setter')) {
           terrainSetters.add(t.name);
         }
-        if (this.checkAbility(p, t.beneficiaries, format) || this.checkMove(p, t.beneficiaries)) {
+        if (this.checkAbility(p, t.beneficiaries, format) || this.checkMove(p, t.beneficiaries) || this.isMechanicTerrainForName(p, t.name, 'abuser')) {
           terrainAbusers.add(t.name);
         }
       }
@@ -490,7 +606,37 @@ export class CombinationSearchEngine {
       }
     }
 
+    if (hasTerrainSleepConflict(team)) return true; // Electric/Misty Terrain enfraquece planos baseados em sono
+
     return false;
+  }
+
+  private isMechanicWeatherForName(pokemon: PokemonData, label: string, role: 'setter' | 'abuser'): boolean {
+    const weatherByLabel: Record<string, 'sun' | 'rain' | 'sand' | 'snow'> = {
+      'Sol': 'sun',
+      'Chuva': 'rain',
+      'Areia': 'sand',
+      'Neve': 'snow',
+    };
+    const weather = weatherByLabel[label];
+    if (!weather) return false;
+    return role === 'setter'
+      ? isVgcMechanicWeatherSetter(pokemon, weather)
+      : isVgcMechanicWeatherAbuser(pokemon, weather);
+  }
+
+  private isMechanicTerrainForName(pokemon: PokemonData, label: string, role: 'setter' | 'abuser'): boolean {
+    const terrainByLabel: Record<string, 'psychic' | 'grassy' | 'electric' | 'misty'> = {
+      'Terreno Psíquico': 'psychic',
+      'Terreno de Grama': 'grassy',
+      'Terreno Elétrico': 'electric',
+      'Terreno de Névoa': 'misty',
+    };
+    const terrain = terrainByLabel[label];
+    if (!terrain) return false;
+    return role === 'setter'
+      ? isVgcMechanicTerrainSetter(pokemon, terrain)
+      : isVgcMechanicTerrainAbuser(pokemon, terrain);
   }
 
   private checkAbility(pokemon: PokemonData, names: string[], format: string): boolean {
@@ -583,6 +729,37 @@ export class CombinationSearchEngine {
       }
     }
 
+    const vgcPlanA = a.context.analysis.vgcTeamPlan;
+    const vgcPlanB = b.context.analysis.vgcTeamPlan;
+
+    if (vgcPlanA && vgcPlanB) {
+      const missingMechanicsA = vgcPlanA.mechanicCoverage?.missingCriticalMechanics?.length ?? 0;
+      const missingMechanicsB = vgcPlanB.mechanicCoverage?.missingCriticalMechanics?.length ?? 0;
+
+      if (missingMechanicsA !== missingMechanicsB) {
+        return missingMechanicsA - missingMechanicsB;
+      }
+
+      const missingA = vgcPlanA.roleCoverage.missingCriticalRoles.length;
+      const missingB = vgcPlanB.roleCoverage.missingCriticalRoles.length;
+
+      if (missingA !== missingB) {
+        return missingA - missingB;
+      }
+
+      if (Math.abs((vgcPlanA.mechanicCoverage?.score ?? 0) - (vgcPlanB.mechanicCoverage?.score ?? 0)) >= 2) {
+        return (vgcPlanB.mechanicCoverage?.score ?? 0) - (vgcPlanA.mechanicCoverage?.score ?? 0);
+      }
+
+      if (Math.abs(vgcPlanA.score - vgcPlanB.score) >= 2) {
+        return vgcPlanB.score - vgcPlanA.score;
+      }
+
+      if (vgcPlanA.modeAnalysis.viableModeCount !== vgcPlanB.modeAnalysis.viableModeCount) {
+        return vgcPlanB.modeAnalysis.viableModeCount - vgcPlanA.modeAnalysis.viableModeCount;
+      }
+    }
+
     const regulationA = a.context.analysis.championsRegulation;
     const regulationB = b.context.analysis.championsRegulation;
 
@@ -619,7 +796,7 @@ export class CombinationSearchEngine {
     return team
       .map(pokemon => {
         const setSuffix = pokemon.ability || pokemon.item ? `-${pokemon.ability || ''}-${pokemon.item || ''}` : '';
-        return `${pokemon.name}${setSuffix}`;
+        return `${getSpeciesClauseKey(pokemon.name)}${setSuffix}`;
       })
       .sort()
       .join('|');

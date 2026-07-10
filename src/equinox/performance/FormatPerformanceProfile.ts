@@ -100,12 +100,12 @@ export class FormatPerformanceProfileRegistry {
         label: isDoubles
           ? 'Pokémon Champions Doubles Performance Guardrail'
           : 'Pokémon Champions Singles Performance Guardrail',
-        maxPipelineEvaluations: isDoubles ? 3200 : 3600,
-        exploitationRatio: clampRatio(isDoubles ? 0.86 : 0.84),
-        maxCombinationsToKeep: 220,
-        anchorCandidateLimit: isDoubles ? 22 : 24,
-        perAnchorCombinations: isDoubles ? 12 : 14,
-        note: 'Mantém diversidade suficiente para regulação viva, mas reduz avaliações completas quando o source pack já define ameaças e arquétipos.',
+        maxPipelineEvaluations: isDoubles ? 8 : 120,
+        exploitationRatio: clampRatio(isDoubles ? 0.94 : 0.9),
+        maxCombinationsToKeep: isDoubles ? 10 : 40,
+        anchorCandidateLimit: isDoubles ? 4 : 10,
+        perAnchorCombinations: isDoubles ? 1 : 3,
+        note: 'Usa pré-ranking VGC leve de plano 6/4/leads, preserva o arquétipo e hidrata apenas finalistas para reduzir latência em fluxo interativo.',
       });
     }
 
@@ -124,14 +124,14 @@ export class FormatPerformanceProfileRegistry {
 
     if (intelligence.gameFamily === 'smogon' || intelligence.id === 'national_dex') {
       return applyRuntimeProfile({
-        id: 'meta-ladder-performance',
-        label: 'Meta Ladder Performance Guardrail',
-        maxPipelineEvaluations: 6500,
-        exploitationRatio: 0.78,
-        maxCombinationsToKeep: 300,
-        anchorCandidateLimit: 24,
-        perAnchorCombinations: 18,
-        note: 'Ladders competitivas preservam uma busca mais ampla por diversidade de cores ofensivas, defensivas e anti-meta.',
+        id: 'champions-singles-performance',
+        label: 'Pokémon Champions Singles Performance Guardrail',
+        maxPipelineEvaluations: 120,
+        exploitationRatio: 0.9,
+        maxCombinationsToKeep: 40,
+        anchorCandidateLimit: 10,
+        perAnchorCombinations: 3,
+        note: 'Showdown/National Dex saiu do escopo do produto; aliases legados usam o solver de Champions Singles como fallback seguro.',
       });
     }
 

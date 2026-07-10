@@ -9,6 +9,7 @@ import { FormatIntelligenceAnalysis } from '../formats/FormatIntelligence';
 import { RadicalRedGauntletAnalysis } from '../radicalred/RadicalRedBossProfile';
 import { ChampionsRegulationAnalysis } from '../champions/ChampionsRegulationProfile';
 import { EquinoxDataSourceReport } from '../data/DataSourceReport';
+import { VgcTeamPlanAnalysis } from '../vgc/VgcTeamBuilding';
 
 export interface PokemonVariant {
   formatId: string;
@@ -123,6 +124,7 @@ export interface TeamAnalysis {
   radicalRedGauntlet?: RadicalRedGauntletAnalysis;
   championsRegulation?: ChampionsRegulationAnalysis;
   dataSources?: EquinoxDataSourceReport;
+  vgcTeamPlan?: VgcTeamPlanAnalysis;
 }
 
 interface AnalysisContextParams {

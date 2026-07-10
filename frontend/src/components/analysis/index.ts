@@ -10,3 +10,4 @@ export * from './FormatIntelligencePanel';
 export { RadicalRedGauntletPanel } from './RadicalRedGauntletPanel';
 export { ChampionsRegulationPanel } from './ChampionsRegulationPanel';
 export { DataSourcePanel } from './DataSourcePanel';
+export { VgcTeamPlanPanel } from './VgcTeamPlanPanel';
