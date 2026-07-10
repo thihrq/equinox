@@ -438,6 +438,7 @@ export default function App() {
               </div>
             </div>
           </details>
+        </form>
 
         <div className="eq-sidebar-poem">
           <YinYangMark className="eq-sidebar-poem__mark" />
