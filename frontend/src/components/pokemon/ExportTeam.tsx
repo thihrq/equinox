@@ -3,12 +3,12 @@ import { Copy, Check } from 'lucide-react';
 import type { Locale } from '../../i18n/equinoxI18n';
 import type { SuggestedPokemon } from '../../types/equinox';
 
-interface ShowdownExportProps {
+interface ExportTeamProps {
   team: SuggestedPokemon[];
   locale: Locale;
 }
 
-export function ShowdownExport({ team, locale }: ShowdownExportProps) {
+export function ExportTeam({ team, locale }: ExportTeamProps) {
   const [copied, setCopied] = useState(false);
 
   const getShowdownText = () => {
@@ -31,12 +31,12 @@ export function ShowdownExport({ team, locale }: ShowdownExportProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const title = locale === 'pt-BR' ? 'Exportar Time Completo (Showdown)' : 'Export Full Team (Showdown)';
-  const copyLabel = locale === 'pt-BR' ? 'Copiar Showdown' : 'Copy Showdown';
+  const title = locale === 'pt-BR' ? 'Exportar Time Completo' : 'Export Full Team';
+  const copyLabel = locale === 'pt-BR' ? 'Copiar Time' : 'Copy Team';
   const copiedLabel = locale === 'pt-BR' ? 'Copiado!' : 'Copied!';
 
   return (
-    <section className="eq-showdown-export" style={{
+    <section className="eq-export-team" style={{
       marginTop: '24px',
       padding: '20px',
       border: '1px solid var(--eq-border)',

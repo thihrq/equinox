@@ -44,22 +44,29 @@ export function BattlePlanHero({ option, identityLabel, format, locale, formatSc
   const translatedIdentity = formatTeamIdentity(locale, identityLabel);
 
   return (
-    <section className="eq-battle-plan-hero">
-      <div className="eq-battle-plan-copy">
-        <span className="eq-kicker-v2">{t(locale, 'battlePlanEyebrow')}</span>
+    <section className="eq-battle-plan-hero-compact">
+      <div className="eq-battle-hero-header">
         <h2>{locale === 'pt-BR' ? `${t(locale, 'teamPrefix')} ${translatedIdentity}` : `${translatedIdentity} ${t(locale, 'teamSuffix')}`}</h2>
-        <p className="eq-battle-plan-quote">“{getBattlePlanQuote(option, locale)}”</p>
-        <div className="eq-battle-plan-meta">
-          <span>{getStars(option.score?.total)}</span>
-          <small>≈ {getReadingTime(option)} {t(locale, 'readingTime')}</small>
-        </div>
+        <span className="eq-battle-hero-stars">{getStars(option.score?.total)}</span>
       </div>
 
-      <div className="eq-battle-plan-metrics">
-        <Metric label={t(locale, 'overall')} value={formatScore(option.score?.total)} />
-        <Metric label={t(locale, 'meta')} value={translateContent(option.metaAnalysis?.name ?? (format === 'radical_red' ? 'Radical Red' : 'Vanilla'), locale)} />
-        <Metric label={t(locale, 'threatCoverage')} value={threatCoverage} />
-        <Metric label={t(locale, 'speed')} value={translateContent(option.speed?.speedProfile ?? '—', locale)} />
+      <div className="eq-battle-hero-metrics">
+        <div className="eq-battle-hero-metric">
+          <span>{t(locale, 'overall')}:</span>
+          <strong>{formatScore(option.score?.total)}</strong>
+        </div>
+        <div className="eq-battle-hero-metric">
+          <span>{t(locale, 'meta')}:</span>
+          <strong>{translateContent(option.metaAnalysis?.name ?? (format === 'radical_red' ? 'Radical Red' : 'Vanilla'), locale)}</strong>
+        </div>
+        <div className="eq-battle-hero-metric">
+          <span>{t(locale, 'threatCoverage')}:</span>
+          <strong>{threatCoverage}</strong>
+        </div>
+        <div className="eq-battle-hero-metric">
+          <span>{t(locale, 'speed')}:</span>
+          <strong>{translateContent(option.speed?.speedProfile ?? '—', locale)}</strong>
+        </div>
       </div>
     </section>
   );

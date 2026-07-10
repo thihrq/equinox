@@ -6,8 +6,8 @@ import { t } from './i18n/equinoxI18n';
 import { findPokemonNameSuggestions, isKnownPokemonName } from './utils/pokemonNames';
 import { getNextPokemonSpriteUrl, getPokemonSpriteUrl, getSmogonPokemonSlug } from './utils/pokemonSprites';
 import { apiPost, type ApiErrorShape } from './services/api';
-import { BattlePlanHero, CoachTimeline, SectionHeader } from './components/coach';
-import { PokemonGrid, ShowdownExport } from './components/pokemon';
+import { BattlePlanHero, SectionHeader } from './components/coach';
+import { ExportTeam, PokemonGrid } from './components/pokemon';
 import { OptionTabs, StrategySummary } from './components/strategy';
 import {
   AIBuilderDecision,
@@ -259,69 +259,6 @@ export default function App() {
         </div>
 
         <form className="eq-builder-panel" onSubmit={analyzeTeam}>
-          <SectionLabel>{t(locale, 'timeBase')}</SectionLabel>
-
-          <div className="eq-team-inputs">
-            {[0, 1, 2].map(index => {
-              const sprite = getSpriteUrl(team[index]);
-              const value = team[index].trim();
-              const suggestions = findPokemonNameSuggestions(value);
-              const knownPokemon = isKnownPokemonName(value);
-
-              return (
-                <label key={index} className="eq-team-input">
-                  <span className="eq-team-slot">
-                    {sprite ? (
-                      <img
-                        src={sprite}
-                        alt={`Pokémon ${index + 1}`}
-                        onError={event => {
-                          event.currentTarget.src = getNextPokemonSpriteUrl(team[index], event.currentTarget.src);
-                        }}
-                      />
-                    ) : (
-                      index + 1
-                    )}
-                  </span>
-                  <span className="eq-team-field">
-                    <input
-                      type="text"
-                      placeholder={teamPlaceholders[index]}
-                      value={team[index]}
-                      list={`eq-pokemon-suggestions-${index}`}
-                      onChange={event => handleInputChange(index, event.target.value)}
-                    />
-                    <datalist id={`eq-pokemon-suggestions-${index}`}>
-                      {suggestions.map(name => (
-                        <option key={name} value={name} />
-                      ))}
-                    </datalist>
-                    {value && (
-                      <small className={knownPokemon ? 'is-known' : ''}>
-                        {knownPokemon ? t(locale, 'recognizedPokemon') : t(locale, 'unverifiedPokemon')}
-                      </small>
-                    )}
-                  </span>
-                </label>
-              );
-            })}
-          </div>
-
-          <div className="eq-sidebar-actions">
-            <button className="eq-generate-button" type="submit" disabled={loading}>
-              {loading ? (
-                <>
-                  <span className="eq-loader-ring eq-loader-ring--button" aria-hidden="true" />
-                  {t(locale, 'calculating')}
-                </>
-              ) : (
-                t(locale, 'generate')
-              )}
-            </button>
-          </div>
-
-          {error && <p className="eq-error-message" role="alert">{error}</p>}
-
           <details className="eq-builder-disclosure">
             <summary>
               <span>
@@ -429,6 +366,69 @@ export default function App() {
               </div>
             </div>
           </details>
+
+          <SectionLabel>{t(locale, 'timeBase')}</SectionLabel>
+
+          <div className="eq-team-inputs">
+            {[0, 1, 2].map(index => {
+              const sprite = getSpriteUrl(team[index]);
+              const value = team[index].trim();
+              const suggestions = findPokemonNameSuggestions(value);
+              const knownPokemon = isKnownPokemonName(value);
+
+              return (
+                <label key={index} className="eq-team-input">
+                  <span className="eq-team-slot">
+                    {sprite ? (
+                      <img
+                        src={sprite}
+                        alt={`Pokémon ${index + 1}`}
+                        onError={event => {
+                          event.currentTarget.src = getNextPokemonSpriteUrl(team[index], event.currentTarget.src);
+                        }}
+                      />
+                    ) : (
+                      index + 1
+                    )}
+                  </span>
+                  <span className="eq-team-field">
+                    <input
+                      type="text"
+                      placeholder={teamPlaceholders[index]}
+                      value={team[index]}
+                      list={`eq-pokemon-suggestions-${index}`}
+                      onChange={event => handleInputChange(index, event.target.value)}
+                    />
+                    <datalist id={`eq-pokemon-suggestions-${index}`}>
+                      {suggestions.map(name => (
+                        <option key={name} value={name} />
+                      ))}
+                    </datalist>
+                    {value && (
+                      <small className={knownPokemon ? 'is-known' : ''}>
+                        {knownPokemon ? t(locale, 'recognizedPokemon') : t(locale, 'unverifiedPokemon')}
+                      </small>
+                    )}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+
+          <div className="eq-sidebar-actions">
+            <button className="eq-generate-button" type="submit" disabled={loading}>
+              {loading ? (
+                <>
+                  <span className="eq-loader-ring eq-loader-ring--button" aria-hidden="true" />
+                  {t(locale, 'calculating')}
+                </>
+              ) : (
+                t(locale, 'generate')
+              )}
+            </button>
+          </div>
+
+          {error && <p className="eq-error-message" role="alert">{error}</p>}
         </form>
 
         <div className="eq-sidebar-poem">
@@ -470,14 +470,6 @@ export default function App() {
 
         {result && selectedOption && !loading && (
           <div className="eq-results-v3">
-            <OptionTabs
-              options={result.topTeams}
-              selectedIndex={selectedOptionIndex}
-              locale={locale}
-              onSelect={setSelectedOptionIndex}
-              formatScore={formatScore}
-            />
-
             <BattlePlanHero
               option={selectedOption}
               identityLabel={identityLabel}
@@ -485,6 +477,14 @@ export default function App() {
               locale={locale}
               formatScore={formatScore}
               formatPercent={formatPercent}
+            />
+
+            <OptionTabs
+              options={result.topTeams}
+              selectedIndex={selectedOptionIndex}
+              locale={locale}
+              onSelect={setSelectedOptionIndex}
+              formatScore={formatScore}
             />
 
             <SectionHeader title={t(locale, 'coreTitle')} eyebrow={t(locale, 'coreEyebrow')} />
@@ -496,12 +496,10 @@ export default function App() {
             />
 
             {selectedOption.fullTeam && selectedOption.fullTeam.length > 0 && (
-              <ShowdownExport team={selectedOption.fullTeam} locale={locale} />
+              <ExportTeam team={selectedOption.fullTeam} locale={locale} />
             )}
 
-            <CoachTimeline coach={selectedOption.coach} suggestedPokemons={selectedOption.suggestedPokemons} locale={locale} />
-
-            <SectionHeader title={t(locale, 'quickTitle')} eyebrow={t(locale, 'quickEyebrow')} />
+            <SectionHeader title={t(locale, 'playbookTitle')} eyebrow={t(locale, 'playbookEyebrow')} />
             <StrategySummary option={selectedOption} locale={locale} />
 
             <section className="eq-details-v3">

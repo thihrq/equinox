@@ -4404,3 +4404,82 @@ img { display: block; }
   }
 }
 
+/* Compact Battle Plan Hero styles */
+.eq-battle-plan-hero-compact {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 18px 24px;
+  border: 1px solid var(--eq-border-subtle);
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.055), transparent),
+    var(--eq-surface);
+  box-shadow: 0 10px 24px var(--eq-shadow);
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.eq-battle-hero-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.eq-battle-hero-header h2 {
+  margin: 0;
+  color: var(--eq-text-strong);
+  font-size: 1.35rem;
+  font-weight: 950;
+  letter-spacing: -0.02em;
+}
+
+.eq-battle-hero-stars {
+  color: var(--eq-text-strong);
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  opacity: 0.82;
+}
+
+.eq-battle-hero-metrics {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.eq-battle-hero-metric {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.eq-battle-hero-metric span {
+  color: var(--eq-text-muted);
+}
+
+.eq-battle-hero-metric strong {
+  color: var(--eq-text-strong);
+  font-weight: 850;
+}
+
+@media (max-width: 760px) {
+  .eq-battle-plan-hero-compact {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .eq-battle-hero-metrics {
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+  }
+}
+
+
