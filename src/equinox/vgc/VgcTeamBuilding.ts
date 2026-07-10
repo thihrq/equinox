@@ -45,6 +45,7 @@ export type VgcArchetypeId =
   | 'sun_trick_room'
   | 'rain_offense'
   | 'rain_tailwind'
+  | 'rain_trick_room'
   | 'sand_balance'
   | 'snow_balance'
   | 'tailwind_balance'
@@ -146,6 +147,10 @@ const REQUIREMENTS: Record<VgcArchetypeId, RoleRequirementProfile> = {
     critical: ['Weather Setter', 'Weather Abuser', 'Speed Control', 'Turn Control', 'Redirection', 'Physical Damage', 'Special Damage'],
     important: ['Anti Trick Room', 'Pivot', 'Defensive Glue', 'Spread Damage', 'Late Game Cleaner'],
   },
+  rain_trick_room: {
+    critical: ['Weather Setter', 'Weather Abuser', 'Speed Control', 'Turn Control', 'Redirection', 'Physical Damage', 'Special Damage'],
+    important: ['Anti Trick Room', 'Pivot', 'Defensive Glue', 'Spread Damage', 'Late Game Cleaner'],
+  },
   rain_offense: {
     critical: ['Weather Setter', 'Weather Abuser', 'Speed Control', 'Turn Control', 'Physical Damage', 'Special Damage'],
     important: ['Anti Weather', 'Redirection', 'Pivot', 'Anti Trick Room', 'Spread Damage', 'Late Game Cleaner'],
@@ -212,13 +217,13 @@ const hasAny = (values: string[], targets: string[]): boolean => {
 };
 
 const isTrickRoomArchetype = (archetype: VgcArchetypeId): boolean =>
-  ['hard_trick_room', 'sun_trick_room', 'psychic_terrain_trick_room'].includes(archetype);
+  ['hard_trick_room', 'sun_trick_room', 'psychic_terrain_trick_room', 'rain_trick_room'].includes(archetype);
 
 const isSunArchetype = (archetype: VgcArchetypeId): boolean =>
   ['sun_offense', 'sun_trick_room'].includes(archetype);
 
 const isRainArchetype = (archetype: VgcArchetypeId): boolean =>
-  ['rain_offense', 'rain_tailwind'].includes(archetype);
+  ['rain_offense', 'rain_tailwind', 'rain_trick_room'].includes(archetype);
 
 const isTerrainArchetype = (archetype: VgcArchetypeId): boolean =>
   ['terrain_balance', 'terrain_offense', 'psychic_terrain_trick_room'].includes(archetype);
@@ -596,6 +601,11 @@ export function inferVgcArchetype(team: PokemonData[], format: string): VgcArche
     const spe = Number(getVariant(pokemon, format)?.baseStats?.spe ?? 0);
     return spe >= 105 && (roles.includes('Physical Damage') || roles.includes('Special Damage'));
   }).length;
+
+  if (hasLikelyTrickRoomCore && hasRainSetter) {
+    signals.push('Setter provável de Trick Room + clima de chuva detectados');
+    return { id: 'rain_trick_room', label: 'RainRoom', confidence: hasTrickRoom ? 94 : 88, signals };
+  }
 
   if (hasLikelyTrickRoomCore && hasSunSetter) {
     signals.push('Setter provável de Trick Room + clima de sol detectados');

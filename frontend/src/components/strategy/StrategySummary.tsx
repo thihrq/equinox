@@ -15,90 +15,79 @@ interface ModeValidationResult {
 
 const validateModeA = (fullTeam: any[], locale: Locale): ModeValidationResult => {
   const errors: string[] = [];
-  const pelipper = fullTeam.find(p => p.name.toLowerCase().includes('pelipper'));
-  const waterAbuser = fullTeam.find(p => p.name.toLowerCase().includes('overqwil') || p.name.toLowerCase().includes('relicanth'));
+  const sinistcha = fullTeam.find(p => p.name.toLowerCase().includes('sinistcha'));
+  const ironhands = fullTeam.find(p => p.name.toLowerCase().includes('iron hands') || p.name.toLowerCase().includes('ironhands'));
 
-  if (!pelipper) {
-    errors.push(locale === 'pt-BR' ? 'Pelipper não encontrado no time.' : 'Pelipper not found in team.');
+  if (!sinistcha) {
+    errors.push(locale === 'pt-BR' ? 'Sinistcha não encontrado no time.' : 'Sinistcha not found in team.');
   } else {
-    const moves = (pelipper.moves ?? []).map((m: string) => m.toLowerCase());
-    if (!moves.includes('tailwind')) {
-      errors.push(locale === 'pt-BR' ? 'Pelipper não possui Tailwind no set atual.' : 'Pelipper lacks Tailwind in the current set.');
+    const moves = (sinistcha.moves ?? []).map((m: string) => m.toLowerCase());
+    if (!moves.includes('trick room')) {
+      errors.push(locale === 'pt-BR' ? 'Sinistcha não possui Trick Room para inverter velocidade.' : 'Sinistcha lacks Trick Room for speed control.');
     }
   }
 
-  if (!waterAbuser) {
-    errors.push(locale === 'pt-BR' ? 'Nenhum abuser de chuva (Overqwil/Relicanth) encontrado.' : 'No rain abuser (Overqwil/Relicanth) found.');
+  if (!ironhands) {
+    errors.push(locale === 'pt-BR' ? 'Iron Hands não encontrado no time.' : 'Iron Hands not found in team.');
   } else {
-    const moves = (waterAbuser.moves ?? []).map((m: string) => m.toLowerCase());
-    const hasWaterMove = moves.includes('liquidation') || moves.includes('wave crash') || moves.includes('muddy water') || moves.includes('surf') || moves.includes('hydro pump');
-    if (!hasWaterMove) {
-      errors.push(locale === 'pt-BR' ? `${waterAbuser.name} não possui golpe Water STAB (como Liquidation/Wave Crash) para aproveitar a chuva.` : `${waterAbuser.name} lacks a Water STAB move to abuse rain.`);
+    const moves = (ironhands.moves ?? []).map((m: string) => m.toLowerCase());
+    if (!moves.includes('fake out')) {
+      errors.push(locale === 'pt-BR' ? 'Iron Hands não possui Fake Out no set atual.' : 'Iron Hands lacks Fake Out in the current set.');
     }
   }
 
   return {
     viable: errors.length === 0,
-    score: errors.length > 0 ? 0 : 85,
+    score: errors.length > 0 ? 0 : 80,
     errors
   };
 };
 
 const validateModeB = (fullTeam: any[], locale: Locale): ModeValidationResult => {
   const errors: string[] = [];
-  const sinistcha = fullTeam.find(p => p.name.toLowerCase().includes('sinistcha'));
-  const aggron = fullTeam.find(p => p.name.toLowerCase().includes('aggron'));
-
-  if (!sinistcha) {
-    errors.push(locale === 'pt-BR' ? 'Sinistcha não encontrado no time.' : 'Sinistcha not found in team.');
-  } else {
-    const moves = (sinistcha.moves ?? []).map((m: string) => m.toLowerCase());
-    if (!moves.includes('rage powder')) {
-      errors.push(locale === 'pt-BR' ? 'Sinistcha não possui Rage Powder para redirecionamento.' : 'Sinistcha lacks Rage Powder for redirection.');
-    }
-    if (!moves.includes('trick room')) {
-      errors.push(locale === 'pt-BR' ? 'Sinistcha não possui Trick Room para inverter velocidade.' : 'Sinistcha lacks Trick Room for speed control.');
-    }
-  }
-
-  if (!aggron) {
-    errors.push(locale === 'pt-BR' ? 'Aggron-Mega não encontrado no time.' : 'Aggron-Mega not found in team.');
-  } else {
-    const moves = (aggron.moves ?? []).map((m: string) => m.toLowerCase());
-    if (!moves.includes('heavy slam')) {
-      errors.push(locale === 'pt-BR' ? 'Aggron-Mega não possui Heavy Slam para causar pressão sob TR.' : 'Aggron-Mega lacks Heavy Slam for Trick Room damage.');
-    }
-    if (!moves.includes('body press')) {
-      errors.push(locale === 'pt-BR' ? 'Aggron-Mega não possui Body Press para aproveitar sua defesa.' : 'Aggron-Mega lacks Body Press to leverage its defense.');
-    }
-  }
-
-  return {
-    viable: errors.length === 0,
-    score: errors.length > 0 ? 0 : 80,
-    errors
-  };
-};
-
-const validateModeC = (fullTeam: any[], locale: Locale): ModeValidationResult => {
-  const errors: string[] = [];
   const togekiss = fullTeam.find(p => p.name.toLowerCase().includes('togekiss'));
+  const sinistcha = fullTeam.find(p => p.name.toLowerCase().includes('sinistcha'));
 
   if (!togekiss) {
     errors.push(locale === 'pt-BR' ? 'Togekiss não encontrado no time.' : 'Togekiss not found in team.');
   } else {
     const moves = (togekiss.moves ?? []).map((m: string) => m.toLowerCase());
     if (!moves.includes('follow me')) {
-      errors.push(locale === 'pt-BR' ? 'Togekiss não possui Follow Me para redirecionar golpes.' : 'Togekiss lacks Follow Me for redirection.');
+      errors.push(locale === 'pt-BR' ? 'Togekiss não possui Follow Me para redirecionamento.' : 'Togekiss lacks Follow Me for redirection.');
     }
-    if (!moves.includes('helping hand')) {
-      errors.push(locale === 'pt-BR' ? 'Togekiss não possui Helping Hand para apoiar o parceiro.' : 'Togekiss lacks Helping Hand for support.');
+  }
+
+  if (!sinistcha) {
+    errors.push(locale === 'pt-BR' ? 'Sinistcha não encontrado no time.' : 'Sinistcha not found in team.');
+  } else {
+    const moves = (sinistcha.moves ?? []).map((m: string) => m.toLowerCase());
+    if (!moves.includes('trick room')) {
+      errors.push(locale === 'pt-BR' ? 'Sinistcha não possui Trick Room para ativar no lead.' : 'Sinistcha lacks Trick Room for setup.');
     }
   }
 
   return {
     viable: errors.length === 0,
-    score: errors.length > 0 ? 0 : 80,
+    score: errors.length > 0 ? 0 : 70,
+    errors
+  };
+};
+
+const validateModeC = (fullTeam: any[], locale: Locale): ModeValidationResult => {
+  const errors: string[] = [];
+  const pelipper = fullTeam.find(p => p.name.toLowerCase().includes('pelipper'));
+  const carracosta = fullTeam.find(p => p.name.toLowerCase().includes('carracosta'));
+
+  if (!pelipper) {
+    errors.push(locale === 'pt-BR' ? 'Pelipper não encontrado no time.' : 'Pelipper not found in team.');
+  }
+  if (!carracosta) {
+    errors.push(locale === 'pt-BR' ? 'Carracosta não encontrado no time.' : 'Carracosta not found in team.');
+  }
+
+  return {
+    viable: errors.length === 0,
+    score: errors.length > 0 ? 0 : 75,
     errors
   };
 };
@@ -114,46 +103,45 @@ const getTacticalGuide = (option: TeamOption, format: string, locale: Locale): {
     
     // Identificar peças-chave presentes na equipe de 6
     const hasPelipper = fullNames.some(n => n.toLowerCase().includes('pelipper'));
-    const hasOverqwil = fullNames.some(n => n.toLowerCase().includes('overqwil'));
-    const hasAggron = fullNames.some(n => n.toLowerCase().includes('aggron'));
     const hasSinistcha = fullNames.some(n => n.toLowerCase().includes('sinistcha'));
     const hasTogekiss = fullNames.some(n => n.toLowerCase().includes('togekiss'));
-    const hasRelicanth = fullNames.some(n => n.toLowerCase().includes('relicanth'));
+    const hasCarracosta = fullNames.some(n => n.toLowerCase().includes('carracosta'));
+    const hasIronHands = fullNames.some(n => n.toLowerCase().includes('iron hands') || n.toLowerCase().includes('ironhands'));
 
-    // Caso Especial: O time de Chuva de Megas do Usuário
-    if (hasPelipper && (hasOverqwil || hasRelicanth) && (hasAggron || hasSinistcha || hasTogekiss)) {
+    // Caso Especial: O time RainRoom Híbrido do Usuário
+    if (hasPelipper && hasSinistcha && hasTogekiss && hasCarracosta && hasIronHands) {
       const vA = validateModeA(fullTeam, locale);
       const vB = validateModeB(fullTeam, locale);
       const vC = validateModeC(fullTeam, locale);
 
       const modeA = {
-        name: locale === 'pt-BR' ? 'Pressão sob Chuva Ofensiva (Swift Swim Sweep)' : 'Offensive Swift Swim Sweep',
+        name: locale === 'pt-BR' ? 'Inversão sob Trick Room (Lead Sinistcha + Iron Hands)' : 'Trick Room Setup Mode',
         roleLabel: locale === 'pt-BR' ? 'Modo Principal (Modo A)' : 'Primary Mode (Mode A)',
         score: vA.score,
         errors: vA.errors,
         strategy: locale === 'pt-BR'
-          ? `Abertura: Pelipper + Overqwil (ou Relicanth). O objetivo é ativar a chuva (Drizzle) e pressionar imediatamente com golpes potentes de água (como Liquidation ou Wave Crash) aproveitando a velocidade dobrada do Swift Swim. Use Tailwind com Pelipper apenas se o oponente possuir controle de velocidade concorrente, e mantenha Hurricane e Weather Ball ativos para enfraquecer counters de Grass/Fighting.`
-          : `Lead: Pelipper + Overqwil (or Relicanth). The goal is to set rain (Drizzle) and apply high immediate pressure with water attacks (like Liquidation or Wave Crash) leveraging the doubled Swift Swim speed. Only set Tailwind if the opponent has speed control, keeping Hurricane/Weather Ball active to weaken Grass/Fighting counters.`
+          ? `Abertura: Sinistcha + Iron Hands. Iron Hands utiliza Fake Out no primeiro turno para travar um oponente perigoso, mitigando flinch ou sono e dando espaço seguro para Sinistcha ativar o Trick Room. Uma vez invertida a velocidade, Iron Hands ataca com Drain Punch ou Wild Charge, e Sinistcha oferece suporte com Rage Powder. Carracosta ou Mega Aggron entram posteriormente como atacantes pesados.`
+          : `Lead: Sinistcha + Iron Hands. Iron Hands uses Fake Out on turn one to create a safe window for Sinistcha to setup Trick Room. Once speed is reversed, Iron Hands strikes with Drain Punch/Wild Charge under Rage Powder redirection. Carracosta or Mega Aggron clean up from the bench.`
       };
 
       const modeB = {
-        name: locale === 'pt-BR' ? 'Aggron sob Controle Defensivo (Trick Room Mode)' : 'Defensive Trick Room & Pivot Mode',
+        name: locale === 'pt-BR' ? 'Redirecionamento sob TR (Lead Togekiss + Sinistcha)' : 'Double Support Trick Room Mode',
         roleLabel: locale === 'pt-BR' ? 'Modo Alternativo (Modo B)' : 'Alternative Mode (Mode B)',
         score: vB.score,
         errors: vB.errors,
         strategy: locale === 'pt-BR'
-          ? `Abertura: Sinistcha + Aggron-Mega. Usado contra equipes de alta velocidade ou quando a chuva pura é neutralizada. Sinistcha oferece suporte vital com Rage Powder para redirecionar ataques, ou ativa o Trick Room para inverter a ordem de velocidade. A entrada em campo de Sinistcha ativa a habilidade Hospitality, restaurando parte da vida de Aggron-Mega em reposicionamentos estratégicos (pivot), permitindo que ele bata pesado com Heavy Slam e Body Press sob a proteção da chuva (que reduz seu dano de fogo).`
-          : `Lead: Sinistcha + Aggron-Mega. Used against fast teams or when weather setup is neutralized. Sinistcha provides crucial support with Rage Powder or sets Trick Room to reverse speed. Switching Sinistcha in triggers Hospitality, recovering Aggron-Mega on strategic pivots so it can strike with Heavy Slam/Body Press protected by rain (which cuts fire damage).`
+          ? `Abertura: Togekiss + Sinistcha. Togekiss utiliza Follow Me para redirecionar golpes de alvo único (com Safety Goggles protegendo Togekiss contra golpes de pó e permitindo que atue de forma segura perante Spore e Rage Powder do oponente), garantindo a ativação do Trick Room por Sinistcha. Após a inversão, um dos suportes recua para a entrada segura de Mega Aggron ou Carracosta.`
+          : `Lead: Togekiss + Sinistcha. Togekiss uses Follow Me to redirect single-target hits (with Safety Goggles protecting against powder sleep and ignoring Rage Powder), ensuring Sinistcha sets Trick Room. After speed is reversed, pivot into Mega Aggron or Carracosta.`
       };
 
       const modeC = {
-        name: locale === 'pt-BR' ? 'Redirecionamento e Suporte Ofensivo (Helping Hand Support)' : 'Redirection & Helping Hand Support',
-        roleLabel: locale === 'pt-BR' ? 'Modo de Suporte (Modo C)' : 'Support Mode (Mode C)',
+        name: locale === 'pt-BR' ? 'Rota Alternativa de Chuva (Lead Pelipper + Carracosta)' : 'Rain Transition Mode',
+        roleLabel: locale === 'pt-BR' ? 'Modo de Chuva (Modo C)' : 'Rain Mode (Mode C)',
         score: vC.score,
         errors: vC.errors,
         strategy: locale === 'pt-BR'
-          ? `Abertura: Togekiss + Overqwil (ou Aggron-Mega). Foca em proteger um atacante de grande impacto contra ameaças de alvo único. Togekiss usa Follow Me para redirecionar golpes, enquanto Safety Goggles protege Togekiss contra golpes de pó (como Spore) e permite que ele atue com mais segurança diante de usuários de Spore e Rage Powder. Aumenta o alcance dos nocautes com Helping Hand. Ideal contra equipes sem alto dano em área.`
-          : `Lead: Togekiss + Overqwil (or Aggron-Mega). Focuses on protecting a single heavy hitter. Togekiss uses Follow Me, while Safety Goggles protects Togekiss against powder moves (like Spore) allowing it to act safely in front of Spore and Rage Powder users. Boosts damage with Helping Hand. Best against teams without strong spread damage.`
+          ? `Abertura: Pelipper + Carracosta. Usado quando o Trick Room não for adequado. Pelipper ativa chuva (Drizzle) e pode usar Wide Guard para anular ataques spread adversários ou configurar Tailwind. Carracosta ataca sob a chuva. Observação: Neste modo híbrido, atente-se à velocidade de Carracosta para evitar que o aumento de velocidade por Swift Swim conflite com um Trick Room ativo.`
+          : `Lead: Pelipper + Carracosta. Used when Trick Room is not favored. Pelipper sets rain (Drizzle) and utilizes Wide Guard or Tailwind. Carracosta sweeps. Note: Beware of Carracosta speed values under rain to avoid speed conflicts if Trick Room is active.`
       };
 
       return [modeA, modeB, modeC];

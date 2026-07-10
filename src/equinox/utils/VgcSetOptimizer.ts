@@ -733,6 +733,13 @@ const CURATED_VGC_SETS: Record<string, CuratedVgcSet> = {
     role: 'Redirection / Helping Hand Support',
     moves: ['Follow Me', 'Helping Hand', 'Dazzling Gleam', 'Protect'],
   },
+  carracosta: {
+    ability: 'Solid Rock',
+    item: 'Sitrus Berry',
+    nature: 'Relaxed',
+    role: 'Trick Room Physical Sweeper',
+    moves: ['Liquidation', 'Rock Slide', 'High Horsepower', 'Protect'],
+  },
 };
 
 export function isMegaStone(item?: string | null): boolean {

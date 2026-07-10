@@ -308,6 +308,11 @@ export const VGC_ARCHETYPE_BLUEPRINTS: Record<VgcArchetypeId, VgcArchetypeBluepr
     critical: [slot('trick_room_setter', 'setter de Trick Room', 1, 1, true), slot('trick_room_abuser', 'abuser lento de Trick Room', 2, 1, true), slot('weather_setter_sun', 'setter de sol', 1, 0.9, true), slot('weather_abuser_sun_primary', 'abuser primário de sol', 1, 0.8, true), slot('trick_room_protection', 'proteção para Trick Room', 1, 0.85, true)],
     important: [slot('premium_redirection', 'redirection premium', 1, 0.75), slot('physical_damage', 'pressão física', 1, 0.55), slot('special_damage', 'pressão especial', 1, 0.55), slot('defensive_glue', 'cola defensiva', 1, 0.5)],
   },
+  rain_trick_room: {
+    id: 'rain_trick_room', label: 'RainRoom',
+    critical: [slot('trick_room_setter', 'setter de Trick Room', 1, 1, true), slot('trick_room_abuser', 'abuser lento de Trick Room', 2, 1, true), slot('weather_setter_rain', 'setter de chuva', 1, 0.9, true), slot('trick_room_protection', 'proteção para Trick Room', 1, 0.85, true)],
+    important: [slot('premium_redirection', 'redirection premium', 1, 0.75), slot('physical_damage', 'pressão física', 1, 0.55), slot('special_damage', 'pressão especial', 1, 0.55), slot('defensive_glue', 'cola defensiva', 1, 0.5)],
+  },
   rain_offense: {
     id: 'rain_offense', label: 'Rain Offense',
     critical: [slot('weather_setter_rain', 'setter de chuva', 1, 1, true), slot('weather_abuser_rain_primary', 'abuser de chuva', 2, 1, true), slot('speed_control', 'controle de velocidade', 1, 0.8, true), slot('turn_control', 'controle de turno', 1, 0.75, true)],
@@ -550,7 +555,7 @@ export function evaluateVgcSetQuality(
   return { score, warnings, hardFailures };
 }
 
-const TRICK_ROOM_ARCHETYPES: VgcArchetypeId[] = ['hard_trick_room', 'sun_trick_room', 'psychic_terrain_trick_room'];
+const TRICK_ROOM_ARCHETYPES: VgcArchetypeId[] = ['hard_trick_room', 'sun_trick_room', 'psychic_terrain_trick_room', 'rain_trick_room'];
 
 function isTrickRoomBlueprint(archetype: VgcArchetypeId): boolean {
   return TRICK_ROOM_ARCHETYPES.includes(archetype);
