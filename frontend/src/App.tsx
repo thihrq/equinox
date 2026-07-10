@@ -266,7 +266,7 @@ export default function App() {
 
         <form className="eq-builder-panel" onSubmit={analyzeTeam}>
           {/* 1. Escolha de Regras e Formato (No Topo da Sidebar, Colapsável) */}
-          <details className="eq-builder-disclosure" open style={{ marginBottom: '16px' }}>
+          <details className="eq-builder-disclosure" style={{ marginBottom: '16px' }}>
             <summary style={{ padding: '12px 16px' }}>
               <span style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-start' }}>
                 <strong style={{ fontSize: '15px', fontWeight: 900 }}>{t(locale, 'sidebarFormat')}</strong>
@@ -402,42 +402,18 @@ export default function App() {
 
           {error && <p className="eq-error-message" role="alert" style={{ marginBottom: '22px' }}>{error}</p>}
 
-          {/* 3. Direção da Equipe / Identidade (Na Parte Inferior da Sidebar, Colapsável) */}
-          <details className="eq-builder-disclosure" open style={{ marginTop: '16px' }}>
-            <summary style={{ padding: '12px 16px' }}>
-              <span style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-start' }}>
-                <strong style={{ fontSize: '15px', fontWeight: 900 }}>{t(locale, 'sidebarIdentity')}</strong>
-                <small>{t(locale, 'advancedIdentityHint')}</small>
-              </span>
-            </summary>
-            <div className="eq-builder-disclosure__body" style={{ padding: '16px' }}>
-              <div className="eq-identity-panel-flat" style={{ display: 'grid', gap: '12px' }}>
-                <button
-                  className={`eq-modern-toggle ${allowLegendaries ? 'is-active' : ''}`}
-                  type="button"
-                  onClick={() => setAllowLegendaries(!allowLegendaries)}
-                  style={{ minHeight: '44px' }}
-                >
-                  <span>{t(locale, 'allowLegendaries')}</span>
-                  <i />
-                </button>
-
-                <div className="eq-identity-picker">
-                  {identityOptions.map(option => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      className={teamIdentity === option.value ? 'is-active' : ''}
-                      onClick={() => setTeamIdentity(option.value)}
-                    >
-                      <strong>{option.label}</strong>
-                      <span>{option.short}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </details>
+          {/* 3. Permitir Lendários (Fixo na Parte Inferior da Sidebar) */}
+          <div style={{ marginTop: '16px' }}>
+            <button
+              className={`eq-modern-toggle ${allowLegendaries ? 'is-active' : ''}`}
+              type="button"
+              onClick={() => setAllowLegendaries(!allowLegendaries)}
+              style={{ minHeight: '44px', width: '100%' }}
+            >
+              <span>{t(locale, 'allowLegendaries')}</span>
+              <i />
+            </button>
+          </div>
         </form>
 
         <div className="eq-sidebar-poem">
