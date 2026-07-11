@@ -496,7 +496,7 @@ const CURATED_VGC_SETS: Record<string, CuratedVgcSet> = {
   },
   basculegion: {
     ability: 'Swift Swim',
-    item: 'Spell Tag',
+    item: 'Clear Amulet',
     nature: 'Adamant',
     role: 'Rain Physical Cleaner / Priority',
     moves: ['Wave Crash', 'Last Respects', 'Aqua Jet', 'Protect'],
@@ -739,6 +739,20 @@ const CURATED_VGC_SETS: Record<string, CuratedVgcSet> = {
     nature: 'Relaxed',
     role: 'Trick Room Physical Sweeper',
     moves: ['Liquidation', 'Rock Slide', 'High Horsepower', 'Protect'],
+  },
+  basculegionm: {
+    ability: 'Swift Swim',
+    item: 'Clear Amulet',
+    nature: 'Adamant',
+    role: 'Rain Physical Cleaner / Priority',
+    moves: ['Wave Crash', 'Last Respects', 'Aqua Jet', 'Protect'],
+  },
+  hydreigon: {
+    ability: 'Levitate',
+    item: 'Life Orb',
+    nature: 'Modest',
+    role: 'Special Damage / Ground Immunity',
+    moves: ['Draco Meteor', 'Dark Pulse', 'Earth Power', 'Protect'],
   },
 };
 

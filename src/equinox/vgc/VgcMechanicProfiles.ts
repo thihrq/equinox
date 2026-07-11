@@ -579,7 +579,8 @@ export function getVgcMechanicProfile(nameOrPokemon?: string | PokemonData | nul
 
   if (!rawName) return undefined;
 
-  const direct = PROFILE_BY_ALIAS.get(normalize(rawName));
+  const norm = normalize(rawName);
+  const direct = PROFILE_BY_ALIAS.get(norm);
   if (direct) return direct;
 
   const base = getMegaBaseName(rawName);
@@ -587,7 +588,20 @@ export function getVgcMechanicProfile(nameOrPokemon?: string | PokemonData | nul
   if (baseProfile) return baseProfile;
 
   const speciesKey = getSpeciesClauseKey(rawName);
-  return PROFILE_BY_ALIAS.get(speciesKey);
+  const specProfile = PROFILE_BY_ALIAS.get(speciesKey);
+  if (specProfile) return specProfile;
+
+  // Fallback de gênero (ex: basculegionm -> basculegion)
+  if (norm.endsWith('m') && norm.length > 2) {
+    const genderFallback = PROFILE_BY_ALIAS.get(norm.slice(0, -1));
+    if (genderFallback) return genderFallback;
+  }
+  if (norm.endsWith('f') && norm.length > 2) {
+    const genderFallback = PROFILE_BY_ALIAS.get(norm.slice(0, -1));
+    if (genderFallback) return genderFallback;
+  }
+
+  return undefined;
 }
 
 export function getVgcMechanicTags(nameOrPokemon?: string | PokemonData | null): VgcMechanicTag[] {
