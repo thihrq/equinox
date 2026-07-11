@@ -17,10 +17,12 @@ export function ExportTeam({ team, locale }: ExportTeamProps) {
         const itemSuffix = p.item && p.item !== 'Nenhum' && p.item !== 'None' ? ` @ ${p.item}` : '';
         const ability = p.ability && p.ability !== 'Nenhum' && p.ability !== 'None' ? `Ability: ${p.ability}\n` : '';
         const nature = p.nature ? `${p.nature} Nature\n` : '';
+        const isTrNature = p.nature && ['relaxed', 'brave', 'quiet', 'sassy'].includes(p.nature.toLowerCase());
+        const ivs = isTrNature ? 'IVs: 0 Spe\n' : '';
         const moves = p.moves && p.moves.length > 0
           ? p.moves.map(m => `- ${m}`).join('\n') + '\n'
           : '';
-        return `${p.name}${itemSuffix}\n${ability}${nature}${moves}`;
+        return `${p.name}${itemSuffix}\n${ability}${nature}${ivs}${moves}`;
       })
       .join('\n');
   };
