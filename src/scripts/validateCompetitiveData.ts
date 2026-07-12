@@ -35,7 +35,13 @@ assert(invalid.errors.some(error => error.code === 'MISSING_REGULATION'), 'Struc
 assert(invalid.errors.some(error => error.code === 'MISSING_FORM'), 'Structure validator must require form.');
 assert(invalid.errors.some(error => error.code === 'INVALID_MOVE_COUNT'), 'Structure validator must require exactly four moves.');
 assert(pilotManifest.recordCount === pilotSets.sets.length, 'Pilot manifest recordCount must match sets.json.');
-assert(pilotManifest.status === 'draft', 'Pilot package must remain draft.');
+assert(pilotManifest.status === 'reviewed', 'Pilot package must be reviewed before staging publish.');
+assert(pilotManifest.reviewState === 'staging-ready', 'Pilot package must be marked staging-ready.');
+assert(pilotManifest.reviewedCount === pilotSets.sets.length, 'All pilot records must be reviewed before staging publish.');
+assert(pilotManifest.verifiedCount === 0, 'Pilot package must not promote records to verified during staging readiness.');
+assert(pilotManifest.activeCount === 0, 'Pilot package must not promote records to active during staging readiness.');
+assert(pilotManifest.draftCount === 0, 'Pilot package must not retain draft records before staging publish.');
+assert(pilotSets.sets.every(set => set.status === 'reviewed'), 'All pilot sets must be reviewed before staging publish.');
 assert(pilotSets.sets.every(set => set.regulationId === pilotManifest.regulationId), 'Pilot sets must match manifest regulationId.');
 
 async function runFilesystemSourceCheck(): Promise<void> {

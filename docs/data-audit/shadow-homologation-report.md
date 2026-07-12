@@ -63,14 +63,13 @@ Showdown, plain text and JSON exports are generated from the same `CompetitivePo
 
 ## Current Gate Result
 
-Phase 3 is approved for shadow validation only.
+Phase 3 approved the package for shadow validation only. Fase 4 later completed reviewed-set curation for staging readiness.
 
 The following gates remain blocked:
 
-- staging publish
 - production activation
 - promotion to `verified`
 - promotion to `active`
 - verified competitive label
 
-The main reason is expected: the pilot still has four `reviewed` sets, zero `verified` sets and five draft records in the package.
+The main reason is expected: the pilot has reviewed records only, zero `verified` sets and zero `active` sets.
