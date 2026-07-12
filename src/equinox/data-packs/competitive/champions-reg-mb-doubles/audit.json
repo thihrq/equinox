@@ -5,10 +5,24 @@
   "battleStyle": "doubles",
   "dataVersion": "2026.07.1",
   "status": "draft",
-  "reviewState": "pilot-draft",
+  "reviewState": "partial-reviewed",
   "recordCount": 9,
   "notes": [
-    "Initial pilot package. No set is promoted to active until structure, legality, coherence, freshness, duplicate, coverage and human review checks pass.",
-    "Package is approved for offline validation and shadow comparison only."
-  ]
+    "Fase 2 curation started: four priority sets were promoted to reviewed for shadow Team Builder validation only.",
+    "No set is verified or active. Package remains blocked for staging and production.",
+    "Reviewed priority sets: Sinistcha Trick Room, Aggron-Mega slow breaker, Ursaluna-Bloodmoon slow special breaker, Incineroar bulky pivot."
+  ],
+  "reviewedSets": 4,
+  "verifiedSets": 0,
+  "activeSets": 0,
+  "draftSets": 5,
+  "gates": {
+    "structure": "passed",
+    "legality": "passed",
+    "coherence": "passed",
+    "coverage": "passed",
+    "humanReview": "partial",
+    "staging": "blocked-draft-records-present",
+    "production": "blocked"
+  }
 }

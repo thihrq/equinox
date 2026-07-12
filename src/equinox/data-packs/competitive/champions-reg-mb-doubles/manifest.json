@@ -5,9 +5,16 @@
   "battleStyle": "doubles",
   "dataVersion": "2026.07.1",
   "regulationId": "champions_reg_m_b_doubles",
-  "sourceIds": ["equinox-curated-champions-mb-doubles"],
+  "sourceIds": [
+    "equinox-curated-champions-mb-doubles"
+  ],
   "recordCount": 9,
   "contentHash": "",
   "generatedAt": "2026-07-12T00:00:00.000Z",
-  "status": "draft"
+  "status": "draft",
+  "reviewState": "partial-reviewed",
+  "reviewedCount": 4,
+  "verifiedCount": 0,
+  "activeCount": 0,
+  "draftCount": 5
 }

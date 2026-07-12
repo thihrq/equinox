@@ -51,6 +51,11 @@ export function calculateTeamDataCoverage(team: PokemonData[]): TeamDataCoverage
     coverage.notes.push('Unknown set sources prevent a verified competitive label.');
   }
 
+  if (coverage.verifiedSets < team.length) {
+    coverage.verifiedCompetitiveLabel = false;
+    coverage.notes.push('Only fully verified or active sets can receive a verified competitive label.');
+  }
+
   if (coverage.generatedFallbacks >= 3) {
     coverage.competitiveIndexCap = Math.min(coverage.competitiveIndexCap, 65);
     coverage.notes.push('Three or more generated fallbacks cap the competitive index at 65.');
@@ -65,7 +70,7 @@ export function calculateTeamDataCoverage(team: PokemonData[]): TeamDataCoverage
     coverage.confidenceScore,
     Math.max(0, Math.round(
       coverage.verifiedSets * 16 +
-      coverage.reviewedSets * 13 +
+      coverage.reviewedSets * 14 +
       coverage.draftSets * 10 +
       coverage.legacyFallbacks * 7 +
       coverage.generatedFallbacks * 4,
