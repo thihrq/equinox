@@ -8,6 +8,7 @@ export interface ScoreBreakdown {
   meta: number;
   threats: number;
   cores: number;
+  synergy: number;
   total: number;
 }
 
@@ -21,6 +22,7 @@ export function createEmptyScore(): ScoreBreakdown {
     meta: 0,
     threats: 0,
     cores: 0,
+    synergy: 0,
     total: 0,
   };
 }

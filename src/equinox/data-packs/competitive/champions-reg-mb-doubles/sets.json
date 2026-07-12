@@ -1,0 +1,572 @@
+{
+  "sets": [
+    {
+      "pokemonId": "sinistcha",
+      "pokemonName": "Sinistcha",
+      "formId": "sinistcha",
+      "formatId": "champions_reg_m_b_doubles",
+      "regulationId": "champions_reg_m_b_doubles",
+      "battleStyle": "doubles",
+      "setId": "sinistcha-bulky-trick-room-setter-draft",
+      "setName": "Bulky Trick Room Setter",
+      "item": "Sitrus Berry",
+      "ability": "Hospitality",
+      "nature": "Sassy",
+      "evs": {
+        "hp": 252,
+        "atk": 0,
+        "def": 100,
+        "spa": 0,
+        "spd": 156,
+        "spe": 0
+      },
+      "ivs": {
+        "hp": 31,
+        "atk": 0,
+        "def": 31,
+        "spa": 31,
+        "spd": 31,
+        "spe": 0
+      },
+      "moves": [
+        "Trick Room",
+        "Rage Powder",
+        "Matcha Gotcha",
+        "Protect"
+      ],
+      "primaryRole": "trick-room-setter",
+      "secondaryRoles": [
+        "redirection-support"
+      ],
+      "archetypes": [
+        "trick-room",
+        "balance"
+      ],
+      "synergyTags": [
+        "redirection",
+        "room"
+      ],
+      "sourceId": "equinox-curated-champions-mb-doubles",
+      "sourceType": "curated",
+      "sourceUpdatedAt": "2026-07-12",
+      "confidence": 84,
+      "status": "reviewed",
+      "dataVersion": "2026.07.1",
+      "coherenceScore": 88,
+      "humanReview": {
+        "reviewedBy": "Equinox technical curation pass",
+        "reviewedAt": "2026-07-12",
+        "reviewResult": "approved-for-shadow-reviewed",
+        "reviewScope": "Fase 2.1/2.2 pilot curation; not verified, not active, not authorized for staging.",
+        "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
+        "teamBuilderReview": "Approved for shadow Team Builder coverage in the Sinistcha + Aggron-Mega homologation case.",
+        "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
+        "reviewerNotes": "Approved as the primary Trick Room setter. 0 Spe IV, Rage Powder and Protect support the intended slow balance plan.",
+        "spreadJustification": "252 HP with mixed bulk and 0 Spe IV preserves Trick Room pacing while keeping redirection usable before setup.",
+        "limitations": "Still requires matchup testing before verified because item choice may vary between Sitrus Berry and Mental Herb.",
+        "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
+      }
+    },
+    {
+      "pokemonId": "sinistcha",
+      "pokemonName": "Sinistcha",
+      "formId": "sinistcha",
+      "formatId": "champions_reg_m_b_doubles",
+      "regulationId": "champions_reg_m_b_doubles",
+      "battleStyle": "doubles",
+      "setId": "sinistcha-redirection-support-draft",
+      "setName": "Bulky Redirection Support",
+      "item": "Rocky Helmet",
+      "ability": "Hospitality",
+      "nature": "Bold",
+      "evs": {
+        "hp": 252,
+        "atk": 0,
+        "def": 180,
+        "spa": 0,
+        "spd": 76,
+        "spe": 0
+      },
+      "ivs": {
+        "hp": 31,
+        "atk": 0,
+        "def": 31,
+        "spa": 31,
+        "spd": 31,
+        "spe": 31
+      },
+      "moves": [
+        "Rage Powder",
+        "Life Dew",
+        "Matcha Gotcha",
+        "Protect"
+      ],
+      "primaryRole": "redirection-support",
+      "secondaryRoles": [
+        "bulky-pivot"
+      ],
+      "archetypes": [
+        "balance",
+        "setup"
+      ],
+      "synergyTags": [
+        "redirection",
+        "healing"
+      ],
+      "sourceId": "equinox-curated-champions-mb-doubles",
+      "sourceType": "curated",
+      "sourceUpdatedAt": "2026-07-12",
+      "confidence": 78,
+      "status": "draft",
+      "dataVersion": "2026.07.1",
+      "humanReview": {
+        "reviewedBy": "Equinox technical curation pass",
+        "reviewedAt": "2026-07-12",
+        "reviewResult": "kept-draft",
+        "reviewerNotes": "Structure, legality and coherence validators pass, but this set was not part of the four-set priority gate.",
+        "nextGate": "Needs role, spread, item and matchup review before draft -> reviewed."
+      }
+    },
+    {
+      "pokemonId": "aggron",
+      "pokemonName": "Aggron-Mega",
+      "formId": "aggronmega",
+      "formatId": "champions_reg_m_b_doubles",
+      "regulationId": "champions_reg_m_b_doubles",
+      "battleStyle": "doubles",
+      "setId": "aggronmega-slow-physical-breaker-draft",
+      "setName": "Slow Physical Breaker",
+      "item": "Aggronite",
+      "ability": "Filter",
+      "nature": "Brave",
+      "evs": {
+        "hp": 252,
+        "atk": 252,
+        "def": 4,
+        "spa": 0,
+        "spd": 0,
+        "spe": 0
+      },
+      "ivs": {
+        "hp": 31,
+        "atk": 31,
+        "def": 31,
+        "spa": 31,
+        "spd": 31,
+        "spe": 0
+      },
+      "moves": [
+        "Heavy Slam",
+        "Rock Slide",
+        "Stomping Tantrum",
+        "Protect"
+      ],
+      "primaryRole": "slow-physical-breaker",
+      "secondaryRoles": [
+        "primary-win-condition"
+      ],
+      "archetypes": [
+        "trick-room",
+        "balance"
+      ],
+      "synergyTags": [
+        "mega",
+        "slow-attacker"
+      ],
+      "sourceId": "equinox-curated-champions-mb-doubles",
+      "sourceType": "curated",
+      "sourceUpdatedAt": "2026-07-12",
+      "confidence": 82,
+      "status": "reviewed",
+      "dataVersion": "2026.07.1",
+      "coherenceScore": 86,
+      "humanReview": {
+        "reviewedBy": "Equinox technical curation pass",
+        "reviewedAt": "2026-07-12",
+        "reviewResult": "approved-for-shadow-reviewed",
+        "reviewScope": "Fase 2.1/2.2 pilot curation; not verified, not active, not authorized for staging.",
+        "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
+        "teamBuilderReview": "Approved for shadow Team Builder coverage in the Sinistcha + Aggron-Mega homologation case.",
+        "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
+        "reviewerNotes": "Approved as the slow physical breaker for the pilot lead case. Brave nature, 0 Spe IV and Aggronite match Trick Room pressure.",
+        "spreadJustification": "Max HP and max Atk prioritizes immediate damage and survivability under Trick Room.",
+        "limitations": "Coverage is intentionally conservative; Stomping Tantrum slot needs matchup validation before verified.",
+        "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
+      }
+    },
+    {
+      "pokemonId": "aggron",
+      "pokemonName": "Aggron-Mega",
+      "formId": "aggronmega",
+      "formatId": "champions_reg_m_b_doubles",
+      "regulationId": "champions_reg_m_b_doubles",
+      "battleStyle": "doubles",
+      "setId": "aggronmega-body-press-defensive-attacker-draft",
+      "setName": "Body Press Defensive Attacker",
+      "item": "Aggronite",
+      "ability": "Filter",
+      "nature": "Impish",
+      "evs": {
+        "hp": 252,
+        "atk": 4,
+        "def": 252,
+        "spa": 0,
+        "spd": 0,
+        "spe": 0
+      },
+      "ivs": {
+        "hp": 31,
+        "atk": 31,
+        "def": 31,
+        "spa": 31,
+        "spd": 31,
+        "spe": 31
+      },
+      "moves": [
+        "Iron Defense",
+        "Body Press",
+        "Heavy Slam",
+        "Protect"
+      ],
+      "primaryRole": "physical-wall",
+      "secondaryRoles": [
+        "secondary-win-condition"
+      ],
+      "archetypes": [
+        "balance",
+        "trick-room"
+      ],
+      "synergyTags": [
+        "mega",
+        "body-press"
+      ],
+      "sourceId": "equinox-curated-champions-mb-doubles",
+      "sourceType": "generated",
+      "sourceUpdatedAt": "2026-07-12",
+      "confidence": 76,
+      "status": "draft",
+      "dataVersion": "2026.07.1",
+      "humanReview": {
+        "reviewedBy": "Equinox technical curation pass",
+        "reviewedAt": "2026-07-12",
+        "reviewResult": "kept-draft",
+        "reviewerNotes": "Structure, legality and coherence validators pass, but this set was not part of the four-set priority gate.",
+        "nextGate": "Needs role, spread, item and matchup review before draft -> reviewed."
+      }
+    },
+    {
+      "pokemonId": "incineroar",
+      "pokemonName": "Incineroar",
+      "formId": "incineroar",
+      "formatId": "champions_reg_m_b_doubles",
+      "regulationId": "champions_reg_m_b_doubles",
+      "battleStyle": "doubles",
+      "setId": "incineroar-bulky-slow-pivot-draft",
+      "setName": "Bulky Slow Pivot",
+      "item": "Safety Goggles",
+      "ability": "Intimidate",
+      "nature": "Careful",
+      "evs": {
+        "hp": 252,
+        "atk": 4,
+        "def": 76,
+        "spa": 0,
+        "spd": 176,
+        "spe": 0
+      },
+      "ivs": {
+        "hp": 31,
+        "atk": 31,
+        "def": 31,
+        "spa": 31,
+        "spd": 31,
+        "spe": 31
+      },
+      "moves": [
+        "Fake Out",
+        "Parting Shot",
+        "Knock Off",
+        "Flare Blitz"
+      ],
+      "primaryRole": "bulky-pivot",
+      "secondaryRoles": [
+        "fake-out-control"
+      ],
+      "archetypes": [
+        "balance",
+        "trick-room"
+      ],
+      "synergyTags": [
+        "intimidate",
+        "pivot"
+      ],
+      "sourceId": "equinox-curated-champions-mb-doubles",
+      "sourceType": "curated",
+      "sourceUpdatedAt": "2026-07-12",
+      "confidence": 83,
+      "status": "reviewed",
+      "dataVersion": "2026.07.1",
+      "coherenceScore": 87,
+      "humanReview": {
+        "reviewedBy": "Equinox technical curation pass",
+        "reviewedAt": "2026-07-12",
+        "reviewResult": "approved-for-shadow-reviewed",
+        "reviewScope": "Fase 2.1/2.2 pilot curation; not verified, not active, not authorized for staging.",
+        "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
+        "teamBuilderReview": "Approved for shadow Team Builder coverage in the Sinistcha + Aggron-Mega homologation case.",
+        "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
+        "reviewerNotes": "Approved as Fake Out, Intimidate and Parting Shot glue for balanced doubles teams.",
+        "spreadJustification": "HP and special bulk support repeated pivoting while preserving enough physical bulk for Intimidate cycles.",
+        "limitations": "Safety Goggles is strong into redirection/spore fields but item may change after broader meta review.",
+        "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
+      }
+    },
+    {
+      "pokemonId": "incineroar",
+      "pokemonName": "Incineroar",
+      "formId": "incineroar",
+      "formatId": "champions_reg_m_b_doubles",
+      "regulationId": "champions_reg_m_b_doubles",
+      "battleStyle": "doubles",
+      "setId": "incineroar-fast-taunt-pivot-draft",
+      "setName": "Fast Taunt Pivot",
+      "item": "Sitrus Berry",
+      "ability": "Intimidate",
+      "nature": "Jolly",
+      "evs": {
+        "hp": 180,
+        "atk": 76,
+        "def": 0,
+        "spa": 0,
+        "spd": 0,
+        "spe": 252
+      },
+      "ivs": {
+        "hp": 31,
+        "atk": 31,
+        "def": 31,
+        "spa": 31,
+        "spd": 31,
+        "spe": 31
+      },
+      "moves": [
+        "Fake Out",
+        "Taunt",
+        "Parting Shot",
+        "Flare Blitz"
+      ],
+      "primaryRole": "fake-out-control",
+      "secondaryRoles": [
+        "bulky-pivot"
+      ],
+      "archetypes": [
+        "balance",
+        "offense"
+      ],
+      "synergyTags": [
+        "intimidate",
+        "tempo"
+      ],
+      "sourceId": "equinox-curated-champions-mb-doubles",
+      "sourceType": "generated",
+      "sourceUpdatedAt": "2026-07-12",
+      "confidence": 74,
+      "status": "draft",
+      "dataVersion": "2026.07.1",
+      "humanReview": {
+        "reviewedBy": "Equinox technical curation pass",
+        "reviewedAt": "2026-07-12",
+        "reviewResult": "kept-draft",
+        "reviewerNotes": "Structure, legality and coherence validators pass, but this set was not part of the four-set priority gate.",
+        "nextGate": "Needs role, spread, item and matchup review before draft -> reviewed."
+      }
+    },
+    {
+      "pokemonId": "togekiss",
+      "pokemonName": "Togekiss",
+      "formId": "togekiss",
+      "formatId": "champions_reg_m_b_doubles",
+      "regulationId": "champions_reg_m_b_doubles",
+      "battleStyle": "doubles",
+      "setId": "togekiss-bulky-redirection-support-draft",
+      "setName": "Bulky Redirection Support",
+      "item": "Safety Goggles",
+      "ability": "Serene Grace",
+      "nature": "Calm",
+      "evs": {
+        "hp": 252,
+        "atk": 0,
+        "def": 100,
+        "spa": 0,
+        "spd": 156,
+        "spe": 0
+      },
+      "ivs": {
+        "hp": 31,
+        "atk": 0,
+        "def": 31,
+        "spa": 31,
+        "spd": 31,
+        "spe": 31
+      },
+      "moves": [
+        "Follow Me",
+        "Helping Hand",
+        "Air Slash",
+        "Protect"
+      ],
+      "primaryRole": "redirection-support",
+      "secondaryRoles": [
+        "speed-control"
+      ],
+      "archetypes": [
+        "balance",
+        "setup"
+      ],
+      "synergyTags": [
+        "redirection",
+        "support"
+      ],
+      "sourceId": "equinox-curated-champions-mb-doubles",
+      "sourceType": "generated",
+      "sourceUpdatedAt": "2026-07-12",
+      "confidence": 75,
+      "status": "draft",
+      "dataVersion": "2026.07.1",
+      "humanReview": {
+        "reviewedBy": "Equinox technical curation pass",
+        "reviewedAt": "2026-07-12",
+        "reviewResult": "kept-draft",
+        "reviewerNotes": "Structure, legality and coherence validators pass, but this set was not part of the four-set priority gate.",
+        "nextGate": "Needs role, spread, item and matchup review before draft -> reviewed."
+      }
+    },
+    {
+      "pokemonId": "ursaluna",
+      "pokemonName": "Ursaluna-Bloodmoon",
+      "formId": "ursalunabloodmoon",
+      "formatId": "champions_reg_m_b_doubles",
+      "regulationId": "champions_reg_m_b_doubles",
+      "battleStyle": "doubles",
+      "setId": "ursalunabloodmoon-slow-special-breaker-draft",
+      "setName": "Slow Special Breaker",
+      "item": "Life Orb",
+      "ability": "Mind's Eye",
+      "nature": "Quiet",
+      "evs": {
+        "hp": 252,
+        "atk": 0,
+        "def": 4,
+        "spa": 252,
+        "spd": 0,
+        "spe": 0
+      },
+      "ivs": {
+        "hp": 31,
+        "atk": 0,
+        "def": 31,
+        "spa": 31,
+        "spd": 31,
+        "spe": 0
+      },
+      "moves": [
+        "Blood Moon",
+        "Earth Power",
+        "Hyper Voice",
+        "Protect"
+      ],
+      "primaryRole": "slow-special-breaker",
+      "secondaryRoles": [
+        "primary-win-condition"
+      ],
+      "archetypes": [
+        "trick-room",
+        "balance"
+      ],
+      "synergyTags": [
+        "slow-attacker",
+        "spread"
+      ],
+      "sourceId": "equinox-curated-champions-mb-doubles",
+      "sourceType": "curated",
+      "sourceUpdatedAt": "2026-07-12",
+      "confidence": 82,
+      "status": "reviewed",
+      "dataVersion": "2026.07.1",
+      "coherenceScore": 86,
+      "humanReview": {
+        "reviewedBy": "Equinox technical curation pass",
+        "reviewedAt": "2026-07-12",
+        "reviewResult": "approved-for-shadow-reviewed",
+        "reviewScope": "Fase 2.1/2.2 pilot curation; not verified, not active, not authorized for staging.",
+        "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
+        "teamBuilderReview": "Approved for shadow Team Builder coverage in the Sinistcha + Aggron-Mega homologation case.",
+        "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
+        "reviewerNotes": "Approved as the slow special breaker and secondary win condition for Trick Room structures.",
+        "spreadJustification": "Quiet 252 HP / 252 SpA with 0 Spe IV maximizes slow special pressure under Trick Room.",
+        "limitations": "Life Orb damage tradeoff needs quartet testing before verified.",
+        "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
+      }
+    },
+    {
+      "pokemonId": "muk",
+      "pokemonName": "Muk-Alola",
+      "formId": "mukalola",
+      "formatId": "champions_reg_m_b_doubles",
+      "regulationId": "champions_reg_m_b_doubles",
+      "battleStyle": "doubles",
+      "setId": "mukalola-special-wall-draft",
+      "setName": "Special Wall",
+      "item": "Black Sludge",
+      "ability": "Poison Touch",
+      "nature": "Careful",
+      "evs": {
+        "hp": 252,
+        "atk": 4,
+        "def": 0,
+        "spa": 0,
+        "spd": 252,
+        "spe": 0
+      },
+      "ivs": {
+        "hp": 31,
+        "atk": 31,
+        "def": 31,
+        "spa": 31,
+        "spd": 31,
+        "spe": 31
+      },
+      "moves": [
+        "Knock Off",
+        "Poison Jab",
+        "Protect",
+        "Taunt"
+      ],
+      "primaryRole": "special-wall",
+      "secondaryRoles": [
+        "slow-physical-breaker"
+      ],
+      "archetypes": [
+        "balance",
+        "trick-room"
+      ],
+      "synergyTags": [
+        "dark",
+        "poison"
+      ],
+      "sourceId": "equinox-curated-champions-mb-doubles",
+      "sourceType": "generated",
+      "sourceUpdatedAt": "2026-07-12",
+      "confidence": 74,
+      "status": "draft",
+      "dataVersion": "2026.07.1",
+      "humanReview": {
+        "reviewedBy": "Equinox technical curation pass",
+        "reviewedAt": "2026-07-12",
+        "reviewResult": "kept-draft",
+        "reviewerNotes": "Structure, legality and coherence validators pass, but this set was not part of the four-set priority gate.",
+        "nextGate": "Needs role, spread, item and matchup review before draft -> reviewed."
+      }
+    }
+  ]
+}

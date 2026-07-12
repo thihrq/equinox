@@ -1,0 +1,39 @@
+name: competitive-data-quality
+
+on:
+  pull_request:
+  push:
+    branches:
+      - develop
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      EQUINOX_DATA_MODE: filesystem
+      EQUINOX_ALLOW_DATABASE_WRITES: "false"
+      MONGODB_URI: mongodb://127.0.0.1:27099/blocked
+      MONGO_URI: mongodb://127.0.0.1:27099/blocked
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --include=dev
+      - run: npm run typecheck
+      - run: npm run data-mode:test
+      - run: npm run sets:offline-guards:check
+      - run: npm run sets:structure:check
+      - run: npm run sets:legality:check
+      - run: npm run sets:coherence:check
+      - run: npm run sets:coverage:check
+      - run: npm run sets:import:dry
+      - run: npm run sets:migrate:dry
+      - run: npm run sets:shadow:compare
+      - run: npm run sets:shadow:homologate
+      - run: npm run sets:v2-shadow-selection:check
+      - run: npm run preflight
+      - run: npm run build
+      - run: git diff --check

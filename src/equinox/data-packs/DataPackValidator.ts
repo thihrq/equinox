@@ -3,6 +3,8 @@ import {
   EquinoxDataPackValidationResult,
 } from './DataPackManifest';
 import { RadicalRedDataPack } from '../radicalred/RadicalRedBossProfile';
+import { CompetitiveSetValidationInput } from '../data-validation/CompetitiveValidationTypes';
+import { validateCompetitiveSetStructure } from '../data-validation/CompetitiveSetStructureValidator';
 
 export class DataPackValidator {
   public validateManifest(manifest: Omit<EquinoxDataPackManifest, 'validation'>): EquinoxDataPackValidationResult {
@@ -73,6 +75,50 @@ export class DataPackValidator {
     }
 
     return this.result(errors, warnings);
+  }
+
+  public validateCompetitiveSetPack(records: CompetitiveSetValidationInput[]): EquinoxDataPackValidationResult {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    records.forEach((record, index) => {
+      const validation = this.validateCompetitiveSetRecord(record);
+      for (const error of validation.errors) errors.push(`set[${index}]: ${error}`);
+      for (const warning of validation.warnings) warnings.push(`set[${index}]: ${warning}`);
+    });
+
+    return this.result(errors, warnings);
+  }
+
+  public validateCompetitiveSetRecord(record: CompetitiveSetValidationInput): EquinoxDataPackValidationResult {
+    const validation = validateCompetitiveSetStructure(record);
+    return this.result(
+      validation.errors.map(error => `${error.code} ${error.path}: ${error.message}`),
+      validation.warnings.map(warning => `${warning.code} ${warning.path}: ${warning.message}`),
+    );
+  }
+
+  public validatePackCoverage(recordCount: number, expectedMinimum: number): EquinoxDataPackValidationResult {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    if (recordCount <= 0) errors.push('Competitive set pack has no records.');
+    if (recordCount < expectedMinimum) warnings.push(`Competitive set pack has ${recordCount} records, below expected minimum ${expectedMinimum}.`);
+    return this.result(errors, warnings);
+  }
+
+  public validatePackFreshness(sourceUpdatedAt?: string): EquinoxDataPackValidationResult {
+    const warnings: string[] = [];
+    if (!sourceUpdatedAt) warnings.push('Competitive set pack does not expose sourceUpdatedAt.');
+    return this.result([], warnings);
+  }
+
+  public validatePackConsistency(records: CompetitiveSetValidationInput[]): EquinoxDataPackValidationResult {
+    const warnings: string[] = [];
+    const formats = new Set(records.map(record => record.formatId).filter(Boolean));
+    const regulations = new Set(records.map(record => record.regulationId).filter(Boolean));
+    if (formats.size > 1) warnings.push(`Competitive set pack mixes formats: ${[...formats].join(', ')}.`);
+    if (regulations.size > 1) warnings.push(`Competitive set pack mixes regulations: ${[...regulations].join(', ')}.`);
+    return this.result([], warnings);
   }
 
   private result(errors: string[], warnings: string[]): EquinoxDataPackValidationResult {

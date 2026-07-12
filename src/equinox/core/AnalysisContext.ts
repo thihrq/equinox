@@ -9,6 +9,8 @@ import { FormatIntelligenceAnalysis } from '../formats/FormatIntelligence';
 import { RadicalRedGauntletAnalysis } from '../radicalred/RadicalRedBossProfile';
 import { ChampionsRegulationAnalysis } from '../champions/ChampionsRegulationProfile';
 import { EquinoxDataSourceReport } from '../data/DataSourceReport';
+import { VgcTeamPlanAnalysis } from '../vgc/VgcTeamBuilding';
+import { CompetitivePokemonSet } from '../competitive/CompetitivePokemonSet';
 
 export interface PokemonVariant {
   formatId: string;
@@ -40,6 +42,12 @@ export interface PokemonData {
   types?: string[];
   abilities?: Record<string, string>;
   competitive?: CompetitiveMetadata;
+  ability?: string;
+  item?: string;
+  moves?: string[];
+  nature?: string;
+  role?: string;
+  competitiveSet?: CompetitivePokemonSet;
 }
 
 export interface DefensiveTypeSummary {
@@ -73,6 +81,15 @@ export interface RoleAnalysis {
   roleCoverageRatio: number;
 }
 
+export interface SynergyAnalysis {
+  weatherScore: number;
+  terrainScore: number;
+  trickRoomScore: number;
+  momentumScore: number;
+  itemClauseScore: number;
+  totalSynergyScore: number;
+}
+
 export interface SpeedMemberAnalysis {
   name: string;
   baseSpeed: number;
@@ -99,6 +116,7 @@ export interface TeamAnalysis {
   offensiveCoverage?: OffensiveCoverageAnalysis;
   roles?: RoleAnalysis;
   speed?: SpeedAnalysis;
+  synergy?: SynergyAnalysis;
   threats?: ThreatAnalysis;
   meta?: MetaAnalysis;
   coach?: CoachAnalysis;
@@ -108,6 +126,7 @@ export interface TeamAnalysis {
   radicalRedGauntlet?: RadicalRedGauntletAnalysis;
   championsRegulation?: ChampionsRegulationAnalysis;
   dataSources?: EquinoxDataSourceReport;
+  vgcTeamPlan?: VgcTeamPlanAnalysis;
 }
 
 interface AnalysisContextParams {
@@ -115,6 +134,7 @@ interface AnalysisContextParams {
   selectedPokemon: PokemonData[];
   candidatePool?: PokemonData[];
   teamIdentity?: string;
+  lockedLead?: [string, string];
 }
 
 export class AnalysisContext {
@@ -122,6 +142,7 @@ export class AnalysisContext {
   public readonly selectedPokemon: PokemonData[];
   public readonly candidatePool: PokemonData[];
   public readonly teamIdentity: string;
+  public readonly lockedLead?: [string, string];
 
   public analysis: TeamAnalysis;
   public score: ScoreBreakdown;
@@ -132,6 +153,7 @@ export class AnalysisContext {
     this.selectedPokemon = params.selectedPokemon;
     this.candidatePool = params.candidatePool ?? [];
     this.teamIdentity = params.teamIdentity ?? 'balanced';
+    this.lockedLead = params.lockedLead;
 
     this.analysis = {
       defensiveMatrix: [],

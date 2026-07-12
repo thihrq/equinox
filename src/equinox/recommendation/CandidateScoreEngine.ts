@@ -4,6 +4,12 @@ import { getDamageMultiplier } from '../utils/DamageMultiplier';
 import { getPokemonTypes, getVariant } from '../utils/PokemonUtils';
 import { RadicalRedGauntletScorer } from '../radicalred/RadicalRedGauntletScorer';
 import { ChampionsRegulationScorer } from '../champions/ChampionsRegulationScorer';
+import { hasLikelyTrickRoomCoreForVgc } from '../vgc/VgcTeamBuilding';
+import { isMegaOption } from '../utils/VgcSetOptimizer';
+import type { FormatSolver } from '../format-solvers/FormatSolver';
+import { FormatSolverRegistry } from '../format-solvers/FormatSolverRegistry';
+import { evaluateFormatCandidateObjective } from '../format-solvers/FormatObjectiveGuards';
+import { resolveFormatPlan } from '../format-solvers/FormatPlanResolver';
 
 export type TeamIdentity =
   | 'balanced'
@@ -11,7 +17,12 @@ export type TeamIdentity =
   | 'hyper_offense'
   | 'stall'
   | 'speed'
-  | 'fun';
+  | 'fun'
+  | 'offensive'
+  | 'defensive'
+  | 'anti-meta'
+  | 'anti_meta'
+  | 'creative';
 
 export interface CandidateScoreResult {
   pokemon: PokemonData;
@@ -26,22 +37,45 @@ interface ScoreCandidatesParams {
   candidates: PokemonData[];
   format: string;
   teamIdentity?: TeamIdentity;
+  formatSolver?: FormatSolver;
 }
 
 export class CandidateScoreEngine {
   private readonly radicalRedScorer = new RadicalRedGauntletScorer();
   private readonly championsScorer = new ChampionsRegulationScorer();
+  private readonly solverRegistry = new FormatSolverRegistry();
 
   public scoreCandidates(params: ScoreCandidatesParams): CandidateScoreResult[] {
     const { baseTeam, candidates, format, teamIdentity = 'balanced' } = params;
+    const formatSolver = params.formatSolver ?? this.solverRegistry.getSolver(format);
 
     const baseTypes = this.getTeamTypes(baseTeam, format);
     const exposedWeaknesses = this.getExposedWeaknesses(baseTeam, format);
+    const lockedPlan = resolveFormatPlan(baseTeam, format, formatSolver.mode);
 
     return candidates
-      .map(candidate =>
-        this.scoreCandidate(candidate, baseTeam, baseTypes, exposedWeaknesses, format, teamIdentity),
-      )
+      .map(candidate => {
+        try {
+          const normalizedCandidate = formatSolver.normalizePokemonSet({
+            pokemon: candidate,
+            format,
+            preferCurated: true,
+            formatPlan: lockedPlan,
+          });
+          return this.scoreCandidate(normalizedCandidate, baseTeam, baseTypes, exposedWeaknesses, format, teamIdentity, formatSolver);
+        } catch (error) {
+          const reason = error instanceof Error ? error.message : String(error);
+          console.warn(`[Equinox] CandidateScore skipped ${candidate.name}: ${reason}`);
+          return {
+            pokemon: candidate,
+            score: -9999,
+            roles: ['Invalid Candidate Set'],
+            types: getPokemonTypes(candidate, format),
+            reasons: ['Candidato ignorado porque o set/perfil competitivo falhou na validação sistêmica.'],
+          } satisfies CandidateScoreResult;
+        }
+      })
+      .filter(result => result.score > -9000)
       .sort((a, b) => b.score - a.score);
   }
 
@@ -52,6 +86,7 @@ export class CandidateScoreEngine {
     exposedWeaknesses: string[],
     format: string,
     teamIdentity: TeamIdentity,
+    formatSolver: FormatSolver,
   ): CandidateScoreResult {
     const candidateTypes = getPokemonTypes(candidate, format);
     const roles = this.inferRoles(candidate, format);
@@ -93,12 +128,17 @@ export class CandidateScoreEngine {
     const spd = Number(stats?.spd ?? 0);
     const spe = Number(stats?.spe ?? 0);
 
-    if (spe >= 110) {
+    const baseHasLikelyTrickRoomCore = formatSolver.usesDoublesMechanicContracts && hasLikelyTrickRoomCoreForVgc(baseTeam, format);
+
+    if (!baseHasLikelyTrickRoomCore && spe >= 110) {
       score += 12;
       reasons.push('Adiciona alta velocidade');
-    } else if (spe >= 100) {
+    } else if (!baseHasLikelyTrickRoomCore && spe >= 100) {
       score += 8;
       reasons.push('Adiciona boa velocidade');
+    } else if (baseHasLikelyTrickRoomCore && spe >= 90 && teamIdentity !== 'offensive' && teamIdentity !== 'creative') {
+      score -= 12;
+      reasons.push('Velocidade alta pode disputar o plano de Trick Room');
     }
 
     for (const role of roles) {
@@ -107,6 +147,34 @@ export class CandidateScoreEngine {
         reasons.push(`Adiciona função: ${role}`);
       }
     }
+
+    score += formatSolver.adjustCandidateScore({
+      baseTeam,
+      candidate,
+      format,
+      teamIdentity,
+      currentScore: score,
+      currentRoles: roles,
+      reasons,
+    });
+
+    const objective = evaluateFormatCandidateObjective({
+      mode: formatSolver.mode,
+      baseTeam,
+      candidate,
+      format,
+    });
+
+    score += objective.score;
+    if (objective.hardFailures.length) {
+      score -= objective.hardFailures.length * 450;
+      reasons.push(...objective.hardFailures.map(failure => `Bloqueio de formato: ${failure}`));
+    }
+    if (objective.warnings.length) {
+      score -= objective.warnings.length * 35;
+      reasons.push(...objective.warnings.slice(0, 2));
+    }
+    reasons.push(...objective.reasons.slice(0, 3));
 
     const bst = this.calculateBST(candidate, format);
 
@@ -125,36 +193,19 @@ export class CandidateScoreEngine {
       bst,
       candidateName: candidate.name,
       reasons,
+      ability: candidate.ability || '',
+      types: candidateTypes,
     });
 
     score += identityBonus;
 
-    if (this.radicalRedScorer.isApplicable(format)) {
-      const gauntletFit = this.radicalRedScorer.scoreCandidate({
-        baseTeam,
-        candidate,
-        format,
-      });
+    // Dedicated FormatSolvers own the format-specific scoring now.
+    // Legacy broad scorers are intentionally not added here because they can
+    // override slot/contract decisions and reintroduce cross-format leakage.
 
-      if (gauntletFit.score !== 0) {
-        score += Math.round(gauntletFit.score * 1.65);
-      }
-
-      reasons.push(...gauntletFit.reasons);
-    }
-
-    if (this.championsScorer.isApplicable(format)) {
-      const regulationFit = this.championsScorer.scoreCandidate({
-        baseTeam,
-        candidate,
-        format,
-      });
-
-      if (regulationFit.score !== 0) {
-        score += Math.round(regulationFit.score * 1.8);
-      }
-
-      reasons.push(...regulationFit.reasons);
+    if (baseTeam.some(pokemon => isMegaOption(pokemon)) && isMegaOption(candidate)) {
+      score -= 80;
+      reasons.push('Evita segunda opção Mega no mesmo time');
     }
 
     return {
@@ -178,6 +229,8 @@ export class CandidateScoreEngine {
     bst: number;
     candidateName: string;
     reasons: string[];
+    ability: string;
+    types: string[];
   }): number {
     const {
       teamIdentity,
@@ -191,6 +244,8 @@ export class CandidateScoreEngine {
       bst,
       candidateName,
       reasons,
+      ability,
+      types,
     } = params;
 
     let bonus = 0;
@@ -304,6 +359,52 @@ export class CandidateScoreEngine {
           bonus += 4;
         }
 
+        break;
+      }
+
+      case 'offensive': {
+        if (atk >= 110 || spa >= 110) {
+          bonus += 15;
+          reasons.push('Adiciona poder ofensivo bruto');
+        }
+        if (roles.includes('Wallbreaker')) {
+          bonus += 12;
+          reasons.push('Combina com postura ofensiva');
+        }
+        break;
+      }
+
+      case 'defensive': {
+        if (hp >= 90 || def >= 95 || spd >= 95) {
+          bonus += 15;
+          reasons.push('Reforça a estrutura defensiva do time');
+        }
+        if (roles.includes('Support') || roles.includes('Pivot') || roles.includes('Special Wall') || roles.includes('Physical Wall')) {
+          bonus += 12;
+          reasons.push('Adiciona suporte utilitário ao time');
+        }
+        break;
+      }
+
+      case 'anti-meta':
+      case 'anti_meta': {
+        const abilityLower = (ability || '').toLowerCase();
+        const hasAntiMetaFeature = ['inner focus', 'defiant', 'competitive', 'clear body', 'armor tail', 'ghost'].includes(abilityLower) ||
+                                   types.some((t: string) => t.toLowerCase() === 'ghost');
+        if (hasAntiMetaFeature) {
+          bonus += 18;
+          reasons.push('Possui recursos para quebrar jogadas comuns do meta');
+        }
+        break;
+      }
+
+      case 'creative': {
+        const topMeta = ['incineroar', 'rillaboom', 'urshifu', 'flutter mane', 'amoonguss', 'pelipper', 'sinistcha', 'tornadus', 'chiyu', 'chienpao'];
+        const isOffMeta = !topMeta.includes(candidateName.toLowerCase());
+        if (isOffMeta) {
+          bonus += 18;
+          reasons.push('Escolha fora do meta-game convencional');
+        }
         break;
       }
     }

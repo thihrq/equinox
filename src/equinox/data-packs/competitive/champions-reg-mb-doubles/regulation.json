@@ -1,0 +1,11 @@
+{
+  "regulationId": "champions_reg_m_b_doubles",
+  "battleStyle": "doubles",
+  "formatId": "champions_reg_m_b_doubles",
+  "dataVersion": "2026.07.1",
+  "status": "draft",
+  "megaEvolutionAllowed": true,
+  "notes": [
+    "Draft local pilot package for validation only. Not production approved."
+  ]
+}

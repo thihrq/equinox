@@ -6,25 +6,24 @@ import { t } from './i18n/equinoxI18n';
 import { findPokemonNameSuggestions, isKnownPokemonName } from './utils/pokemonNames';
 import { getNextPokemonSpriteUrl, getPokemonSpriteUrl, getSmogonPokemonSlug } from './utils/pokemonSprites';
 import { apiPost, type ApiErrorShape } from './services/api';
-import { BattlePlanHero, CoachTimeline, SectionHeader } from './components/coach';
-import { PokemonGrid } from './components/pokemon';
+import { BattlePlanHero, SectionHeader } from './components/coach';
+import { ExportTeam, PokemonGrid } from './components/pokemon';
 import { OptionTabs, StrategySummary } from './components/strategy';
+import { LeadStrategyPanel } from './components/lead/LeadStrategyPanel';
+import type { LeadSuggestionResult } from './types/lead';
 import {
   AIBuilderDecision,
-  CandidateDiversity,
-  ChampionsRegulationPanel,
-  DataSourcePanel,
-  CoverageSpeed,
   DetailsBlock,
   ExplanationList,
-  FormatIntelligencePanel,
   MatchupAnalysis,
   RadicalRedGauntletPanel,
   ScoreBreakdownView,
   ThreatReport,
+  VgcTeamPlanPanel,
 } from './components/analysis';
 
-type FormatFamily = 'vanilla' | 'competitive' | 'radical_red' | 'champions';
+type FormatFamily = 'vanilla' | 'radical_red' | 'champions';
+type AppResult = SuggestionResponse | LeadSuggestionResult;
 
 interface PickerOption<TValue extends string = string> {
   value: TValue;
@@ -47,7 +46,6 @@ const getIdentityOptions = (locale: Locale): Array<PickerOption<TeamIdentity>> =
 
 const getFormatFamilies = (locale: Locale): Array<PickerOption<FormatFamily>> => [
   { value: 'vanilla', label: t(locale, 'formatFamilyVanilla'), short: t(locale, 'formatFamilyVanillaShort') },
-  { value: 'competitive', label: t(locale, 'formatFamilyCompetitive'), short: t(locale, 'formatFamilyCompetitiveShort') },
   { value: 'radical_red', label: t(locale, 'formatFamilyRadicalRed'), short: t(locale, 'formatFamilyRadicalRedShort') },
   { value: 'champions', label: t(locale, 'formatFamilyChampions'), short: t(locale, 'formatFamilyChampionsShort') },
 ];
@@ -80,39 +78,11 @@ const getChampionsOptions = (locale: Locale): Array<PickerOption> => [
   { value: 'champions_reg_m_b_doubles', label: t(locale, 'formatChampionsDoubles'), short: t(locale, 'formatChampionsDoublesShort') },
 ];
 
-const getCompetitiveFormatOptions = (locale: Locale): VanillaGamePickerOption[] => [
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9ou', label: '[Gen 9] OU', short: t(locale, 'showdownStandardSingles') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9ubers', label: '[Gen 9] Ubers', short: t(locale, 'showdownRestrictedSingles') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9uu', label: '[Gen 9] UU', short: t(locale, 'showdownTieredSingles') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9ru', label: '[Gen 9] RU', short: t(locale, 'showdownTieredSingles') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9nu', label: '[Gen 9] NU', short: t(locale, 'showdownTieredSingles') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9pu', label: '[Gen 9] PU', short: t(locale, 'showdownTieredSingles') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9zu', label: '[Gen 9] ZU', short: t(locale, 'showdownTieredSingles') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9lc', label: '[Gen 9] LC', short: t(locale, 'showdownLittleCup') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9monotype', label: '[Gen 9] Monotype', short: t(locale, 'showdownSpecialRules') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9cap', label: '[Gen 9] CAP', short: t(locale, 'showdownCommunityFormat') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen9anythinggoes', label: '[Gen 9] Anything Goes', short: t(locale, 'showdownOpenRules') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'gen91v1', label: '[Gen 9] 1v1', short: t(locale, 'showdownSpecialRules') },
-  { group: t(locale, 'showdownGroupSingles'), value: 'national_dex', label: 'National Dex', short: t(locale, 'formatNationalDexShort') },
-  { group: t(locale, 'showdownGroupDoubles'), value: 'gen9doublesou', label: '[Gen 9] Doubles OU', short: t(locale, 'showdownStandardDoubles') },
-  { group: t(locale, 'showdownGroupDoubles'), value: 'gen9doublesubers', label: '[Gen 9] Doubles Ubers', short: t(locale, 'showdownRestrictedDoubles') },
-  { group: t(locale, 'showdownGroupDoubles'), value: 'gen9doublesuu', label: '[Gen 9] Doubles UU', short: t(locale, 'showdownTieredDoubles') },
-  { group: t(locale, 'showdownGroupDoubles'), value: 'gen9doubleslc', label: '[Gen 9] Doubles LC', short: t(locale, 'showdownLittleCup') },
-  { group: t(locale, 'showdownGroupDoubles'), value: 'gen9vgc2025regi', label: '[Gen 9] VGC 2025 Reg I', short: t(locale, 'showdownVgc') },
-  { group: t(locale, 'showdownGroupDoubles'), value: 'gen9bssregi', label: '[Gen 9] BSS Reg I', short: t(locale, 'showdownBattleStadium') },
-  { group: t(locale, 'showdownGroupDraft'), value: 'gen9draft', label: '[Gen 9] Draft', short: t(locale, 'showdownDraft') },
-  { group: t(locale, 'showdownGroupDraft'), value: 'gen96v6doublesdraft', label: '[Gen 9] 6v6 Doubles Draft', short: t(locale, 'showdownDraft') },
-  { group: t(locale, 'showdownGroupDraft'), value: 'gen94v4doublesdraft', label: '[Gen 9] 4v4 Doubles Draft', short: t(locale, 'showdownDraft') },
-  { group: t(locale, 'showdownGroupDraft'), value: 'gen9natdexdraft', label: '[Gen 9] NatDex Draft', short: t(locale, 'showdownDraft') },
-  { group: t(locale, 'showdownGroupDraft'), value: 'gen9natdex6v6doublesdraft', label: '[Gen 9] NatDex 6v6 Doubles Draft', short: t(locale, 'showdownDraft') },
-  { group: t(locale, 'showdownGroupDraft'), value: 'gen9natdexlcdraft', label: '[Gen 9] NatDex LC Draft', short: t(locale, 'showdownDraft') },
-];
-
 const getFormatFamily = (format: string): FormatFamily => {
   if (format.startsWith('vanilla_') || format === 'vanilla') return 'vanilla';
   if (format.startsWith('champions_')) return 'champions';
   if (format === 'radical_red') return 'radical_red';
-  return 'competitive';
+  return 'champions';
 };
 
 const exampleCores = [
@@ -123,24 +93,46 @@ const exampleCores = [
 
 const teamPlaceholders = ['Ex: Charizard', 'Ex: Blastoise', 'Ex: Venusaur'];
 
+function isLeadSuggestionResult(result: AppResult | null): result is LeadSuggestionResult {
+  return !!result && 'strategies' in result && 'leadProfile' in result;
+}
+
+function isSuggestionResponse(result: AppResult | null): result is SuggestionResponse {
+  return !!result && 'topTeams' in result;
+}
+
 export default function App() {
   const [team, setTeam] = useState(['', '', '']);
   const [format, setFormat] = useState('vanilla_fire_red');
-  const [teamIdentity, setTeamIdentity] = useState<TeamIdentity>('balanced');
+  const [teamIdentity] = useState<TeamIdentity>('balanced');
   const [allowLegendaries, setAllowLegendaries] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [locale, setLocale] = useState<Locale>('pt-BR');
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
+
+  // Estados para o novo fluxo Build-Around-Lead
+  const [buildMode, setBuildMode] = useState<'complete-core' | 'build-around-lead'>('complete-core');
+  const [leadTeam, setLeadTeam] = useState<string[]>(['', '']);
+  const [activeLeadStrategyIndex, setActiveLeadStrategyIndex] = useState(0);
+  const [activeLeadQuartetIndex, setActiveLeadQuartetIndex] = useState(0);
+
+  const isLeadBuilderEnabled = import.meta.env.VITE_ENABLE_LEAD_BUILDER === 'true';
+  const handleSelectOption = (index: number) => {
+    setSelectedOptionIndex(index);
+    setTimeout(() => {
+      document.getElementById('eq-pokemon-grid-v3')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 80);
+  };
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<SuggestionResponse | null>(null);
+  const [result, setResult] = useState<AppResult | null>(null);
   const [error, setError] = useState('');
 
   const identityOptions = useMemo(() => getIdentityOptions(locale), [locale]);
   const formatFamilies = useMemo(() => getFormatFamilies(locale), [locale]);
   const vanillaGameOptions = useMemo(() => getVanillaGameOptions(locale), [locale]);
   const championsOptions = useMemo(() => getChampionsOptions(locale), [locale]);
-  const competitiveFormatOptions = useMemo(() => getCompetitiveFormatOptions(locale), [locale]);
   const activeFormatFamily = useMemo(() => getFormatFamily(format), [format]);
+  const isVgcFormat = format.toLowerCase().startsWith('champions');
   const vanillaGamesByGroup = useMemo(() => {
     return vanillaGameOptions.reduce<Record<string, VanillaGamePickerOption[]>>((groups, option) => {
       groups[option.group] = [...(groups[option.group] ?? []), option];
@@ -150,29 +142,20 @@ export default function App() {
   const selectedVanillaGame = useMemo(() => {
     return vanillaGameOptions.find(option => option.value === format);
   }, [format, vanillaGameOptions]);
-  const competitiveFormatsByGroup = useMemo(() => {
-    return competitiveFormatOptions.reduce<Record<string, VanillaGamePickerOption[]>>((groups, option) => {
-      groups[option.group] = [...(groups[option.group] ?? []), option];
-      return groups;
-    }, {});
-  }, [competitiveFormatOptions]);
-  const selectedCompetitiveFormat = useMemo(() => {
-    return competitiveFormatOptions.find(option => option.value === format);
-  }, [format, competitiveFormatOptions]);
   const selectedChampionsFormat = useMemo(() => {
     return championsOptions.find(option => option.value === format);
   }, [format, championsOptions]);
   const selectedFormatLabel = useMemo(() => {
     if (activeFormatFamily === 'vanilla') return selectedVanillaGame?.label ?? t(locale, 'formatFamilyVanilla');
-    if (activeFormatFamily === 'competitive') return selectedCompetitiveFormat?.label ?? t(locale, 'formatFamilyCompetitive');
     if (activeFormatFamily === 'champions') return selectedChampionsFormat?.label ?? t(locale, 'formatFamilyChampions');
     return t(locale, 'formatFamilyRadicalRed');
-  }, [activeFormatFamily, locale, selectedChampionsFormat, selectedCompetitiveFormat, selectedVanillaGame]);
+  }, [activeFormatFamily, locale, selectedChampionsFormat, selectedVanillaGame]);
 
   const selectedOption = useMemo(() => {
-    if (!result?.topTeams?.length) return null;
+    if (!isSuggestionResponse(result) || !result.topTeams?.length) return null;
     return result.topTeams[Math.min(selectedOptionIndex, result.topTeams.length - 1)];
   }, [result, selectedOptionIndex]);
+  const leadResult = isLeadSuggestionResult(result) ? result : null;
 
   const identityLabel = identityOptions.find(option => option.value === teamIdentity)?.label ?? 'Balance';
 
@@ -198,14 +181,11 @@ export default function App() {
 
   const handleFormatFamilyChange = (family: FormatFamily) => {
     if (family === activeFormatFamily) return;
+    setBuildMode('complete-core');
+    setResult(null);
 
     if (family === 'vanilla') {
       setFormat('vanilla_fire_red');
-      return;
-    }
-
-    if (family === 'competitive') {
-      setFormat('gen9ou');
       return;
     }
 
@@ -215,6 +195,12 @@ export default function App() {
     }
 
     setFormat('champions_reg_m_b_singles');
+  };
+
+  const handleLeadInputChange = (index: number, value: string) => {
+    const newLead = [...leadTeam];
+    newLead[index] = value;
+    setLeadTeam(newLead);
   };
 
   const formatScore = (value?: number) => {
@@ -227,12 +213,7 @@ export default function App() {
     return `${Math.round(value * 100)}%`;
   };
 
-  const formatAverageSpeed = (value?: number) => {
-    if (value === undefined || Number.isNaN(value)) return '0';
-    return value.toFixed(1);
-  };
 
-  const normalizeScore = (value: number) => Math.max(0, Math.min(100, 50 + value));
 
   const getTopExplanations = (option: TeamOption): ExplanationEntry[] => {
     return [...(option.explanations ?? [])]
@@ -254,12 +235,21 @@ export default function App() {
     return apiError.response?.data?.message || t(locale, 'serverError');
   };
 
+  const normalizeScore = (value: number) => Math.max(0, Math.min(100, 50 + value));
+
   const analyzeTeam = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (team.some(pokemon => pokemon.trim() === '')) {
-      setError(t(locale, 'fillTeamError'));
-      return;
+    if (buildMode === 'build-around-lead') {
+      if (leadTeam.some(pokemon => pokemon.trim() === '')) {
+        setError(locale === 'pt-BR' ? 'Por favor, preencha os dois Pokémon da lead.' : 'Please fill both lead Pokémon.');
+        return;
+      }
+    } else {
+      if (team.some(pokemon => pokemon.trim() === '')) {
+        setError(t(locale, 'fillTeamError'));
+        return;
+      }
     }
 
     setLoading(true);
@@ -268,14 +258,23 @@ export default function App() {
     setSelectedOptionIndex(0);
 
     try {
-      const response = await apiPost<SuggestionResponse>('/api/team/suggest', {
+      const url = buildMode === 'build-around-lead' ? '/api/team/suggest-from-lead' : '/api/team/suggest';
+      const body = buildMode === 'build-around-lead' ? {
+        lead: leadTeam.map(pokemon => ({ name: pokemon.trim() })),
+        format,
+        leadMode: 'fixed-lead',
+        allowLegendaries,
+        teamIdentity,
+        locale,
+      } : {
         team: team.map(pokemon => pokemon.trim()),
         format,
         allowLegendaries,
         teamIdentity,
         locale,
-      });
+      };
 
+      const response = await apiPost<AppResult>(url, body);
       setResult(response);
     } catch (err: unknown) {
       console.log('Error analyzing team:', err);
@@ -284,7 +283,6 @@ export default function App() {
       setLoading(false);
     }
   };
-
   return (
     <div className={`eq-app-shell eq-theme-${theme}`}>
       <aside className="eq-sidebar-v2">
@@ -303,79 +301,15 @@ export default function App() {
         </div>
 
         <form className="eq-builder-panel" onSubmit={analyzeTeam}>
-          <SectionLabel>{t(locale, 'timeBase')}</SectionLabel>
-
-          <div className="eq-team-inputs">
-            {[0, 1, 2].map(index => {
-              const sprite = getSpriteUrl(team[index]);
-              const value = team[index].trim();
-              const suggestions = findPokemonNameSuggestions(value);
-              const knownPokemon = isKnownPokemonName(value);
-
-              return (
-                <label key={index} className="eq-team-input">
-                  <span className="eq-team-slot">
-                    {sprite ? (
-                      <img
-                        src={sprite}
-                        alt={`Pokémon ${index + 1}`}
-                        onError={event => {
-                          event.currentTarget.src = getNextPokemonSpriteUrl(team[index], event.currentTarget.src);
-                        }}
-                      />
-                    ) : (
-                      index + 1
-                    )}
-                  </span>
-                  <span className="eq-team-field">
-                    <input
-                      type="text"
-                      placeholder={teamPlaceholders[index]}
-                      value={team[index]}
-                      list={`eq-pokemon-suggestions-${index}`}
-                      onChange={event => handleInputChange(index, event.target.value)}
-                    />
-                    <datalist id={`eq-pokemon-suggestions-${index}`}>
-                      {suggestions.map(name => (
-                        <option key={name} value={name} />
-                      ))}
-                    </datalist>
-                    {value && (
-                      <small className={knownPokemon ? 'is-known' : ''}>
-                        {knownPokemon ? t(locale, 'recognizedPokemon') : t(locale, 'unverifiedPokemon')}
-                      </small>
-                    )}
-                  </span>
-                </label>
-              );
-            })}
-          </div>
-
-          <div className="eq-sidebar-actions">
-            <button className="eq-generate-button" type="submit" disabled={loading}>
-              {loading ? (
-                <>
-                  <span className="eq-loader-ring eq-loader-ring--button" aria-hidden="true" />
-                  {t(locale, 'calculating')}
-                </>
-              ) : (
-                t(locale, 'generate')
-              )}
-            </button>
-          </div>
-
-          {error && <p className="eq-error-message" role="alert">{error}</p>}
-
-          <details className="eq-builder-disclosure">
-            <summary>
-              <span>
-                <strong>{t(locale, 'advancedContext')}</strong>
+          <details className="eq-builder-disclosure" style={{ marginBottom: '16px' }}>
+            <summary style={{ padding: '12px 16px' }}>
+              <span style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-start' }}>
+                <strong style={{ fontSize: '15px', fontWeight: 900 }}>{t(locale, 'sidebarFormat')}</strong>
                 <small>{t(locale, 'formatCurrent')}: {selectedFormatLabel}</small>
               </span>
             </summary>
-            <div className="eq-builder-disclosure__body">
-              <SectionLabel>{t(locale, 'format')}</SectionLabel>
-              <div className="eq-format-picker eq-format-family-picker">
+            <div className="eq-builder-disclosure__body" style={{ padding: '16px' }}>
+              <div className="eq-format-picker eq-format-family-picker" style={{ marginBottom: '12px' }}>
                 {formatFamilies.map(option => (
                   <button
                     key={option.value}
@@ -390,7 +324,7 @@ export default function App() {
               </div>
 
               {activeFormatFamily === 'vanilla' && (
-                <div className="eq-format-subpanel eq-format-subpanel--select">
+                <div className="eq-format-subpanel eq-format-subpanel--select" style={{ marginBottom: '16px' }}>
                   <span>{t(locale, 'vanillaGame')}</span>
                   <label className="eq-format-select">
                     <select
@@ -417,34 +351,8 @@ export default function App() {
                 </div>
               )}
 
-              {activeFormatFamily === 'competitive' && (
-                <div className="eq-format-subpanel eq-format-subpanel--select">
-                  <span>{t(locale, 'competitiveFormat')}</span>
-                  <label className="eq-format-select">
-                    <select
-                      value={format}
-                      onChange={event => setFormat(event.target.value)}
-                      aria-label={t(locale, 'competitiveFormat')}
-                    >
-                      {Object.entries(competitiveFormatsByGroup).map(([group, options]) => (
-                        <optgroup key={group} label={group}>
-                          {options.map(option => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </optgroup>
-                      ))}
-                    </select>
-                  </label>
-                  <p className="eq-format-selected-note">
-                    {selectedCompetitiveFormat?.short ?? t(locale, 'competitiveFormatNote')}
-                  </p>
-                </div>
-              )}
-
               {activeFormatFamily === 'champions' && (
-                <div className="eq-format-subpanel">
+                <div className="eq-format-subpanel" style={{ marginBottom: '16px' }}>
                   <span>{t(locale, 'championsMode')}</span>
                   <p className="eq-format-selected-note">{t(locale, 'championsRegulationNote')}</p>
                   <div className="eq-format-suboptions">
@@ -453,7 +361,11 @@ export default function App() {
                         key={option.value}
                         type="button"
                         className={format === option.value ? 'is-active' : ''}
-                        onClick={() => setFormat(option.value)}
+                        onClick={() => {
+                          setFormat(option.value);
+                          setBuildMode('complete-core');
+                          setResult(null);
+                        }}
                       >
                         <strong>{option.label}</strong>
                         <span>{option.short}</span>
@@ -465,39 +377,175 @@ export default function App() {
             </div>
           </details>
 
-          <details className="eq-builder-disclosure">
-            <summary>
-              <span>
-                <strong>{t(locale, 'advancedIdentity')}</strong>
-                <small>{t(locale, 'advancedIdentityHint')}</small>
-              </span>
-            </summary>
-            <div className="eq-builder-disclosure__body">
-              <button
-                className={`eq-modern-toggle ${allowLegendaries ? 'is-active' : ''}`}
-                type="button"
-                onClick={() => setAllowLegendaries(!allowLegendaries)}
-              >
-                <span>{t(locale, 'allowLegendaries')}</span>
-                <i />
-              </button>
+          <SectionLabel>{t(locale, 'timeBase')}</SectionLabel>
 
-              <SectionLabel>{t(locale, 'identity')}</SectionLabel>
-              <div className="eq-identity-picker">
-                {identityOptions.map(option => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    className={teamIdentity === option.value ? 'is-active' : ''}
-                    onClick={() => setTeamIdentity(option.value)}
-                  >
-                    <strong>{option.label}</strong>
-                    <span>{option.short}</span>
-                  </button>
-                ))}
-              </div>
+          {isLeadBuilderEnabled && format === 'champions_reg_m_b_doubles' && (
+            <div className="eq-build-mode-toggle" style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+              <button
+                type="button"
+                className={`eq-tab-v3 ${buildMode === 'complete-core' ? 'is-active' : ''}`}
+                onClick={() => {
+                  setBuildMode('complete-core');
+                  setResult(null);
+                }}
+                style={{
+                  flex: 1,
+                  padding: '8px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--eq-border)',
+                  background: buildMode === 'complete-core' ? 'var(--eq-accent)' : 'var(--eq-bg-card-sub)',
+                  color: buildMode === 'complete-core' ? '#000' : 'var(--eq-text-primary)',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                }}
+              >
+                {locale === 'pt-BR' ? 'Completar Núcleo (3)' : 'Complete Core (3)'}
+              </button>
+              <button
+                type="button"
+                className={`eq-tab-v3 ${buildMode === 'build-around-lead' ? 'is-active' : ''}`}
+                onClick={() => {
+                  setBuildMode('build-around-lead');
+                  setResult(null);
+                }}
+                style={{
+                  flex: 1,
+                  padding: '8px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--eq-border)',
+                  background: buildMode === 'build-around-lead' ? 'var(--eq-accent)' : 'var(--eq-bg-card-sub)',
+                  color: buildMode === 'build-around-lead' ? '#000' : 'var(--eq-text-primary)',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                }}
+              >
+                {locale === 'pt-BR' ? 'Ao Redor da Lead (2)' : 'Build Around Lead (2)'}
+              </button>
             </div>
-          </details>
+          )}
+
+          {buildMode === 'build-around-lead' ? (
+            <div className="eq-team-inputs" style={{ marginBottom: '14px' }}>
+              {[0, 1].map(index => {
+                const sprite = getSpriteUrl(leadTeam[index]);
+                const value = leadTeam[index].trim();
+                const suggestions = findPokemonNameSuggestions(value);
+                const knownPokemon = isKnownPokemonName(value);
+
+                return (
+                  <label key={index} className="eq-team-input">
+                    <span className="eq-team-slot">
+                      {sprite ? (
+                        <img
+                          src={sprite}
+                          alt={`Lead Pokémon ${index + 1}`}
+                          onError={event => {
+                            event.currentTarget.src = getNextPokemonSpriteUrl(leadTeam[index], event.currentTarget.src);
+                          }}
+                        />
+                      ) : (
+                        index + 1
+                      )}
+                    </span>
+                    <span className="eq-team-field">
+                      <input
+                        type="text"
+                        placeholder={index === 0 ? 'Ex: Pelipper' : 'Ex: Aggron'}
+                        value={leadTeam[index]}
+                        list={`eq-lead-suggestions-${index}`}
+                        onChange={event => handleLeadInputChange(index, event.target.value)}
+                      />
+                      <datalist id={`eq-lead-suggestions-${index}`}>
+                        {suggestions.map(name => (
+                          <option key={name} value={name} />
+                        ))}
+                      </datalist>
+                      {value && (
+                        <small className={knownPokemon ? 'is-known' : ''}>
+                          {knownPokemon ? t(locale, 'recognizedPokemon') : t(locale, 'unverifiedPokemon')}
+                        </small>
+                      )}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="eq-team-inputs" style={{ marginBottom: '14px' }}>
+              {[0, 1, 2].map(index => {
+                const sprite = getSpriteUrl(team[index]);
+                const value = team[index].trim();
+                const suggestions = findPokemonNameSuggestions(value);
+                const knownPokemon = isKnownPokemonName(value);
+
+                return (
+                  <label key={index} className="eq-team-input">
+                    <span className="eq-team-slot">
+                      {sprite ? (
+                        <img
+                          src={sprite}
+                          alt={`Pokémon ${index + 1}`}
+                          onError={event => {
+                            event.currentTarget.src = getNextPokemonSpriteUrl(team[index], event.currentTarget.src);
+                          }}
+                        />
+                      ) : (
+                        index + 1
+                      )}
+                    </span>
+                    <span className="eq-team-field">
+                      <input
+                        type="text"
+                        placeholder={teamPlaceholders[index]}
+                        value={team[index]}
+                        list={`eq-pokemon-suggestions-${index}`}
+                        onChange={event => handleInputChange(index, event.target.value)}
+                      />
+                      <datalist id={`eq-pokemon-suggestions-${index}`}>
+                        {suggestions.map(name => (
+                          <option key={name} value={name} />
+                        ))}
+                      </datalist>
+                      {value && (
+                        <small className={knownPokemon ? 'is-known' : ''}>
+                          {knownPokemon ? t(locale, 'recognizedPokemon') : t(locale, 'unverifiedPokemon')}
+                        </small>
+                      )}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          )}
+
+          <div className="eq-sidebar-actions" style={{ marginBottom: '22px' }}>
+            <button className="eq-generate-button" type="submit" disabled={loading}>
+              {loading ? (
+                <>
+                  <span className="eq-loader-ring eq-loader-ring--button" aria-hidden="true" />
+                  {t(locale, 'calculating')}
+                </>
+              ) : (
+                t(locale, 'generate')
+              )}
+            </button>
+          </div>
+
+          {error && <p className="eq-error-message" role="alert" style={{ marginBottom: '22px' }}>{error}</p>}
+
+          <div style={{ marginTop: '16px' }}>
+            <button
+              className={`eq-modern-toggle ${allowLegendaries ? 'is-active' : ''}`}
+              type="button"
+              onClick={() => setAllowLegendaries(!allowLegendaries)}
+              style={{ minHeight: '44px', width: '100%' }}
+            >
+              <span>{t(locale, 'allowLegendaries')}</span>
+              <i />
+            </button>
+          </div>
         </form>
 
         <div className="eq-sidebar-poem">
@@ -535,9 +583,20 @@ export default function App() {
 
         {!result && !loading && <EmptyState locale={locale} onUseExampleCore={handleUseExampleCore} />}
         {loading && <LoadingState locale={locale} />}
-        {result && !selectedOption && !loading && <NoResultsState locale={locale} />}
+        {result && !selectedOption && !leadResult && !loading && <NoResultsState locale={locale} />}
 
-        {result && selectedOption && !loading && (
+        {leadResult && !loading && (
+          <LeadStrategyPanel
+            result={leadResult}
+            locale={locale}
+            activeStrategyIndex={activeLeadStrategyIndex}
+            setActiveStrategyIndex={setActiveLeadStrategyIndex}
+            activeQuartetIndex={activeLeadQuartetIndex}
+            setActiveQuartetIndex={setActiveLeadQuartetIndex}
+          />
+        )}
+
+        {isSuggestionResponse(result) && selectedOption && !loading && (
           <div className="eq-results-v3">
             <BattlePlanHero
               option={selectedOption}
@@ -548,37 +607,33 @@ export default function App() {
               formatPercent={formatPercent}
             />
 
-            <SectionHeader title={t(locale, 'coreTitle')} eyebrow={t(locale, 'coreEyebrow')} />
-            <PokemonGrid
-              pokemons={selectedOption.suggestedPokemons}
-              locale={locale}
-              getSpriteUrl={getSpriteUrl}
-              getSmogonUrl={getSmogonUrl}
-            />
-
             <OptionTabs
               options={result.topTeams}
               selectedIndex={selectedOptionIndex}
               locale={locale}
-              onSelect={setSelectedOptionIndex}
+              onSelect={handleSelectOption}
               formatScore={formatScore}
             />
 
-            <CoachTimeline coach={selectedOption.coach} suggestedPokemons={selectedOption.suggestedPokemons} locale={locale} />
+            <div id="eq-pokemon-grid-v3" style={{ scrollMarginTop: '24px', display: 'grid', gap: '22px' }}>
+              <SectionHeader title={t(locale, 'coreTitle')} eyebrow={t(locale, 'coreEyebrow')} />
+              <PokemonGrid
+                pokemons={selectedOption.fullTeam && selectedOption.fullTeam.length > 0 ? selectedOption.fullTeam : selectedOption.suggestedPokemons}
+                locale={locale}
+                getSpriteUrl={getSpriteUrl}
+                getSmogonUrl={getSmogonUrl}
+              />
+            </div>
 
-            <SectionHeader title={t(locale, 'quickTitle')} eyebrow={t(locale, 'quickEyebrow')} />
+            <SectionHeader title={t(locale, 'playbookTitle')} eyebrow={t(locale, 'playbookEyebrow')} />
             <StrategySummary option={selectedOption} locale={locale} />
+
+            {selectedOption.fullTeam && selectedOption.fullTeam.length > 0 && (
+              <ExportTeam team={selectedOption.fullTeam} locale={locale} />
+            )}
 
             <section className="eq-details-v3">
               <SectionHeader title={t(locale, 'detailsTitle')} eyebrow={t(locale, 'detailsEyebrow')} />
-
-              <DetailsBlock title={t(locale, 'formatIntelligence')} subtitle={t(locale, 'formatIntelligenceSubtitle')} count={selectedOption.formatIntelligence ? 1 : 0} locale={locale}>
-                <FormatIntelligencePanel option={selectedOption} locale={locale} />
-              </DetailsBlock>
-
-              <DetailsBlock title={t(locale, 'dataSources')} subtitle={t(locale, 'dataSourcesSubtitle')} count={selectedOption.dataSourceReport?.entries.length ?? 0} locale={locale}>
-                <DataSourcePanel option={selectedOption} locale={locale} />
-              </DetailsBlock>
 
               {activeFormatFamily === 'radical_red' && (
                 <DetailsBlock title={t(locale, 'radicalRedGauntlet')} subtitle={t(locale, 'radicalRedGauntletSubtitle')} count={selectedOption.radicalRedGauntlet?.bossReports.length ?? 0} locale={locale}>
@@ -586,34 +641,32 @@ export default function App() {
                 </DetailsBlock>
               )}
 
-              {activeFormatFamily === 'champions' && (
-                <DetailsBlock title={t(locale, 'championsRegulation')} subtitle={t(locale, 'championsRegulationSubtitle')} count={selectedOption.championsRegulation ? 1 : 0} locale={locale}>
-                  <ChampionsRegulationPanel option={selectedOption} locale={locale} />
+              {activeFormatFamily === 'vanilla' && selectedOption.radicalRedGauntlet && (
+                <DetailsBlock title={t(locale, 'radicalRedGauntlet')} subtitle={locale === 'pt-BR' ? 'Avaliação baseada no Boss Gauntlet da Elite Four deste formato' : 'Evaluation based on this format\'s Elite Four Boss Gauntlet'} count={selectedOption.radicalRedGauntlet.bossReports.length} locale={locale}>
+                  <RadicalRedGauntletPanel option={selectedOption} locale={locale} />
                 </DetailsBlock>
               )}
 
-              <DetailsBlock title={t(locale, 'threatIntelligence')} subtitle={t(locale, 'threatIntelligenceSubtitle')} count={selectedOption.threatAnalysis?.matchups.length ?? 0} locale={locale}>
+              {isVgcFormat && (
+                <DetailsBlock title={t(locale, 'vgcStrategyAnalysis')} subtitle={t(locale, 'vgcStrategyAnalysisSubtitle')} count={4} locale={locale}>
+                  <VgcTeamPlanPanel option={selectedOption} locale={locale} />
+                </DetailsBlock>
+              )}
+
+              <DetailsBlock title={t(locale, 'threatAnalysis')} subtitle={t(locale, 'threatAnalysisSubtitle')} count={selectedOption.threatAnalysis?.matchups.length ?? 0} locale={locale}>
                 <ThreatReport option={selectedOption} locale={locale} />
               </DetailsBlock>
 
-              <DetailsBlock title={t(locale, 'aiBuilderDecision')} subtitle={t(locale, 'aiBuilderDecisionSubtitle')} count={selectedOption.aiBuilder ? 1 : 0} locale={locale}>
-                <AIBuilderDecision option={selectedOption} locale={locale} />
-              </DetailsBlock>
-
-              <DetailsBlock title={t(locale, 'matchupAnalysis')} subtitle={t(locale, 'matchupAnalysisSubtitle')} count={selectedOption.damageReport?.matchups.length ?? 0} locale={locale}>
+              <DetailsBlock title={t(locale, 'matchupReadiness')} subtitle={t(locale, 'matchupReadinessSubtitle')} count={selectedOption.damageReport?.matchups.length ?? 0} locale={locale}>
                 <MatchupAnalysis option={selectedOption} locale={locale} />
               </DetailsBlock>
 
-              <DetailsBlock title={t(locale, 'coverageSpeed')} subtitle={t(locale, 'coverageSpeedSubtitle')} count={(selectedOption.offensiveCoverage?.uniqueAttackTypes.length ?? 0) + 1} locale={locale}>
-                <CoverageSpeed option={selectedOption} locale={locale} formatPercent={formatPercent} formatAverageSpeed={formatAverageSpeed} />
+              <DetailsBlock title={t(locale, 'aiBuilderDecision')} subtitle={t(locale, 'aiBuilderDecisionSubtitle')} count={selectedOption.aiBuilder ? 3 : 0} locale={locale}>
+                <AIBuilderDecision option={selectedOption} locale={locale} />
               </DetailsBlock>
 
               <DetailsBlock title={t(locale, 'performanceMetrics')} subtitle={t(locale, 'performanceMetricsSubtitle')} count={6} locale={locale}>
                 <ScoreBreakdownView option={selectedOption} locale={locale} normalizeScore={normalizeScore} formatScore={formatScore} />
-              </DetailsBlock>
-
-              <DetailsBlock title={t(locale, 'candidateDiversity')} subtitle={t(locale, 'candidateDiversitySubtitle')} count={result.candidateDiversity?.diversifiedCandidates ?? 0} locale={locale}>
-                <CandidateDiversity diversity={result.candidateDiversity} locale={locale} />
               </DetailsBlock>
 
               <DetailsBlock title={t(locale, 'decisionReasons')} subtitle={t(locale, 'decisionReasonsSubtitle')} count={getTopExplanations(selectedOption).length} locale={locale}>

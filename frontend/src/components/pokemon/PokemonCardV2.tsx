@@ -44,6 +44,18 @@ export function PokemonCardV2({ pokemon, sprite, smogonUrl, locale }: PokemonCar
             <li key={item}>{translateContent(item, locale)}</li>
           ))}
         </ul>
+
+        <div className="eq-battle-kit-details" style={{ marginTop: '12px', paddingTop: '8px', borderTop: '1px dashed var(--eq-border)' }}>
+          <div style={{ fontSize: '11px', color: 'var(--eq-muted)', display: 'grid', gap: '3px' }}>
+            <div><strong>{locale === 'pt-BR' ? 'Habilidade' : 'Ability'}:</strong> {pokemon.ability || pokemon.kit.ability || 'Nenhuma'}</div>
+            <div><strong>{locale === 'pt-BR' ? 'Item' : 'Item'}:</strong> {pokemon.item || pokemon.kit.item || 'Nenhum'}</div>
+            {pokemon.moves && pokemon.moves.length > 0 && (
+              <div>
+                <strong>{locale === 'pt-BR' ? 'Movimentos' : 'Moves'}:</strong> {pokemon.moves.join(' / ')}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       <footer className="eq-pokemon-card-footer">
