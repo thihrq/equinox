@@ -14,8 +14,10 @@ import {
   isLikelyTrickRoomAbuserForVgc,
   isLikelyTrickRoomSetterForVgc,
   isPremiumTrickRoomRedirectionForVgc,
+  VgcTeamPlanAnalysis,
 } from '../vgc/VgcTeamBuilding';
 import { evaluateVgcArchetypeCompatibility, evaluateVgcSetQuality } from '../vgc/VgcArchetypeBlueprints';
+import { AnalysisContext } from '../core/AnalysisContext';
 
 export interface CandidateDiversityInsight {
   name: string;
@@ -451,39 +453,53 @@ export class RecommendationAdapter {
     return {
       suggestedPokemons: combination.team.map(pokemon => {
         const basicKit = generateBasicKit(pokemon, format);
+        const ability = pokemon.ability || pokemon.abilities?.[0] || 'Nenhum';
+        const item = pokemon.item || 'Nenhum';
+        const hasDbMoves = pokemon.moves && pokemon.moves.length > 0;
+        const moves = hasDbMoves ? pokemon.moves : [];
+        const nature = pokemon.nature || basicKit.nature || 'Serious';
+        const role = pokemon.role || basicKit.role || 'Flex';
+
         return {
           name: pokemon.name,
           kit: {
-            nature: pokemon.nature || basicKit.nature,
-            role: pokemon.role || basicKit.role,
-            ability: pokemon.ability || pokemon.abilities?.[0] || 'Nenhum',
-            item: pokemon.item || 'Nenhum',
-            moves: pokemon.moves || [],
+            nature,
+            role,
+            ability,
+            item,
+            moves,
           },
-          nature: pokemon.nature || basicKit.nature,
-          role: pokemon.role || basicKit.role,
-          ability: pokemon.ability || pokemon.abilities?.[0] || 'Nenhum',
-          item: pokemon.item || 'Nenhum',
-          moves: pokemon.moves || [],
+          nature,
+          role,
+          ability,
+          item,
+          moves,
           battleInsight: this.buildBattleInsight(pokemon, format),
         };
       }),
       fullTeam: combination.context.selectedPokemon.map(pokemon => {
         const basicKit = generateBasicKit(pokemon, format);
+        const ability = pokemon.ability || pokemon.abilities?.[0] || 'Nenhum';
+        const item = pokemon.item || 'Nenhum';
+        const hasDbMoves = pokemon.moves && pokemon.moves.length > 0;
+        const moves = hasDbMoves ? pokemon.moves : [];
+        const nature = pokemon.nature || basicKit.nature || 'Serious';
+        const role = pokemon.role || basicKit.role || 'Flex';
+
         return {
           name: pokemon.name,
           kit: {
-            nature: pokemon.nature || basicKit.nature,
-            role: pokemon.role || basicKit.role,
-            ability: pokemon.ability || pokemon.abilities?.[0] || 'Nenhum',
-            item: pokemon.item || 'Nenhum',
-            moves: pokemon.moves || [],
+            nature,
+            role,
+            ability,
+            item,
+            moves,
           },
-          nature: pokemon.nature || basicKit.nature,
-          role: pokemon.role || basicKit.role,
-          ability: pokemon.ability || pokemon.abilities?.[0] || 'Nenhum',
-          item: pokemon.item || 'Nenhum',
-          moves: pokemon.moves || [],
+          nature,
+          role,
+          ability,
+          item,
+          moves,
           battleInsight: this.buildBattleInsight(pokemon, format),
         };
       }),
@@ -507,7 +523,9 @@ export class RecommendationAdapter {
       radicalRedGauntlet: context.analysis.radicalRedGauntlet,
       championsRegulation: context.analysis.championsRegulation,
       dataSourceReport: context.analysis.dataSources,
-      vgcTeamPlan: context.analysis.vgcTeamPlan,
+      vgcTeamPlan: format.toLowerCase().startsWith('champions')
+        ? RecommendationAdapter.enrichVgcPlan(context.analysis.vgcTeamPlan, context, format)
+        : undefined,
     };
   }
 
@@ -636,5 +654,13 @@ export class RecommendationAdapter {
     return Object.keys(TYPE_CHART).find(
       key => key.toLowerCase() === type.toLowerCase(),
     );
+  }
+
+  private static enrichVgcPlan(
+    plan: VgcTeamPlanAnalysis | undefined,
+    context: AnalysisContext,
+    format: string
+  ): VgcTeamPlanAnalysis | undefined {
+    return plan;
   }
 }
