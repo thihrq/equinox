@@ -6,7 +6,7 @@ export class VgcTeamPlanEngine implements AnalysisEngine {
   public readonly name = 'VgcTeamPlanEngine';
 
   public execute(context: AnalysisContext): void {
-    const analysis = evaluateVgcTeamPlan(context.selectedPokemon, context.format);
+    const analysis = evaluateVgcTeamPlan(context.selectedPokemon, context.format, context.lockedLead);
 
     context.analysis.vgcTeamPlan = analysis;
 

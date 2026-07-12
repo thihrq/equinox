@@ -17,10 +17,13 @@ routes.get('/system/release', SystemController.release);
 
 // Canonical API route.
 routes.post('/api/team/suggest', TeamController.suggest);
+routes.post('/api/team/suggest-from-lead', TeamController.suggestFromLead);
 
 // Compatibility aliases for local envs where VITE_API_BASE_URL may already include /api
 // or older builds still post to the pre-hardening route.
 routes.post('/team/suggest', TeamController.suggest);
+routes.post('/team/suggest-from-lead', TeamController.suggestFromLead);
 routes.post('/api/api/team/suggest', TeamController.suggest);
+routes.post('/api/api/team/suggest-from-lead', TeamController.suggestFromLead);
 
 export default routes;

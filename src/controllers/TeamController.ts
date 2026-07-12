@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import { TeamService, TeamSuggestionInputError } from '../services/TeamService';
 import { TeamIdentity } from '../equinox/recommendation/CandidateScoreEngine';
 import { appConfig } from '../config/env';
+import { LeadStrategyRecommendationService } from '../services/LeadStrategyRecommendationService';
+import { PokemonInput, LeadMode } from '../equinox/vgc/LeadBuildTypes';
 
 const ALLOWED_IDENTITIES: TeamIdentity[] = [
   'balanced',
@@ -26,6 +28,26 @@ function normalizePokemonInput(value: unknown): string[] {
   return value
     .map(item => String(item ?? '').trim())
     .filter(Boolean);
+}
+
+function normalizeLeadInput(value: unknown): PokemonInput[] {
+  if (!Array.isArray(value)) return [];
+  return value.map(item => {
+    if (typeof item === 'string') {
+      return { name: item.trim() };
+    }
+    if (item && typeof item === 'object') {
+      const obj = item as any;
+      return {
+        name: String(obj.name ?? '').trim(),
+        item: obj.item ? String(obj.item).trim() : undefined,
+        ability: obj.ability ? String(obj.ability).trim() : undefined,
+        moves: Array.isArray(obj.moves) ? obj.moves.map((m: any) => String(m ?? '').trim()).filter(Boolean) : undefined,
+        nature: obj.nature ? String(obj.nature).trim() : undefined,
+      };
+    }
+    return { name: '' };
+  }).filter(p => p.name !== '');
 }
 
 
@@ -149,6 +171,56 @@ export class TeamController {
       res.status(500).json(internalErrorPayload(
         'TEAM_SUGGESTION_FAILED',
         'Erro ao sugerir complementos para o time.',
+        error,
+      ));
+    }
+  }
+
+  public static async suggestFromLead(req: Request, res: Response): Promise<void> {
+    try {
+      const {
+        lead,
+        format = 'champions_reg_m_b_doubles',
+        leadMode = 'fixed-lead',
+        allowLegendaries = false,
+        teamIdentity = 'balanced',
+      } = req.body;
+
+      const normalizedLead = normalizeLeadInput(lead);
+
+      if (normalizedLead.length !== 2) {
+        res.status(400).json({
+          code: 'INVALID_TEAM_SIZE',
+          message: req.body?.locale === 'en-US'
+            ? 'Please provide exactly 2 Pokémon for the lead.'
+            : 'Informe exatamente 2 Pokémon para a lead.',
+        });
+        return;
+      }
+
+      const service = new LeadStrategyRecommendationService();
+      const result = await service.execute({
+        lead: [normalizedLead[0], normalizedLead[1]],
+        format: String(format || 'champions_reg_m_b_doubles'),
+        leadMode: (leadMode === 'core-pair' ? 'core-pair' : 'fixed-lead') as LeadMode,
+        allowLegendaries: Boolean(allowLegendaries),
+        teamIdentity: normalizeTeamIdentity(teamIdentity),
+      });
+
+      res.json(result);
+    } catch (error) {
+      if (error instanceof TeamSuggestionInputError) {
+        res.status(error.statusCode).json({
+          code: error.code,
+          message: localizeSuggestionInputError(error, req.body?.locale),
+          details: error.details,
+        });
+        return;
+      }
+
+      res.status(500).json(internalErrorPayload(
+        'LEAD_SUGGESTION_FAILED',
+        'Erro ao sugerir complementos a partir da lead.',
         error,
       ));
     }

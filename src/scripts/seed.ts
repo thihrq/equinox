@@ -2,6 +2,7 @@
 import mongoose from 'mongoose';
 import axios from 'axios';
 import { Pokemon } from '../models/Pokemon'; // Ajuste o caminho se necessário
+import { assertDatabaseWritesAllowed, assertMongoAccessAllowed } from '../equinox/data-audit/DataAuditRuntime';
 import 'dotenv/config'; // Certifique-se de ter o dotenv instalado se usar .env
 
 // Função para capitalizar (ex: 'fire' -> 'Fire') para casar com o nosso TYPE_CHART
@@ -16,6 +17,8 @@ const seedDatabase = async () => {
   try {
     // 1. Conecta ao Banco de Dados (substitua pela sua string de conexão se não usar .env)
     const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/pokemon-builder';
+    assertMongoAccessAllowed('seed database');
+    assertDatabaseWritesAllowed('seed database');
     await mongoose.connect(MONGO_URI);
     console.log('📦 Conectado ao MongoDB. Iniciando o download...');
 

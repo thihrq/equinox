@@ -286,7 +286,8 @@ function synthesizeMechanicFallbackSet(pokemonName: string): CuratedVgcSet | und
     const specialBias = Number(stats?.spa ?? 0) >= Number(stats?.atk ?? 0);
     const stabMap = specialBias ? SPECIAL_STAB_BY_TYPE : PHYSICAL_STAB_BY_TYPE;
     const stabMoves = types.map((type: string) => stabMap[type]).filter(Boolean) as string[];
-    const moves = [...new Set([...stabMoves, specialBias ? 'Earth Power' : 'Rock Slide', 'Protect'])].slice(0, 4);
+    const specialCoverage = types.includes('water') ? 'Ice Beam' : 'Earth Power';
+    const moves = [...new Set([...stabMoves, specialBias ? specialCoverage : 'Rock Slide', 'Protect'])].slice(0, 4);
 
     return {
       ability: 'Regenerator',

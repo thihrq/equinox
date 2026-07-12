@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { resolveDataMode, EquinoxDataMode } from './dataMode';
 
 export type NodeEnvironment = 'development' | 'test' | 'production';
 export type RuntimeProfile = 'standard' | 'render_free';
@@ -15,6 +16,11 @@ export interface AppConfig {
   runtimeProfile: RuntimeProfile;
   seedOnStartup: boolean;
   forceSeedOnStartup: boolean;
+  useCompetitiveSetsV2: boolean;
+  requireVerifiedChampionsData: boolean;
+  allowGeneratedSetFallback: boolean;
+  dataMode: EquinoxDataMode;
+  allowDatabaseWrites: boolean;
   isProduction: boolean;
 }
 
@@ -132,12 +138,19 @@ export const appConfig: AppConfig = {
   version: process.env.APP_VERSION || '1.0.3',
   nodeEnv,
   port: parsePort(process.env.PORT, 3000),
-  mongoUri: process.env.MONGO_URI || 'mongodb://localhost:27017/pokemon_teambuilder',
+  mongoUri: process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/pokemon_teambuilder',
   corsOrigins: parseCorsOrigins(isProduction),
   corsOriginPatterns: parseCorsOriginPatterns(),
   jsonLimit: process.env.JSON_LIMIT || '1mb',
   runtimeProfile: parseRuntimeProfile(process.env.EQUINOX_RUNTIME_PROFILE, isProduction),
   seedOnStartup: parseBoolean(process.env.EQUINOX_SEED_ON_START),
   forceSeedOnStartup: parseBoolean(process.env.EQUINOX_FORCE_SEED_ON_START),
+  useCompetitiveSetsV2: parseBoolean(process.env.EQUINOX_USE_COMPETITIVE_SETS_V2),
+  requireVerifiedChampionsData: parseBoolean(process.env.EQUINOX_REQUIRE_VERIFIED_CHAMPIONS_DATA),
+  allowGeneratedSetFallback: process.env.EQUINOX_ALLOW_GENERATED_SET_FALLBACK === undefined
+    ? true
+    : parseBoolean(process.env.EQUINOX_ALLOW_GENERATED_SET_FALLBACK),
+  dataMode: resolveDataMode(),
+  allowDatabaseWrites: parseBoolean(process.env.EQUINOX_ALLOW_DATABASE_WRITES),
   isProduction,
 };

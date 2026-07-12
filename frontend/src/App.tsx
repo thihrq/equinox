@@ -9,15 +9,12 @@ import { apiPost, type ApiErrorShape } from './services/api';
 import { BattlePlanHero, SectionHeader } from './components/coach';
 import { ExportTeam, PokemonGrid } from './components/pokemon';
 import { OptionTabs, StrategySummary } from './components/strategy';
+import { LeadStrategyPanel } from './components/lead/LeadStrategyPanel';
+import type { LeadSuggestionResult } from './types/lead';
 import {
   AIBuilderDecision,
-  CandidateDiversity,
-  ChampionsRegulationPanel,
-  DataSourcePanel,
-  CoverageSpeed,
   DetailsBlock,
   ExplanationList,
-  FormatIntelligencePanel,
   MatchupAnalysis,
   RadicalRedGauntletPanel,
   ScoreBreakdownView,
@@ -26,6 +23,7 @@ import {
 } from './components/analysis';
 
 type FormatFamily = 'vanilla' | 'radical_red' | 'champions';
+type AppResult = SuggestionResponse | LeadSuggestionResult;
 
 interface PickerOption<TValue extends string = string> {
   value: TValue;
@@ -95,14 +93,30 @@ const exampleCores = [
 
 const teamPlaceholders = ['Ex: Charizard', 'Ex: Blastoise', 'Ex: Venusaur'];
 
+function isLeadSuggestionResult(result: AppResult | null): result is LeadSuggestionResult {
+  return !!result && 'strategies' in result && 'leadProfile' in result;
+}
+
+function isSuggestionResponse(result: AppResult | null): result is SuggestionResponse {
+  return !!result && 'topTeams' in result;
+}
+
 export default function App() {
   const [team, setTeam] = useState(['', '', '']);
   const [format, setFormat] = useState('vanilla_fire_red');
-  const [teamIdentity, setTeamIdentity] = useState<TeamIdentity>('balanced');
+  const [teamIdentity] = useState<TeamIdentity>('balanced');
   const [allowLegendaries, setAllowLegendaries] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [locale, setLocale] = useState<Locale>('pt-BR');
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
+
+  // Estados para o novo fluxo Build-Around-Lead
+  const [buildMode, setBuildMode] = useState<'complete-core' | 'build-around-lead'>('complete-core');
+  const [leadTeam, setLeadTeam] = useState<string[]>(['', '']);
+  const [activeLeadStrategyIndex, setActiveLeadStrategyIndex] = useState(0);
+  const [activeLeadQuartetIndex, setActiveLeadQuartetIndex] = useState(0);
+
+  const isLeadBuilderEnabled = import.meta.env.VITE_ENABLE_LEAD_BUILDER === 'true';
   const handleSelectOption = (index: number) => {
     setSelectedOptionIndex(index);
     setTimeout(() => {
@@ -110,7 +124,7 @@ export default function App() {
     }, 80);
   };
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<SuggestionResponse | null>(null);
+  const [result, setResult] = useState<AppResult | null>(null);
   const [error, setError] = useState('');
 
   const identityOptions = useMemo(() => getIdentityOptions(locale), [locale]);
@@ -118,6 +132,7 @@ export default function App() {
   const vanillaGameOptions = useMemo(() => getVanillaGameOptions(locale), [locale]);
   const championsOptions = useMemo(() => getChampionsOptions(locale), [locale]);
   const activeFormatFamily = useMemo(() => getFormatFamily(format), [format]);
+  const isVgcFormat = format.toLowerCase().startsWith('champions');
   const vanillaGamesByGroup = useMemo(() => {
     return vanillaGameOptions.reduce<Record<string, VanillaGamePickerOption[]>>((groups, option) => {
       groups[option.group] = [...(groups[option.group] ?? []), option];
@@ -137,9 +152,10 @@ export default function App() {
   }, [activeFormatFamily, locale, selectedChampionsFormat, selectedVanillaGame]);
 
   const selectedOption = useMemo(() => {
-    if (!result?.topTeams?.length) return null;
+    if (!isSuggestionResponse(result) || !result.topTeams?.length) return null;
     return result.topTeams[Math.min(selectedOptionIndex, result.topTeams.length - 1)];
   }, [result, selectedOptionIndex]);
+  const leadResult = isLeadSuggestionResult(result) ? result : null;
 
   const identityLabel = identityOptions.find(option => option.value === teamIdentity)?.label ?? 'Balance';
 
@@ -165,6 +181,8 @@ export default function App() {
 
   const handleFormatFamilyChange = (family: FormatFamily) => {
     if (family === activeFormatFamily) return;
+    setBuildMode('complete-core');
+    setResult(null);
 
     if (family === 'vanilla') {
       setFormat('vanilla_fire_red');
@@ -179,6 +197,12 @@ export default function App() {
     setFormat('champions_reg_m_b_singles');
   };
 
+  const handleLeadInputChange = (index: number, value: string) => {
+    const newLead = [...leadTeam];
+    newLead[index] = value;
+    setLeadTeam(newLead);
+  };
+
   const formatScore = (value?: number) => {
     if (value === undefined || Number.isNaN(value)) return '0';
     return value > 0 ? `+${value}` : `${value}`;
@@ -189,12 +213,7 @@ export default function App() {
     return `${Math.round(value * 100)}%`;
   };
 
-  const formatAverageSpeed = (value?: number) => {
-    if (value === undefined || Number.isNaN(value)) return '0';
-    return value.toFixed(1);
-  };
 
-  const normalizeScore = (value: number) => Math.max(0, Math.min(100, 50 + value));
 
   const getTopExplanations = (option: TeamOption): ExplanationEntry[] => {
     return [...(option.explanations ?? [])]
@@ -216,12 +235,21 @@ export default function App() {
     return apiError.response?.data?.message || t(locale, 'serverError');
   };
 
+  const normalizeScore = (value: number) => Math.max(0, Math.min(100, 50 + value));
+
   const analyzeTeam = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (team.some(pokemon => pokemon.trim() === '')) {
-      setError(t(locale, 'fillTeamError'));
-      return;
+    if (buildMode === 'build-around-lead') {
+      if (leadTeam.some(pokemon => pokemon.trim() === '')) {
+        setError(locale === 'pt-BR' ? 'Por favor, preencha os dois Pokémon da lead.' : 'Please fill both lead Pokémon.');
+        return;
+      }
+    } else {
+      if (team.some(pokemon => pokemon.trim() === '')) {
+        setError(t(locale, 'fillTeamError'));
+        return;
+      }
     }
 
     setLoading(true);
@@ -230,14 +258,23 @@ export default function App() {
     setSelectedOptionIndex(0);
 
     try {
-      const response = await apiPost<SuggestionResponse>('/api/team/suggest', {
+      const url = buildMode === 'build-around-lead' ? '/api/team/suggest-from-lead' : '/api/team/suggest';
+      const body = buildMode === 'build-around-lead' ? {
+        lead: leadTeam.map(pokemon => ({ name: pokemon.trim() })),
+        format,
+        leadMode: 'fixed-lead',
+        allowLegendaries,
+        teamIdentity,
+        locale,
+      } : {
         team: team.map(pokemon => pokemon.trim()),
         format,
         allowLegendaries,
         teamIdentity,
         locale,
-      });
+      };
 
+      const response = await apiPost<AppResult>(url, body);
       setResult(response);
     } catch (err: unknown) {
       console.log('Error analyzing team:', err);
@@ -246,7 +283,6 @@ export default function App() {
       setLoading(false);
     }
   };
-
   return (
     <div className={`eq-app-shell eq-theme-${theme}`}>
       <aside className="eq-sidebar-v2">
@@ -265,7 +301,6 @@ export default function App() {
         </div>
 
         <form className="eq-builder-panel" onSubmit={analyzeTeam}>
-          {/* 1. Escolha de Regras e Formato (No Topo da Sidebar, Colapsável) */}
           <details className="eq-builder-disclosure" style={{ marginBottom: '16px' }}>
             <summary style={{ padding: '12px 16px' }}>
               <span style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-start' }}>
@@ -326,7 +361,11 @@ export default function App() {
                         key={option.value}
                         type="button"
                         className={format === option.value ? 'is-active' : ''}
-                        onClick={() => setFormat(option.value)}
+                        onClick={() => {
+                          setFormat(option.value);
+                          setBuildMode('complete-core');
+                          setResult(null);
+                        }}
                       >
                         <strong>{option.label}</strong>
                         <span>{option.short}</span>
@@ -338,54 +377,148 @@ export default function App() {
             </div>
           </details>
 
-          {/* 2. Seleção do Time Base (No Centro da Sidebar) */}
           <SectionLabel>{t(locale, 'timeBase')}</SectionLabel>
 
-          <div className="eq-team-inputs" style={{ marginBottom: '14px' }}>
-            {[0, 1, 2].map(index => {
-              const sprite = getSpriteUrl(team[index]);
-              const value = team[index].trim();
-              const suggestions = findPokemonNameSuggestions(value);
-              const knownPokemon = isKnownPokemonName(value);
+          {isLeadBuilderEnabled && format === 'champions_reg_m_b_doubles' && (
+            <div className="eq-build-mode-toggle" style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+              <button
+                type="button"
+                className={`eq-tab-v3 ${buildMode === 'complete-core' ? 'is-active' : ''}`}
+                onClick={() => {
+                  setBuildMode('complete-core');
+                  setResult(null);
+                }}
+                style={{
+                  flex: 1,
+                  padding: '8px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--eq-border)',
+                  background: buildMode === 'complete-core' ? 'var(--eq-accent)' : 'var(--eq-bg-card-sub)',
+                  color: buildMode === 'complete-core' ? '#000' : 'var(--eq-text-primary)',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                }}
+              >
+                {locale === 'pt-BR' ? 'Completar Núcleo (3)' : 'Complete Core (3)'}
+              </button>
+              <button
+                type="button"
+                className={`eq-tab-v3 ${buildMode === 'build-around-lead' ? 'is-active' : ''}`}
+                onClick={() => {
+                  setBuildMode('build-around-lead');
+                  setResult(null);
+                }}
+                style={{
+                  flex: 1,
+                  padding: '8px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--eq-border)',
+                  background: buildMode === 'build-around-lead' ? 'var(--eq-accent)' : 'var(--eq-bg-card-sub)',
+                  color: buildMode === 'build-around-lead' ? '#000' : 'var(--eq-text-primary)',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                }}
+              >
+                {locale === 'pt-BR' ? 'Ao Redor da Lead (2)' : 'Build Around Lead (2)'}
+              </button>
+            </div>
+          )}
 
-              return (
-                <label key={index} className="eq-team-input">
-                  <span className="eq-team-slot">
-                    {sprite ? (
-                      <img
-                        src={sprite}
-                        alt={`Pokémon ${index + 1}`}
-                        onError={event => {
-                          event.currentTarget.src = getNextPokemonSpriteUrl(team[index], event.currentTarget.src);
-                        }}
+          {buildMode === 'build-around-lead' ? (
+            <div className="eq-team-inputs" style={{ marginBottom: '14px' }}>
+              {[0, 1].map(index => {
+                const sprite = getSpriteUrl(leadTeam[index]);
+                const value = leadTeam[index].trim();
+                const suggestions = findPokemonNameSuggestions(value);
+                const knownPokemon = isKnownPokemonName(value);
+
+                return (
+                  <label key={index} className="eq-team-input">
+                    <span className="eq-team-slot">
+                      {sprite ? (
+                        <img
+                          src={sprite}
+                          alt={`Lead Pokémon ${index + 1}`}
+                          onError={event => {
+                            event.currentTarget.src = getNextPokemonSpriteUrl(leadTeam[index], event.currentTarget.src);
+                          }}
+                        />
+                      ) : (
+                        index + 1
+                      )}
+                    </span>
+                    <span className="eq-team-field">
+                      <input
+                        type="text"
+                        placeholder={index === 0 ? 'Ex: Pelipper' : 'Ex: Aggron'}
+                        value={leadTeam[index]}
+                        list={`eq-lead-suggestions-${index}`}
+                        onChange={event => handleLeadInputChange(index, event.target.value)}
                       />
-                    ) : (
-                      index + 1
-                    )}
-                  </span>
-                  <span className="eq-team-field">
-                    <input
-                      type="text"
-                      placeholder={teamPlaceholders[index]}
-                      value={team[index]}
-                      list={`eq-pokemon-suggestions-${index}`}
-                      onChange={event => handleInputChange(index, event.target.value)}
-                    />
-                    <datalist id={`eq-pokemon-suggestions-${index}`}>
-                      {suggestions.map(name => (
-                        <option key={name} value={name} />
-                      ))}
-                    </datalist>
-                    {value && (
-                      <small className={knownPokemon ? 'is-known' : ''}>
-                        {knownPokemon ? t(locale, 'recognizedPokemon') : t(locale, 'unverifiedPokemon')}
-                      </small>
-                    )}
-                  </span>
-                </label>
-              );
-            })}
-          </div>
+                      <datalist id={`eq-lead-suggestions-${index}`}>
+                        {suggestions.map(name => (
+                          <option key={name} value={name} />
+                        ))}
+                      </datalist>
+                      {value && (
+                        <small className={knownPokemon ? 'is-known' : ''}>
+                          {knownPokemon ? t(locale, 'recognizedPokemon') : t(locale, 'unverifiedPokemon')}
+                        </small>
+                      )}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="eq-team-inputs" style={{ marginBottom: '14px' }}>
+              {[0, 1, 2].map(index => {
+                const sprite = getSpriteUrl(team[index]);
+                const value = team[index].trim();
+                const suggestions = findPokemonNameSuggestions(value);
+                const knownPokemon = isKnownPokemonName(value);
+
+                return (
+                  <label key={index} className="eq-team-input">
+                    <span className="eq-team-slot">
+                      {sprite ? (
+                        <img
+                          src={sprite}
+                          alt={`Pokémon ${index + 1}`}
+                          onError={event => {
+                            event.currentTarget.src = getNextPokemonSpriteUrl(team[index], event.currentTarget.src);
+                          }}
+                        />
+                      ) : (
+                        index + 1
+                      )}
+                    </span>
+                    <span className="eq-team-field">
+                      <input
+                        type="text"
+                        placeholder={teamPlaceholders[index]}
+                        value={team[index]}
+                        list={`eq-pokemon-suggestions-${index}`}
+                        onChange={event => handleInputChange(index, event.target.value)}
+                      />
+                      <datalist id={`eq-pokemon-suggestions-${index}`}>
+                        {suggestions.map(name => (
+                          <option key={name} value={name} />
+                        ))}
+                      </datalist>
+                      {value && (
+                        <small className={knownPokemon ? 'is-known' : ''}>
+                          {knownPokemon ? t(locale, 'recognizedPokemon') : t(locale, 'unverifiedPokemon')}
+                        </small>
+                      )}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          )}
 
           <div className="eq-sidebar-actions" style={{ marginBottom: '22px' }}>
             <button className="eq-generate-button" type="submit" disabled={loading}>
@@ -402,7 +535,6 @@ export default function App() {
 
           {error && <p className="eq-error-message" role="alert" style={{ marginBottom: '22px' }}>{error}</p>}
 
-          {/* 3. Permitir Lendários (Fixo na Parte Inferior da Sidebar) */}
           <div style={{ marginTop: '16px' }}>
             <button
               className={`eq-modern-toggle ${allowLegendaries ? 'is-active' : ''}`}
@@ -451,9 +583,20 @@ export default function App() {
 
         {!result && !loading && <EmptyState locale={locale} onUseExampleCore={handleUseExampleCore} />}
         {loading && <LoadingState locale={locale} />}
-        {result && !selectedOption && !loading && <NoResultsState locale={locale} />}
+        {result && !selectedOption && !leadResult && !loading && <NoResultsState locale={locale} />}
 
-        {result && selectedOption && !loading && (
+        {leadResult && !loading && (
+          <LeadStrategyPanel
+            result={leadResult}
+            locale={locale}
+            activeStrategyIndex={activeLeadStrategyIndex}
+            setActiveStrategyIndex={setActiveLeadStrategyIndex}
+            activeQuartetIndex={activeLeadQuartetIndex}
+            setActiveQuartetIndex={setActiveLeadQuartetIndex}
+          />
+        )}
+
+        {isSuggestionResponse(result) && selectedOption && !loading && (
           <div className="eq-results-v3">
             <BattlePlanHero
               option={selectedOption}
@@ -498,20 +641,28 @@ export default function App() {
                 </DetailsBlock>
               )}
 
-              <DetailsBlock title={t(locale, 'threatIntelligence')} subtitle={t(locale, 'threatIntelligenceSubtitle')} count={selectedOption.threatAnalysis?.matchups.length ?? 0} locale={locale}>
+              {activeFormatFamily === 'vanilla' && selectedOption.radicalRedGauntlet && (
+                <DetailsBlock title={t(locale, 'radicalRedGauntlet')} subtitle={locale === 'pt-BR' ? 'Avaliação baseada no Boss Gauntlet da Elite Four deste formato' : 'Evaluation based on this format\'s Elite Four Boss Gauntlet'} count={selectedOption.radicalRedGauntlet.bossReports.length} locale={locale}>
+                  <RadicalRedGauntletPanel option={selectedOption} locale={locale} />
+                </DetailsBlock>
+              )}
+
+              {isVgcFormat && (
+                <DetailsBlock title={t(locale, 'vgcStrategyAnalysis')} subtitle={t(locale, 'vgcStrategyAnalysisSubtitle')} count={4} locale={locale}>
+                  <VgcTeamPlanPanel option={selectedOption} locale={locale} />
+                </DetailsBlock>
+              )}
+
+              <DetailsBlock title={t(locale, 'threatAnalysis')} subtitle={t(locale, 'threatAnalysisSubtitle')} count={selectedOption.threatAnalysis?.matchups.length ?? 0} locale={locale}>
                 <ThreatReport option={selectedOption} locale={locale} />
               </DetailsBlock>
 
-              <DetailsBlock title={t(locale, 'vgcTeamPlan')} subtitle={t(locale, 'vgcTeamPlanSubtitle')} count={selectedOption.vgcTeamPlan ? 1 : 0} locale={locale}>
-                <VgcTeamPlanPanel option={selectedOption} locale={locale} />
-              </DetailsBlock>
-
-              <DetailsBlock title={t(locale, 'aiBuilderDecision')} subtitle={t(locale, 'aiBuilderDecisionSubtitle')} count={selectedOption.aiBuilder ? 1 : 0} locale={locale}>
-                <AIBuilderDecision option={selectedOption} locale={locale} />
-              </DetailsBlock>
-
-              <DetailsBlock title={t(locale, 'matchupAnalysis')} subtitle={t(locale, 'matchupAnalysisSubtitle')} count={selectedOption.damageReport?.matchups.length ?? 0} locale={locale}>
+              <DetailsBlock title={t(locale, 'matchupReadiness')} subtitle={t(locale, 'matchupReadinessSubtitle')} count={selectedOption.damageReport?.matchups.length ?? 0} locale={locale}>
                 <MatchupAnalysis option={selectedOption} locale={locale} />
+              </DetailsBlock>
+
+              <DetailsBlock title={t(locale, 'aiBuilderDecision')} subtitle={t(locale, 'aiBuilderDecisionSubtitle')} count={selectedOption.aiBuilder ? 3 : 0} locale={locale}>
+                <AIBuilderDecision option={selectedOption} locale={locale} />
               </DetailsBlock>
 
               <DetailsBlock title={t(locale, 'performanceMetrics')} subtitle={t(locale, 'performanceMetricsSubtitle')} count={6} locale={locale}>

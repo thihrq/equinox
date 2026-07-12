@@ -17,7 +17,12 @@ export type TeamIdentity =
   | 'hyper_offense'
   | 'stall'
   | 'speed'
-  | 'fun';
+  | 'fun'
+  | 'offensive'
+  | 'defensive'
+  | 'anti-meta'
+  | 'anti_meta'
+  | 'creative';
 
 export interface CandidateScoreResult {
   pokemon: PokemonData;
@@ -131,7 +136,7 @@ export class CandidateScoreEngine {
     } else if (!baseHasLikelyTrickRoomCore && spe >= 100) {
       score += 8;
       reasons.push('Adiciona boa velocidade');
-    } else if (baseHasLikelyTrickRoomCore && spe >= 90) {
+    } else if (baseHasLikelyTrickRoomCore && spe >= 90 && teamIdentity !== 'offensive' && teamIdentity !== 'creative') {
       score -= 12;
       reasons.push('Velocidade alta pode disputar o plano de Trick Room');
     }
@@ -188,6 +193,8 @@ export class CandidateScoreEngine {
       bst,
       candidateName: candidate.name,
       reasons,
+      ability: candidate.ability || '',
+      types: candidateTypes,
     });
 
     score += identityBonus;
@@ -222,6 +229,8 @@ export class CandidateScoreEngine {
     bst: number;
     candidateName: string;
     reasons: string[];
+    ability: string;
+    types: string[];
   }): number {
     const {
       teamIdentity,
@@ -235,6 +244,8 @@ export class CandidateScoreEngine {
       bst,
       candidateName,
       reasons,
+      ability,
+      types,
     } = params;
 
     let bonus = 0;
@@ -348,6 +359,52 @@ export class CandidateScoreEngine {
           bonus += 4;
         }
 
+        break;
+      }
+
+      case 'offensive': {
+        if (atk >= 110 || spa >= 110) {
+          bonus += 15;
+          reasons.push('Adiciona poder ofensivo bruto');
+        }
+        if (roles.includes('Wallbreaker')) {
+          bonus += 12;
+          reasons.push('Combina com postura ofensiva');
+        }
+        break;
+      }
+
+      case 'defensive': {
+        if (hp >= 90 || def >= 95 || spd >= 95) {
+          bonus += 15;
+          reasons.push('Reforça a estrutura defensiva do time');
+        }
+        if (roles.includes('Support') || roles.includes('Pivot') || roles.includes('Special Wall') || roles.includes('Physical Wall')) {
+          bonus += 12;
+          reasons.push('Adiciona suporte utilitário ao time');
+        }
+        break;
+      }
+
+      case 'anti-meta':
+      case 'anti_meta': {
+        const abilityLower = (ability || '').toLowerCase();
+        const hasAntiMetaFeature = ['inner focus', 'defiant', 'competitive', 'clear body', 'armor tail', 'ghost'].includes(abilityLower) ||
+                                   types.some((t: string) => t.toLowerCase() === 'ghost');
+        if (hasAntiMetaFeature) {
+          bonus += 18;
+          reasons.push('Possui recursos para quebrar jogadas comuns do meta');
+        }
+        break;
+      }
+
+      case 'creative': {
+        const topMeta = ['incineroar', 'rillaboom', 'urshifu', 'flutter mane', 'amoonguss', 'pelipper', 'sinistcha', 'tornadus', 'chiyu', 'chienpao'];
+        const isOffMeta = !topMeta.includes(candidateName.toLowerCase());
+        if (isOffMeta) {
+          bonus += 18;
+          reasons.push('Escolha fora do meta-game convencional');
+        }
         break;
       }
     }

@@ -572,6 +572,30 @@ export interface VgcRoleCoverageAnalysis {
   coverageScore: number;
 }
 
+export type TacticalInsightType =
+  | 'weather_defense' | 'redirection_setup' | 'immunity_coverage'
+  | 'speed_conflict' | 'fake_out_setter' | 'ability_synergy'
+  | 'swift_swim_rain' | 'slow_pivot' | 'wide_guard_cover'
+  | 'body_press_setup' | 'hybrid_axis_synergy';
+
+export type TacticalAvailability = 'active-now' | 'available-after-switch' | 'selected-but-inactive' | 'unavailable';
+
+export interface TacticalInsight {
+  type: TacticalInsightType;
+  pokemonInvolved: string[];
+  mechanicsUsed: string[];
+  movesRequired: string[];
+  explanation_ptBR: string;
+  explanation_enUS: string;
+  verified: boolean;
+  missingResources: string[];
+  impactScore: number;
+  availability?: TacticalAvailability;
+  fieldRequirements?: { mustBeActive: string[]; mustBeSelected: string[]; requiredWeather?: string };
+  timing?: { earliestTurn: number; requiresSwitch: boolean; immediateFromLead: boolean };
+  reliabilityScore?: number;
+}
+
 export interface VgcLeadEvaluation {
   lead: string[];
   score: number;
@@ -580,9 +604,16 @@ export interface VgcLeadEvaluation {
 
 export interface VgcModeEvaluation {
   selectedFour: string[];
+  lead?: string[];
+  backline?: string[];
+  contractValid?: boolean;
+  contractErrors?: string[];
+  warnings?: string[];
   score: number;
   leadOptions: VgcLeadEvaluation[];
   reasons: string[];
+  tacticalInsights?: TacticalInsight[];
+  turnPlanLines?: any[];
 }
 
 export interface VgcModeAnalysis {
@@ -621,6 +652,19 @@ export interface VgcTeamPlanAnalysis {
   concerns: string[];
   planSummary: string;
   score: number;
+  teamInsights?: TacticalInsight[];
+  leadMetrics?: {
+    mechanicalValidity: number;
+    initialTurnExecution: number;
+    disruptionResistance: number;
+    offensiveConversion: number;
+    strategicIndex: number;
+  };
+  assessment?: {
+    contractErrors: { code: string; message: string; severity: 'error' | 'warning' | 'risk' }[];
+    warnings: { code: string; message: string; severity: 'error' | 'warning' | 'risk' }[];
+    matchupRisks: { code: string; message: string; severity: 'error' | 'warning' | 'risk' }[];
+  };
 }
 
 export interface TeamOption {

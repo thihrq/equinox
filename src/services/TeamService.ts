@@ -88,7 +88,7 @@ export class TeamService {
   }
 
 
-  private static createFullAnalysisPipeline(): AnalysisPipeline {
+  public static createFullAnalysisPipeline(): AnalysisPipeline {
     return new AnalysisPipeline()
       .use(new DefensiveMatrixEngine())
       .use(new WeaknessScoreEngine())
@@ -179,6 +179,7 @@ export class TeamService {
         selectedPokemon: fullTeam,
         candidatePool: candidates,
         teamIdentity,
+        lockedLead: baseTeam.length === 2 ? [baseTeam[0].name, baseTeam[1].name] : undefined,
       });
 
       await pipeline.run(context);
@@ -205,11 +206,16 @@ export class TeamService {
   ) {
     console.time('EquinoxTotal');
 
-    if (!Array.isArray(currentMembers) || currentMembers.length !== 3) {
+    const isVgcFormat = format.toLowerCase().startsWith('champions');
+    const isValidLength = currentMembers.length === 3 || (isVgcFormat && currentMembers.length === 2);
+
+    if (!Array.isArray(currentMembers) || !isValidLength) {
       console.timeEnd('EquinoxTotal');
       throw new TeamSuggestionInputError(
         'INVALID_TEAM_SIZE',
-        'Informe exatamente 3 Pokémon válidos para montar a base do time.',
+        isVgcFormat
+          ? 'Informe exatamente 2 Pokémon (para construir ao redor da lead) ou 3 Pokémon (para completar o núcleo).'
+          : 'Informe exatamente 3 Pokémon válidos para montar a base do time.',
       );
     }
 
@@ -409,7 +415,7 @@ export class TeamService {
     console.timeEnd('CandidateScore');
 
     console.time('DiversitySelector');
-    const isChampionsDoublesProfile = formatSolver.mode === 'champions_doubles';
+    const isChampionsDoublesProfile = formatSolver.mode === 'champions_doubles' || formatSolver.usesBossGauntlet;
     const diversifiedResults = new DiversityCandidateSelector().select(
       scoredCandidates,
       formatSolver.getDiversityOptions(),
@@ -558,12 +564,12 @@ export class TeamService {
       rankingPipeline,
       performanceProfile.maxCombinationsToKeep,
       {
-        maxPipelineEvaluations: performanceProfile.maxPipelineEvaluations,
-        exploitationRatio: performanceProfile.exploitationRatio,
+        maxPipelineEvaluations: teamIdentity === 'creative' ? 24 : performanceProfile.maxPipelineEvaluations,
+        exploitationRatio: teamIdentity === 'creative' ? 0.60 : performanceProfile.exploitationRatio,
         anchorCandidateLimit: performanceProfile.anchorCandidateLimit,
         perAnchorCombinations: performanceProfile.perAnchorCombinations,
       },
-    ).findBestTrios({
+    ).findBestComplements({
       baseTeam: validCurrentTeam,
       candidates: dedupedFinalCandidates,
       format,

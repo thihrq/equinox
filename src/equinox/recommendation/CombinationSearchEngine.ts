@@ -80,6 +80,12 @@ interface OptimizedTrioCandidate {
   heuristicScore: number;
 }
 
+interface OptimizedQuartetCandidate {
+  quartet: PokemonData[];
+  signature: string;
+  heuristicScore: number;
+}
+
 interface OptimizerStats {
   totalPossible: number;
   validGenerated: number;
@@ -104,6 +110,15 @@ export class CombinationSearchEngine {
       anchorCandidateLimit: options?.anchorCandidateLimit ?? 24,
       perAnchorCombinations: options?.perAnchorCombinations ?? 18,
     };
+  }
+
+  public async findBestComplements(
+    params: FindBestTriosParams,
+  ): Promise<EvaluatedCombination[]> {
+    if (params.baseTeam.length === 2) {
+      return this.findBestQuartets(params);
+    }
+    return this.findBestTrios(params);
   }
 
   public async findBestTrios(
@@ -328,9 +343,19 @@ export class CombinationSearchEngine {
       if (speed > 0) speeds.push(speed);
     }
 
-    score += uniqueTypes.size * 3.5;
-    score += roles.size * 3;
-    score -= this.calculateRepeatedTypePenalty(allTypes);
+    const weightUniqueTypes = teamIdentity === 'creative' ? 14.0 : 3.5;
+    const weightRoles = teamIdentity === 'creative' ? 8.0 : 3.0;
+    const weightRepeatedPenalty = teamIdentity === 'creative' ? 6.5 : 1.0;
+
+    score += uniqueTypes.size * weightUniqueTypes;
+    score += roles.size * weightRoles;
+    score -= this.calculateRepeatedTypePenalty(allTypes) * weightRepeatedPenalty;
+
+    // Se for ofensivo, penalizar severamente acúmulo de suportes no trio para favorecer sweepers
+    if (teamIdentity === 'offensive') {
+      const supportCount = trio.filter(p => p.competitive?.roles?.includes('Support') || p.competitive?.roles?.includes('Pivot')).length;
+      if (supportCount >= 2) score -= 80;
+    }
 
     const fastest = speeds.length > 0 ? Math.max(...speeds) : 0;
     const averageSpeed = speeds.length > 0
@@ -351,6 +376,7 @@ export class CombinationSearchEngine {
       averageSpeed,
       trio,
       format,
+      baseTeam,
     });
 
     if (formatSolver.usesDoublesMechanicContracts) {
@@ -361,16 +387,20 @@ export class CombinationSearchEngine {
       const vgcPlan = evaluateVgcTeamPlan(fullTeam, format);
       const mechanicContract = evaluateVgcMechanicBlueprint(fullTeam, format, vgcPlan.archetype.id);
       const architectureCompatibility = evaluateVgcArchetypeCompatibility(fullTeam, format, vgcPlan.archetype.id);
-      score += (vgcPlan.score - 50) * 2.0;
-      score += (mechanicContract.score - 50) * 2.1;
+      const weightPlan = teamIdentity === 'creative' ? 0.8 : 2.0;
+      const weightContract = teamIdentity === 'creative' ? 0.7 : 2.1;
+      score += (vgcPlan.score - 50) * weightPlan;
+      score += (mechanicContract.score - 50) * weightContract;
       score += architectureCompatibility.score;
       score += Math.min(30, vgcPlan.modeAnalysis.viableModeCount * 6);
-      score -= vgcPlan.roleCoverage.missingCriticalRoles.length * 12;
-      score -= mechanicContract.missingCriticalMechanics.length * 45;
-      score -= mechanicContract.conflictWarnings.length * 24;
-      score -= architectureCompatibility.hardFailures.length * 95;
-      score -= architectureCompatibility.warnings.length * 32;
-      score -= vgcPlan.roleCoverage.redundancyWarnings.length * 6;
+
+      const penaltyScale = teamIdentity === 'creative' ? 0.4 : 1.0;
+      score -= vgcPlan.roleCoverage.missingCriticalRoles.length * 12 * penaltyScale;
+      score -= mechanicContract.missingCriticalMechanics.length * 45 * penaltyScale;
+      score -= mechanicContract.conflictWarnings.length * 24 * penaltyScale;
+      score -= architectureCompatibility.hardFailures.length * 95 * penaltyScale;
+      score -= architectureCompatibility.warnings.length * 32 * penaltyScale;
+      score -= vgcPlan.roleCoverage.redundancyWarnings.length * 6 * penaltyScale;
 
       if (baseHasLikelyTrickRoomCore) {
         const hasPremiumTrickRoomRedirection = fullTeam.some(pokemon => isPremiumTrickRoomRedirectionForVgc(pokemon));
@@ -394,7 +424,9 @@ export class CombinationSearchEngine {
 
         if (trickRoomSetterCount >= 2) score += 70;
         if (trickRoomAbuserCount >= 3) score += 55;
-        if (fastNonTrickRoomPieces > 0) score -= fastNonTrickRoomPieces * 60;
+
+        const speedPenaltyWeight = (teamIdentity === 'offensive' || teamIdentity === 'creative') ? 15 : 60;
+        if (fastNonTrickRoomPieces > 0) score -= fastNonTrickRoomPieces * speedPenaltyWeight;
         if (disfavoredFastSetup > 0) score -= disfavoredFastSetup * 75;
         if (fireMembers >= 3) score -= 80;
       }
@@ -445,8 +477,9 @@ export class CombinationSearchEngine {
     averageSpeed: number;
     trio: PokemonData[];
     format: string;
+    baseTeam: PokemonData[];
   }): number {
-    const { teamIdentity, roles, fastest, averageSpeed, trio, format } = params;
+    const { teamIdentity, roles, fastest, averageSpeed, trio, format, baseTeam } = params;
     const offensivePower = trio.reduce((sum, pokemon) => {
       const stats = getVariant(pokemon, format)?.baseStats;
       return sum + Math.max(Number(stats?.atk ?? 0), Number(stats?.spa ?? 0));
@@ -458,6 +491,50 @@ export class CombinationSearchEngine {
     }, 0) / Math.max(1, trio.length);
 
     switch (teamIdentity) {
+      case 'offensive': {
+        let bonus = 0;
+        if (offensivePower >= 110) bonus += 50;
+        else if (offensivePower >= 95) bonus += 25;
+        if (fastest >= 95) bonus += 25;
+        const supportMon = trio.filter(p => p.competitive?.roles?.includes('Pivot') || p.competitive?.roles?.includes('Support')).length;
+        if (supportMon >= 2) bonus -= 30;
+        return bonus;
+      }
+      case 'defensive': {
+        let bonus = 0;
+        if (defensivePower >= 260) bonus += 50;
+        else if (defensivePower >= 240) bonus += 25;
+        const hasSupport = trio.some(p => p.competitive?.roles?.includes('Pivot') || p.competitive?.roles?.includes('Support') || p.competitive?.roles?.includes('Special Wall') || p.competitive?.roles?.includes('Physical Wall'));
+        if (hasSupport) bonus += 25;
+        return bonus;
+      }
+      case 'anti-meta':
+      case 'anti_meta': {
+        let bonus = 0;
+        const hasAntiMetaAbility = trio.some(p => {
+          const ability = (p.ability || '').toLowerCase();
+          return ['inner focus', 'defiant', 'competitive', 'clear body', 'armor tail', 'ghost'].includes(ability) ||
+                  getPokemonTypes(p, format).some((t: string) => t.toLowerCase() === 'ghost');
+        });
+        if (hasAntiMetaAbility) bonus += 45;
+        return bonus;
+      }
+      case 'creative': {
+        let bonus = 0;
+        const topMeta = ['incineroar', 'rillaboom', 'urshifu', 'flutter mane', 'amoonguss', 'pelipper', 'sinistcha', 'tornadus', 'chiyu', 'chienpao'];
+        const creativeMons = trio.filter(p => !topMeta.includes(p.name.toLowerCase()));
+        bonus += creativeMons.length * 45;
+
+        const uniqueTypes = new Set(trio.flatMap(p => getPokemonTypes(p, format)));
+        const baseTypes = new Set(baseTeam.flatMap(p => getPokemonTypes(p, format)));
+        let newTypesCount = 0;
+        for (const t of uniqueTypes) {
+          if (!baseTypes.has(t)) newTypesCount++;
+        }
+        bonus += newTypesCount * 25;
+
+        return bonus;
+      }
       case 'hyper_offense':
         return (fastest >= 110 ? 10 : 0) + (offensivePower >= 115 ? 10 : 0);
       case 'bulky_offense':
@@ -513,6 +590,7 @@ export class CombinationSearchEngine {
         const baseItems = baseTeam.map(p => p.item).filter(Boolean) as string[];
         const baseHasItemDuplicate = new Set(baseItems).size < baseItems.length;
         if (!baseHasItemDuplicate) {
+          console.log('[DEBUG-REJECT] Item Clause violada:', teamItems);
           return false;
         }
       }
@@ -521,6 +599,7 @@ export class CombinationSearchEngine {
     if (formatSolver.usesDoublesMechanicContracts) {
       const baseHasConflict = this.hasConflict(baseTeam, format);
       if (!baseHasConflict && this.hasConflict(team, format)) {
+        console.log('[DEBUG-REJECT] Conflito de eixos na equipe inteira');
         return false;
       }
 
@@ -530,12 +609,16 @@ export class CombinationSearchEngine {
       const baseHasLikelyTrickRoomCore = hasLikelyTrickRoomCoreForVgc(baseTeam, format);
 
       if (baseHasSunSetter && !baseHasPrimarySunAbuser && !teamHasPrimarySunAbuser && !baseHasLikelyTrickRoomCore) {
+        console.log('[DEBUG-REJECT] Sun core inválido');
         return false;
       }
     }
 
     const validation = formatSolver.validateFinalTeam(team, format);
-    if (!validation.valid) return false;
+    if (!validation.valid) {
+      console.log('[DEBUG-REJECT] validateFinalTeam inválido:', validation.hardFailures);
+      return false;
+    }
 
     const objective = evaluateFormatTeamObjective({
       mode: formatSolver.mode,
@@ -544,7 +627,12 @@ export class CombinationSearchEngine {
       format,
     });
 
-    return objective.hardFailures.length === 0;
+    if (objective.hardFailures.length > 0) {
+      console.log('[DEBUG-REJECT] objective.hardFailures:', objective.hardFailures);
+      return false;
+    }
+
+    return true;
   }
 
   private hasConflict(team: PokemonData[], format: string): boolean {
@@ -732,6 +820,15 @@ export class CombinationSearchEngine {
     const vgcPlanA = a.context.analysis.vgcTeamPlan;
     const vgcPlanB = b.context.analysis.vgcTeamPlan;
 
+    if (a.context.teamIdentity === 'creative' || a.context.teamIdentity === 'fun') {
+      const topMeta = ['incineroar', 'rillaboom', 'urshifu', 'flutter mane', 'amoonguss', 'pelipper', 'sinistcha', 'tornadus', 'chiyu', 'chienpao', 'togekiss'];
+      const offMetaA = a.team.filter(p => !topMeta.includes(p.name.toLowerCase())).length;
+      const offMetaB = b.team.filter(p => !topMeta.includes(p.name.toLowerCase())).length;
+      if (offMetaA !== offMetaB) {
+        return offMetaB - offMetaA;
+      }
+    }
+
     if (vgcPlanA && vgcPlanB) {
       const missingMechanicsA = vgcPlanA.mechanicCoverage?.missingCriticalMechanics?.length ?? 0;
       const missingMechanicsB = vgcPlanB.mechanicCoverage?.missingCriticalMechanics?.length ?? 0;
@@ -815,5 +912,144 @@ export class CombinationSearchEngine {
     }
 
     return numerator / denominator;
+  }
+
+  public async findBestQuartets(
+    params: FindBestTriosParams,
+  ): Promise<EvaluatedCombination[]> {
+    const { baseTeam, candidates, format, teamIdentity = 'balanced' } = params;
+    const formatSolver = params.formatSolver ?? this.solverRegistry.getSolver(format);
+    const best: EvaluatedCombination[] = [];
+
+    const { quartets, stats } = this.buildOptimizedQuartetSearchSpace(params);
+
+    console.log(
+      `[Equinox] CombinationOptimizer (Quartets): possible=${stats.totalPossible}, valid=${stats.validGenerated}, evaluated=${stats.selectedForPipeline}, skippedInvalid=${stats.skippedInvalid}`,
+    );
+
+    for (const candidate of quartets) {
+      const fullTeam = formatSolver.normalizeFinalTeam([...baseTeam, ...candidate.quartet], format);
+      const normalizedQuartet = fullTeam.slice(baseTeam.length);
+
+      const context = new AnalysisContext({
+        format,
+        selectedPokemon: fullTeam,
+        candidatePool: candidates,
+        teamIdentity,
+      });
+
+      await this.pipeline.run(context);
+
+      this.insertIfRelevant(best, {
+        team: normalizedQuartet,
+        context,
+      });
+    }
+
+    return best.sort(this.compareCombinations);
+  }
+
+  private buildOptimizedQuartetSearchSpace(
+    params: FindBestTriosParams,
+  ): { quartets: OptimizedQuartetCandidate[]; stats: OptimizerStats } {
+    const { baseTeam, candidates, format } = params;
+    const formatSolver = params.formatSolver ?? this.solverRegistry.getSolver(format);
+    const len = Math.min(candidates.length, 15);
+    const totalPossible = this.combinationCount(len, 4);
+    const allValid: OptimizedQuartetCandidate[] = [];
+    let skippedInvalid = 0;
+
+    for (let i = 0; i < len; i++) {
+      for (let j = i + 1; j < len; j++) {
+        for (let k = j + 1; k < len; k++) {
+          for (let l = k + 1; l < len; l++) {
+            const quartet = [candidates[i], candidates[j], candidates[k], candidates[l]];
+            const quartetSpecies = new Set(quartet.map(pokemon => getSpeciesClauseKey(pokemon.name)));
+            if (quartetSpecies.size !== quartet.length) {
+              skippedInvalid++;
+              continue;
+            }
+
+            const fullTeam = formatSolver.normalizeFinalTeam([...baseTeam, ...quartet], format);
+
+            const validation = formatSolver.validateFinalTeam(fullTeam, format);
+            if (!validation.valid) {
+              if (skippedInvalid < 5) {
+                console.log(`[DEBUG] Combinação inválida: ${fullTeam.map(p => p.name).join(', ')} | Falhas:`, validation.hardFailures);
+              }
+              skippedInvalid++;
+              continue;
+            }
+
+            if (!this.isValidTeam(fullTeam, baseTeam, format, formatSolver)) {
+              if (skippedInvalid < 5) {
+                console.log(`[DEBUG] Combinação rejeitada por isValidTeam: ${fullTeam.map(p => p.name).join(', ')}`);
+              }
+              skippedInvalid++;
+              continue;
+            }
+
+            allValid.push({
+              quartet,
+              signature: this.getSignature(quartet),
+              heuristicScore: this.calculateHeuristicScore(quartet, params, formatSolver),
+            });
+          }
+        }
+      }
+    }
+
+    allValid.sort((a, b) => b.heuristicScore - a.heuristicScore);
+
+    const searchBudget = Math.min(
+      this.options.maxPipelineEvaluations,
+      allValid.length,
+    );
+
+    if (allValid.length <= searchBudget) {
+      return {
+        quartets: allValid,
+        stats: {
+          totalPossible,
+          validGenerated: allValid.length,
+          selectedForPipeline: allValid.length,
+          skippedInvalid,
+        },
+      };
+    }
+
+    const selected = new Map<string, OptimizedQuartetCandidate>();
+    const exploitationBudget = Math.max(
+      Math.floor(searchBudget * this.options.exploitationRatio),
+      1,
+    );
+
+    for (let i = 0; i < exploitationBudget; i++) {
+      const candidate = allValid[i];
+      if (candidate) {
+        selected.set(candidate.signature, candidate);
+      }
+    }
+
+    const explorationBudget = searchBudget - selected.size;
+    let attempts = 0;
+    while (selected.size < searchBudget && attempts < 1000 && allValid.length > 0) {
+      attempts++;
+      const index = Math.floor(Math.random() * allValid.length);
+      const candidate = allValid[index];
+      if (candidate && !selected.has(candidate.signature)) {
+        selected.set(candidate.signature, candidate);
+      }
+    }
+
+    return {
+      quartets: Array.from(selected.values()),
+      stats: {
+        totalPossible,
+        validGenerated: allValid.length,
+        selectedForPipeline: selected.size,
+        skippedInvalid,
+      },
+    };
   }
 }

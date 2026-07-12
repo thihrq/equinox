@@ -1,4 +1,7 @@
 import { PokemonData } from '../core/AnalysisContext';
+import type { TacticalInsight } from './TacticalInsightTypes';
+import { analyzeTacticalInteractions } from './TacticalInteractionAnalyzer';
+import { validateModeContract } from './VgcModeContractValidator';
 import { getPokemonTypes, getVariant } from '../utils/PokemonUtils';
 import { getDamageMultiplier } from '../utils/DamageMultiplier';
 import {
@@ -81,9 +84,15 @@ export interface VgcLeadEvaluation {
 
 export interface VgcModeEvaluation {
   selectedFour: string[];
+  lead: string[];
+  backline: string[];
+  contractValid: boolean;
+  contractErrors: string[];
+  warnings: string[];
   score: number;
   leadOptions: VgcLeadEvaluation[];
   reasons: string[];
+  tacticalInsights: TacticalInsight[];
 }
 
 export interface VgcModeAnalysis {
@@ -113,6 +122,14 @@ export interface VgcTeamPlanAnalysis {
   concerns: string[];
   planSummary: string;
   score: number;
+  teamInsights: TacticalInsight[];
+  leadMetrics?: {
+    mechanicalValidity: number;
+    initialTurnExecution: number;
+    disruptionResistance: number;
+    offensiveConversion: number;
+    strategicIndex: number;
+  };
 }
 
 interface RoleRequirementProfile {
@@ -688,11 +705,11 @@ export function inferVgcArchetype(team: PokemonData[], format: string): VgcArche
   return { id: 'balance', label: 'Balance', confidence: 58, signals };
 }
 
-export function evaluateVgcTeamPlan(team: PokemonData[], format: string): VgcTeamPlanAnalysis {
+export function evaluateVgcTeamPlan(team: PokemonData[], format: string, lockedLead?: [string, string]): VgcTeamPlanAnalysis {
   const archetype = inferVgcArchetype(team, format);
   const roleCoverage = evaluateRoleCoverage(team, format, archetype.id);
   const mechanicCoverage = evaluateVgcMechanicBlueprint(team, format, archetype.id);
-  const modeAnalysis = evaluateModes(team, format, archetype.id);
+  const modeAnalysis = evaluateModes(team, format, archetype.id, lockedLead);
   const matchupReadiness = evaluateMatchups(team, format);
 
   const score = clamp(
@@ -706,6 +723,8 @@ export function evaluateVgcTeamPlan(team: PokemonData[], format: string): VgcTea
   const recommendations = buildRecommendations(roleCoverage, mechanicCoverage, modeAnalysis, matchupReadiness, archetype);
   const concerns = buildConcerns(roleCoverage, mechanicCoverage, modeAnalysis, matchupReadiness);
 
+  const teamInsights = analyzeTacticalInteractions(team, format);
+
   return {
     archetype,
     roleCoverage,
@@ -716,6 +735,7 @@ export function evaluateVgcTeamPlan(team: PokemonData[], format: string): VgcTea
     concerns,
     planSummary: buildPlanSummary(archetype, roleCoverage, mechanicCoverage, modeAnalysis, score),
     score,
+    teamInsights,
   };
 }
 
@@ -723,6 +743,7 @@ export function evaluateVgcCandidateFit(
   candidate: PokemonData,
   baseTeam: PokemonData[],
   format: string,
+  teamIdentity?: string,
 ): { score: number; reasons: string[]; roles: VgcRole[]; archetype: VgcArchetypeAnalysis } {
   const archetype = inferVgcArchetype(baseTeam, format);
   const baseCoverage = evaluateRoleCoverage(baseTeam, format, archetype.id);
@@ -797,7 +818,7 @@ export function evaluateVgcCandidateFit(
       reasons.push('É um suporte naturalmente coerente com times lentos de Trick Room');
     }
 
-    if (candidateSpeed >= 100 && !candidateRoles.includes('Turn Control')) {
+    if (candidateSpeed >= 100 && !candidateRoles.includes('Turn Control') && teamIdentity !== 'offensive' && teamIdentity !== 'creative') {
       score -= 34;
     }
 
@@ -1013,17 +1034,24 @@ function evaluateRoleCoverage(team: PokemonData[], format: string, archetype: Vg
   };
 }
 
-function evaluateModes(team: PokemonData[], format: string, archetype: VgcArchetypeId): VgcModeAnalysis {
+function evaluateModes(team: PokemonData[], format: string, archetype: VgcArchetypeId, lockedLead?: [string, string]): VgcModeAnalysis {
   // Os 3 primeiros Pokémon são assumidos como as sementes inseridas pelo usuário
   const userSeeds = team.slice(0, 3).map(p => p.name);
 
-  const fours = combinations(team, Math.min(4, team.length));
+  let fours = combinations(team, Math.min(4, team.length));
+  if (lockedLead) {
+    // Mantém apenas quartetos que possuem ambos os Pokémon da lead travada
+    fours = fours.filter(four =>
+      four.some(p => p.name === lockedLead[0]) && four.some(p => p.name === lockedLead[1])
+    );
+  }
+
   const modes = fours.map(four => {
-    const evalResult = evaluateFour(four, format, archetype);
-    
+    const evalResult = evaluateFour(four, format, archetype, lockedLead);
+
     // Contar quantas sementes do usuário estão presentes no modo de 4
     const seedCount = four.filter(p => userSeeds.includes(p.name)).length;
-    
+
     // Adicionar bônus de relevância para manter os Pokémon originais nas estratégias do Playbook
     const seedBonus = seedCount * 12; // Ex: 3 sementes presentes = +36 pontos de score de modo
     evalResult.score = clamp(evalResult.score + seedBonus);
@@ -1037,8 +1065,29 @@ function evaluateModes(team: PokemonData[], format: string, archetype: VgcArchet
     return evalResult;
   }).sort((a, b) => b.score - a.score);
 
-  const viableModes = modes.filter(mode => mode.score >= 62).slice(0, 5);
-  const bestLeads = modes.flatMap(mode => mode.leadOptions).sort((a, b) => b.score - a.score).slice(0, 5);
+  const uniqueModes = modes.filter((mode, index, allModes) => {
+    const signature = JSON.stringify({
+      lead: [...mode.lead].sort(),
+      primaryInsight: mode.tacticalInsights[0]?.type ?? 'none',
+      hasRain: mode.tacticalInsights.some(insight => insight.type === 'swift_swim_rain'),
+      hasTrickRoom: mode.selectedFour.some(name => {
+        const pokemon = team.find(member => member.name === name);
+        return pokemon ? hasAny(getMoveValues(pokemon), ['Trick Room']) : false;
+      }),
+    });
+    return allModes.findIndex(candidate => JSON.stringify({
+      lead: [...candidate.lead].sort(),
+      primaryInsight: candidate.tacticalInsights[0]?.type ?? 'none',
+      hasRain: candidate.tacticalInsights.some(insight => insight.type === 'swift_swim_rain'),
+      hasTrickRoom: candidate.selectedFour.some(name => {
+        const pokemon = team.find(member => member.name === name);
+        return pokemon ? hasAny(getMoveValues(pokemon), ['Trick Room']) : false;
+      }),
+    }) === signature) === index;
+  });
+
+  const viableModes = uniqueModes.filter(mode => mode.contractValid && mode.score >= 62).slice(0, 5);
+  const bestLeads = uniqueModes.flatMap(mode => mode.leadOptions).sort((a, b) => b.score - a.score).slice(0, 5);
   const averageTopModes = modes.slice(0, 5).reduce((sum, mode) => sum + mode.score, 0) / Math.max(1, Math.min(5, modes.length));
 
   return {
@@ -1049,11 +1098,18 @@ function evaluateModes(team: PokemonData[], format: string, archetype: VgcArchet
   };
 }
 
-function evaluateFour(four: PokemonData[], format: string, archetype: VgcArchetypeId): VgcModeEvaluation {
+function evaluateFour(four: PokemonData[], format: string, archetype: VgcArchetypeId, lockedLead?: [string, string]): VgcModeEvaluation {
   const roleCoverage = evaluateRoleCoverage(four, format, archetype);
-  const leads = combinations(four, Math.min(2, four.length))
+  let leads = combinations(four, Math.min(2, four.length))
     .map(lead => evaluateLeadPair(lead, format, archetype))
     .sort((a, b) => b.score - a.score);
+
+  if (lockedLead) {
+    // Filtra para manter estritamente apenas a lead travada pelo usuário (independente da ordem)
+    leads = leads.filter(l =>
+      l.lead.includes(lockedLead[0]) && l.lead.includes(lockedLead[1])
+    );
+  }
 
   const topLeadScore = leads[0]?.score ?? 0;
   const reasons: string[] = [];
@@ -1147,11 +1203,42 @@ function evaluateFour(four: PokemonData[], format: string, archetype: VgcArchety
   if (roleCoverage.detectedRoles['Anti Trick Room'].length) reasons.push('Tem resposta ativa contra Trick Room/setup.');
   if (roleCoverage.detectedRoles['Redirection'].length) reasons.push('Consegue proteger atacante-chave com redirecionamento.');
 
+  // Penalidade por conflito híbrido de velocidade (Swift Swim + Trick Room/eixo lento)
+  const hasSwiftSwimmer = four.some(p => hasAny(getAbilityValues(p, format), ['Swift Swim']));
+  const hasTrOrSlow = four.some(p =>
+    hasAny(getMoveValues(p), ['Trick Room']) ||
+    (Number(getVariant(p, format)?.baseStats?.spe ?? 80) <= 55 && !hasAny(getAbilityValues(p, format), ['Swift Swim']))
+  );
+  if (hasSwiftSwimmer && hasTrOrSlow) {
+    score -= 12;
+    reasons.push('Mistura de Swift Swim e Trick Room/eixo lento na mesma seleção.');
+  }
+
+  const primaryLead = leads[0]?.lead ?? four.slice(0, 2).map(pokemon => pokemon.name);
+  const selectedFour = four.map(pokemon => pokemon.name);
+  const backline = selectedFour.filter(name => !primaryLead.includes(name));
+  const contract = validateModeContract({ selectedFour, lead: primaryLead, backline }, four);
+  const tacticalInsights = analyzeTacticalInteractions(four, format, { lead: primaryLead, backline });
+
+  const activeImmediateInsights = tacticalInsights.filter(insight => insight.availability === 'active-now' && insight.verified).length;
+  const deferredInsights = tacticalInsights.filter(insight => insight.availability === 'available-after-switch').length;
+  if (activeImmediateInsights === 0) {
+    score -= 10;
+    reasons.push('Lead com baixa pressão ou interação imediata.');
+  }
+  score -= Math.min(12, deferredInsights * 3);
+
   return {
-    selectedFour: four.map(pokemon => pokemon.name),
-    score: Math.min(95, clamp(score)),
+    selectedFour,
+    lead: primaryLead,
+    backline,
+    contractValid: contract.valid,
+    contractErrors: contract.errors,
+    warnings: contract.warnings,
+    score: contract.valid ? Math.min(90, clamp(score)) : 0,
     leadOptions: leads.slice(0, 3),
-    reasons: reasons.slice(0, 4),
+    reasons: reasons.slice(0, 5),
+    tacticalInsights,
   };
 }
 
@@ -1167,12 +1254,18 @@ function evaluateLeadPair(lead: PokemonData[], format: string, archetype: VgcArc
 
   const hasLeadSunSetter = lead.some(pokemon => hasActiveSunSetter(pokemon, format));
   const hasLeadPrimarySunAbuser = lead.some(pokemon => hasPrimarySunAbuser(pokemon, format));
-  const hasLeadTrickRoomSetter = lead.some(pokemon => isLikelyTrickRoomSetterForVgc(pokemon) || hasAny(getMoveValues(pokemon), ['Trick Room']));
-  const hasLeadTrickRoomSupport = pairHas('Redirection') || pairHas('Turn Control') || lead.some(pokemon => hasAny(getAbilityValues(pokemon, format), ['Armor Tail', 'Psychic Surge']));
+  const trickRoomSetters = lead.filter(pokemon => isLikelyTrickRoomSetterForVgc(pokemon) || hasAny(getMoveValues(pokemon), ['Trick Room']));
+  const hasLeadTrickRoomSetter = trickRoomSetters.length > 0;
+  const hasIndependentTrickRoomSupport = trickRoomSetters.some(setter =>
+    lead.some(partner => partner.name !== setter.name && (
+      hasAny(getMoveValues(partner), ['Fake Out', 'Follow Me', 'Rage Powder']) ||
+      hasAny(getAbilityValues(partner, format), ['Armor Tail', 'Psychic Surge'])
+    )),
+  );
   const hasLeadSlowAbuser = lead.some(pokemon => isLikelyTrickRoomAbuserForVgc(pokemon, format));
 
-  if (isTrickRoomArchetype(archetype) && hasLeadTrickRoomSetter && hasLeadTrickRoomSupport) {
-    score += 38;
+  if (isTrickRoomArchetype(archetype) && hasLeadTrickRoomSetter && hasIndependentTrickRoomSupport) {
+    score += 45;
     reasons.push('Lead ajuda a colocar Trick Room com segurança.');
   } else if (isTrickRoomArchetype(archetype) && hasLeadTrickRoomSetter && hasLeadSlowAbuser) {
     score += 28;
@@ -1184,7 +1277,7 @@ function evaluateLeadPair(lead: PokemonData[], format: string, archetype: VgcArc
   const hasLeadRainSupport = lead.some(pokemon => hasRainSupport(pokemon, format));
 
   if (isRainArchetype(archetype) && hasLeadRainSetter && hasLeadRainAbuser) {
-    score += 38;
+    score += 52;
     reasons.push('Lead executa imediatamente setter de chuva + abuser primário.');
   } else if (isRainArchetype(archetype) && hasLeadRainSetter && hasLeadRainSupport) {
     score += 24;
@@ -1231,6 +1324,12 @@ function evaluateLeadPair(lead: PokemonData[], format: string, archetype: VgcArc
 
   if (isSunArchetype(archetype) && pairHas('Weather Setter') && pairHas('Anti Weather')) {
     score += 6;
+  }
+
+  const dedicatedAttackers = roleSets.filter(roles => roles.has('Physical Damage') || roles.has('Special Damage')).length;
+  if (dedicatedAttackers === 0) {
+    score -= 20;
+    reasons.push('Lead sem pressão ofensiva imediata.');
   }
 
   return {

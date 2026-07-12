@@ -482,7 +482,7 @@ export function evaluateVgcSetQuality(
     }
   }
 
-  if (isTrickRoomBlueprint(archetype) && hasWeatherSpeedDoublingAbility(pokemon, format) && getEffectiveWeatherSpeedForContract(pokemon, format) >= 80) {
+  if (archetype === 'hard_trick_room' && hasWeatherSpeedDoublingAbility(pokemon, format) && getEffectiveWeatherSpeedForContract(pokemon, format) >= 80) {
     hardFailures.push(`${pokemon.name} usa habilidade que dobra Speed no clima e cria modo oposto ao contrato de Trick Room.`);
   }
 
@@ -534,7 +534,7 @@ export function evaluateVgcSetQuality(
     hardFailures.push(`${pokemon.name} foi classificado como peça ofensiva, mas o set não possui dano confiável.`);
   }
 
-  if (isTrickRoomBlueprint(archetype)) {
+  if (archetype === 'hard_trick_room') {
     const hasTrickRoomContribution = slots.has('trick_room_setter') || slots.has('trick_room_abuser') || slots.has('trick_room_protection') || slots.has('premium_redirection') || slots.has('turn_control') || slots.has('defensive_glue') || slots.has('priority');
     if (!hasTrickRoomContribution && isDamageRole) {
       warnings.push(`${pokemon.name} não entrega contribuição clara para o contrato de Trick Room.`);
