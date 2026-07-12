@@ -63,6 +63,14 @@ Promocao para `verified` ou `active` continua bloqueada e exige revisao humana e
 
 ## Staging
 
+Preflight sem MongoDB:
+
+```powershell
+$env:EQUINOX_DATA_MODE="filesystem"
+$env:EQUINOX_ALLOW_DATABASE_WRITES="false"
+npm run sets:publish:staging:dry
+```
+
 Staging deve usar colecao separada:
 
 ```powershell
@@ -73,6 +81,13 @@ npm run sets:publish:staging
 ```
 
 O comando bloqueia pacotes `draft` e tambem bloqueia registros `draft`, `quarantined` ou `deprecated`. Nunca publicar diretamente em `pokemonsets`.
+
+Antes de executar o publish real, confirme:
+
+- `MONGODB_URI` aponta para o ambiente correto.
+- `EQUINOX_TARGET_COLLECTION` esta exatamente como `pokemonsets_v2_staging`.
+- `npm run preflight` passou.
+- `npm run sets:publish:staging:dry` passou com `[WRITES] 0`.
 
 ## Publicacao Futura
 
