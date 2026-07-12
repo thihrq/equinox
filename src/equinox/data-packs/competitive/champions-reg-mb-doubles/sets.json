@@ -117,14 +117,21 @@
       "sourceType": "curated",
       "sourceUpdatedAt": "2026-07-12",
       "confidence": 78,
-      "status": "draft",
+      "status": "reviewed",
       "dataVersion": "2026.07.1",
+      "coherenceScore": 82,
       "humanReview": {
         "reviewedBy": "Equinox technical curation pass",
         "reviewedAt": "2026-07-12",
-        "reviewResult": "kept-draft",
-        "reviewerNotes": "Structure, legality and coherence validators pass, but this set was not part of the four-set priority gate.",
-        "nextGate": "Needs role, spread, item and matchup review before draft -> reviewed."
+        "reviewResult": "approved-for-staging-reviewed",
+        "reviewScope": "Fase 4 pilot curation; reviewed for staging publish only, not verified and not active.",
+        "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
+        "teamBuilderReview": "Approved as a secondary redirection support option for balance and setup structures in staging validation.",
+        "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
+        "reviewerNotes": "Approved as an alternate Sinistcha support set. Rage Powder, Life Dew and Protect keep the set aligned with defensive board control.",
+        "spreadJustification": "252 HP with physical bias supports repeated redirection turns while preserving enough special bulk for mixed boards.",
+        "limitations": "Rocky Helmet and Life Dew value still require staging matchup review before verified.",
+        "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
       }
     },
     {
@@ -244,14 +251,21 @@
       "sourceType": "generated",
       "sourceUpdatedAt": "2026-07-12",
       "confidence": 76,
-      "status": "draft",
+      "status": "reviewed",
       "dataVersion": "2026.07.1",
+      "coherenceScore": 80,
       "humanReview": {
         "reviewedBy": "Equinox technical curation pass",
         "reviewedAt": "2026-07-12",
-        "reviewResult": "kept-draft",
-        "reviewerNotes": "Structure, legality and coherence validators pass, but this set was not part of the four-set priority gate.",
-        "nextGate": "Needs role, spread, item and matchup review before draft -> reviewed."
+        "reviewResult": "approved-for-staging-reviewed",
+        "reviewScope": "Fase 4 pilot curation; reviewed for staging publish only, not verified and not active.",
+        "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
+        "teamBuilderReview": "Approved as a secondary Body Press win condition for staging validation.",
+        "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
+        "reviewerNotes": "Approved as a slower defensive attacker branch. Iron Defense, Body Press and Protect match the declared physical-wall role.",
+        "spreadJustification": "Max HP and max Defense make the Body Press line coherent, but the 31 Spe IV keeps it less specialized than the main Trick Room breaker.",
+        "limitations": "Generated source type and speed IV choice require matchup review before verified.",
+        "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
       }
     },
     {
@@ -371,14 +385,21 @@
       "sourceType": "generated",
       "sourceUpdatedAt": "2026-07-12",
       "confidence": 74,
-      "status": "draft",
+      "status": "reviewed",
       "dataVersion": "2026.07.1",
+      "coherenceScore": 78,
       "humanReview": {
         "reviewedBy": "Equinox technical curation pass",
         "reviewedAt": "2026-07-12",
-        "reviewResult": "kept-draft",
-        "reviewerNotes": "Structure, legality and coherence validators pass, but this set was not part of the four-set priority gate.",
-        "nextGate": "Needs role, spread, item and matchup review before draft -> reviewed."
+        "reviewResult": "approved-for-staging-reviewed",
+        "reviewScope": "Fase 4 pilot curation; reviewed for staging publish only, not verified and not active.",
+        "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
+        "teamBuilderReview": "Approved as a faster Incineroar tempo branch for staging validation.",
+        "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
+        "reviewerNotes": "Approved for staging as a tempo pivot. Fake Out, Taunt and Parting Shot support anti-setup play patterns.",
+        "spreadJustification": "Speed investment supports proactive Taunt lines, with HP and Attack preserving pivot utility.",
+        "limitations": "Generated source type and fast Incineroar role require ladder/meta review before verified.",
+        "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
       }
     },
     {
@@ -431,14 +452,21 @@
       "sourceType": "generated",
       "sourceUpdatedAt": "2026-07-12",
       "confidence": 75,
-      "status": "draft",
+      "status": "reviewed",
       "dataVersion": "2026.07.1",
+      "coherenceScore": 80,
       "humanReview": {
         "reviewedBy": "Equinox technical curation pass",
         "reviewedAt": "2026-07-12",
-        "reviewResult": "kept-draft",
-        "reviewerNotes": "Structure, legality and coherence validators pass, but this set was not part of the four-set priority gate.",
-        "nextGate": "Needs role, spread, item and matchup review before draft -> reviewed."
+        "reviewResult": "approved-for-staging-reviewed",
+        "reviewScope": "Fase 4 pilot curation; reviewed for staging publish only, not verified and not active.",
+        "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
+        "teamBuilderReview": "Approved as a generic redirection support option for staging validation.",
+        "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
+        "reviewerNotes": "Approved for staging as a Follow Me support branch. Helping Hand, Air Slash and Protect preserve utility without overstating offensive pressure.",
+        "spreadJustification": "HP with mixed bulk supports repeated redirection and leaves Togekiss consistent with the support role.",
+        "limitations": "Generated source type and item choice require usage review before verified.",
+        "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
       }
     },
     {
@@ -558,14 +586,21 @@
       "sourceType": "generated",
       "sourceUpdatedAt": "2026-07-12",
       "confidence": 74,
-      "status": "draft",
+      "status": "reviewed",
       "dataVersion": "2026.07.1",
+      "coherenceScore": 80,
       "humanReview": {
         "reviewedBy": "Equinox technical curation pass",
         "reviewedAt": "2026-07-12",
-        "reviewResult": "kept-draft",
-        "reviewerNotes": "Structure, legality and coherence validators pass, but this set was not part of the four-set priority gate.",
-        "nextGate": "Needs role, spread, item and matchup review before draft -> reviewed."
+        "reviewResult": "approved-for-staging-reviewed",
+        "reviewScope": "Fase 4 pilot curation; reviewed for staging publish only, not verified and not active.",
+        "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
+        "teamBuilderReview": "Approved as a special-wall branch for staging validation.",
+        "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
+        "reviewerNotes": "Approved for staging as a defensive Alolan Muk option. Knock Off, Poison Jab and Protect preserve utility while Minimize marks it as a matchup-sensitive branch.",
+        "spreadJustification": "Max HP and special bulk fit the declared special-wall role.",
+        "limitations": "Generated source type and Minimize slot require explicit format and sportsmanship review before verified.",
+        "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
       }
     }
   ]

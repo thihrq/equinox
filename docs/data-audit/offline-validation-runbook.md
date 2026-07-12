@@ -51,7 +51,7 @@ Nao utilizar V2 em producao ate aprovacao formal dos sets e do staging.
 
 ## Pacote Piloto
 
-O pacote `champions-reg-mb-doubles` permanece `draft`. Os arquivos obrigatorios sao:
+O pacote `champions-reg-mb-doubles` esta `reviewed` e pronto apenas para staging. Os arquivos obrigatorios sao:
 
 - `manifest.json`
 - `regulation.json`
@@ -59,7 +59,7 @@ O pacote `champions-reg-mb-doubles` permanece `draft`. Os arquivos obrigatorios 
 - `sets.json`
 - `audit.json`
 
-Promocao de status exige revisao humana em `docs/data-audit/pilot-curation-review.md`.
+Promocao para `verified` ou `active` continua bloqueada e exige revisao humana em `docs/data-audit/pilot-curation-review.md`.
 
 ## Staging
 
@@ -72,17 +72,16 @@ $env:EQUINOX_TARGET_COLLECTION="pokemonsets_v2_staging"
 npm run sets:publish:staging
 ```
 
-O comando bloqueia pacotes `draft`; ele so deve ser usado depois de `reviewed` ou superior. Nunca publicar diretamente em `pokemonsets`.
+O comando bloqueia pacotes `draft` e tambem bloqueia registros `draft`, `quarantined` ou `deprecated`. Nunca publicar diretamente em `pokemonsets`.
 
 ## Publicacao Futura
 
-1. Completar revisao humana.
-2. Promover `draft` para `reviewed`.
-3. Rodar `npm run preflight`.
-4. Publicar em `pokemonsets_v2_staging`.
-5. Testar Team Builder contra staging.
-6. Aprovar rollback.
-7. Somente depois avaliar promocao para producao.
+1. Rodar `npm run preflight`.
+2. Publicar em `pokemonsets_v2_staging`.
+3. Testar Team Builder contra staging.
+4. Aprovar rollback.
+5. Somente depois avaliar promocao para `verified`.
+6. Somente depois de `verified`, avaliar promocao para producao.
 
 ## Rollback
 

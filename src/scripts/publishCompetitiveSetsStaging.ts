@@ -15,6 +15,15 @@ async function main(): Promise<void> {
   }
 
   const records = pilotPack.sets;
+  const blockedRecords = records.filter(record =>
+    record.status === 'draft' ||
+    record.status === 'quarantined' ||
+    record.status === 'deprecated'
+  );
+  if (blockedRecords.length > 0) {
+    throw new Error(`Staging publish blocked: ${blockedRecords.length} records are not reviewed, verified or active.`);
+  }
+
   const operations = records.map(record => ({
     replaceOne: {
       filter: { setId: record.setId, dataVersion: record.dataVersion },
