@@ -5,7 +5,8 @@ export type EquinoxDataPackKind =
   | 'boss_gauntlet'
   | 'regulation_profile'
   | 'eligible_roster'
-  | 'meta_profile';
+  | 'meta_profile'
+  | 'competitive_sets';
 
 export type EquinoxDataPackGameFamily =
   | 'core'

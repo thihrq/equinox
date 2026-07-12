@@ -12,6 +12,7 @@ import { RadicalRedDataPack } from '../radicalred/RadicalRedBossProfile';
 import { CHAMPIONS_REGULATION_PROFILES } from '../champions/ChampionsRegulationData';
 import { ChampionsRegulationProfile } from '../champions/ChampionsRegulationProfile';
 import { CHAMPIONS_META_SOURCE_PACKS, ChampionsMetaSourcePack } from '../champions/ChampionsMetaSourcePack';
+import setsDataPack from './sets-data-pack.json';
 
 const emptyCounts = (): Record<EquinoxDataPackKind, number> => ({
   vanilla_pool: 0,
@@ -19,6 +20,7 @@ const emptyCounts = (): Record<EquinoxDataPackKind, number> => ({
   regulation_profile: 0,
   eligible_roster: 0,
   meta_profile: 0,
+  competitive_sets: 0,
 });
 
 const clamp = (value: number): number => Math.max(0, Math.min(100, Math.round(value)));
@@ -59,6 +61,7 @@ export class DataPackRegistry {
       this.buildRadicalRedManifest(RADICAL_RED_4_1_HARDCORE_INDIGO_LEAGUE),
       ...Object.values(CHAMPIONS_REGULATION_PROFILES).flatMap(profile => this.buildChampionsManifests(profile)),
       ...Object.values(CHAMPIONS_META_SOURCE_PACKS).map(pack => this.buildChampionsMetaManifest(pack)),
+      this.buildCompetitiveSetsManifest(),
       ...Object.values(VANILLA_GAME_PROFILES).map(profile => this.buildVanillaManifest(profile)),
     ];
 
@@ -203,6 +206,32 @@ export class DataPackRegistry {
     };
 
     return this.withDefaultValidation(manifest);
+  }
+
+  private buildCompetitiveSetsManifest(): EquinoxDataPackManifest {
+    const sets = setsDataPack.sets ?? [];
+    const manifest = {
+      id: 'sets:legacy-mixed-competitive',
+      kind: 'competitive_sets' as const,
+      title: 'Legacy mixed competitive sets pack',
+      gameFamily: 'pokemon_champions' as const,
+      formatIds: setsDataPack.formatsSupported ?? ['legacy'],
+      dataVersion: setsDataPack.version,
+      status: 'bootstrap' as const,
+      sourceName: 'Equinox legacy sets-data-pack.json',
+      sourceUrl: undefined,
+      sourceUpdatedAt: undefined,
+      dataHash: setsDataPack.version,
+      recordCount: sets.length,
+      refreshCadence: 'manual' as const,
+      owner: 'Equinox Competitive Data Pack Migration',
+      notes: [
+        'This pack is intentionally marked bootstrap because it mixes formats and lacks V2 metadata.',
+        'Use data:audit and sets:* checks before promoting any record to active V2 data.',
+      ],
+    };
+
+    return this.withValidation(manifest, this.validator.validatePackConsistency(sets));
   }
 
   private countVanillaPoolRecords(profile: VanillaGameProfile): number {

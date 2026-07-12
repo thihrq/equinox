@@ -1,0 +1,14 @@
+{
+  "generatedAt": "2026-07-12T00:00:00.000Z",
+  "regulationId": "champions_reg_m_b_doubles",
+  "formatId": "champions_reg_m_b_doubles",
+  "battleStyle": "doubles",
+  "dataVersion": "2026.07.1",
+  "status": "draft",
+  "reviewState": "pilot-draft",
+  "recordCount": 9,
+  "notes": [
+    "Initial pilot package. No set is promoted to active until structure, legality, coherence, freshness, duplicate, coverage and human review checks pass.",
+    "Package is approved for offline validation and shadow comparison only."
+  ]
+}

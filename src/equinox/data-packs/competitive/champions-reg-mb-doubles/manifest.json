@@ -1,0 +1,13 @@
+{
+  "id": "champions-reg-mb-doubles",
+  "kind": "competitive_sets",
+  "gameFamily": "pokemon_champions",
+  "battleStyle": "doubles",
+  "dataVersion": "2026.07.1",
+  "regulationId": "champions_reg_m_b_doubles",
+  "sourceIds": ["equinox-curated-champions-mb-doubles"],
+  "recordCount": 9,
+  "contentHash": "",
+  "generatedAt": "2026-07-12T00:00:00.000Z",
+  "status": "draft"
+}
