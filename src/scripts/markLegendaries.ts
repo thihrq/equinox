@@ -2,6 +2,7 @@
 import mongoose from 'mongoose';
 import { connectDatabase } from '../config/database'; // Ajuste o caminho se necessário
 import { Pokemon } from '../models/Pokemon';
+import { assertDatabaseWritesAllowed } from '../equinox/data-audit/DataAuditRuntime';
 
 const legendariesAndMythicals = [
   'Articuno', 'Zapdos', 'Moltres', 'Mewtwo', 'Mew',
@@ -24,6 +25,7 @@ async function runMigration() {
     const regexList = legendariesAndMythicals.map(name => new RegExp(`^${name}`, 'i'));
 
     // Atualiza todos os Pokémons que batem com a lista
+    assertDatabaseWritesAllowed('mark legendary pokemon');
     const result = await Pokemon.updateMany(
       { name: { $in: regexList } },
       { $set: { isLegendary: true } }
