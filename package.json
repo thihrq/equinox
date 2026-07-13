@@ -26,6 +26,8 @@
     "sets:publish:staging:dry": "ts-node src/scripts/publishCompetitiveSetsStaging.ts --dry-run",
     "sets:shadow:compare": "ts-node src/scripts/compareCompetitiveSetsShadow.ts",
     "sets:shadow:homologate": "ts-node src/scripts/validateShadowHomologation.ts",
+    "sets:staging:homologate": "ts-node src/scripts/validateStagingHomologation.ts",
+    "sets:staging:homologate:fixture": "ts-node src/scripts/validateStagingHomologation.ts --fixture",
     "sets:v2-shadow-selection:check": "ts-node src/scripts/validateV2TeamBuilderShadow.ts",
     "mongo:snapshot": "ts-node src/scripts/snapshotMongoCompetitiveData.ts",
     "recommendation:check": "ts-node src/scripts/validateRecommendationRules.ts",
