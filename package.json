@@ -30,6 +30,7 @@
     "sets:staging:homologate:fixture": "ts-node src/scripts/validateStagingHomologation.ts --fixture",
     "sets:v2-shadow-selection:check": "ts-node src/scripts/validateV2TeamBuilderShadow.ts",
     "sets:verified:readiness": "ts-node src/scripts/validateVerifiedReadiness.ts",
+    "sets:verified:matchups": "ts-node src/scripts/validateVerifiedMatchupEvidence.ts",
     "mongo:snapshot": "ts-node src/scripts/snapshotMongoCompetitiveData.ts",
     "recommendation:check": "ts-node src/scripts/validateRecommendationRules.ts",
     "balance:check": "ts-node src/scripts/validateBalanceEngine.ts",
