@@ -95,8 +95,28 @@ Antes de executar o publish real, confirme:
 2. Publicar em `pokemonsets_v2_staging`.
 3. Testar Team Builder contra staging.
 4. Aprovar rollback.
-5. Somente depois avaliar promocao para `verified`.
-6. Somente depois de `verified`, avaliar promocao para producao.
+5. Rodar `npm run sets:verified:readiness`.
+6. Somente depois avaliar promocao para `verified`.
+7. Somente depois de `verified`, avaliar promocao para producao.
+
+## Verified Readiness
+
+O gate abaixo nao promove registros. Ele confirma se a promocao `reviewed -> verified` continua bloqueada ou se todas as evidencias exigidas foram atendidas:
+
+```powershell
+npm run sets:verified:readiness
+```
+
+O estado esperado atual e bloqueado:
+
+- `promotionReady: 0`
+- `blocked: 9`
+- nenhum registro `verified`
+- nenhum registro `active`
+- limitacoes humanas ainda abertas por set
+- rollback evidence ainda pendente
+
+Quando esse comando deixar de bloquear algum set, a curadoria humana deve atualizar `docs/data-audit/pilot-curation-review.md` antes de qualquer escrita em MongoDB.
 
 ## Rollback
 
