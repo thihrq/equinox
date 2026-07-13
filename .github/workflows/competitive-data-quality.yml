@@ -31,6 +31,7 @@ jobs:
       - run: npm run sets:coverage:check
       - run: npm run sets:import:dry
       - run: npm run sets:migrate:dry
+      - run: npm run sets:publish:staging:dry
       - run: npm run sets:shadow:compare
       - run: npm run sets:shadow:homologate
       - run: npm run sets:v2-shadow-selection:check

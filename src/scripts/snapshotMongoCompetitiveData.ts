@@ -24,34 +24,39 @@ async function run(): Promise<void> {
     return;
   }
 
-  await mongoose.connect(appConfig.mongoUri);
-  markMongoConnected();
-  const [pokemonSetCount, pokemonCount, latest, v2ActiveCount, v2DraftCount] = await Promise.all([
-    PokemonSet.countDocuments({}),
-    Pokemon.countDocuments({}),
-    PokemonSet.find({}).sort({ updatedAt: -1 }).limit(1).lean().exec(),
-    PokemonSet.countDocuments({ dataVersion: { $exists: true }, status: 'active' }),
-    PokemonSet.countDocuments({ dataVersion: { $exists: true }, status: 'draft' }),
-  ]);
-  markMongoRead(5);
+  try {
+    await mongoose.connect(appConfig.mongoUri);
+    markMongoConnected();
+    const [pokemonSetCount, pokemonCount, latest, v2ActiveCount, v2DraftCount] = await Promise.all([
+      PokemonSet.countDocuments({}),
+      Pokemon.countDocuments({}),
+      PokemonSet.find({}).sort({ updatedAt: -1 }).limit(1).lean().exec(),
+      PokemonSet.countDocuments({ dataVersion: { $exists: true }, status: 'active' }),
+      PokemonSet.countDocuments({ dataVersion: { $exists: true }, status: 'draft' }),
+    ]);
+    markMongoRead(5);
 
-  console.log(JSON.stringify({
-    generatedAt: new Date().toISOString(),
-    dataMode: resolveDataMode(),
-    pokemonSetCount,
-    pokemonCount,
-    latestUpdatedAt: (latest[0] as { updatedAt?: Date } | undefined)?.updatedAt ?? null,
-    v2ActiveCount,
-    v2DraftCount,
-    mongoConnected: true,
-    mongoReads: 5,
-    mongoWrites: 0,
-  }, null, 2));
-  printAuditRuntimeReport(buildAuditRuntimeReport());
-  await mongoose.disconnect();
+    console.log(JSON.stringify({
+      generatedAt: new Date().toISOString(),
+      dataMode: resolveDataMode(),
+      pokemonSetCount,
+      pokemonCount,
+      latestUpdatedAt: (latest[0] as { updatedAt?: Date } | undefined)?.updatedAt ?? null,
+      v2ActiveCount,
+      v2DraftCount,
+      mongoConnected: true,
+      mongoReads: 5,
+      mongoWrites: 0,
+    }, null, 2));
+    printAuditRuntimeReport(buildAuditRuntimeReport());
+  } finally {
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.disconnect();
+    }
+  }
 }
 
 run().catch(error => {
   console.error(error);
-  process.exit(1);
+  process.exitCode = 1;
 });

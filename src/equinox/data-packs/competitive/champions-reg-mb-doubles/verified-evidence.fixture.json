@@ -1,0 +1,113 @@
+{
+  "formatId": "champions_reg_m_b_doubles",
+  "records": [
+    {
+      "setId": "sinistcha-bulky-trick-room-setter-draft",
+      "approvedMatchupScenarios": ["sinistcha-tr-room-redirect-vs-fast-offense", "muk-alola-special-wall-vs-trick-room"],
+      "matchupTesting": "approved",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "approved",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": true,
+      "notes": "Verified readiness transition: staging review approved and prior limitation resolved for dry-run verified eligibility."
+    },
+    {
+      "setId": "sinistcha-redirection-support-draft",
+      "approvedMatchupScenarios": ["sinistcha-redirection-support-vs-setup-pressure", "muk-alola-special-wall-vs-support-redirection"],
+      "matchupTesting": "approved",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "Rocky Helmet and Life Dew still require staging matchup review before verified."
+    },
+    {
+      "setId": "aggronmega-slow-physical-breaker-draft",
+      "approvedMatchupScenarios": ["sinistcha-tr-room-redirect-vs-fast-offense", "aggronmega-slow-breaker-vs-intimidate-cycle"],
+      "matchupTesting": "approved",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "approved",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": true,
+      "notes": "Verified readiness transition: staging review approved and prior limitation resolved for dry-run verified eligibility."
+    },
+    {
+      "setId": "aggronmega-body-press-defensive-attacker-draft",
+      "approvedMatchupScenarios": ["sinistcha-redirection-support-vs-setup-pressure", "aggronmega-body-press-vs-redirection"],
+      "matchupTesting": "approved",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "Generated provenance and the Speed IV choice still require matchup review before verified."
+    },
+    {
+      "setId": "incineroar-bulky-slow-pivot-draft",
+      "approvedMatchupScenarios": ["incineroar-slow-pivot-vs-physical-leads", "aggronmega-slow-breaker-vs-intimidate-cycle"],
+      "matchupTesting": "approved",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "approved",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": true,
+      "notes": "Verified readiness transition: staging review approved and prior limitation resolved for dry-run verified eligibility."
+    },
+    {
+      "setId": "incineroar-fast-taunt-pivot-draft",
+      "approvedMatchupScenarios": ["incineroar-slow-pivot-vs-physical-leads", "incineroar-fast-taunt-vs-speed-control"],
+      "matchupTesting": "approved",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "The fast pivot role still requires ladder matchup testing before verified."
+    },
+    {
+      "setId": "togekiss-bulky-redirection-support-draft",
+      "approvedMatchupScenarios": ["togekiss-redirection-vs-bloodmoon-breaker", "aggronmega-body-press-vs-redirection"],
+      "matchupTesting": "approved",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "The item choice still requires usage matchup testing before verified."
+    },
+    {
+      "setId": "ursalunabloodmoon-slow-special-breaker-draft",
+      "approvedMatchupScenarios": ["togekiss-redirection-vs-bloodmoon-breaker", "incineroar-fast-taunt-vs-speed-control"],
+      "matchupTesting": "approved",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "approved",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": true,
+      "notes": "Verified readiness transition: staging review approved and prior limitation resolved for dry-run verified eligibility."
+    },
+    {
+      "setId": "mukalola-special-wall-draft",
+      "approvedMatchupScenarios": ["muk-alola-special-wall-vs-trick-room", "muk-alola-special-wall-vs-support-redirection"],
+      "matchupTesting": "approved",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "The Minimize slot still requires explicit format matchup testing before verified."
+    }
+  ]
+}

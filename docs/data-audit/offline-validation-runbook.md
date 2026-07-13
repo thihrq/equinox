@@ -51,7 +51,7 @@ Nao utilizar V2 em producao ate aprovacao formal dos sets e do staging.
 
 ## Pacote Piloto
 
-O pacote `champions-reg-mb-doubles` permanece `draft`. Os arquivos obrigatorios sao:
+O pacote `champions-reg-mb-doubles` esta `reviewed` e pronto apenas para staging. Os arquivos obrigatorios sao:
 
 - `manifest.json`
 - `regulation.json`
@@ -59,9 +59,17 @@ O pacote `champions-reg-mb-doubles` permanece `draft`. Os arquivos obrigatorios 
 - `sets.json`
 - `audit.json`
 
-Promocao de status exige revisao humana em `docs/data-audit/pilot-curation-review.md`.
+Promocao para `verified` ou `active` continua bloqueada e exige revisao humana em `docs/data-audit/pilot-curation-review.md`.
 
 ## Staging
+
+Preflight sem MongoDB:
+
+```powershell
+$env:EQUINOX_DATA_MODE="filesystem"
+$env:EQUINOX_ALLOW_DATABASE_WRITES="false"
+npm run sets:publish:staging:dry
+```
 
 Staging deve usar colecao separada:
 
@@ -72,17 +80,43 @@ $env:EQUINOX_TARGET_COLLECTION="pokemonsets_v2_staging"
 npm run sets:publish:staging
 ```
 
-O comando bloqueia pacotes `draft`; ele so deve ser usado depois de `reviewed` ou superior. Nunca publicar diretamente em `pokemonsets`.
+O comando bloqueia pacotes `draft` e tambem bloqueia registros `draft`, `quarantined` ou `deprecated`. Nunca publicar diretamente em `pokemonsets`.
+
+Antes de executar o publish real, confirme:
+
+- `MONGODB_URI` aponta para o ambiente correto.
+- `EQUINOX_TARGET_COLLECTION` esta exatamente como `pokemonsets_v2_staging`.
+- `npm run preflight` passou.
+- `npm run sets:publish:staging:dry` passou com `[WRITES] 0`.
 
 ## Publicacao Futura
 
-1. Completar revisao humana.
-2. Promover `draft` para `reviewed`.
-3. Rodar `npm run preflight`.
-4. Publicar em `pokemonsets_v2_staging`.
-5. Testar Team Builder contra staging.
-6. Aprovar rollback.
-7. Somente depois avaliar promocao para producao.
+1. Rodar `npm run preflight`.
+2. Publicar em `pokemonsets_v2_staging`.
+3. Testar Team Builder contra staging.
+4. Aprovar rollback.
+5. Rodar `npm run sets:verified:readiness`.
+6. Somente depois avaliar promocao para `verified`.
+7. Somente depois de `verified`, avaliar promocao para producao.
+
+## Verified Readiness
+
+O gate abaixo nao promove registros. Ele confirma se a promocao `reviewed -> verified` continua bloqueada ou se todas as evidencias exigidas foram atendidas:
+
+```powershell
+npm run sets:verified:readiness
+```
+
+O estado esperado atual e bloqueado:
+
+- `promotionReady: 0`
+- `blocked: 9`
+- nenhum registro `verified`
+- nenhum registro `active`
+- limitacoes humanas ainda abertas por set
+- rollback evidence ainda pendente
+
+Quando esse comando deixar de bloquear algum set, a curadoria humana deve atualizar `docs/data-audit/pilot-curation-review.md` antes de qualquer escrita em MongoDB.
 
 ## Rollback
 

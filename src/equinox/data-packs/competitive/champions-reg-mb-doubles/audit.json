@@ -4,25 +4,25 @@
   "formatId": "champions_reg_m_b_doubles",
   "battleStyle": "doubles",
   "dataVersion": "2026.07.1",
-  "status": "draft",
-  "reviewState": "partial-reviewed",
+  "status": "reviewed",
+  "reviewState": "staging-ready",
   "recordCount": 9,
   "notes": [
-    "Fase 2 curation started: four priority sets were promoted to reviewed for shadow Team Builder validation only.",
-    "No set is verified or active. Package remains blocked for staging and production.",
-    "Reviewed priority sets: Sinistcha Trick Room, Aggron-Mega slow breaker, Ursaluna-Bloodmoon slow special breaker, Incineroar bulky pivot."
+    "Fase 4 curation completed: all nine pilot sets are reviewed for staging validation.",
+    "No set is verified or active. Package remains blocked for production.",
+    "Staging publish is allowed only to pokemonsets_v2_staging with EQUINOX_DATA_MODE=mongo and EQUINOX_ALLOW_DATABASE_WRITES=true."
   ],
-  "reviewedSets": 4,
+  "reviewedSets": 9,
   "verifiedSets": 0,
   "activeSets": 0,
-  "draftSets": 5,
+  "draftSets": 0,
   "gates": {
     "structure": "passed",
     "legality": "passed",
     "coherence": "passed",
     "coverage": "passed",
-    "humanReview": "partial",
-    "staging": "blocked-draft-records-present",
+    "humanReview": "complete-reviewed",
+    "staging": "ready-reviewed-package",
     "production": "blocked"
   }
 }
