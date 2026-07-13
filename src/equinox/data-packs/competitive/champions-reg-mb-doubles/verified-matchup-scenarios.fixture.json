@@ -1,0 +1,105 @@
+{
+  "formatId": "champions_reg_m_b_doubles",
+  "acceptedEvidenceLevels": ["internal-scenario-review"],
+  "scenarios": [
+    {
+      "scenarioId": "sinistcha-tr-room-redirect-vs-fast-offense",
+      "label": "Sinistcha Trick Room redirection into fast offense",
+      "lead": ["Sinistcha", "Aggron-Mega"],
+      "opposingThreats": ["Tornadus", "Urshifu-Rapid-Strike", "Flutter Mane"],
+      "validationGoal": "Validate that Trick Room plus Rage Powder gives slow attackers a safe first tempo line into fast pressure.",
+      "approvedForSets": ["sinistcha-bulky-trick-room-setter-draft", "aggronmega-slow-physical-breaker-draft"],
+      "evidenceLevel": "internal-scenario-review",
+      "reviewResult": "approved",
+      "notes": "Approved as internal tactical evidence only; not ladder or tournament proof."
+    },
+    {
+      "scenarioId": "sinistcha-redirection-support-vs-setup-pressure",
+      "label": "Sinistcha redirection support for setup pressure",
+      "lead": ["Sinistcha", "Aggron-Mega"],
+      "opposingThreats": ["Amoonguss", "Landorus-Therian", "Chi-Yu"],
+      "validationGoal": "Validate that Rage Powder and Strength Sap preserve an ally's setup turn while reducing immediate physical pressure.",
+      "approvedForSets": ["sinistcha-redirection-support-draft", "aggronmega-body-press-defensive-attacker-draft"],
+      "evidenceLevel": "internal-scenario-review",
+      "reviewResult": "approved",
+      "notes": "Approved as internal tactical evidence only; not ladder or tournament proof."
+    },
+    {
+      "scenarioId": "incineroar-slow-pivot-vs-physical-leads",
+      "label": "Incineroar slow pivot against physical leads",
+      "lead": ["Incineroar", "Sinistcha"],
+      "opposingThreats": ["Rillaboom", "Garchomp", "Urshifu-Rapid-Strike"],
+      "validationGoal": "Validate that Intimidate, Fake Out, and Parting Shot create a stable pivot sequence for a slower partner.",
+      "approvedForSets": ["incineroar-bulky-slow-pivot-draft", "incineroar-fast-taunt-pivot-draft"],
+      "evidenceLevel": "internal-scenario-review",
+      "reviewResult": "approved",
+      "notes": "Approved as internal tactical evidence only; not ladder or tournament proof."
+    },
+    {
+      "scenarioId": "togekiss-redirection-vs-bloodmoon-breaker",
+      "label": "Togekiss redirection supporting Bloodmoon offense",
+      "lead": ["Togekiss", "Ursaluna-Bloodmoon"],
+      "opposingThreats": ["Flutter Mane", "Iron Hands", "Tornadus"],
+      "validationGoal": "Validate that Follow Me gives Ursaluna-Bloodmoon a safe turn to apply special spread pressure into mixed offense.",
+      "approvedForSets": ["togekiss-bulky-redirection-support-draft", "ursalunabloodmoon-slow-special-breaker-draft"],
+      "evidenceLevel": "internal-scenario-review",
+      "reviewResult": "approved",
+      "notes": "Approved as internal tactical evidence only; not ladder or tournament proof."
+    },
+    {
+      "scenarioId": "muk-alola-special-wall-vs-trick-room",
+      "label": "Muk-Alola special wall anchoring Trick Room turns",
+      "lead": ["Muk-Alola", "Sinistcha"],
+      "opposingThreats": ["Flutter Mane", "Chi-Yu", "Indeedee-F"],
+      "validationGoal": "Validate that Muk-Alola absorbs special pressure while Sinistcha establishes a safe support cycle.",
+      "approvedForSets": ["mukalola-special-wall-draft", "sinistcha-bulky-trick-room-setter-draft"],
+      "evidenceLevel": "internal-scenario-review",
+      "reviewResult": "approved",
+      "notes": "Approved as internal tactical evidence only; not ladder or tournament proof."
+    },
+    {
+      "scenarioId": "aggronmega-slow-breaker-vs-intimidate-cycle",
+      "label": "Aggron-Mega slow breaker through Intimidate cycles",
+      "lead": ["Aggron-Mega", "Incineroar"],
+      "opposingThreats": ["Landorus-Therian", "Incineroar", "Rillaboom"],
+      "validationGoal": "Validate that Aggron-Mega retains a reliable physical damage line while Incineroar controls attack power and positioning.",
+      "approvedForSets": ["aggronmega-slow-physical-breaker-draft", "incineroar-bulky-slow-pivot-draft"],
+      "evidenceLevel": "internal-scenario-review",
+      "reviewResult": "approved",
+      "notes": "Approved as internal tactical evidence only; not ladder or tournament proof."
+    },
+    {
+      "scenarioId": "aggronmega-body-press-vs-redirection",
+      "label": "Aggron-Mega Body Press behind redirection",
+      "lead": ["Aggron-Mega", "Togekiss"],
+      "opposingThreats": ["Urshifu-Rapid-Strike", "Gholdengo", "Amoonguss"],
+      "validationGoal": "Validate that Follow Me creates enough space for Aggron-Mega to convert Defense into sustained Body Press pressure.",
+      "approvedForSets": ["aggronmega-body-press-defensive-attacker-draft", "togekiss-bulky-redirection-support-draft"],
+      "evidenceLevel": "internal-scenario-review",
+      "reviewResult": "approved",
+      "notes": "Approved as internal tactical evidence only; not ladder or tournament proof."
+    },
+    {
+      "scenarioId": "incineroar-fast-taunt-vs-speed-control",
+      "label": "Fast Incineroar Taunt against speed control",
+      "lead": ["Incineroar", "Ursaluna-Bloodmoon"],
+      "opposingThreats": ["Tornadus", "Whimsicott", "Farigiraf"],
+      "validationGoal": "Validate that a faster Taunt line denies opposing speed control long enough for Ursaluna-Bloodmoon to pressure the board.",
+      "approvedForSets": ["incineroar-fast-taunt-pivot-draft", "ursalunabloodmoon-slow-special-breaker-draft"],
+      "evidenceLevel": "internal-scenario-review",
+      "reviewResult": "approved",
+      "notes": "Approved as internal tactical evidence only; not ladder or tournament proof."
+    },
+    {
+      "scenarioId": "muk-alola-special-wall-vs-support-redirection",
+      "label": "Muk-Alola special wall with redirection support",
+      "lead": ["Muk-Alola", "Sinistcha"],
+      "opposingThreats": ["Gholdengo", "Flutter Mane", "Porygon2"],
+      "validationGoal": "Validate that Muk-Alola and Sinistcha can absorb special attacks and redirect targeted pressure while preserving endgame resources.",
+      "approvedForSets": ["mukalola-special-wall-draft", "sinistcha-redirection-support-draft"],
+      "evidenceLevel": "internal-scenario-review",
+      "reviewResult": "approved",
+      "notes": "Approved as internal tactical evidence only; not ladder or tournament proof."
+    }
+  ]
+}
