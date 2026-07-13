@@ -45,7 +45,7 @@ Before moving to `verified`, record:
 - confirmation that production collection `pokemonsets` was not written
 - confirmation that all labels remain non-verified
 
-## Resultado da publicação real
+## Resultado da publicacao real
 
 - Data: 2026-07-13
 - Commit: fb34bf5
@@ -53,12 +53,48 @@ Before moving to `verified`, record:
 - Registros planejados: 9
 - Registros escritos: 9
 - Registros rejeitados: 0
-- Escritas em produção: 0
+- Escritas em producao: 0
 - Mongo conectado: sim
-- Snapshot pré-publicação: concluído
-- Snapshot pós-publicação: concluído
+- Snapshot pre-publicacao: concluido
+- Snapshot pos-publicacao: concluido
 - Status final: staging publicado com sucesso
-- Observação: URI, usuário e senha não foram registrados por segurança.
+- Observacao: URI, usuario e senha nao foram registrados por seguranca.
+
+## Functional Staging Homologation
+
+After the real staging publish, run the read-only homologation gate against the staging collection:
+
+```powershell
+$env:EQUINOX_DATA_MODE="mongo"
+$env:EQUINOX_ALLOW_DATABASE_WRITES="false"
+$env:EQUINOX_TARGET_COLLECTION="pokemonsets_v2_staging"
+$env:EQUINOX_USE_COMPETITIVE_SETS_V2="true"
+npm run sets:staging:homologate
+```
+
+The command must prove:
+
+- target collection is exactly `pokemonsets_v2_staging`
+- Mongo writes remain disabled
+- staging contains exactly 9 records
+- `reviewed: 9`
+- `draft: 0`
+- `quarantined: 0`
+- `deprecated: 0`
+- `verified: 0`
+- `active: 0`
+- all records use `regulationId=champions_reg_m_b_doubles`
+- all records use `battleStyle=doubles`
+- no record has `legal=false`
+- no homologation scenario consumes draft data
+- no reviewed-only team receives the verified competitive label
+- export, legality and role mismatch rates remain 0
+
+For CI or local validation without Mongo credentials, use the fixture-only equivalent:
+
+```powershell
+npm run sets:staging:homologate:fixture
+```
 
 ## Remaining Blockers
 
