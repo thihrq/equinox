@@ -12,7 +12,7 @@ The user approved the next phase as:
 promotion-ready -> verified in staging -> active later -> production later
 ```
 
-This phase covers spec, plan, implementation, dry-run, PR/merge, real staging execution, post-write validation, and rollback testing. It does not include active promotion, production collection writes, Render production changes, or generated record promotion.
+This phase covers spec, plan, implementation, dry-run, PR/merge, real staging execution, post-write validation, idempotency verification, rollback testing, final re-promotion to the expected staging state, and reporting. It does not include active promotion, production collection writes, Render production changes, generated record promotion, or production deployment of frontend/backend changes.
 
 ## Current State
 
@@ -36,6 +36,7 @@ This phase covers spec, plan, implementation, dry-run, PR/merge, real staging ex
 - Do not alter Render production configuration.
 - Keep ability, move, item, nature, and Pokemon names in canonical English.
 - Real execution must target only `pokemonsets_v2_staging`.
+- Default execution must remain dry-run and exit successfully with 0 writes.
 
 ## Eligible Set Allowlist
 
@@ -48,12 +49,14 @@ incineroar-bulky-slow-pivot-draft
 ursalunabloodmoon-slow-special-breaker-draft
 ```
 
-The promotion script must refuse execution when:
+The promotion script must refuse execute mode when:
 
-- the eligible count is not exactly 4;
-- any eligible set is not in the allowlist;
+- `eligibleCount !== 4`;
+- `allowlistCount !== 4`;
+- eligible IDs differ from the allowlist IDs;
 - any allowlisted set is not eligible;
 - any eligible record is not `curated`;
+- any eligible record is not `promotionReady`;
 - any generated record appears in the eligible list;
 - any generated record would be written;
 - any record is already `active` or would become `active`.
@@ -62,10 +65,24 @@ The promotion script must refuse execution when:
 
 Dry-run is the default behavior.
 
-This command must not write:
+This command must not write and must exit with code 0 when validation succeeds:
 
 ```powershell
 npm.cmd run sets:promote:verified
+```
+
+Dry-run result baseline:
+
+```text
+mode: dry-run
+recordsEligible: 4
+recordsBlocked: 5
+recordsAlreadyVerified: 0
+recordsPromotedToVerified: 0
+recordsWritten: 0
+recordsActive: 0
+generatedPromoted: 0
+productionWrites: 0
 ```
 
 Real staging execution requires all of these conditions:
@@ -88,7 +105,7 @@ AND ENABLE_VERIFIED_PROMOTION=true
 AND --execute present
 ```
 
-If any condition fails:
+If `--execute` is present and any authorization condition fails:
 
 ```text
 recordsWritten: 0
@@ -113,16 +130,73 @@ pokemonsets_v2_staging
 
 The script must reject any other target, including missing, empty, misspelled, production, or dynamically inferred collection names.
 
+Production protection should combine:
+
+```text
+code guardrail
+restricted Mongo credential where available
+production snapshot evidence when readable
+```
+
+If the staging Mongo user cannot read production, the report must document that production write access is unavailable to that credential.
+
+## Atomic Write Preconditions
+
+Promotion writes must not match by `setId` alone. The Mongo update filter must include the expected state.
+
+Required conceptual filter:
+
+```ts
+{
+  setId: { $in: allowlist },
+  status: "reviewed",
+  active: false,
+  sourceType: "curated",
+  promotionReady: true
+}
+```
+
+For this controlled phase, missing `active` is an integrity error, not implicit `false`.
+
+After the write operation, the script must assert:
+
+```text
+matchedCount + recordsAlreadyVerified === 4
+modifiedCount === recordsPromotedToVerified
+```
+
+Any mismatch invalidates execution and must be reported as a failed run.
+
+## Concurrency Protection
+
+Two processes must not silently promote the same phase concurrently.
+
+The implementation must include at least one of:
+
+```text
+verifiedRunId-based detection
+promotionLock or equivalent run marker
+single execution document keyed by runId
+```
+
+At minimum, the post-write validation must detect records changed between pre-validation and write, fail the run, and report the changed IDs.
+
 ## Data Mutation Rules
 
 For the four allowlisted records only, real staging execution may update:
 
 ```text
 status: verified
-active: false
 verifiedAt: <run timestamp>
 verifiedRunId: <run id>
 updatedAt: <run timestamp>
+```
+
+The promotion must not write `active`. Instead:
+
+```text
+precondition: active === false
+mutation: do not alter active
 ```
 
 The script must not change:
@@ -152,6 +226,34 @@ active: false
 
 Generated records must remain unmodified.
 
+## Competitive Payload Hashes
+
+Snapshots must hash immutable competitive fields before and after the promotion:
+
+```text
+moves
+item
+ability
+nature
+EVs
+IVs
+roles
+sourceType
+sourceUpdatedAt
+confidence
+coherenceScore
+```
+
+For every promoted set, the report must include:
+
+```text
+competitivePayloadHashBefore
+competitivePayloadHashAfter
+competitivePayloadChanged: false
+```
+
+If any competitive payload hash changes, the run must fail validation.
+
 ## Idempotency
 
 The promotion must be idempotent.
@@ -159,6 +261,7 @@ The promotion must be idempotent.
 If the four allowlisted records are already `verified` and `active: false` in staging, rerunning with the same eligibility state must report:
 
 ```text
+mode: execute
 recordsEligible: 4
 recordsAlreadyVerified: 4
 recordsPromotedToVerified: 0
@@ -184,6 +287,9 @@ eligibleSetIds
 blockedSetIds
 beforeStatusBySetId
 afterStatusBySetId
+competitivePayloadHashBefore
+competitivePayloadHashAfter
+competitivePayloadChanged
 recordsPromotedToVerified
 recordsAlreadyVerified
 recordsActive
@@ -195,6 +301,29 @@ Snapshots must not include credentials or MongoDB URI.
 
 The implementation may write snapshots to `docs/data-audit/` only for non-secret operational evidence, or print them as structured logs if writing audit files during operational execution is not desired.
 
+## Production Snapshot Evidence
+
+When the credential can read production, the operation must capture before and after production metadata:
+
+```text
+productionDocumentCountBefore
+productionDocumentCountAfter
+productionLatestUpdatedAtBefore
+productionLatestUpdatedAtAfter
+productionLogicalHashBefore
+productionLogicalHashAfter
+```
+
+The production logical hash may be built from IDs and `updatedAt` values only. It must not include secrets.
+
+If production is not readable by the staging credential, the report must state:
+
+```text
+productionReadAccess: false
+productionWriteAccess: false or not granted
+productionSnapshotSkippedReason: staging credential cannot read production
+```
+
 ## Rollback Requirements
 
 A rollback script or rollback mode must be implemented for staging only.
@@ -205,17 +334,61 @@ Rollback target:
 pokemonsets_v2_staging
 ```
 
+Rollback execute mode must require:
+
+```powershell
+npm.cmd run sets:rollback:verified:staging -- --run-id=<RUN_ID> --execute
+```
+
+Without `--run-id`, real rollback must be refused before any write.
+
+Rollback filter:
+
+```ts
+{
+  setId: { $in: allowlist },
+  status: "verified",
+  active: false,
+  verifiedRunId: runId
+}
+```
+
 Rollback behavior:
 
 - only the four allowlisted records can be rolled back;
-- only records verified by this phase can be reverted;
+- only records verified by the specified `verifiedRunId` can be reverted;
 - `status` changes from `verified` to `reviewed`;
-- `active` remains `false`;
+- `active` remains `false` and is not rewritten unless the existing code requires it for schema consistency;
 - generated records are untouched;
 - production collection is blocked;
 - MongoDB connection is closed correctly.
 
 Rollback must also support dry-run.
+
+Pre-promotion rollback dry-run is expected to report:
+
+```text
+recordsEligibleForRollback: 0
+recordsWritten: 0
+```
+
+Post-promotion rollback dry-run is expected to report:
+
+```text
+recordsEligibleForRollback: 4
+recordsWritten: 0
+```
+
+Rollback execute result:
+
+```text
+recordsEligibleForRollback: 4
+recordsRolledBack: 4
+recordsWritten: 4
+recordsActive: 0
+generatedChanged: 0
+productionWrites: 0
+```
 
 ## Mongo Connection Lifecycle
 
@@ -240,8 +413,10 @@ sets:verified:staging:check
 Expected dry-run before real execution:
 
 ```text
+mode: dry-run
 recordsEligible: 4
 recordsBlocked: 5
+recordsAlreadyVerified: 0
 recordsPromotedToVerified: 0
 recordsActive: 0
 generatedPromoted: 0
@@ -249,15 +424,57 @@ productionWrites: 0
 recordsWritten: 0
 ```
 
-Expected after controlled execution:
+Expected first controlled execution:
 
 ```text
+mode: execute
 recordsEligible: 4
+recordsAlreadyVerified: 0
 recordsPromotedToVerified: 4
+recordsWritten: 4
 recordsActive: 0
 generatedPromoted: 0
 productionWrites: 0
 ```
+
+Expected second idempotent execution:
+
+```text
+mode: execute
+recordsEligible: 4
+recordsAlreadyVerified: 4
+recordsPromotedToVerified: 0
+recordsWritten: 0
+recordsActive: 0
+generatedPromoted: 0
+productionWrites: 0
+```
+
+Expected re-execution after rollback:
+
+```text
+recordsEligible: 4
+recordsPromotedToVerified: 4
+recordsWritten: 4
+```
+
+## Mongo Staging Check
+
+`sets:verified:staging:check` must read directly from `pokemonsets_v2_staging`, not from local fixtures only.
+
+It must prove:
+
+```text
+allowlistedVerified: 4
+allowlistedActive: 0
+generatedVerifiedByRun: 0
+blockedRecordsStillReviewed: 5
+duplicateSetIds: 0
+productionWrites: 0
+sameVerifiedRunIdForAllowlist: true
+```
+
+It must fail if the target collection is not `pokemonsets_v2_staging`.
 
 ## Validation
 
@@ -295,16 +512,33 @@ Post-write validation:
 0 active records
 0 generated records promoted
 0 production writes
-pokemonsets unchanged
+pokemonsets unchanged or production access blocked by staging credential
+competitivePayloadChanged: false for all four promoted records
 ```
 
-Rollback validation:
+Operational sequence after merge:
 
 ```text
-4 records reverted to reviewed in pokemonsets_v2_staging
-0 active records
-0 generated records changed
-0 production writes
+snapshot pre-promotion
+dry-run with real Mongo
+execute promotion
+staging check
+second idempotent execute
+rollback dry-run
+rollback execute
+rollback validation
+final promotion execute
+final staging check
+final report
+```
+
+The final promotion after rollback is required so the environment ends in the expected state for this phase:
+
+```text
+Verified in staging: 4
+Active: 0
+Generated verified: 0
+Production intact
 ```
 
 ## Reporting
@@ -322,11 +556,16 @@ The report must include:
 - dry-run result;
 - execute result if execution occurs;
 - post-write validation result;
+- idempotency execution result;
 - rollback dry-run result;
 - rollback execute result if rollback is tested;
+- final re-promotion result after rollback;
+- final staging check result;
+- competitive payload hashes before and after;
 - confirmation that generated records were not promoted;
 - confirmation that active remains 0;
 - confirmation that production writes remain 0;
+- production snapshot evidence or restricted-credential explanation;
 - confirmation that Mongo connection closed correctly.
 
 ## Out of Scope
@@ -337,4 +576,4 @@ The report must include:
 - Generated record promotion.
 - Removing source freshness blockers.
 - Lowering thresholds.
-- Publishing frontend/backend changes.
+- Production deployment of frontend or backend changes.
