@@ -1,0 +1,104 @@
+{
+  "formatId": "champions_reg_m_b_doubles",
+  "records": [
+    {
+      "setId": "sinistcha-bulky-trick-room-setter-draft",
+      "matchupTesting": "pending",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "Item choice still requires matchup testing before verified."
+    },
+    {
+      "setId": "sinistcha-redirection-support-draft",
+      "matchupTesting": "pending",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "Rocky Helmet and Life Dew still require staging matchup review before verified."
+    },
+    {
+      "setId": "aggronmega-slow-physical-breaker-draft",
+      "matchupTesting": "pending",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "Stomping Tantrum coverage still requires matchup testing before verified."
+    },
+    {
+      "setId": "aggronmega-body-press-defensive-attacker-draft",
+      "matchupTesting": "pending",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "Generated provenance and the Speed IV choice still require matchup review before verified."
+    },
+    {
+      "setId": "incineroar-bulky-slow-pivot-draft",
+      "matchupTesting": "pending",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "Safety Goggles still requires broader meta matchup testing before verified."
+    },
+    {
+      "setId": "incineroar-fast-taunt-pivot-draft",
+      "matchupTesting": "pending",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "The fast pivot role still requires ladder matchup testing before verified."
+    },
+    {
+      "setId": "togekiss-bulky-redirection-support-draft",
+      "matchupTesting": "pending",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "The item choice still requires usage matchup testing before verified."
+    },
+    {
+      "setId": "ursalunabloodmoon-slow-special-breaker-draft",
+      "matchupTesting": "pending",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "Life Orb damage tradeoffs still require quartet matchup testing before verified."
+    },
+    {
+      "setId": "mukalola-special-wall-draft",
+      "matchupTesting": "pending",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "The Minimize slot still requires explicit format matchup testing before verified."
+    }
+  ]
+}

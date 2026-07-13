@@ -1,14 +1,19 @@
 import pilotPack from '../equinox/data-packs/competitive/champions-reg-mb-doubles/sets.json';
+import evidenceFixture from '../equinox/data-packs/competitive/champions-reg-mb-doubles/verified-evidence.fixture.json';
 import { CompetitiveSetValidationInput } from '../equinox/data-validation/CompetitiveValidationTypes';
 
-interface HumanReview {
-  reviewResult?: string;
-  reviewScope?: string;
-  legalityReview?: string;
-  teamBuilderReview?: string;
-  exportReview?: string;
-  limitations?: string;
-  nextGate?: string;
+type EvidenceReviewStatus = 'pending' | 'approved';
+
+interface VerifiedEvidenceRecord {
+  setId: string;
+  matchupTesting: EvidenceReviewStatus;
+  sourceFreshnessReview: EvidenceReviewStatus;
+  shadowReview: EvidenceReviewStatus;
+  stagingReview: EvidenceReviewStatus;
+  exportParityReview: EvidenceReviewStatus;
+  rollbackEvidence: EvidenceReviewStatus;
+  limitationsResolved: boolean;
+  notes: string;
 }
 
 interface ReadinessItem {
@@ -20,14 +25,14 @@ interface ReadinessItem {
   coherenceScore: number;
   blockers: string[];
   evidence: {
-    sourceFreshness: boolean;
+    matchupTesting: boolean;
+    sourceFreshnessReview: boolean;
     confidenceReviewed: boolean;
-    teamBuilderReviewed: boolean;
-    shadowReviewed: boolean;
-    stagingReviewed: boolean;
-    exportReviewed: boolean;
+    shadowReview: boolean;
+    stagingReview: boolean;
+    exportParityReview: boolean;
     rollbackEvidence: boolean;
-    noOpenLimitations: boolean;
+    limitationsResolved: boolean;
   };
 }
 
@@ -35,45 +40,34 @@ function assert(condition: boolean, message: string): void {
   if (!condition) throw new Error(message);
 }
 
-function humanReviewOf(record: CompetitiveSetValidationInput & { humanReview?: HumanReview }): HumanReview {
-  return record.humanReview ?? {};
-}
-
-function includesAny(value: string | undefined, needles: string[]): boolean {
-  const normalized = String(value ?? '').toLowerCase();
-  return needles.some(needle => normalized.includes(needle));
-}
-
-function evaluateRecord(record: CompetitiveSetValidationInput & { humanReview?: HumanReview }): ReadinessItem {
-  const review = humanReviewOf(record);
-  const limitations = String(review.limitations ?? '').trim();
-  const nextGate = String(review.nextGate ?? '').trim();
-  const sourceType = String(record.sourceType ?? '');
+function evaluateRecord(record: CompetitiveSetValidationInput, verifiedEvidence: VerifiedEvidenceRecord): ReadinessItem {
   const confidence = Number(record.confidence ?? 0);
   const coherenceScore = Number(record.coherenceScore ?? 0);
   const status = String(record.status ?? 'draft');
 
   const evidence = {
-    sourceFreshness: sourceType === 'curated' && Boolean(record.sourceUpdatedAt),
+    matchupTesting: verifiedEvidence.matchupTesting === 'approved',
+    sourceFreshnessReview: record.sourceType === 'curated'
+      && Boolean(record.sourceUpdatedAt)
+      && verifiedEvidence.sourceFreshnessReview === 'approved',
     confidenceReviewed: confidence >= 80 && coherenceScore >= 85,
-    teamBuilderReviewed: includesAny(review.teamBuilderReview, ['approved']),
-    shadowReviewed: includesAny(review.reviewScope, ['shadow']) || includesAny(review.reviewResult, ['shadow']),
-    stagingReviewed: includesAny(review.reviewScope, ['staging']) || includesAny(review.reviewResult, ['staging']),
-    exportReviewed: includesAny(review.exportReview, ['showdown', 'json', 'export']),
-    rollbackEvidence: includesAny(nextGate, ['rollback']) && includesAny(nextGate, ['evidence']),
-    noOpenLimitations: limitations.length === 0,
+    shadowReview: verifiedEvidence.shadowReview === 'approved',
+    stagingReview: verifiedEvidence.stagingReview === 'approved',
+    exportParityReview: verifiedEvidence.exportParityReview === 'approved',
+    rollbackEvidence: verifiedEvidence.rollbackEvidence === 'approved',
+    limitationsResolved: verifiedEvidence.limitationsResolved === true,
   };
 
   const blockers: string[] = [];
   if (status !== 'reviewed') blockers.push(`status must remain reviewed before verified promotion, received ${status}`);
-  if (!evidence.sourceFreshness) blockers.push('missing curated source freshness evidence');
+  if (!evidence.matchupTesting) blockers.push('missing approved matchup testing evidence');
+  if (!evidence.sourceFreshnessReview) blockers.push('missing curated source freshness or approved source freshness review evidence');
   if (!evidence.confidenceReviewed) blockers.push('confidence/coherence are below verified threshold');
-  if (!evidence.teamBuilderReviewed) blockers.push('missing Team Builder review evidence');
-  if (!evidence.shadowReviewed) blockers.push('missing shadow review evidence');
-  if (!evidence.stagingReviewed) blockers.push('missing staging review evidence');
-  if (!evidence.exportReviewed) blockers.push('missing export review evidence');
-  if (!evidence.rollbackEvidence) blockers.push('missing rollback evidence');
-  if (!evidence.noOpenLimitations) blockers.push(`open limitation: ${limitations}`);
+  if (!evidence.shadowReview) blockers.push('missing approved shadow review evidence');
+  if (!evidence.stagingReview) blockers.push('missing approved staging review evidence');
+  if (!evidence.exportParityReview) blockers.push('missing approved export parity review evidence');
+  if (!evidence.rollbackEvidence) blockers.push('missing approved rollback evidence');
+  if (!evidence.limitationsResolved) blockers.push(`unresolved limitation: ${verifiedEvidence.notes}`);
 
   return {
     setId: String(record.setId ?? 'unknown'),
@@ -87,8 +81,17 @@ function evaluateRecord(record: CompetitiveSetValidationInput & { humanReview?: 
   };
 }
 
-const records = (pilotPack as { sets: Array<CompetitiveSetValidationInput & { humanReview?: HumanReview }> }).sets;
-const results = records.map(evaluateRecord);
+const records = (pilotPack as { sets: CompetitiveSetValidationInput[] }).sets;
+const evidenceRecords = (evidenceFixture as { formatId: string; records: VerifiedEvidenceRecord[] }).records;
+const evidenceBySetId = new Map(evidenceRecords.map(record => [record.setId, record]));
+
+assert(evidenceFixture.formatId === 'champions_reg_m_b_doubles', `Verified evidence fixture formatId must be champions_reg_m_b_doubles, received ${evidenceFixture.formatId}.`);
+assert(evidenceRecords.length === records.length, `Verified readiness expects ${records.length} evidence records, received ${evidenceRecords.length}.`);
+for (const record of records) {
+  assert(evidenceBySetId.has(String(record.setId)), `missing verified evidence record for ${String(record.setId)}`);
+}
+
+const results = records.map(record => evaluateRecord(record, evidenceBySetId.get(String(record.setId)) as VerifiedEvidenceRecord));
 const promotionReady = results.filter(result => result.blockers.length === 0);
 const blocked = results.filter(result => result.blockers.length > 0);
 
@@ -102,14 +105,14 @@ const aggregate = {
   records: records.length,
   promotionReady: promotionReady.length,
   blocked: blocked.length,
-  curatedSourceCount: results.filter(result => result.evidence.sourceFreshness).length,
+  matchupTestingApprovedCount: results.filter(result => result.evidence.matchupTesting).length,
+  sourceFreshnessReviewedCount: results.filter(result => result.evidence.sourceFreshnessReview).length,
   confidenceReadyCount: results.filter(result => result.evidence.confidenceReviewed).length,
-  teamBuilderReviewedCount: results.filter(result => result.evidence.teamBuilderReviewed).length,
-  shadowReviewedCount: results.filter(result => result.evidence.shadowReviewed).length,
-  stagingReviewedCount: results.filter(result => result.evidence.stagingReviewed).length,
-  exportReviewedCount: results.filter(result => result.evidence.exportReviewed).length,
+  shadowReviewedCount: results.filter(result => result.evidence.shadowReview).length,
+  stagingReviewedCount: results.filter(result => result.evidence.stagingReview).length,
+  exportParityReviewedCount: results.filter(result => result.evidence.exportParityReview).length,
   rollbackEvidenceCount: results.filter(result => result.evidence.rollbackEvidence).length,
-  noOpenLimitationsCount: results.filter(result => result.evidence.noOpenLimitations).length,
+  limitationsResolvedCount: results.filter(result => result.evidence.limitationsResolved).length,
 };
 
 console.log('[Equinox] Verified readiness validation passed: promotion remains blocked.');
