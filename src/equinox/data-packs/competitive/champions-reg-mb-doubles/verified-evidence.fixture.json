@@ -3,8 +3,8 @@
   "records": [
     {
       "setId": "sinistcha-bulky-trick-room-setter-draft",
-      "approvedMatchupScenarios": [],
-      "matchupTesting": "pending",
+      "approvedMatchupScenarios": ["sinistcha-tr-room-redirect-vs-fast-offense", "muk-alola-special-wall-vs-trick-room"],
+      "matchupTesting": "approved",
       "sourceFreshnessReview": "approved",
       "shadowReview": "approved",
       "stagingReview": "pending",
@@ -15,8 +15,8 @@
     },
     {
       "setId": "sinistcha-redirection-support-draft",
-      "approvedMatchupScenarios": [],
-      "matchupTesting": "pending",
+      "approvedMatchupScenarios": ["sinistcha-redirection-support-vs-setup-pressure", "muk-alola-special-wall-vs-support-redirection"],
+      "matchupTesting": "approved",
       "sourceFreshnessReview": "approved",
       "shadowReview": "approved",
       "stagingReview": "pending",
@@ -27,8 +27,8 @@
     },
     {
       "setId": "aggronmega-slow-physical-breaker-draft",
-      "approvedMatchupScenarios": [],
-      "matchupTesting": "pending",
+      "approvedMatchupScenarios": ["sinistcha-tr-room-redirect-vs-fast-offense", "aggronmega-slow-breaker-vs-intimidate-cycle"],
+      "matchupTesting": "approved",
       "sourceFreshnessReview": "approved",
       "shadowReview": "approved",
       "stagingReview": "pending",
@@ -39,8 +39,8 @@
     },
     {
       "setId": "aggronmega-body-press-defensive-attacker-draft",
-      "approvedMatchupScenarios": [],
-      "matchupTesting": "pending",
+      "approvedMatchupScenarios": ["sinistcha-redirection-support-vs-setup-pressure", "aggronmega-body-press-vs-redirection"],
+      "matchupTesting": "approved",
       "sourceFreshnessReview": "approved",
       "shadowReview": "approved",
       "stagingReview": "pending",
@@ -51,8 +51,8 @@
     },
     {
       "setId": "incineroar-bulky-slow-pivot-draft",
-      "approvedMatchupScenarios": [],
-      "matchupTesting": "pending",
+      "approvedMatchupScenarios": ["incineroar-slow-pivot-vs-physical-leads", "aggronmega-slow-breaker-vs-intimidate-cycle"],
+      "matchupTesting": "approved",
       "sourceFreshnessReview": "approved",
       "shadowReview": "approved",
       "stagingReview": "pending",
@@ -63,8 +63,8 @@
     },
     {
       "setId": "incineroar-fast-taunt-pivot-draft",
-      "approvedMatchupScenarios": [],
-      "matchupTesting": "pending",
+      "approvedMatchupScenarios": ["incineroar-slow-pivot-vs-physical-leads", "incineroar-fast-taunt-vs-speed-control"],
+      "matchupTesting": "approved",
       "sourceFreshnessReview": "approved",
       "shadowReview": "approved",
       "stagingReview": "pending",
@@ -75,8 +75,8 @@
     },
     {
       "setId": "togekiss-bulky-redirection-support-draft",
-      "approvedMatchupScenarios": [],
-      "matchupTesting": "pending",
+      "approvedMatchupScenarios": ["togekiss-redirection-vs-bloodmoon-breaker", "aggronmega-body-press-vs-redirection"],
+      "matchupTesting": "approved",
       "sourceFreshnessReview": "approved",
       "shadowReview": "approved",
       "stagingReview": "pending",
@@ -87,8 +87,8 @@
     },
     {
       "setId": "ursalunabloodmoon-slow-special-breaker-draft",
-      "approvedMatchupScenarios": [],
-      "matchupTesting": "pending",
+      "approvedMatchupScenarios": ["togekiss-redirection-vs-bloodmoon-breaker", "incineroar-fast-taunt-vs-speed-control"],
+      "matchupTesting": "approved",
       "sourceFreshnessReview": "approved",
       "shadowReview": "approved",
       "stagingReview": "pending",
@@ -99,8 +99,8 @@
     },
     {
       "setId": "mukalola-special-wall-draft",
-      "approvedMatchupScenarios": [],
-      "matchupTesting": "pending",
+      "approvedMatchupScenarios": ["muk-alola-special-wall-vs-trick-room", "muk-alola-special-wall-vs-support-redirection"],
+      "matchupTesting": "approved",
       "sourceFreshnessReview": "approved",
       "shadowReview": "approved",
       "stagingReview": "pending",
