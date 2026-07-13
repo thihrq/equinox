@@ -45,6 +45,21 @@ Before moving to `verified`, record:
 - confirmation that production collection `pokemonsets` was not written
 - confirmation that all labels remain non-verified
 
+## Resultado da publicação real
+
+- Data: 2026-07-13
+- Commit: fb34bf5
+- Target collection: `pokemonsets_v2_staging`
+- Registros planejados: 9
+- Registros escritos: 9
+- Registros rejeitados: 0
+- Escritas em produção: 0
+- Mongo conectado: sim
+- Snapshot pré-publicação: concluído
+- Snapshot pós-publicação: concluído
+- Status final: staging publicado com sucesso
+- Observação: URI, usuário e senha não foram registrados por segurança.
+
 ## Remaining Blockers
 
 - No production publish.

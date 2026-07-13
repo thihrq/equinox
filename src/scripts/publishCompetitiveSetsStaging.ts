@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { connectDatabase } from '../config/database';
 import pilotPack from '../equinox/data-packs/competitive/champions-reg-mb-doubles/sets.json';
 import manifest from '../equinox/data-packs/competitive/champions-reg-mb-doubles/manifest.json';
@@ -53,18 +54,24 @@ async function main(): Promise<void> {
     return;
   }
 
-  await connectDatabase();
-  await new CompetitiveSetMongoWriter().bulkWrite(operations, targetCollection);
-  console.log(`[STAGING PUBLISH] target=${targetCollection} records written=${operations.length} production writes=0`);
-  printAuditRuntimeReport(buildAuditRuntimeReport([{
-    type: 'mongo',
-    label: 'staging competitive sets',
-    recordCount: operations.length,
-    path: targetCollection,
-  }]));
+  try {
+    await connectDatabase();
+    await new CompetitiveSetMongoWriter().bulkWrite(operations, targetCollection);
+    console.log(`[STAGING PUBLISH] target=${targetCollection} records written=${operations.length} production writes=0`);
+    printAuditRuntimeReport(buildAuditRuntimeReport([{
+      type: 'mongo',
+      label: 'staging competitive sets',
+      recordCount: operations.length,
+      path: targetCollection,
+    }]));
+  } finally {
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.disconnect();
+    }
+  }
 }
 
 main().catch(error => {
   console.error(error instanceof Error ? error.message : error);
-  process.exit(1);
+  process.exitCode = 1;
 });
