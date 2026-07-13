@@ -7,11 +7,11 @@
       "matchupTesting": "approved",
       "sourceFreshnessReview": "approved",
       "shadowReview": "approved",
-      "stagingReview": "pending",
+      "stagingReview": "approved",
       "exportParityReview": "approved",
       "rollbackEvidence": "approved",
-      "limitationsResolved": false,
-      "notes": "Item choice still requires matchup testing before verified."
+      "limitationsResolved": true,
+      "notes": "Verified readiness transition: staging review approved and prior limitation resolved for dry-run verified eligibility."
     },
     {
       "setId": "sinistcha-redirection-support-draft",
@@ -31,11 +31,11 @@
       "matchupTesting": "approved",
       "sourceFreshnessReview": "approved",
       "shadowReview": "approved",
-      "stagingReview": "pending",
+      "stagingReview": "approved",
       "exportParityReview": "approved",
       "rollbackEvidence": "approved",
-      "limitationsResolved": false,
-      "notes": "Stomping Tantrum coverage still requires matchup testing before verified."
+      "limitationsResolved": true,
+      "notes": "Verified readiness transition: staging review approved and prior limitation resolved for dry-run verified eligibility."
     },
     {
       "setId": "aggronmega-body-press-defensive-attacker-draft",
@@ -55,11 +55,11 @@
       "matchupTesting": "approved",
       "sourceFreshnessReview": "approved",
       "shadowReview": "approved",
-      "stagingReview": "pending",
+      "stagingReview": "approved",
       "exportParityReview": "approved",
       "rollbackEvidence": "approved",
-      "limitationsResolved": false,
-      "notes": "Safety Goggles still requires broader meta matchup testing before verified."
+      "limitationsResolved": true,
+      "notes": "Verified readiness transition: staging review approved and prior limitation resolved for dry-run verified eligibility."
     },
     {
       "setId": "incineroar-fast-taunt-pivot-draft",
@@ -91,11 +91,11 @@
       "matchupTesting": "approved",
       "sourceFreshnessReview": "approved",
       "shadowReview": "approved",
-      "stagingReview": "pending",
+      "stagingReview": "approved",
       "exportParityReview": "approved",
       "rollbackEvidence": "approved",
-      "limitationsResolved": false,
-      "notes": "Life Orb damage tradeoffs still require quartet matchup testing before verified."
+      "limitationsResolved": true,
+      "notes": "Verified readiness transition: staging review approved and prior limitation resolved for dry-run verified eligibility."
     },
     {
       "setId": "mukalola-special-wall-draft",
