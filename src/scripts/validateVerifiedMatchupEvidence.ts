@@ -28,6 +28,7 @@ function assert(condition: boolean, message: string): void {
 }
 
 const expectedFormatId = 'champions_reg_m_b_doubles';
+const acceptedEvidenceLevel = 'internal-scenario-review';
 const evidence = evidenceFixture as { formatId: string; records: VerifiedEvidenceRecord[] };
 const scenarios = scenarioFixture as {
   formatId: string;
@@ -47,6 +48,13 @@ if (scenarios.formatId !== expectedFormatId) {
   failures.push(`Scenario fixture formatId must be ${expectedFormatId}; received ${scenarios.formatId}.`);
 }
 
+if (
+  scenarios.acceptedEvidenceLevels.length !== 1 ||
+  scenarios.acceptedEvidenceLevels[0] !== acceptedEvidenceLevel
+) {
+  failures.push(`Scenario fixture acceptedEvidenceLevels must be exactly ${acceptedEvidenceLevel}.`);
+}
+
 for (const setId of pilotSetIds) {
   const evidenceRecordCount = evidence.records.filter(record => record.setId === setId).length;
   if (evidenceRecordCount !== 1) {
@@ -63,6 +71,10 @@ for (const scenarioId of new Set(duplicateScenarioIds)) {
 }
 
 for (const scenario of scenarios.scenarios) {
+  if (scenario.evidenceLevel !== acceptedEvidenceLevel) {
+    failures.push(`${scenario.scenarioId}: evidenceLevel must be ${acceptedEvidenceLevel}; received ${scenario.evidenceLevel}.`);
+  }
+
   for (const setId of scenario.approvedForSets) {
     if (!pilotSetIds.has(setId)) {
       failures.push(`${scenario.scenarioId}: approvedForSets references unknown pilot set ${setId}.`);
@@ -72,12 +84,13 @@ for (const scenario of scenarios.scenarios) {
 
 for (const record of evidence.records) {
   const approvedScenarioIds = record.approvedMatchupScenarios.filter(scenarioId => scenarioId.trim().length > 0);
+  const distinctApprovedScenarioIds = new Set(approvedScenarioIds);
 
-  if (approvedScenarioIds.length < 2) {
-    failures.push(`${record.setId}: requires at least two approved matchup scenario IDs before verified promotion; received ${approvedScenarioIds.length}.`);
+  if (distinctApprovedScenarioIds.size < 2) {
+    failures.push(`${record.setId}: requires at least two distinct approved matchup scenario IDs before verified promotion; received ${distinctApprovedScenarioIds.size}.`);
   }
 
-  for (const scenarioId of approvedScenarioIds) {
+  for (const scenarioId of distinctApprovedScenarioIds) {
     const scenario = scenariosById.get(scenarioId);
     if (!scenario) {
       failures.push(`${record.setId}: references unknown matchup scenario ${scenarioId}.`);
@@ -86,10 +99,6 @@ for (const record of evidence.records) {
 
     if (scenario.reviewResult !== 'approved') {
       failures.push(`${record.setId}: scenario ${scenarioId} must have reviewResult approved; received ${scenario.reviewResult}.`);
-    }
-
-    if (!scenarios.acceptedEvidenceLevels.includes(scenario.evidenceLevel)) {
-      failures.push(`${record.setId}: scenario ${scenarioId} uses unaccepted evidenceLevel ${scenario.evidenceLevel}.`);
     }
 
     if (!scenario.approvedForSets.includes(record.setId)) {
