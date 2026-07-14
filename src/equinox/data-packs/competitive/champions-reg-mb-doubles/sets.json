@@ -51,6 +51,7 @@
       "sourceUpdatedAt": "2026-07-12",
       "confidence": 84,
       "status": "reviewed",
+      "active": false,
       "dataVersion": "2026.07.1",
       "coherenceScore": 88,
       "humanReview": {
@@ -118,6 +119,7 @@
       "sourceUpdatedAt": "2026-07-12",
       "confidence": 78,
       "status": "reviewed",
+      "active": false,
       "dataVersion": "2026.07.1",
       "coherenceScore": 82,
       "humanReview": {
@@ -185,6 +187,7 @@
       "sourceUpdatedAt": "2026-07-12",
       "confidence": 82,
       "status": "reviewed",
+      "active": false,
       "dataVersion": "2026.07.1",
       "coherenceScore": 86,
       "humanReview": {
@@ -252,6 +255,7 @@
       "sourceUpdatedAt": "2026-07-12",
       "confidence": 76,
       "status": "reviewed",
+      "active": false,
       "dataVersion": "2026.07.1",
       "coherenceScore": 80,
       "humanReview": {
@@ -319,6 +323,7 @@
       "sourceUpdatedAt": "2026-07-12",
       "confidence": 83,
       "status": "reviewed",
+      "active": false,
       "dataVersion": "2026.07.1",
       "coherenceScore": 87,
       "humanReview": {
@@ -386,6 +391,7 @@
       "sourceUpdatedAt": "2026-07-12",
       "confidence": 74,
       "status": "reviewed",
+      "active": false,
       "dataVersion": "2026.07.1",
       "coherenceScore": 78,
       "humanReview": {
@@ -453,6 +459,7 @@
       "sourceUpdatedAt": "2026-07-12",
       "confidence": 75,
       "status": "reviewed",
+      "active": false,
       "dataVersion": "2026.07.1",
       "coherenceScore": 80,
       "humanReview": {
@@ -520,6 +527,7 @@
       "sourceUpdatedAt": "2026-07-12",
       "confidence": 82,
       "status": "reviewed",
+      "active": false,
       "dataVersion": "2026.07.1",
       "coherenceScore": 86,
       "humanReview": {
@@ -587,6 +595,7 @@
       "sourceUpdatedAt": "2026-07-12",
       "confidence": 74,
       "status": "reviewed",
+      "active": false,
       "dataVersion": "2026.07.1",
       "coherenceScore": 80,
       "humanReview": {
