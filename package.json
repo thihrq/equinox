@@ -52,7 +52,18 @@
     "sets:activate:staging": "ts-node src/scripts/promoteVerifiedSetsToActive.ts",
     "sets:activate:staging:dry": "ts-node src/scripts/promoteVerifiedSetsToActive.ts --dry-run",
     "sets:activate:staging:check": "ts-node src/scripts/validateActiveStagingPromotion.ts",
-    "sets:activate:staging:rollback": "ts-node src/scripts/rollbackActiveStagingPromotion.ts"
+    "sets:activate:staging:rollback": "ts-node src/scripts/rollbackActiveStagingPromotion.ts",
+    "sets:active-staging:contracts:check": "ts-node src/scripts/validateActiveStagingHomologationContracts.ts",
+    "sets:active-staging:config:check": "ts-node src/scripts/validateActiveStagingHomologationConfig.ts",
+    "sets:active-staging:monitoring:check": "ts-node src/scripts/validateActiveStagingHomologationMonitoring.ts",
+    "sets:active-staging:repository:check": "ts-node src/scripts/validateActiveStagingRepository.ts",
+    "sets:active-staging:repository:exit-codes:check": "ts-node src/scripts/validateActiveStagingRepositoryExitCodes.ts",
+    "sets:active-staging:cli-exit-codes:check": "ts-node src/scripts/validateActiveStagingHomologationCliExitCodes.ts",
+    "sets:active-staging:engine-adapter:check": "ts-node src/scripts/validateActiveStagingEngineAdapter.ts",
+    "sets:active-staging:teamdata:check": "ts-node src/scripts/validateActiveStagingTeamDataTracker.ts",
+    "sets:active-staging:runner:offline": "ts-node src/scripts/validateActiveStagingRunnerOffline.ts",
+    "sets:active-staging:offline-integration:check": "ts-node src/scripts/validateActiveStagingHomologationOfflineIntegration.ts",
+    "sets:active-staging:homologate": "ts-node src/scripts/homologateActiveStagingFunctionalV1.ts"
   },
   "keywords": [
     "pokemon",
