@@ -6,6 +6,7 @@ export interface ActiveStagingHomologationConfig {
   readOnly: boolean;
   dataMode: string | undefined;
   allowDatabaseWrites: boolean;
+  allowDatabaseWritesRaw: string | undefined;
 }
 
 export class ActiveStagingConfigError extends Error {
@@ -19,6 +20,7 @@ export function readActiveStagingHomologationConfig(env: NodeJS.ProcessEnv = pro
     readOnly: env.EQUINOX_ACTIVE_STAGING_READ_ONLY === 'true',
     dataMode: env.EQUINOX_DATA_MODE,
     allowDatabaseWrites: env.EQUINOX_ALLOW_DATABASE_WRITES === 'true',
+    allowDatabaseWritesRaw: env.EQUINOX_ALLOW_DATABASE_WRITES,
   };
 }
 
@@ -28,7 +30,7 @@ export function assertActiveStagingHomologationConfig(config: ActiveStagingHomol
     config.collectionName === 'pokemonsets_v2_staging' ? null : 'EQUINOX_ACTIVE_STAGING_COLLECTION=pokemonsets_v2_staging is required',
     config.readOnly ? null : 'EQUINOX_ACTIVE_STAGING_READ_ONLY=true is required',
     config.dataMode === 'mongo' ? null : 'EQUINOX_DATA_MODE=mongo is required',
-    config.allowDatabaseWrites === false ? null : 'EQUINOX_ALLOW_DATABASE_WRITES=false is required',
+    config.allowDatabaseWritesRaw === 'false' ? null : 'EQUINOX_ALLOW_DATABASE_WRITES=false is required',
   ].filter((failure): failure is string => Boolean(failure));
   if (failures.length) throw new ActiveStagingConfigError(`Active staging functional homologation config failed:\n- ${failures.join('\n- ')}`);
   return { ...config, enabled: true, readOnly: true, collectionName: 'pokemonsets_v2_staging' };
