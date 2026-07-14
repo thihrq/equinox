@@ -24,6 +24,39 @@ assertValidationFailure(
   () => buildActiveStagingEngineInput(ACTIVE_STAGING_HOMOLOGATION_SCENARIOS[0], records.slice(0, 2)),
   'two-record active staging input',
 );
+assertValidationFailure(
+  () => buildActiveStagingEngineInput(ACTIVE_STAGING_HOMOLOGATION_SCENARIOS[0], [records[0], records[0], records[1], records[2]]),
+  'duplicate active staging set ids',
+);
+assertValidationFailure(
+  () => buildActiveStagingEngineInput(ACTIVE_STAGING_HOMOLOGATION_SCENARIOS[0], [
+    { ...records[0], setId: 'unexpected-active-set' },
+    records[1],
+    records[2],
+    records[3],
+  ]),
+  'unexpected active staging set id',
+);
+assertValidationFailure(
+  () => buildActiveStagingEngineInput(ACTIVE_STAGING_HOMOLOGATION_SCENARIOS[0], [
+    { ...records[0], status: 'reviewed', active: false } as unknown as ActiveStagingSetRecord,
+    records[1],
+    records[2],
+    records[3],
+  ]),
+  'inactive active staging record',
+);
+assertValidationFailure(
+  () =>
+    buildActiveStagingEngineInput(
+      {
+        ...ACTIVE_STAGING_HOMOLOGATION_SCENARIOS[0],
+        expectedPresentedSetIds: ['missing-active-set', records[1].setId],
+      },
+      records,
+    ),
+  'scenario requesting non-resolved set',
+);
 
 for (const scenario of ACTIVE_STAGING_HOMOLOGATION_SCENARIOS) {
   const input = buildActiveStagingEngineInput(scenario, records);

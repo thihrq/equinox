@@ -6,6 +6,12 @@ export const WRITE_COMMAND_NAMES = [
   'findAndModify',
   'bulkWrite',
   'commitTransaction',
+  'create',
+  'createIndexes',
+  'collMod',
+  'drop',
+  'dropDatabase',
+  'renameCollection',
 ] as const;
 
 export interface MongoCommandObservation {

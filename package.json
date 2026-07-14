@@ -58,6 +58,7 @@
     "sets:active-staging:monitoring:check": "ts-node src/scripts/validateActiveStagingHomologationMonitoring.ts",
     "sets:active-staging:repository:check": "ts-node src/scripts/validateActiveStagingRepository.ts",
     "sets:active-staging:repository:exit-codes:check": "ts-node src/scripts/validateActiveStagingRepositoryExitCodes.ts",
+    "sets:active-staging:cli-exit-codes:check": "ts-node src/scripts/validateActiveStagingHomologationCliExitCodes.ts",
     "sets:active-staging:engine-adapter:check": "ts-node src/scripts/validateActiveStagingEngineAdapter.ts",
     "sets:active-staging:teamdata:check": "ts-node src/scripts/validateActiveStagingTeamDataTracker.ts",
     "sets:active-staging:runner:offline": "ts-node src/scripts/validateActiveStagingRunnerOffline.ts",

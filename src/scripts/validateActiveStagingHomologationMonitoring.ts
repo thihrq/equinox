@@ -9,15 +9,19 @@ const monitor = new MongoCommandMonitor();
 monitor.record({ commandName: 'find', collectionName: 'pokemonsets_v2_staging' });
 monitor.record({ commandName: 'update', collectionName: 'pokemonsets_v2_staging' });
 monitor.record({ commandName: 'insert', collectionName: 'pokemonsets' });
+monitor.record({ commandName: 'createIndexes', collectionName: 'pokemonsets_v2_staging' });
+monitor.record({ commandName: 'drop', collectionName: 'pokemonsets' });
 
 const report = monitor.report();
 assert(WRITE_COMMAND_NAMES.includes('update'), 'update must be a write command');
-assert(report.totalCommands === 3, 'monitor must count all commands');
+assert(WRITE_COMMAND_NAMES.includes('createIndexes'), 'createIndexes must be a write command');
+assert(WRITE_COMMAND_NAMES.includes('drop'), 'drop must be a write command');
+assert(report.totalCommands === 5, 'monitor must count all commands');
 assert(report.readsByCollection.pokemonsets_v2_staging === 1, 'staging find must count as staging read');
 assert(report.productionCollectionReads === 0, 'production write must not count as production read');
-assert(report.observedMongoWriteCommands === 2, 'two write commands must be observed');
-assert(report.observedStagingWriteCommands === 1, 'one staging write command must be observed');
-assert(report.observedProductionWriteCommands === 1, 'one production write command must be observed');
+assert(report.observedMongoWriteCommands === 4, 'four write commands must be observed');
+assert(report.observedStagingWriteCommands === 2, 'two staging write commands must be observed');
+assert(report.observedProductionWriteCommands === 2, 'two production write commands must be observed');
 
 const readMonitor = new CollectionReadMonitor();
 readMonitor.recordRead('pokemonsets_v2_staging', 4);

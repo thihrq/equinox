@@ -17,6 +17,7 @@ import {
 import {
   ACTIVE_STAGING_FUNCTIONAL_GATE_EXIT_CODE,
   ACTIVE_STAGING_MONGO_READ_EXIT_CODE,
+  type ActiveStagingOperationalEvidence,
   type FunctionalHomologationExitCode,
 } from '../equinox/competitive/active-staging/ActiveStagingHomologationTypes';
 import { ACTIVE_STAGING_SET_ALLOWLIST } from '../equinox/competitive/active-staging/ActiveStagingHomologationAllowlist';
@@ -64,21 +65,36 @@ async function main(): Promise<FunctionalHomologationExitCode> {
 
     const mongo = commandMonitor.report();
     const reads = readMonitor.report();
-    const evidence = {
+    const productionCollectionReads = mongo.productionCollectionReads + reads.productionCollectionReads;
+    const recordsWritten = mongo.observedMongoWriteCommands;
+    const productionWrites = mongo.observedProductionWriteCommands;
+    const evidence: ActiveStagingOperationalEvidence & { mongo: typeof mongo; reads: typeof reads } = {
       ...report,
+      targetCollection: config.collectionName,
+      productionCollectionReads,
+      observedMongoWriteCommands: mongo.observedMongoWriteCommands,
+      observedStagingWriteCommands: mongo.observedStagingWriteCommands,
+      observedProductionWriteCommands: mongo.observedProductionWriteCommands,
+      productionWrites,
+      recordsWritten,
       mongo,
       reads,
-      targetCollection: config.collectionName,
     };
     console.log(JSON.stringify(evidence, null, 2));
 
     assertActiveStagingRepositoryFunctionalGates(
       records.length,
       ACTIVE_STAGING_SET_ALLOWLIST.length,
-      mongo.observedMongoWriteCommands,
+      evidence.observedMongoWriteCommands,
       mongo.productionCollectionReads,
       reads.productionCollectionReads,
     );
+    if (evidence.productionCollectionReads !== 0) {
+      throw new ActiveStagingRepositoryFunctionalGateError('production reads must be zero');
+    }
+    if (evidence.productionWrites !== 0 || evidence.recordsWritten !== 0) {
+      throw new ActiveStagingRepositoryFunctionalGateError('active staging homologation must not write records');
+    }
     exitCode = report.aggregate.readyForAtlasReadOnlyHomologation
       ? 0
       : ACTIVE_STAGING_FUNCTIONAL_GATE_EXIT_CODE;

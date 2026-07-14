@@ -16,10 +16,15 @@ activeRecordsLoadedByRepository: 4
 scenariosRun: 4
 scenariosPassed: 4
 uniqueActiveRecordsPresentedAcrossAllScenarios: 4
+scenariosWithEngineExecution: 4
+scenariosWithZeroFallbacks: 4
+fullTeamEvaluationExecuted: true in 4/4 scenarios
 productionCollectionReads: 0
 observedMongoWriteCommands: 0
 observedStagingWriteCommands: 0
 observedProductionWriteCommands: 0
+recordsWritten: 0
+productionWrites: 0
 localPilotFallbackUsed: false
 competitiveVerificationState: staging-controlled
 ```
@@ -30,6 +35,8 @@ competitiveVerificationState: staging-controlled
 npm.cmd run sets:active-staging:contracts:check
 npm.cmd run sets:active-staging:config:check
 npm.cmd run sets:active-staging:monitoring:check
+npm.cmd run sets:active-staging:repository:exit-codes:check
+npm.cmd run sets:active-staging:cli-exit-codes:check
 npm.cmd run sets:active-staging:engine-adapter:check
 npm.cmd run sets:active-staging:teamdata:check
 npm.cmd run sets:active-staging:runner:offline
@@ -60,6 +67,9 @@ activeRecordsLoadedByRepository: 4
 scenariosRun: 4
 scenariosPassed: 4
 uniqueActiveRecordsPresentedAcrossAllScenarios: 4
+scenariosWithEngineExecution: 4
+scenariosWithZeroFallbacks: 4
+fullTeamEvaluationExecuted: true in 4/4 scenarios
 productionCollectionReads: 0
 observedMongoWriteCommands: 0
 observedStagingWriteCommands: 0

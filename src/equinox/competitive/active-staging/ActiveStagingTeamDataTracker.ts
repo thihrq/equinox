@@ -13,13 +13,14 @@ export type TeamDataWithActiveStagingTrace<T extends object> = T & ActiveStaging
 export function applyActiveStagingTraceToTeamData<T extends object>(
   teamData: T,
   input: ActiveStagingEngineInput,
+  appliedSetIds: string[] = input.expectedActiveV2SetsPresentedToEngine,
 ): TeamDataWithActiveStagingTrace<T> {
   return {
     ...teamData,
     competitiveVerificationState: 'staging-controlled',
     expectedActiveV2SetsResolvedFromMongo: [...input.expectedActiveV2SetsResolvedFromMongo],
     expectedActiveV2SetsPresentedToEngine: [...input.expectedActiveV2SetsPresentedToEngine],
-    expectedActiveV2SetsAppliedToTeamData: [...input.expectedActiveV2SetsPresentedToEngine],
+    expectedActiveV2SetsAppliedToTeamData: [...appliedSetIds],
     localPilotFallbackUsed: false,
   };
 }

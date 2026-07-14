@@ -52,6 +52,14 @@ export interface ActiveStagingScenarioReport {
   expectedActiveV2SetsAppliedToTeamData: string[];
   competitiveVerificationState: 'staging-controlled';
   localPilotFallbackUsed: false;
+  engineExecuted: true;
+  generatedStrategyIds: string[];
+  selectedStrategyId: string;
+  teamDataVerifiedSets: number;
+  teamDataGeneratedFallbacks: number;
+  teamDataUnknownSets: number;
+  fullTeamEvaluationScore: number;
+  fullTeamEvaluationExecuted: boolean;
   teamDataCoverage?: TeamDataCoverage;
   passed: boolean;
 }
@@ -61,6 +69,8 @@ export interface ActiveStagingHomologationAggregate {
   scenariosRun: number;
   scenariosPassed: number;
   uniqueActiveRecordsPresentedAcrossAllScenarios: number;
+  scenariosWithEngineExecution: number;
+  scenariosWithZeroFallbacks: number;
   localPilotFallbackUsed: false;
   readyForAtlasReadOnlyHomologation: boolean;
 }
@@ -76,6 +86,6 @@ export interface ActiveStagingOperationalEvidence extends ActiveStagingHomologat
   observedMongoWriteCommands: number;
   observedStagingWriteCommands: number;
   observedProductionWriteCommands: number;
-  productionWrites: 0;
-  recordsWritten: 0;
+  productionWrites: number;
+  recordsWritten: number;
 }
