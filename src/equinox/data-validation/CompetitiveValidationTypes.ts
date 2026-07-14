@@ -53,6 +53,9 @@ export interface CompetitiveSetValidationInput {
   contentHash?: string;
   legal?: boolean;
   status?: CompetitiveSetStatus;
+  active?: boolean;
+  verifiedAt?: string | Date;
+  verifiedRunId?: string;
   coherenceScore?: number;
   eligibleRoster?: Array<{ pokemonId: string; forms: string[] }>;
 }

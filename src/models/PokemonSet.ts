@@ -46,6 +46,9 @@ export interface IPokemonSet extends Document {
   validationErrors?: string[];
   validationWarnings?: string[];
   status?: 'active' | 'verified' | 'reviewed' | 'deprecated' | 'quarantined' | 'draft';
+  active?: boolean;
+  verifiedAt?: Date;
+  verifiedRunId?: string;
   dataVersion?: string;
   contentHash?: string;
 }
@@ -96,6 +99,9 @@ const PokemonSetSchema = new Schema<IPokemonSet>({
   validationErrors: [{ type: String }],
   validationWarnings: [{ type: String }],
   status: { type: String, enum: ['active', 'verified', 'reviewed', 'deprecated', 'quarantined', 'draft'], default: 'draft', index: true },
+  active: { type: Boolean, default: false, index: true },
+  verifiedAt: { type: Date },
+  verifiedRunId: { type: String, index: true },
   dataVersion: { type: String },
   contentHash: { type: String }
 });
