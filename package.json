@@ -53,7 +53,8 @@
     "sets:activate:staging:dry": "ts-node src/scripts/promoteVerifiedSetsToActive.ts --dry-run",
     "sets:activate:staging:check": "ts-node src/scripts/validateActiveStagingPromotion.ts",
     "sets:activate:staging:rollback": "ts-node src/scripts/rollbackActiveStagingPromotion.ts",
-    "sets:active-staging:contracts:check": "ts-node src/scripts/validateActiveStagingHomologationContracts.ts"
+    "sets:active-staging:contracts:check": "ts-node src/scripts/validateActiveStagingHomologationContracts.ts",
+    "sets:active-staging:config:check": "ts-node src/scripts/validateActiveStagingHomologationConfig.ts"
   },
   "keywords": [
     "pokemon",
