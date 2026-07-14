@@ -4,6 +4,7 @@ import type { ActiveStagingHomologationConfig } from './ActiveStagingHomologatio
 import type { ActiveStagingSetRecord } from './ActiveStagingHomologationTypes';
 import type { CollectionReadMonitor } from './ActiveStagingCollectionReadMonitor';
 import type { MongoCommandMonitor } from './ActiveStagingMongoCommandMonitor';
+import { assertUniqueActiveStagingSetIds } from './ActiveStagingRepositoryValidation';
 
 interface RepositoryOptions {
   client: MongoClient;
@@ -34,8 +35,7 @@ export class ActiveStagingSetRepository {
 
     readMonitor.recordRead('pokemonsets_v2_staging', docs.length);
     const sorted = docs.sort((a, b) => String(a.setId).localeCompare(String(b.setId)));
-    const uniqueIds = new Set(sorted.map((doc) => doc.setId));
-    if (uniqueIds.size !== sorted.length) throw new Error('duplicate active staging setIds returned by repository');
+    assertUniqueActiveStagingSetIds(sorted.map((doc) => doc.setId));
     return sorted;
   }
 }

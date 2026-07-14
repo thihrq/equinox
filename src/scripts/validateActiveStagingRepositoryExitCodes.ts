@@ -2,6 +2,7 @@ import {
   ActiveStagingRepositoryFunctionalGateError,
   activeStagingRepositoryExitCodeFor,
   assertActiveStagingRepositoryFunctionalGates,
+  assertUniqueActiveStagingSetIds,
   createActiveStagingMongoClient,
 } from '../equinox/competitive/active-staging/ActiveStagingRepositoryValidation';
 import { ActiveStagingConfigError } from '../equinox/competitive/active-staging/ActiveStagingHomologationConfig';
@@ -42,6 +43,7 @@ assertFunctionalGateFailure(() => assertActiveStagingRepositoryFunctionalGates(3
 assertFunctionalGateFailure(() => assertActiveStagingRepositoryFunctionalGates(4, 4, 1, 0, 0), 'detected writes');
 assertFunctionalGateFailure(() => assertActiveStagingRepositoryFunctionalGates(4, 4, 0, 1, 0), 'command monitor production read');
 assertFunctionalGateFailure(() => assertActiveStagingRepositoryFunctionalGates(4, 4, 0, 0, 1), 'collection monitor production read');
+assertFunctionalGateFailure(() => assertUniqueActiveStagingSetIds(['set-a', 'set-a']), 'duplicate active staging set IDs');
 
 try {
   createActiveStagingMongoClient('not-a-mongo-uri');

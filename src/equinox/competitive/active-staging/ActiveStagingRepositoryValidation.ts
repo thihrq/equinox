@@ -9,6 +9,12 @@ import {
 
 export class ActiveStagingRepositoryFunctionalGateError extends Error {}
 
+export function assertUniqueActiveStagingSetIds(setIds: string[]): void {
+  if (new Set(setIds).size !== setIds.length) {
+    throw new ActiveStagingRepositoryFunctionalGateError('duplicate active staging setIds returned by repository');
+  }
+}
+
 export function createActiveStagingMongoClient(mongoUri: string): MongoClient {
   try {
     return new MongoClient(mongoUri, { monitorCommands: true });
