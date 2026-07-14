@@ -60,7 +60,8 @@
     "sets:active-staging:repository:exit-codes:check": "ts-node src/scripts/validateActiveStagingRepositoryExitCodes.ts",
     "sets:active-staging:engine-adapter:check": "ts-node src/scripts/validateActiveStagingEngineAdapter.ts",
     "sets:active-staging:teamdata:check": "ts-node src/scripts/validateActiveStagingTeamDataTracker.ts",
-    "sets:active-staging:runner:offline": "ts-node src/scripts/validateActiveStagingRunnerOffline.ts"
+    "sets:active-staging:runner:offline": "ts-node src/scripts/validateActiveStagingRunnerOffline.ts",
+    "sets:active-staging:homologate": "ts-node src/scripts/homologateActiveStagingFunctionalV1.ts"
   },
   "keywords": [
     "pokemon",
