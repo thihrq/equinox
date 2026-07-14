@@ -153,6 +153,26 @@ localPilotFallbackUsed: false
 
 If the motor uses the local pilot pack instead of the four active Mongo staging records, the mandatory homologation must fail.
 
+If the active staging source fails, returns an incomplete package, or cannot resolve any requested set ID, the mandatory scenario must stop immediately. The runner may report whether local fallback was available, but it must not execute any mandatory scenario with that fallback.
+
+Required failure behavior:
+
+```text
+Mongo staging failed
+-> scenario failed
+-> localPilotFallbackUsed: false
+-> localPilotFallbackAvailable: true/false
+```
+
+Forbidden behavior:
+
+```text
+Mongo staging failed
+-> use pilot pack
+-> execute mandatory scenario
+-> fail only in final aggregate report
+```
+
 This is the central proof of the phase.
 
 ## Homologation Script
@@ -173,10 +193,15 @@ The existing `validateStagingHomologation.ts` may remain available for previous-
 
 ## Package State Gates
 
-The new functional homologation must require:
+The new functional homologation must distinguish package loading from scenario presentation.
+
+Repository/package-level gates:
 
 ```text
 activeRecordsRead: 4
+activeRecordsAvailable: 4
+activeRecordsLoadedByRepository: 4
+uniqueActiveRecordsAvailableToHomologation: 4
 allowlistedActive: 4
 allowlistedVerified: 0
 blockedRecordsStillReviewed: 5
@@ -186,19 +211,28 @@ activeConflicts: 0
 sameActiveRunIdForAllowlist: true
 ```
 
-The script must also track:
+Scenario-presentation gates:
 
 ```text
-activeRecordsAvailable: 4
-activeRecordsLoadedByRepository: 4
-activeRecordsPresentedToEngine: 4
+activeRecordsPresentedToEnginePerScenario: 2
+requestedSetsPresentedToEnginePerScenario: 2
+uniqueActiveRecordsPresentedAcrossAllScenarios: 4
 reviewedRecordsPresentedToEngine: 0
 generatedRecordsPresentedToEngine: 0
 localPilotFallbackUsed: false
-mongoWritesBefore: 0
-mongoWritesAfter: 0
+```
+
+The repository must load and validate all four allowlisted active records once. Each mandatory scenario must present exactly the two requested active records to the engine context. Across the complete homologation run, all four unique active records must have been presented in at least one mandatory scenario.
+
+Isolation and write-observation gates:
+
+```text
+productionCollectionReads: 0
+observedMongoWriteCommands: 0
+observedStagingWriteCommands: 0
+observedProductionWriteCommands: 0
 productionWrites: 0
-productionCollectionReads: 0 when technically measurable
+recordsWritten: 0
 ```
 
 ## Functional Scenarios
@@ -217,48 +251,74 @@ Each scenario must report:
 ```text
 scenarioId
 input Pokemon names
+requestedSetCount
 requestedSetIds
+mongoRequestedSetsFound
 setIds read from Mongo
 shared activeRunId
 source of each set
+requestedSetsPresentedToEngine
 sets presented to engine
 sets effectively used by the recommendation
+requestedSetsAppliedToTeamData
 fallback triggered or not
+localPilotFallbackAvailable
 TeamDataCoverage
-verifiedCompetitiveLabel
+competitiveVerificationState
 export result
 query duration
 scenario total duration
-recommendationContainsExpectedActiveV2
+expectedActiveV2SetsResolvedFromMongo
+expectedActiveV2SetsPresentedToEngine
+expectedActiveV2SetsAppliedToTeamData
+recommendationContainsExpectedActiveV2, only when the exported result contract actually exposes consumed set IDs
 ```
 
-The gate `recommendationsContainActiveV2Sets` must be measured per scenario, not only globally.
+The central per-scenario gate is not that input Pokemon appear as recommendations. The gate is that all requested set IDs were read from Mongo staging, presented to the engine, used when building TeamDataCoverage or the competitive context, and traceable in final scenario evidence.
+
+`recommendationContainsExpectedActiveV2` may be reported only when the result/export contract really includes the consumed set IDs. It must not be the primary gate for scenarios where the requested Pokemon are inputs rather than recommended outputs.
 
 Example scenario result shape:
 
 ```ts
 {
   scenarioId: 'sinistcha-aggronmega',
+  requestedSetCount: 2,
   requestedSetIds: [
     'sinistcha-bulky-trick-room-setter-draft',
     'aggronmega-slow-physical-breaker-draft'
   ],
+  mongoRequestedSetsFound: 2,
+  requestedSetsPresentedToEngine: 2,
+  requestedSetsAppliedToTeamData: 2,
   activeV2SetsConsumed: [
     'sinistcha-bulky-trick-room-setter-draft',
     'aggronmega-slow-physical-breaker-draft'
   ],
-  recommendationContainsExpectedActiveV2: true,
+  expectedActiveV2SetsResolvedFromMongo: true,
+  expectedActiveV2SetsPresentedToEngine: true,
+  expectedActiveV2SetsAppliedToTeamData: true,
   engineUsesMongoStagingActive: true,
-  localPilotFallbackUsed: false
+  localPilotFallbackUsed: false,
+  competitiveVerificationState: 'staging-controlled'
 }
 ```
 
-## Verified Competitive Label Contract
+## Competitive Verification State Contract
 
-For this phase, use a deterministic staging label state:
+For this phase, do not model staging approval as a truthy boolean. Use a domain state:
+
+```ts
+type CompetitiveVerificationState =
+  | 'unverified'
+  | 'staging-controlled'
+  | 'production-approved';
+```
+
+Required value for this phase:
 
 ```text
-verifiedCompetitiveLabel: controlled-true
+competitiveVerificationState: staging-controlled
 ```
 
 Meaning:
@@ -267,10 +327,10 @@ Meaning:
 the data has been verified and activated in staging, but it has not been approved for production rollout.
 ```
 
-This phase must not represent staging homologation as full production approval. A later rollout phase may promote the external label behavior to:
+This avoids consumers treating a string such as `controlled-true` as truthy production approval. This phase must not represent staging homologation as full production approval. A later rollout phase may promote the external behavior to:
 
 ```text
-verifiedCompetitiveLabel: true
+competitiveVerificationState: production-approved
 ```
 
 ## Immediate Failure Criteria
@@ -280,18 +340,30 @@ Stop and fail homologation when any condition is true:
 ```text
 activeRecordsRead !== 4
 activeRecordsLoadedByRepository !== 4
-activeRecordsPresentedToEngine !== 4
+uniqueActiveRecordsAvailableToHomologation !== 4
+activeRecordsPresentedToEnginePerScenario !== 2
+uniqueActiveRecordsPresentedAcrossAllScenarios !== 4
+requestedSetCount !== 2 in any mandatory scenario
+mongoRequestedSetsFound !== 2 in any mandatory scenario
+requestedSetsPresentedToEngine !== 2 in any mandatory scenario
+requestedSetsAppliedToTeamData !== 2 in any mandatory scenario
 reviewedRecordsConsumed > 0
 reviewedRecordsPresentedToEngine > 0
 generatedActiveConsumed > 0
 generatedRecordsPresentedToEngine > 0
 localPilotFallbackUsed === true in any mandatory scenario
 targetCollection !== pokemonsets_v2_staging
-mongoWritesAfter > mongoWritesBefore
+productionCollectionReads > 0
+observedMongoWriteCommands > 0
+observedStagingWriteCommands > 0
+observedProductionWriteCommands > 0
 productionWrites > 0
 activeRunIds are distinct
 any expected setId is missing
-any scenario recommendation lacks expected active V2 consumption
+expectedActiveV2SetsResolvedFromMongo !== true in any mandatory scenario
+expectedActiveV2SetsPresentedToEngine !== true in any mandatory scenario
+expectedActiveV2SetsAppliedToTeamData !== true in any mandatory scenario
+competitiveVerificationState !== staging-controlled in any mandatory scenario
 ```
 
 ## Observability Requirements
@@ -307,15 +379,18 @@ targetCollection
 activeRunId
 activeRecordsAvailable
 activeRecordsLoadedByRepository
-activeRecordsPresentedToEngine
+uniqueActiveRecordsAvailableToHomologation
+activeRecordsPresentedToEnginePerScenario
+uniqueActiveRecordsPresentedAcrossAllScenarios
 reviewedRecordsPresentedToEngine
 generatedRecordsPresentedToEngine
 localPilotFallbackUsed
 scenarioCount
 scenariosPassed
-mongoWritesBefore
-mongoWritesAfter
 productionCollectionReads
+observedMongoWriteCommands
+observedStagingWriteCommands
+observedProductionWriteCommands
 productionWrites
 recordsWritten
 ```
@@ -325,19 +400,31 @@ Required per-scenario fields:
 ```text
 scenarioId
 inputPokemon
+requestedSetCount
 requestedSetIds
+mongoRequestedSetsFound
 mongoSetIdsRead
 activeRunId
+activeRunIdMatchesPackage
 setSources
+requestedSetsPresentedToEngine
 setsPresentedToEngine
 setsUsedByRecommendation
+requestedSetsAppliedToTeamData
+reviewedSetsPresentedToEngine
+generatedSetsPresentedToEngine
 localPilotFallbackUsed
+localPilotFallbackAvailable
 teamDataCoverage
-verifiedCompetitiveLabel
+competitiveVerificationState
 exportResult
 queryDurationMs
 totalDurationMs
+expectedActiveV2SetsResolvedFromMongo
+expectedActiveV2SetsPresentedToEngine
+expectedActiveV2SetsAppliedToTeamData
 recommendationContainsExpectedActiveV2
+observedMongoWriteCommands
 passed
 ```
 
@@ -355,8 +442,11 @@ Mongo read-only validation:
 
 - `EQUINOX_ALLOW_DATABASE_WRITES=false` is required.
 - The script reads only `pokemonsets_v2_staging`.
-- The script fails if the active records are missing or if any mandatory scenario falls back to the local pilot pack.
-- The script verifies no writes occurred during the run.
+- The script fails if the active records are missing or if any mandatory scenario would need the local pilot pack.
+- The script verifies no writes occurred during the run by command observation, not only by an internal script counter.
+- Mongo command monitoring, a repository spy, or an equivalent wrapper must record every `insert`, `update`, `delete`, `replace`, `findAndModify`, `bulkWrite`, or transaction write command issued by the homologation process.
+- The run fails when the observed write-command count is greater than zero.
+- Production collection reads must be observed and reported as `productionCollectionReads: 0`; if this cannot be instrumented, the homologation is incomplete rather than approved.
 
 Recommended commands after implementation:
 
@@ -368,6 +458,22 @@ npm.cmd run build
 git diff --check
 ```
 
+## Runtime Safety And Exit Codes
+
+The homologation runner must close MongoDB connections in `finally`, even when a gate fails.
+
+Secrets must never be emitted. Logs and JSON output must not include MongoDB URI, username, password, tokens, or DNS hook details.
+
+Exit codes must be deterministic:
+
+```text
+0: homologation succeeded
+1: functional gate failed
+2: invalid configuration or environment
+3: Mongo connection or read failure
+```
+
+All failed gates must produce a non-zero process exit code. Partial scenario completion cannot produce exit code 0.
 ## Out Of Scope
 
 This phase does not include:
