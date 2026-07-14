@@ -54,8 +54,21 @@ export interface CompetitiveSetValidationInput {
   legal?: boolean;
   status?: CompetitiveSetStatus;
   active?: boolean;
+  setKey?: string;
   verifiedAt?: string | Date;
   verifiedRunId?: string;
+  activeRunId?: string;
+  activatedAt?: string | Date;
+  activatedFromStatus?: CompetitiveSetStatus;
+  previousVerifiedRunId?: string;
+  activationMetadata?: {
+    runId?: string;
+    targetCollection?: 'pokemonsets_v2_staging';
+    executedAt?: string | Date;
+    source?: 'verified-to-active-staging-v1';
+  };
+  rolledBackAt?: string | Date;
+  rolledBackFromActiveRunId?: string;
   coherenceScore?: number;
   eligibleRoster?: Array<{ pokemonId: string; forms: string[] }>;
 }
