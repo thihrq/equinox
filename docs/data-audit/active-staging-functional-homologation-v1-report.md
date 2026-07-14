@@ -49,6 +49,29 @@ Production collection reads: 0
 Observed Mongo write commands: 0
 ```
 
+## Atlas Read-Only Homologation Result
+
+```text
+Date: 2026-07-14
+Command: npm.cmd run sets:active-staging:homologate
+Exit code: 0
+Target collection: pokemonsets_v2_staging
+activeRecordsLoadedByRepository: 4
+scenariosRun: 4
+scenariosPassed: 4
+uniqueActiveRecordsPresentedAcrossAllScenarios: 4
+productionCollectionReads: 0
+observedMongoWriteCommands: 0
+observedStagingWriteCommands: 0
+observedProductionWriteCommands: 0
+localPilotFallbackUsed: false
+competitiveVerificationState: staging-controlled
+recordsWritten: 0
+productionWrites: 0
+```
+
+Operational note: the Windows resolver returned the Atlas SRV records, but Node's default DNS resolver returned `ECONNREFUSED` for the same SRV lookup. The homologation run used a temporary process-only `NODE_OPTIONS=--require=<temp dns patch>` preload to call `dns.setServers(['8.8.8.8','1.1.1.1'])`. The preload file, `NODE_OPTIONS`, `MONGO_URI`, and `MONGODB_URI` were removed from the process after the run. No URI, username, password, or host secret is recorded in this report.
+
 ## Stop Criteria
 
 Stop immediately if any field differs from the expected evidence block or if any command exits non-zero outside the documented config failure test.
