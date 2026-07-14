@@ -57,7 +57,8 @@
     "sets:active-staging:config:check": "ts-node src/scripts/validateActiveStagingHomologationConfig.ts",
     "sets:active-staging:monitoring:check": "ts-node src/scripts/validateActiveStagingHomologationMonitoring.ts",
     "sets:active-staging:repository:check": "ts-node src/scripts/validateActiveStagingRepository.ts",
-    "sets:active-staging:repository:exit-codes:check": "ts-node src/scripts/validateActiveStagingRepositoryExitCodes.ts"
+    "sets:active-staging:repository:exit-codes:check": "ts-node src/scripts/validateActiveStagingRepositoryExitCodes.ts",
+    "sets:active-staging:engine-adapter:check": "ts-node src/scripts/validateActiveStagingEngineAdapter.ts"
   },
   "keywords": [
     "pokemon",
