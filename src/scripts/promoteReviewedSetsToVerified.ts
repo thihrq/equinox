@@ -85,9 +85,9 @@ async function executePromotion(targetCollection: string, baseSummary: ReturnTyp
       throw new Error(`Verified staging promotion blocked: missing staging records ${missing.join(', ')}.`);
     }
 
-    const activeMissing = beforeDocs.filter(doc => doc.active !== false).map(doc => String(doc.setId));
-    if (activeMissing.length > 0) {
-      throw new Error(`Verified staging promotion blocked: active must be explicitly false for ${activeMissing.join(', ')}.`);
+    const activeEnabled = beforeDocs.filter(doc => doc.active === true).map(doc => String(doc.setId));
+    if (activeEnabled.length > 0) {
+      throw new Error(`Verified staging promotion blocked: active must not be true for ${activeEnabled.join(', ')}.`);
     }
 
     const generatedCandidates = beforeDocs.filter(doc => doc.sourceType === 'generated').map(doc => String(doc.setId));
@@ -102,8 +102,8 @@ async function executePromotion(targetCollection: string, baseSummary: ReturnTyp
       throw new Error(`Verified staging promotion blocked: unexpected status before write ${invalidStatusDocs.join(', ')}.`);
     }
 
-    const alreadyVerifiedBefore = beforeDocs.filter(doc => doc.status === 'verified' && doc.active === false);
-    const reviewedBefore = beforeDocs.filter(doc => doc.status === 'reviewed' && doc.active === false);
+    const alreadyVerifiedBefore = beforeDocs.filter(doc => doc.status === 'verified' && doc.active !== true);
+    const reviewedBefore = beforeDocs.filter(doc => doc.status === 'reviewed' && doc.active !== true);
     if (alreadyVerifiedBefore.length + reviewedBefore.length !== VERIFIED_STAGING_PROMOTION_ALLOWLIST.length) {
       throw new Error(`Verified staging promotion blocked: reviewed+verified count must be 4 before write, reviewed=${reviewedBefore.length} verified=${alreadyVerifiedBefore.length}.`);
     }
@@ -113,12 +113,13 @@ async function executePromotion(targetCollection: string, baseSummary: ReturnTyp
       {
         setId: { $in: VERIFIED_STAGING_PROMOTION_ALLOWLIST },
         status: 'reviewed',
-        active: false,
+        active: { $ne: true },
         sourceType: 'curated',
       },
       {
         $set: {
           status: 'verified',
+          active: false,
           verifiedAt: now,
           verifiedRunId: runId,
           updatedAt: now,
@@ -155,7 +156,7 @@ async function executePromotion(targetCollection: string, baseSummary: ReturnTyp
       throw new Error(`Verified staging promotion changed competitive payloads: ${changedHashes.map(hash => hash.setId).join(', ')}.`);
     }
 
-    const recordsAlreadyVerified = afterDocs.filter(doc => doc.status === 'verified' && doc.active === false).length - recordsPromotedToVerified;
+    const recordsAlreadyVerified = afterDocs.filter(doc => doc.status === 'verified' && doc.active !== true).length - recordsPromotedToVerified;
     const recordsActive = await collection.countDocuments({ setId: { $in: VERIFIED_STAGING_PROMOTION_ALLOWLIST }, active: true });
     const generatedPromoted = await collection.countDocuments({ verifiedRunId: runId, sourceType: 'generated' });
 
