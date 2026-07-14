@@ -80,7 +80,7 @@ async function main(): Promise<void> {
       allowlistedVerified: allowlistedDocs.filter(doc => doc.status === 'verified').length,
       allowlistedActive: allowlistedDocs.filter(doc => doc.active === true).length,
       generatedVerifiedByRun: docs.filter(doc => doc.sourceType === 'generated' && doc.status === 'verified' && doc.verifiedRunId).length,
-      blockedRecordsStillReviewed: docs.filter(doc => blockedSetIds.includes(String(doc.setId)) && doc.status === 'reviewed' && doc.active === false).length,
+      blockedRecordsStillReviewed: docs.filter(doc => blockedSetIds.includes(String(doc.setId)) && doc.status === 'reviewed' && doc.active !== true).length,
       duplicateSetIds,
       productionWrites: 0,
       sameVerifiedRunIdForAllowlist: verifiedRunIds.size === 1 && !verifiedRunIds.has('missing'),
