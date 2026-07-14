@@ -74,7 +74,7 @@ src/services/LeadStrategyRecommendationService.ts
 - Modify: `package.json`
 
 **Interfaces:**
-- Produces: `CompetitiveVerificationState`, `ActiveStagingSetQuery`, `ActiveStagingSetRecord`, `ActiveStagingSetLoadResult`, `ActiveStagingScenarioDefinition`, `ActiveStagingScenarioResult`, `ActiveStagingHomologationSummary`, `FunctionalHomologationExitCode`.
+- Produces: `CompetitiveVerificationState`, `ActiveStagingSetQuery`, `ActiveStagingSetRecord`, `ActiveStagingSetLoadResult`, `ActiveStagingHomologationScenario`, `ActiveStagingScenarioReport`, `ActiveStagingHomologationReport`, `ActiveStagingOperationalEvidence`, `FunctionalHomologationExitCode`.
 
 - [ ] **Step 1: Write failing contract validation**
 
@@ -301,17 +301,17 @@ git commit -m "feat: add active staging homologation config guard"
 - Modify: `src/scripts/validateActiveStagingHomologationContracts.ts`
 
 **Interfaces:**
-- Produces: `ACTIVE_STAGING_HOMOLOGATION_ALLOWLIST`, `ACTIVE_STAGING_HOMOLOGATION_SCENARIOS`, `assertActiveStagingAllowlistIntegrity`.
+- Produces: `ACTIVE_STAGING_SET_ALLOWLIST`, `ACTIVE_STAGING_HOMOLOGATION_SCENARIOS`, `assertActiveStagingAllowlistIntegrity`.
 
 - [ ] **Step 1: Extend contract validation**
 
 Add imports and assertions:
 
 ```ts
-import { ACTIVE_STAGING_HOMOLOGATION_ALLOWLIST, ACTIVE_STAGING_HOMOLOGATION_SCENARIOS, assertActiveStagingAllowlistIntegrity } from '../equinox/competitive/active-staging/ActiveStagingHomologationAllowlist';
-assert(ACTIVE_STAGING_HOMOLOGATION_ALLOWLIST.length === 4, 'allowlist must contain four set IDs');
+import { ACTIVE_STAGING_SET_ALLOWLIST, ACTIVE_STAGING_HOMOLOGATION_SCENARIOS, assertActiveStagingAllowlistIntegrity } from '../equinox/competitive/active-staging/ActiveStagingHomologationAllowlist';
+assert(ACTIVE_STAGING_SET_ALLOWLIST.length === 4, 'allowlist must contain four set IDs');
 assert(ACTIVE_STAGING_HOMOLOGATION_SCENARIOS.length === 4, 'scenario matrix must contain four scenarios');
-for (const scenario of ACTIVE_STAGING_HOMOLOGATION_SCENARIOS) assert(scenario.requestedSetIds.length === 2, `${scenario.scenarioId} must request exactly two sets`);
+for (const scenario of ACTIVE_STAGING_HOMOLOGATION_SCENARIOS) assert(scenario.expectedPresentedSetIds.length === 2, `${scenario.id} must request exactly two sets`);
 assertActiveStagingAllowlistIntegrity();
 ```
 
@@ -326,20 +326,20 @@ Expected: FAIL with missing module `ActiveStagingHomologationAllowlist`.
 - [ ] **Step 2: Implement allowlist module**
 
 ```ts
-import { ActiveStagingScenarioDefinition } from './ActiveStagingHomologationTypes';
-export const ACTIVE_STAGING_HOMOLOGATION_ALLOWLIST = ['sinistcha-bulky-trick-room-setter-draft', 'aggronmega-slow-physical-breaker-draft', 'incineroar-bulky-slow-pivot-draft', 'ursalunabloodmoon-slow-special-breaker-draft'] as const;
-export type ActiveStagingHomologationSetId = typeof ACTIVE_STAGING_HOMOLOGATION_ALLOWLIST[number];
-export const ACTIVE_STAGING_HOMOLOGATION_SCENARIOS: ActiveStagingScenarioDefinition[] = [
-  { scenarioId: 'sinistcha-aggronmega', inputPokemon: ['Sinistcha', 'Aggron-Mega'], requestedSetIds: ['sinistcha-bulky-trick-room-setter-draft', 'aggronmega-slow-physical-breaker-draft'] },
-  { scenarioId: 'incineroar-ursalunabloodmoon', inputPokemon: ['Incineroar', 'Ursaluna-Bloodmoon'], requestedSetIds: ['incineroar-bulky-slow-pivot-draft', 'ursalunabloodmoon-slow-special-breaker-draft'] },
-  { scenarioId: 'sinistcha-incineroar', inputPokemon: ['Sinistcha', 'Incineroar'], requestedSetIds: ['sinistcha-bulky-trick-room-setter-draft', 'incineroar-bulky-slow-pivot-draft'] },
-  { scenarioId: 'aggronmega-ursalunabloodmoon', inputPokemon: ['Aggron-Mega', 'Ursaluna-Bloodmoon'], requestedSetIds: ['aggronmega-slow-physical-breaker-draft', 'ursalunabloodmoon-slow-special-breaker-draft'] },
+import type { ActiveStagingHomologationScenario } from './ActiveStagingHomologationTypes';
+export const ACTIVE_STAGING_SET_ALLOWLIST = ['sinistcha-bulky-trick-room-setter-draft', 'aggronmega-slow-physical-breaker-draft', 'incineroar-bulky-slow-pivot-draft', 'ursalunabloodmoon-slow-special-breaker-draft'] as const;
+export type ActiveStagingHomologationSetId = typeof ACTIVE_STAGING_SET_ALLOWLIST[number];
+export const ACTIVE_STAGING_HOMOLOGATION_SCENARIOS: ActiveStagingHomologationScenario[] = [
+  { id: 'sinistcha-aggronmega', leadPokemon: ['Sinistcha', 'Aggron-Mega'], expectedPresentedSetIds: ['sinistcha-bulky-trick-room-setter-draft', 'aggronmega-slow-physical-breaker-draft'] },
+  { id: 'incineroar-ursalunabloodmoon', leadPokemon: ['Incineroar', 'Ursaluna-Bloodmoon'], expectedPresentedSetIds: ['incineroar-bulky-slow-pivot-draft', 'ursalunabloodmoon-slow-special-breaker-draft'] },
+  { id: 'sinistcha-incineroar', leadPokemon: ['Sinistcha', 'Incineroar'], expectedPresentedSetIds: ['sinistcha-bulky-trick-room-setter-draft', 'incineroar-bulky-slow-pivot-draft'] },
+  { id: 'aggronmega-ursalunabloodmoon', leadPokemon: ['Aggron-Mega', 'Ursaluna-Bloodmoon'], expectedPresentedSetIds: ['aggronmega-slow-physical-breaker-draft', 'ursalunabloodmoon-slow-special-breaker-draft'] },
 ];
 export function assertActiveStagingAllowlistIntegrity(): void {
-  const allowlist = new Set<string>(ACTIVE_STAGING_HOMOLOGATION_ALLOWLIST);
+  const allowlist = new Set<string>(ACTIVE_STAGING_SET_ALLOWLIST);
   const scenarioSetIds = new Set<string>();
   if (allowlist.size !== 4) throw new Error('Active staging allowlist must contain four unique set IDs.');
-  for (const scenario of ACTIVE_STAGING_HOMOLOGATION_SCENARIOS) for (const setId of scenario.requestedSetIds) { if (!allowlist.has(setId)) throw new Error(`${scenario.scenarioId} references non-allowlisted set ${setId}.`); scenarioSetIds.add(setId); }
+  for (const scenario of ACTIVE_STAGING_HOMOLOGATION_SCENARIOS) for (const setId of scenario.expectedPresentedSetIds) { if (!allowlist.has(setId)) throw new Error(`${scenario.id} references non-allowlisted set ${setId}.`); scenarioSetIds.add(setId); }
   if (scenarioSetIds.size !== 4) throw new Error(`Mandatory scenarios must cover all four active set IDs, received ${scenarioSetIds.size}.`);
 }
 ```
