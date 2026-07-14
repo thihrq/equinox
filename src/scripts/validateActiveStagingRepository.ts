@@ -1,4 +1,3 @@
-import { MongoClient } from 'mongodb';
 import { ACTIVE_STAGING_SET_ALLOWLIST } from '../equinox/competitive/active-staging/ActiveStagingHomologationAllowlist';
 import {
   assertActiveStagingHomologationConfig,
@@ -8,6 +7,11 @@ import {
 import { CollectionReadMonitor } from '../equinox/competitive/active-staging/ActiveStagingCollectionReadMonitor';
 import { MongoCommandMonitor } from '../equinox/competitive/active-staging/ActiveStagingMongoCommandMonitor';
 import { ActiveStagingSetRepository } from '../equinox/competitive/active-staging/ActiveStagingSetRepository';
+import {
+  activeStagingRepositoryExitCodeFor,
+  assertActiveStagingRepositoryFunctionalGates,
+  createActiveStagingMongoClient,
+} from '../equinox/competitive/active-staging/ActiveStagingRepositoryValidation';
 
 function requireMongoUri(env: NodeJS.ProcessEnv): string {
   const mongoUri = env.MONGO_URI ?? env.MONGODB_URI;
@@ -17,7 +21,7 @@ function requireMongoUri(env: NodeJS.ProcessEnv): string {
 
 async function main(): Promise<void> {
   const config = assertActiveStagingHomologationConfig(readActiveStagingHomologationConfig(process.env));
-  const client = new MongoClient(requireMongoUri(process.env), { monitorCommands: true });
+  const client = createActiveStagingMongoClient(requireMongoUri(process.env));
   const commandMonitor = new MongoCommandMonitor();
   const readMonitor = new CollectionReadMonitor();
 
@@ -41,10 +45,13 @@ async function main(): Promise<void> {
       readReport: readMonitor.report(),
     };
     console.log(JSON.stringify(report, null, 2));
-    if (records.length !== ACTIVE_STAGING_SET_ALLOWLIST.length) throw new Error('expected 4 active allowlisted records');
-    if (report.writeReport.observedMongoWriteCommands !== 0) throw new Error('write commands must be zero');
-    if (report.writeReport.productionCollectionReads !== 0) throw new Error('production reads must be zero');
-    if (report.readReport.productionCollectionReads !== 0) throw new Error('production reads must be zero');
+    assertActiveStagingRepositoryFunctionalGates(
+      records.length,
+      ACTIVE_STAGING_SET_ALLOWLIST.length,
+      report.writeReport.observedMongoWriteCommands,
+      report.writeReport.productionCollectionReads,
+      report.readReport.productionCollectionReads,
+    );
   } finally {
     await client.close();
   }
@@ -52,5 +59,5 @@ async function main(): Promise<void> {
 
 main().catch((error) => {
   console.error(error instanceof Error ? error.message : error);
-  process.exitCode = error instanceof ActiveStagingConfigError ? error.exitCode : 3;
+  process.exitCode = activeStagingRepositoryExitCodeFor(error);
 });
