@@ -60,7 +60,7 @@ async function countRollbackCandidates(targetCollection: string): Promise<number
   return collection.countDocuments({
     setId: { $in: VERIFIED_STAGING_PROMOTION_ALLOWLIST },
     status: 'verified',
-    active: false,
+    active: { $ne: true },
     verifiedRunId: runId,
   });
 }
@@ -107,7 +107,7 @@ async function main(): Promise<void> {
     const filter = {
       setId: { $in: VERIFIED_STAGING_PROMOTION_ALLOWLIST },
       status: 'verified',
-      active: false,
+      active: { $ne: true },
       verifiedRunId: runId,
     };
     const recordsEligibleForRollback = await collection.countDocuments(filter);
