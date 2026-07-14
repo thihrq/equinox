@@ -48,7 +48,11 @@
     "release:build": "npm run build && npm --prefix frontend run build",
     "db:seed": "ts-node src/workers/runWorker.ts",
     "db:seed:compiled": "node dist/workers/runWorker.js",
-    "vgc:playbook:check": "ts-node src/scripts/validateVgcPlaybook.ts"
+    "vgc:playbook:check": "ts-node src/scripts/validateVgcPlaybook.ts",
+    "sets:activate:staging": "ts-node src/scripts/promoteVerifiedSetsToActive.ts",
+    "sets:activate:staging:dry": "ts-node src/scripts/promoteVerifiedSetsToActive.ts --dry-run",
+    "sets:activate:staging:check": "ts-node src/scripts/validateActiveStagingPromotion.ts",
+    "sets:activate:staging:rollback": "ts-node src/scripts/rollbackActiveStagingPromotion.ts"
   },
   "keywords": [
     "pokemon",
