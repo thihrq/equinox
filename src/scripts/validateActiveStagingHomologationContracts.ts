@@ -5,6 +5,11 @@ import {
   ACTIVE_STAGING_MONGO_READ_EXIT_CODE,
   isCompetitiveVerificationState,
 } from '../equinox/competitive/active-staging/ActiveStagingHomologationTypes';
+import {
+  ACTIVE_STAGING_SET_ALLOWLIST,
+  ACTIVE_STAGING_HOMOLOGATION_SCENARIOS,
+  assertActiveStagingAllowlistIntegrity,
+} from '../equinox/competitive/active-staging/ActiveStagingHomologationAllowlist';
 
 function assert(condition: boolean, message: string): void {
   if (!condition) throw new Error(message);
@@ -18,4 +23,10 @@ assert(isCompetitiveVerificationState('unverified'), 'unverified must be valid')
 assert(isCompetitiveVerificationState('staging-controlled'), 'staging-controlled must be valid');
 assert(isCompetitiveVerificationState('production-approved'), 'production-approved must be valid');
 assert(!isCompetitiveVerificationState('controlled-true'), 'controlled-true must be invalid');
+assert(ACTIVE_STAGING_SET_ALLOWLIST.length === 4, 'allowlist must contain four set IDs');
+assert(ACTIVE_STAGING_HOMOLOGATION_SCENARIOS.length === 4, 'scenario matrix must contain four scenarios');
+for (const scenario of ACTIVE_STAGING_HOMOLOGATION_SCENARIOS) {
+  assert(scenario.expectedPresentedSetIds.length === 2, `${scenario.id} must request exactly two sets`);
+}
+assertActiveStagingAllowlistIntegrity();
 console.log('[Equinox] Active staging homologation contract validation passed.');

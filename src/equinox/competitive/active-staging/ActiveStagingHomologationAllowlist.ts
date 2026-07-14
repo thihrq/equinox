@@ -1,0 +1,67 @@
+import type { ActiveStagingHomologationScenario } from './ActiveStagingHomologationTypes';
+
+export const ACTIVE_STAGING_SET_ALLOWLIST = [
+  'sinistcha-bulky-trick-room-setter-draft',
+  'aggronmega-slow-physical-breaker-draft',
+  'incineroar-bulky-slow-pivot-draft',
+  'ursalunabloodmoon-slow-special-breaker-draft',
+] as const;
+
+export type ActiveStagingHomologationSetId = typeof ACTIVE_STAGING_SET_ALLOWLIST[number];
+
+export const ACTIVE_STAGING_HOMOLOGATION_SCENARIOS: ActiveStagingHomologationScenario[] = [
+  {
+    id: 'sinistcha-aggronmega',
+    leadPokemon: ['Sinistcha', 'Aggron-Mega'],
+    expectedPresentedSetIds: [
+      'sinistcha-bulky-trick-room-setter-draft',
+      'aggronmega-slow-physical-breaker-draft',
+    ],
+  },
+  {
+    id: 'incineroar-ursalunabloodmoon',
+    leadPokemon: ['Incineroar', 'Ursaluna-Bloodmoon'],
+    expectedPresentedSetIds: [
+      'incineroar-bulky-slow-pivot-draft',
+      'ursalunabloodmoon-slow-special-breaker-draft',
+    ],
+  },
+  {
+    id: 'sinistcha-incineroar',
+    leadPokemon: ['Sinistcha', 'Incineroar'],
+    expectedPresentedSetIds: [
+      'sinistcha-bulky-trick-room-setter-draft',
+      'incineroar-bulky-slow-pivot-draft',
+    ],
+  },
+  {
+    id: 'aggronmega-ursalunabloodmoon',
+    leadPokemon: ['Aggron-Mega', 'Ursaluna-Bloodmoon'],
+    expectedPresentedSetIds: [
+      'aggronmega-slow-physical-breaker-draft',
+      'ursalunabloodmoon-slow-special-breaker-draft',
+    ],
+  },
+];
+
+export function assertActiveStagingAllowlistIntegrity(): void {
+  const allowlist = new Set<string>(ACTIVE_STAGING_SET_ALLOWLIST);
+  const scenarioSetIds = new Set<string>();
+
+  if (allowlist.size !== 4) {
+    throw new Error('Active staging allowlist must contain four unique set IDs.');
+  }
+
+  for (const scenario of ACTIVE_STAGING_HOMOLOGATION_SCENARIOS) {
+    for (const setId of scenario.expectedPresentedSetIds) {
+      if (!allowlist.has(setId)) {
+        throw new Error(`${scenario.id} references non-allowlisted set ${setId}.`);
+      }
+      scenarioSetIds.add(setId);
+    }
+  }
+
+  if (scenarioSetIds.size !== 4) {
+    throw new Error(`Mandatory scenarios must cover all four active set IDs, received ${scenarioSetIds.size}.`);
+  }
+}
