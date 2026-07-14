@@ -197,7 +197,7 @@ export function assertActiveFinalState(summary: ActiveStagingSummary): void {
 export function printActiveStagingSummary(summary: ActiveStagingSummary | RollbackActiveStagingSummary): void {
   console.log(JSON.stringify(summary, null, 2));
   for (const [key, value] of Object.entries(summary)) {
-    if (Array.isArray(value) || typeof value === 'object') continue;
+    if (value === undefined || Array.isArray(value) || typeof value === 'object') continue;
     console.log(`${key}: ${String(value)}`);
   }
 }

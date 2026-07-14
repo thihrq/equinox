@@ -166,7 +166,7 @@ async function runDryRun(): Promise<void> {
     return;
   }
 
-  const targetCollection = assertActiveStagingTarget(process.env.EQUINOX_TARGET_COLLECTION ?? ACTIVE_STAGING_TARGET_COLLECTION);
+  const targetCollection = assertActiveStagingTarget(process.env.EQUINOX_TARGET_COLLECTION);
   try {
     await connectDatabase();
     const docs = await readStagingDocuments(targetCollection);

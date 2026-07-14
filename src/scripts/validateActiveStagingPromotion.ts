@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import { resolveDataMode } from '../config/dataMode';
 import { connectDatabase } from '../config/database';
 import {
-  ACTIVE_STAGING_TARGET_COLLECTION,
   assertActiveFinalState,
   assertActiveStagingTarget,
   assertReadyForActivation,
@@ -53,7 +52,7 @@ async function main(): Promise<void> {
     return;
   }
 
-  const targetCollection = assertActiveStagingTarget(process.env.EQUINOX_TARGET_COLLECTION ?? ACTIVE_STAGING_TARGET_COLLECTION);
+  const targetCollection = assertActiveStagingTarget(process.env.EQUINOX_TARGET_COLLECTION);
 
   try {
     await connectDatabase();
