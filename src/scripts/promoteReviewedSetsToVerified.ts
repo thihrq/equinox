@@ -95,7 +95,19 @@ async function executePromotion(targetCollection: string, baseSummary: ReturnTyp
       throw new Error(`Verified staging promotion blocked: generated records in allowlist ${generatedCandidates.join(', ')}.`);
     }
 
+    const invalidStatusDocs = beforeDocs
+      .filter(doc => doc.status !== 'reviewed' && doc.status !== 'verified')
+      .map(doc => `${String(doc.setId)}:${String(doc.status ?? 'missing')}`);
+    if (invalidStatusDocs.length > 0) {
+      throw new Error(`Verified staging promotion blocked: unexpected status before write ${invalidStatusDocs.join(', ')}.`);
+    }
+
     const alreadyVerifiedBefore = beforeDocs.filter(doc => doc.status === 'verified' && doc.active === false);
+    const reviewedBefore = beforeDocs.filter(doc => doc.status === 'reviewed' && doc.active === false);
+    if (alreadyVerifiedBefore.length + reviewedBefore.length !== VERIFIED_STAGING_PROMOTION_ALLOWLIST.length) {
+      throw new Error(`Verified staging promotion blocked: reviewed+verified count must be 4 before write, reviewed=${reviewedBefore.length} verified=${alreadyVerifiedBefore.length}.`);
+    }
+
     const now = new Date();
     const updateResult = await collection.updateMany(
       {
