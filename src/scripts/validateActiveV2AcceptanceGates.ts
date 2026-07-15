@@ -6,6 +6,10 @@ const baseReportMock: ActiveV2AcceptanceReport = {
   inputEvidenceDigest: 'sha256-abc',
   inputCommitSha: 'commit-123',
   inputActiveRunId: 'run-123',
+  baselineSourceDigest: 'sha256-abc',
+  activeV2DataDigest: 'sha256-abc',
+  activeV2RecordCount: 4,
+  activeV2DataDigestAlgorithm: 'active-v2-canonical-sha256-v1',
   evidenceValid: true,
   globalBlockers: [],
   classificationCounts: {

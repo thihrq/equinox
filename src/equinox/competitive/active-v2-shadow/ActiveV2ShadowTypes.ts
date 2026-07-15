@@ -123,6 +123,9 @@ export interface ActiveV2ShadowAggregate extends ActiveV2ShadowBaselineMetadata 
   mode: 'active-v2-shadow-comparison';
   targetCollection: 'pokemonsets_v2_staging';
   activeRunId?: string;
+  activeV2DataDigest?: string;
+  activeV2RecordCount?: number;
+  activeV2DataDigestAlgorithm?: 'active-v2-canonical-sha256-v1';
   activeV2SourceRunIds: string[];
   activeV2RecordsMissingRunId: number;
   activeV2SourceStateReproducible: boolean;

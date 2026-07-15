@@ -74,6 +74,18 @@ export function validateActiveV2ShadowEvidence(evidence: unknown): EvidenceValid
     if (typeof aggregate.baselineSourceRecordCount !== 'number' || aggregate.baselineSourceRecordCount <= 0) {
       errors.push(`Invalid baselineSourceRecordCount: expected positive number, got ${aggregate.baselineSourceRecordCount}.`);
     }
+    // 11. activeV2DataDigest
+    if (!aggregate.activeV2DataDigest || typeof aggregate.activeV2DataDigest !== 'string' || !SHA256_PATTERN.test(aggregate.activeV2DataDigest)) {
+      errors.push(`Invalid activeV2DataDigest: expected sha256 hex string with "sha256-" prefix, got "${aggregate.activeV2DataDigest}".`);
+    }
+    // 12. activeV2RecordCount
+    if (typeof aggregate.activeV2RecordCount !== 'number' || aggregate.activeV2RecordCount <= 0) {
+      errors.push(`Invalid activeV2RecordCount: expected positive number, got ${aggregate.activeV2RecordCount}.`);
+    }
+    // 13. activeV2DataDigestAlgorithm
+    if (aggregate.activeV2DataDigestAlgorithm !== 'active-v2-canonical-sha256-v1') {
+      errors.push(`Invalid activeV2DataDigestAlgorithm: expected "active-v2-canonical-sha256-v1", got "${aggregate.activeV2DataDigestAlgorithm}".`);
+    }
   }
 
   // scenarios check

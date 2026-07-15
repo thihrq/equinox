@@ -3,6 +3,7 @@ import type { ActiveStagingSetRecord } from '../active-staging/ActiveStagingHomo
 import { compareShadowPathResults } from './ActiveV2ShadowComparators';
 import { ActiveV2ShadowGateError } from './ActiveV2ShadowGates';
 import { runActiveV2StagingPath, runControlledBaselinePath } from './ActiveV2ShadowPathAdapter';
+import { calculateCanonicalActiveV2DataDigest, ACTIVE_V2_DATA_DIGEST_ALGORITHM } from '../../../services/competitive-data/digest/ActiveV2CanonicalDataDigest';
 import type {
   ActiveV2ShadowAggregate,
   ActiveV2ShadowBaselineMetadata,
@@ -58,6 +59,9 @@ function executeActiveV2ShadowComparison(input: ActiveV2ShadowRunnerInput): Acti
     mode: 'active-v2-shadow-comparison',
     targetCollection: 'pokemonsets_v2_staging',
     activeRunId: activeV2SourceStateReproducible ? activeV2SourceRunIds[0] : undefined,
+    activeV2DataDigest: activeV2SourceStateReproducible ? calculateCanonicalActiveV2DataDigest(input.activeV2Records) : undefined,
+    activeV2RecordCount: activeV2SourceStateReproducible ? input.activeV2Records.length : undefined,
+    activeV2DataDigestAlgorithm: activeV2SourceStateReproducible ? ACTIVE_V2_DATA_DIGEST_ALGORITHM : undefined,
     activeV2SourceRunIds,
     activeV2RecordsMissingRunId,
     activeV2SourceStateReproducible,

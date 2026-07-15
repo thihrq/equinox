@@ -80,6 +80,10 @@ function main(): void {
       inputEvidenceDigest: digest,
       inputCommitSha: parsedEvidence?.aggregate?.commitSha || 'unknown',
       inputActiveRunId: parsedEvidence?.aggregate?.activeRunId || 'unknown',
+      baselineSourceDigest: parsedEvidence?.aggregate?.baselineSourceDigest || '',
+      activeV2DataDigest: parsedEvidence?.aggregate?.activeV2DataDigest || '',
+      activeV2RecordCount: parsedEvidence?.aggregate?.activeV2RecordCount || 0,
+      activeV2DataDigestAlgorithm: parsedEvidence?.aggregate?.activeV2DataDigestAlgorithm || '',
       evidenceValid: false,
       globalBlockers: [
         {

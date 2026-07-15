@@ -34,6 +34,10 @@ function validateContracts(): void {
     inputEvidenceDigest: 'sha256-mockeddigest',
     inputCommitSha: 'mockedcommit',
     inputActiveRunId: 'mockedrunid',
+    baselineSourceDigest: 'sha256-mockedbaseline',
+    activeV2DataDigest: 'sha256-mockedv2data',
+    activeV2RecordCount: 4,
+    activeV2DataDigestAlgorithm: 'active-v2-canonical-sha256-v1',
     evidenceValid: true,
     globalBlockers: [],
     classificationCounts: {

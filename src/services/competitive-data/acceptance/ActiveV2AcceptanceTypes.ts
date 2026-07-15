@@ -59,6 +59,10 @@ export interface ActiveV2AcceptanceReport {
   inputEvidenceDigest: string;
   inputCommitSha: string;
   inputActiveRunId: string;
+  baselineSourceDigest: string;
+  activeV2DataDigest: string;
+  activeV2RecordCount: number;
+  activeV2DataDigestAlgorithm: string;
   evidenceValid: boolean;
   globalBlockers: GlobalBlocker[];
   classificationCounts: {

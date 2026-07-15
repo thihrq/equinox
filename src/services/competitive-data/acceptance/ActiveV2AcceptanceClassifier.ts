@@ -386,6 +386,10 @@ export function classifyActiveV2ShadowReport(
     inputEvidenceDigest: '', // Preenchido no script principal a partir do buffer físico
     inputCommitSha: (evidence.aggregate as any).commitSha || '',
     inputActiveRunId: (evidence.aggregate as any).activeRunId || '',
+    baselineSourceDigest: evidence.aggregate.baselineSourceDigest || '',
+    activeV2DataDigest: evidence.aggregate.activeV2DataDigest || '',
+    activeV2RecordCount: evidence.aggregate.activeV2RecordCount || 0,
+    activeV2DataDigestAlgorithm: evidence.aggregate.activeV2DataDigestAlgorithm || '',
     evidenceValid: true,
     globalBlockers: [],
     classificationCounts,

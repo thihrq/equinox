@@ -12,6 +12,10 @@ const sampleReport: ActiveV2AcceptanceReport = {
   inputEvidenceDigest: 'sha256-614eb72aaca6757039df5a60b1774d3eafd9bf9ff14a3d8433f4e44706a2e557',
   inputCommitSha: 'commitsha123456',
   inputActiveRunId: 'active-run-456',
+  baselineSourceDigest: 'sha256-abcdef',
+  activeV2DataDigest: 'sha256-abcdef',
+  activeV2RecordCount: 4,
+  activeV2DataDigestAlgorithm: 'active-v2-canonical-sha256-v1',
   evidenceValid: true,
   globalBlockers: [],
   classificationCounts: {
