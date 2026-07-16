@@ -1,6 +1,6 @@
 # Active V2 Production Runbook
 
-**Status:** Runbook incremental (adendo 4.7). Ampliado a cada fase. Esta versão cobre até a Fase 5 (Canário Interno) e a primeira integração real da Fase 3 (Runtime Shadow Mode). Nenhum procedimento aqui foi exercitado contra um Atlas de produção real — todo comando abaixo foi validado apenas offline/dry-run neste ambiente, exceto a integração da Fase 3, que já está ligada em código de produção (`TeamController.suggest`) mas ainda nunca recebeu tráfego real. Antes do primeiro uso real, confirme que o comando ainda corresponde ao código (`git log` no arquivo referenciado).
+**Status:** Runbook incremental (adendo 4.7). Ampliado a cada fase. Esta versão cobre até a Fase 5 (Canário Interno) e a primeira integração real da Fase 3 (Runtime Shadow Mode). Todo comando abaixo já foi validado contra um MongoDB **local** real (`scripts-local/`, ver `docs/data-audit/active-v2-local-mongo-validation-v1-report.md`) — não é o Atlas de produção, mas é mais do que apenas offline/mockado. Antes do primeiro uso real contra Atlas, confirme que o comando ainda corresponde ao código (`git log` no arquivo referenciado) e rode o restore drill oficial (seção 8) com as ferramentas reais do Atlas.
 
 ## 0. Como usar este documento
 
@@ -279,14 +279,14 @@ Reverter a variável de ambiente do segredo/allowlist ao valor anterior (redeplo
 
 ## 8. Restore drill (transversal, antes da primeira escrita real)
 
-Ainda não executado neste ambiente (exige Atlas real — ver limitação geral no topo deste documento). Procedimento planejado (adendo 3.7):
+**Executado contra MongoDB local real** em 2026-07-16 (`npm run local-mongo:restore-drill`, ver `docs/data-audit/active-v2-local-mongo-validation-v1-report.md`) — 14/14 registros restaurados, digest idêntico, índices batendo. **Ainda não executado contra o Atlas real** — o drill local usa um mecanismo de snapshot/restore em nível de aplicação (via driver), não os binários `mongodump`/`mongorestore` (indisponíveis neste ambiente). Procedimento oficial (adendo 3.7), a repetir contra Atlas antes da primeira escrita real de produção:
 
-1. Snapshot do ambiente.
+1. Snapshot do ambiente (com as ferramentas reais do Atlas).
 2. Restauração em cluster/banco isolado (nunca sobre produção).
 3. Validação de contagens, índices, manifestos e digests no ambiente restaurado.
 4. Relatório do restore drill, publicado em `docs/data-audit/`.
 
-Este drill é um bloqueio formal antes da primeira escrita real em `pokemonsets_v2`/`publication_manifests` — não pode ser pulado mesmo que os testes offline estejam 100% verdes.
+Este drill é um bloqueio formal antes da primeira escrita real em `pokemonsets_v2`/`publication_manifests` **no Atlas de produção** — o drill local não substitui isso, só reduz o risco de o mecanismo em si estar quebrado.
 
 ---
 
@@ -308,8 +308,8 @@ Publicações em `pokemonsets_v2` ficam congeladas durante qualquer janela de ob
 
 | Marco | Bloqueio obrigatório | Status nesta branch |
 |---|---|---|
-| Primeira escrita real | Restore drill concluído | Pendente (seção 8) |
-| Runtime Shadow (Fase 3) | Fase 2A + teste de injeção sintética | ✅ Ligado em `TeamController.suggest`, testado offline (seção 3); nunca exercitado com tráfego real |
+| Primeira escrita real | Restore drill concluído | ✅ Concluído contra Mongo local (seção 8); pendente contra Atlas real |
+| Runtime Shadow (Fase 3) | Fase 2A + teste de injeção sintética | ✅ Ligado em `TeamController.suggest`, testado offline e contra Mongo local real (seção 3); nunca exercitado via HTTP com tráfego real |
 | Canary Infrastructure (Fase 4) | Circuit breaker dinâmico + role de escrita restrita | ✅ Código pronto e testado offline (seção 6) |
 | Canary interno (Fase 5) | HMAC + nonce store compartilhado | ✅ Código pronto e testado offline (seção 7) |
 | Canary 25% (Fase 8) | Fase 4A (teste de capacidade no Atlas) | Não iniciado — exige Atlas real |
