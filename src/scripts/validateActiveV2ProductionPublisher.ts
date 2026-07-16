@@ -31,7 +31,11 @@ async function runPublisherTests(): Promise<void> {
         return {
           find: () => ({
             toArray: async () => mockStagingRecords
-          })
+          }),
+          // Usado por readActiveV2CanaryConfig (freeze guard) — sem documento
+          // salvo, cai no estado padrão (mode: 'off'), então o freeze nunca
+          // bloqueia estes testes, que não exercitam o congelamento de dados.
+          findOne: async () => null
         };
       }
     },

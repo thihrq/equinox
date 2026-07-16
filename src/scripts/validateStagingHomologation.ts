@@ -256,8 +256,8 @@ function evaluateScenario(records: CompetitiveSetValidationInput[], scenario: Ho
 
 function validatePackage(records: CompetitiveSetValidationInput[]): void {
   const counts = statusCounts(records);
-  assert(records.length === 9, `Staging collection must contain 9 records, received ${records.length}.`);
-  assert(counts.reviewed === 9, `Staging collection must contain 9 reviewed records, received ${counts.reviewed}.`);
+  assert(records.length === 14, `Staging collection must contain 14 records, received ${records.length}.`);
+  assert(counts.reviewed === 14, `Staging collection must contain 14 reviewed records, received ${counts.reviewed}.`);
   assert(counts.draft === 0, `Staging collection must contain 0 draft records, received ${counts.draft}.`);
   assert(counts.quarantined === 0, `Staging collection must contain 0 quarantined records, received ${counts.quarantined}.`);
   assert(counts.deprecated === 0, `Staging collection must contain 0 deprecated records, received ${counts.deprecated}.`);

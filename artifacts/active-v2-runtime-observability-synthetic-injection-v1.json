@@ -1,0 +1,74 @@
+{
+  "policyVersion": "active-v2-runtime-observability-v1",
+  "slaMs": 60000,
+  "generatedAt": "2026-07-16T01:06:41.658Z",
+  "scenarios": [
+    {
+      "alertCode": "V2_ERROR_RATE",
+      "description": "Taxa de erro do Active V2 acima de 5% em uma janela de 20 requisições",
+      "fired": true,
+      "elapsedMs": 0,
+      "withinSla": true
+    },
+    {
+      "alertCode": "V2_TIMEOUT_RATE",
+      "description": "Taxa de timeout do Active V2 acima de 5% em uma janela de 20 requisições",
+      "fired": true,
+      "elapsedMs": 0,
+      "withinSla": true
+    },
+    {
+      "alertCode": "FALLBACK_RATE",
+      "description": "Taxa de fallback para baseline acima de 10% em uma janela de 20 requisições",
+      "fired": true,
+      "elapsedMs": 0,
+      "withinSla": true
+    },
+    {
+      "alertCode": "P95_LATENCY_DEGRADATION",
+      "description": "Degradação de latência p95 do Active V2 acima de 50% em relação à baseline",
+      "fired": true,
+      "elapsedMs": 1,
+      "withinSla": true
+    },
+    {
+      "alertCode": "BLOCKER_CLASSIFICATION_PRESENT",
+      "description": "Um cenário classificado como blocker aparece na janela",
+      "fired": true,
+      "elapsedMs": 0,
+      "withinSla": true
+    },
+    {
+      "alertCode": "ZERO_ACTIVE_SETS",
+      "description": "Nenhum set ativo encontrado em pokemonsets_v2",
+      "fired": true,
+      "elapsedMs": 0,
+      "withinSla": true
+    },
+    {
+      "alertCode": "MULTIPLE_ACTIVE_VERSIONS",
+      "description": "Mais de uma versão ativa simultânea para o mesmo setId",
+      "fired": true,
+      "elapsedMs": 0,
+      "withinSla": true
+    },
+    {
+      "alertCode": "MANIFEST_INCONSISTENCY",
+      "description": "recordCount do manifesto ativo não confere com a contagem real de sets ativos",
+      "fired": true,
+      "elapsedMs": 0,
+      "withinSla": true
+    },
+    {
+      "alertCode": "DIGEST_MISMATCH",
+      "description": "Digest recalculado dos sets ativos diverge do digest registrado no manifesto",
+      "fired": true,
+      "elapsedMs": 0,
+      "withinSla": true
+    }
+  ],
+  "allFired": true,
+  "allWithinSla": true,
+  "gatePassed": true,
+  "limitation": "Injeção offline em memória — comprova a lógica de classificação e o orçamento de SLA de avaliação, não a entrega ponta-a-ponta contra um ambiente de staging vivo (pendente da Fase 3)."
+}

@@ -1,0 +1,49 @@
+{
+  "generatedAt": "2026-07-16T17:27:20.250Z",
+  "sourceDb": "pokemon_teambuilder",
+  "restoreDb": "pokemon_teambuilder_restore_drill",
+  "collections": [
+    {
+      "collection": "pokemonsets_v2_staging",
+      "sourceRecordCount": 14,
+      "restoredRecordCount": 14,
+      "countsMatch": true,
+      "sourceIndexCount": 2,
+      "restoredIndexCount": 2,
+      "indexesMatch": true,
+      "sourceDigest": "sha256-bb24050533a55b5c620fddd653c713102872b04d2306a85beb1a0dae3b561cb8",
+      "restoredDigest": "sha256-bb24050533a55b5c620fddd653c713102872b04d2306a85beb1a0dae3b561cb8",
+      "digestsMatch": true,
+      "skipped": false
+    },
+    {
+      "collection": "pokemonsets_v2",
+      "sourceRecordCount": 0,
+      "restoredRecordCount": 0,
+      "countsMatch": false,
+      "sourceIndexCount": 0,
+      "restoredIndexCount": 0,
+      "indexesMatch": false,
+      "sourceDigest": null,
+      "restoredDigest": null,
+      "digestsMatch": false,
+      "skipped": true,
+      "notes": "Coleção vazia na fonte (esperado para pokemonsets_v2/publication_manifests antes da primeira publicação real) — drill de estrutura/índice pulado, nada para restaurar."
+    },
+    {
+      "collection": "publication_manifests",
+      "sourceRecordCount": 0,
+      "restoredRecordCount": 0,
+      "countsMatch": false,
+      "sourceIndexCount": 0,
+      "restoredIndexCount": 0,
+      "indexesMatch": false,
+      "sourceDigest": null,
+      "restoredDigest": null,
+      "digestsMatch": false,
+      "skipped": true,
+      "notes": "Coleção vazia na fonte (esperado para pokemonsets_v2/publication_manifests antes da primeira publicação real) — drill de estrutura/índice pulado, nada para restaurar."
+    }
+  ],
+  "overallPassed": true
+}

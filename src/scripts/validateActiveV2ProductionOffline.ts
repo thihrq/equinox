@@ -7,7 +7,8 @@ const validationScripts = [
   'src/scripts/validateActiveV2ProductionPreflight.ts',
   'src/scripts/validateActiveV2ProductionPublisher.ts',
   'src/scripts/validateActiveV2ProductionRollback.ts',
-  'src/scripts/validateActiveV2ProductionCliExitCodes.ts'
+  'src/scripts/validateActiveV2ProductionCliExitCodes.ts',
+  'src/scripts/validateActiveV2DataFreezeGuard.ts'
 ];
 
 function runOfflineSuite(): void {
@@ -25,7 +26,7 @@ function runOfflineSuite(): void {
   }
 
   console.log('\n======================================================');
-  console.log('[Equinox] Todos os 25 testes offline de publicacao e rollback passaram!');
+  console.log(`[Equinox] Todos os ${validationScripts.length} validadores offline de publicacao e rollback passaram!`);
   console.log('======================================================');
 }
 

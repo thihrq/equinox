@@ -4,6 +4,8 @@ import { PublicationManifest } from '../../../models/PublicationManifest';
 import { verifyProductionIndexesAndDuplicities } from './ActiveV2ProductionPreflight';
 import { validateLineageAndDigest } from './ActiveV2ProductionLineageValidator';
 import { calculateCanonicalActiveV2DataDigest } from '../digest/ActiveV2CanonicalDataDigest';
+import { assertActiveV2DataFreezeAllowsPublication } from './ActiveV2DataFreezeGuard';
+import { readActiveV2CanaryConfig } from '../runtime-control/ActiveV2CanaryConfigStore';
 import type { PublishOptions, PublishResult } from './ActiveV2ProductionTypes';
 import { ALLOWED_SOURCE_COLLECTION, ALLOWED_TARGET_COLLECTION, ALLOWED_MANIFEST_COLLECTION } from './ActiveV2ProductionPolicy';
 
@@ -27,6 +29,13 @@ export async function publishToProduction(
 
   // 2. Preflight passivo fora da transação
   await verifyProductionIndexesAndDuplicities(connection);
+
+  // 2.1 Congelamento de dados durante janela canária ativa (adendo seção 13)
+  const canaryConfig = await readActiveV2CanaryConfig(connection);
+  assertActiveV2DataFreezeAllowsPublication(canaryConfig, {
+    emergencyOverride: options.emergencyOverride ?? false,
+    emergencyJustification: options.emergencyJustification ?? null,
+  });
 
   const sourceActiveRunId = acceptanceReport.inputActiveRunId;
   if (!sourceActiveRunId) {
@@ -128,6 +137,13 @@ export async function publishToProduction(
       const { _id, ...cleanRec } = rec;
       return {
         ...cleanRec,
+        // PokemonSetV2Schema exige `role` (legado, singular) além de
+        // `primaryRole`/`secondaryRoles` (o par realmente usado pelo
+        // pipeline de curação/governança). Nenhum consumidor a jusante lê
+        // `.role` hoje, mas o schema o exige — sem isso, insertMany falha
+        // em runtime real (só descoberto rodando contra Mongo de verdade;
+        // os testes offline mockam o model e nunca exercitam essa validação).
+        role: cleanRec.role ?? cleanRec.primaryRole ?? 'unknown',
         publishRunId,
         previousPublishRunId: setTransitions.find(t => t.setId === rec.setId)?.previousPublishRunId || null,
         sourceActiveRunId,

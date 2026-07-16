@@ -164,7 +164,9 @@ export function assertReadyForActivation(summary: ActiveStagingSummary): void {
   if (summary.recordsEligible !== 4) failures.push(`recordsEligible must be 4, received ${summary.recordsEligible}`);
   if (summary.recordsAlreadyActive !== 0) failures.push(`recordsAlreadyActive must be 0, received ${summary.recordsAlreadyActive}`);
   if (summary.allowlistedVerified !== 4) failures.push(`allowlistedVerified must be 4, received ${summary.allowlistedVerified}`);
-  if (summary.blockedRecordsStillReviewed !== 5) failures.push(`blockedRecordsStillReviewed must be 5, received ${summary.blockedRecordsStillReviewed}`);
+  if (summary.blockedRecordsStillReviewed !== summary.recordsBlocked) {
+    failures.push(`blockedRecordsStillReviewed must equal recordsBlocked (${summary.recordsBlocked}), received ${summary.blockedRecordsStillReviewed}`);
+  }
   if (summary.blockedRecordsActive !== 0) failures.push(`blockedRecordsActive must be 0, received ${summary.blockedRecordsActive}`);
   if (summary.generatedActive !== 0) failures.push(`generatedActive must be 0, received ${summary.generatedActive}`);
   if (summary.activeConflicts !== 0) failures.push(`activeConflicts must be 0, received ${summary.activeConflicts}`);
@@ -181,7 +183,9 @@ export function assertActiveFinalState(summary: ActiveStagingSummary): void {
   if (summary.recordsFound !== 4) failures.push(`recordsFound must be 4, received ${summary.recordsFound}`);
   if (summary.allowlistedActive !== 4) failures.push(`allowlistedActive must be 4, received ${summary.allowlistedActive}`);
   if (summary.allowlistedStillVerified !== 0) failures.push(`allowlistedStillVerified must be 0, received ${summary.allowlistedStillVerified}`);
-  if (summary.blockedRecordsStillReviewed !== 5) failures.push(`blockedRecordsStillReviewed must be 5, received ${summary.blockedRecordsStillReviewed}`);
+  if (summary.blockedRecordsStillReviewed !== summary.recordsBlocked) {
+    failures.push(`blockedRecordsStillReviewed must equal recordsBlocked (${summary.recordsBlocked}), received ${summary.blockedRecordsStillReviewed}`);
+  }
   if (summary.blockedRecordsActive !== 0) failures.push(`blockedRecordsActive must be 0, received ${summary.blockedRecordsActive}`);
   if (summary.generatedActive !== 0) failures.push(`generatedActive must be 0, received ${summary.generatedActive}`);
   if (summary.activeConflicts !== 0) failures.push(`activeConflicts must be 0, received ${summary.activeConflicts}`);
