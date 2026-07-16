@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-07-16T23:51:26.845Z",
+  "sourceDb": "test",
+  "restoreDb": "test_restore_drill",
+  "collections": [
+    {
+      "collection": "pokemonsets_v2_staging",
+      "sourceRecordCount": 14,
+      "restoredRecordCount": 14,
+      "countsMatch": true,
+      "sourceIndexCount": 2,
+      "restoredIndexCount": 2,
+      "sourceDigest": "sha256-30f5a64cb7e78b20c5b5e6555b68ce6236c9126595dab8d2f5c5bb1421b95b69",
+      "restoredDigest": "sha256-30f5a64cb7e78b20c5b5e6555b68ce6236c9126595dab8d2f5c5bb1421b95b69",
+      "digestsMatch": true
+    },
+    {
+      "collection": "pokemonsets",
+      "sourceRecordCount": 0,
+      "restoredRecordCount": 0,
+      "countsMatch": true,
+      "sourceIndexCount": 14,
+      "restoredIndexCount": 14,
+      "sourceDigest": null,
+      "restoredDigest": null,
+      "digestsMatch": true
+    }
+  ],
+  "overallPassed": true
+}
