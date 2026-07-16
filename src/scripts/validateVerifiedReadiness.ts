@@ -19,12 +19,12 @@ for (const record of records) {
 
 const evaluation = evaluateVerifiedReadiness(records, evidenceRecords);
 
-assert(records.length === 9, `Verified readiness expects 9 pilot records, received ${records.length}.`);
+assert(records.length === 14, `Verified readiness expects 14 pilot records, received ${records.length}.`);
 assert(records.every(record => record.status === 'reviewed'), 'Verified readiness gate requires all pilot records to remain reviewed.');
 assert(evaluation.aggregate.activeCount === 0, 'Verified readiness gate forbids active pilot records.');
 assert(evaluation.aggregate.verifiedCount === 0, 'Verified readiness gate forbids verified pilot records.');
 assert(evaluation.promotionReady.length === 4, `Verified readiness expects 4 promotion-ready records, received ${evaluation.promotionReady.length}.`);
-assert(evaluation.blocked.length === 5, `Verified readiness expects 5 blocked records, received ${evaluation.blocked.length}.`);
+assert(evaluation.blocked.length === 10, `Verified readiness expects 10 blocked records, received ${evaluation.blocked.length}.`);
 assert(evaluation.promotionReady.every(record => record.sourceType === 'curated'), 'Only curated records may be promotion-ready.');
 assert(evaluation.blocked.every(record => record.blockers.length > 0), 'Blocked records must have at least one readiness blocker.');
 

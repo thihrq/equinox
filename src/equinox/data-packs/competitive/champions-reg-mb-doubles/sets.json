@@ -116,23 +116,23 @@
       ],
       "sourceId": "equinox-curated-champions-mb-doubles",
       "sourceType": "curated",
-      "sourceUpdatedAt": "2026-07-12",
-      "confidence": 78,
+      "sourceUpdatedAt": "2026-07-15",
+      "confidence": 80,
       "status": "reviewed",
       "active": false,
       "dataVersion": "2026.07.1",
       "coherenceScore": 82,
       "humanReview": {
         "reviewedBy": "Equinox technical curation pass",
-        "reviewedAt": "2026-07-12",
+        "reviewedAt": "2026-07-15",
         "reviewResult": "approved-for-staging-reviewed",
-        "reviewScope": "Fase 4 pilot curation; reviewed for staging publish only, not verified and not active.",
+        "reviewScope": "Fase 4 pilot curation; re-reviewed during the coverage expansion pass. Reviewed for staging publish only, not verified and not active.",
         "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
         "teamBuilderReview": "Approved as a secondary redirection support option for balance and setup structures in staging validation.",
         "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
         "reviewerNotes": "Approved as an alternate Sinistcha support set. Rage Powder, Life Dew and Protect keep the set aligned with defensive board control.",
         "spreadJustification": "252 HP with physical bias supports repeated redirection turns while preserving enough special bulk for mixed boards.",
-        "limitations": "Rocky Helmet and Life Dew value still require staging matchup review before verified.",
+        "limitations": "Item choice resolved in this pass: Rocky Helmet is kept over Mental Herb because this set's plan is to tank repeated contact hits while redirecting (unlike the primary Trick Room Sinistcha, which prioritizes guaranteed Trick Room uptime and so keeps Mental Herb pressure off the table); Life Dew is kept over Sitrus Berry because the team-wide heal outvalues a single-use personal heal in a support shell built to stay in over multiple turns. Independent staging matchup review (verified-evidence.fixture.json: stagingReview) remains pending and is not self-certified by this note.",
         "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
       }
     },
@@ -230,7 +230,7 @@
         "def": 31,
         "spa": 31,
         "spd": 31,
-        "spe": 31
+        "spe": 0
       },
       "moves": [
         "Iron Defense",
@@ -251,24 +251,24 @@
         "body-press"
       ],
       "sourceId": "equinox-curated-champions-mb-doubles",
-      "sourceType": "generated",
-      "sourceUpdatedAt": "2026-07-12",
-      "confidence": 76,
+      "sourceType": "curated",
+      "sourceUpdatedAt": "2026-07-15",
+      "confidence": 81,
       "status": "reviewed",
       "active": false,
       "dataVersion": "2026.07.1",
       "coherenceScore": 80,
       "humanReview": {
         "reviewedBy": "Equinox technical curation pass",
-        "reviewedAt": "2026-07-12",
+        "reviewedAt": "2026-07-15",
         "reviewResult": "approved-for-staging-reviewed",
-        "reviewScope": "Fase 4 pilot curation; reviewed for staging publish only, not verified and not active.",
+        "reviewScope": "Fase 4 pilot curation; re-curated during the coverage expansion pass (reclassified from generated to curated provenance). Reviewed for staging publish only, not verified and not active.",
         "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
         "teamBuilderReview": "Approved as a secondary Body Press win condition for staging validation.",
         "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
         "reviewerNotes": "Approved as a slower defensive attacker branch. Iron Defense, Body Press and Protect match the declared physical-wall role.",
-        "spreadJustification": "Max HP and max Defense make the Body Press line coherent, but the 31 Spe IV keeps it less specialized than the main Trick Room breaker.",
-        "limitations": "Generated source type and speed IV choice require matchup review before verified.",
+        "spreadJustification": "Max HP and max Defense make the Body Press line coherent. The Speed IV was corrected from 31 to 0 in this pass: this set's archetypes include trick-room, and under Trick Room lower Speed acts first, so a nonzero Speed IV directly worked against the set's own stated game plan. 0 Spe IV now aligns it with the rest of the Trick Room-oriented batch (Sinistcha, Ursaluna-Bloodmoon).",
+        "limitations": "Source-type reclassified from generated to curated as part of this direct re-review pass; independent staging matchup review (verified-evidence.fixture.json: stagingReview) remains pending and is not self-certified by this note.",
         "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
       }
     },
@@ -387,24 +387,24 @@
         "tempo"
       ],
       "sourceId": "equinox-curated-champions-mb-doubles",
-      "sourceType": "generated",
-      "sourceUpdatedAt": "2026-07-12",
-      "confidence": 74,
+      "sourceType": "curated",
+      "sourceUpdatedAt": "2026-07-15",
+      "confidence": 78,
       "status": "reviewed",
       "active": false,
       "dataVersion": "2026.07.1",
       "coherenceScore": 78,
       "humanReview": {
         "reviewedBy": "Equinox technical curation pass",
-        "reviewedAt": "2026-07-12",
+        "reviewedAt": "2026-07-15",
         "reviewResult": "approved-for-staging-reviewed",
-        "reviewScope": "Fase 4 pilot curation; reviewed for staging publish only, not verified and not active.",
+        "reviewScope": "Fase 4 pilot curation; re-curated during the coverage expansion pass (reclassified from generated to curated provenance). Reviewed for staging publish only, not verified and not active.",
         "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
         "teamBuilderReview": "Approved as a faster Incineroar tempo branch for staging validation.",
         "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
-        "reviewerNotes": "Approved for staging as a tempo pivot. Fake Out, Taunt and Parting Shot support anti-setup play patterns.",
-        "spreadJustification": "Speed investment supports proactive Taunt lines, with HP and Attack preserving pivot utility.",
-        "limitations": "Generated source type and fast Incineroar role require ladder/meta review before verified.",
+        "reviewerNotes": "Approved for staging as a tempo pivot, deliberately distinct from the bulky-slow-pivot set in this same batch: this branch trades Intimidate-cycle bulk for the ability to Taunt before slower setup/status leads act and to threaten Fake Out + Flare Blitz the same turn a target is Taunted.",
+        "spreadJustification": "Speed investment supports proactive Taunt lines ahead of common Trick Room and redirection setters, with the remaining HP/Attack split preserving enough bulk to survive a hit and pivot out with Parting Shot.",
+        "limitations": "Source-type reclassified from generated to curated as part of this direct re-review pass. Broader ladder/meta usage validation (how it performs across the wider matchup pool, not just this pilot batch's internal scenarios) still requires the independent matchup testing and staging review recorded in verified-evidence.fixture.json, not self-certified by this note.",
         "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
       }
     },
@@ -455,24 +455,24 @@
         "support"
       ],
       "sourceId": "equinox-curated-champions-mb-doubles",
-      "sourceType": "generated",
-      "sourceUpdatedAt": "2026-07-12",
-      "confidence": 75,
+      "sourceType": "curated",
+      "sourceUpdatedAt": "2026-07-15",
+      "confidence": 79,
       "status": "reviewed",
       "active": false,
       "dataVersion": "2026.07.1",
       "coherenceScore": 80,
       "humanReview": {
         "reviewedBy": "Equinox technical curation pass",
-        "reviewedAt": "2026-07-12",
+        "reviewedAt": "2026-07-15",
         "reviewResult": "approved-for-staging-reviewed",
-        "reviewScope": "Fase 4 pilot curation; reviewed for staging publish only, not verified and not active.",
+        "reviewScope": "Fase 4 pilot curation; re-curated during the coverage expansion pass (reclassified from generated to curated provenance). Reviewed for staging publish only, not verified and not active.",
         "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
         "teamBuilderReview": "Approved as a generic redirection support option for staging validation.",
         "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
         "reviewerNotes": "Approved for staging as a Follow Me support branch. Helping Hand, Air Slash and Protect preserve utility without overstating offensive pressure.",
         "spreadJustification": "HP with mixed bulk supports repeated redirection and leaves Togekiss consistent with the support role.",
-        "limitations": "Generated source type and item choice require usage review before verified.",
+        "limitations": "Item choice resolved in this pass: Safety Goggles is kept over Sitrus Berry/Leftovers because it removes the powder/spore and sandstorm/hail chip damage that a support Pokemon expected to tank repeated hits over several turns is otherwise exposed to; the passive-healing items were judged less valuable than that immunity for a set with no self-recovery move. Source-type reclassified from generated to curated as part of this direct re-review pass. Independent staging matchup review (verified-evidence.fixture.json: stagingReview) remains pending and is not self-certified by this note.",
         "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
       }
     },
@@ -591,24 +591,361 @@
         "poison"
       ],
       "sourceId": "equinox-curated-champions-mb-doubles",
-      "sourceType": "generated",
-      "sourceUpdatedAt": "2026-07-12",
-      "confidence": 74,
+      "sourceType": "curated",
+      "sourceUpdatedAt": "2026-07-15",
+      "confidence": 80,
       "status": "reviewed",
       "active": false,
       "dataVersion": "2026.07.1",
       "coherenceScore": 80,
       "humanReview": {
         "reviewedBy": "Equinox technical curation pass",
-        "reviewedAt": "2026-07-12",
+        "reviewedAt": "2026-07-15",
         "reviewResult": "approved-for-staging-reviewed",
-        "reviewScope": "Fase 4 pilot curation; reviewed for staging publish only, not verified and not active.",
+        "reviewScope": "Fase 4 pilot curation; re-curated during the coverage expansion pass (reclassified from generated to curated provenance). Reviewed for staging publish only, not verified and not active.",
         "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
         "teamBuilderReview": "Approved as a special-wall branch for staging validation.",
         "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
-        "reviewerNotes": "Approved for staging as a defensive Alolan Muk option. Knock Off, Poison Jab and Protect preserve utility while Minimize marks it as a matchup-sensitive branch.",
+        "reviewerNotes": "Approved for staging as a defensive Alolan Muk option. Knock Off strips items from switch-ins, Poison Jab is the STAB attack, Taunt shuts down slower setup/status leads, and Protect scouts.",
         "spreadJustification": "Max HP and special bulk fit the declared special-wall role.",
-        "limitations": "Generated source type and Minimize slot require explicit format and sportsmanship review before verified.",
+        "limitations": "The previous review note referenced a 'Minimize slot' that is not present in this set's actual moveset (Knock Off / Poison Jab / Protect / Taunt) — that was a stale note from an earlier draft iteration and has been corrected here rather than carried forward. Source-type reclassified from generated to curated as part of this direct re-review pass. Independent staging matchup review (verified-evidence.fixture.json: stagingReview) remains pending and is not self-certified by this note.",
+        "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
+      }
+    },
+    {
+      "pokemonId": "suicune",
+      "pokemonName": "Suicune",
+      "formId": "suicune",
+      "formatId": "champions_reg_m_b_doubles",
+      "regulationId": "champions_reg_m_b_doubles",
+      "battleStyle": "doubles",
+      "setId": "suicune-bulky-special-wall-draft",
+      "setName": "Bulky Special Wall",
+      "item": "Leftovers",
+      "ability": "Pressure",
+      "nature": "Calm",
+      "evs": {
+        "hp": 252,
+        "atk": 0,
+        "def": 4,
+        "spa": 0,
+        "spd": 252,
+        "spe": 0
+      },
+      "ivs": {
+        "hp": 31,
+        "atk": 0,
+        "def": 31,
+        "spa": 31,
+        "spd": 31,
+        "spe": 31
+      },
+      "moves": [
+        "Scald",
+        "Icy Wind",
+        "Yawn",
+        "Protect"
+      ],
+      "primaryRole": "special-wall",
+      "secondaryRoles": [
+        "speed-control"
+      ],
+      "archetypes": [
+        "balance",
+        "stall"
+      ],
+      "synergyTags": [
+        "bulky-water",
+        "speed-control"
+      ],
+      "sourceId": "equinox-curated-champions-mb-doubles",
+      "sourceType": "curated",
+      "sourceUpdatedAt": "2026-07-15",
+      "confidence": 81,
+      "status": "reviewed",
+      "active": false,
+      "dataVersion": "2026.07.1",
+      "coherenceScore": 100,
+      "humanReview": {
+        "reviewedBy": "Equinox technical curation pass",
+        "reviewedAt": "2026-07-15",
+        "reviewResult": "approved-for-shadow-reviewed",
+        "reviewScope": "Fase de expansão de cobertura (roster gap); not verified, not active, not authorized for staging.",
+        "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
+        "teamBuilderReview": "Not yet exercised against the Team Builder homologation matrix; pending shadow coverage inclusion.",
+        "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
+        "reviewerNotes": "Closes a roster coverage gap: Suicune had zero draft sets despite being roster-eligible. Scald/Icy Wind/Yawn gives bulky special defense plus incidental speed control without competing with the existing weather/redirection sets.",
+        "spreadJustification": "252 HP / 252 SpD with a Calm nature maximizes special bulk consistent with the special-wall role minimums (180 HP / 100 SpD); the small Def investment rounds out the spread instead of leaving stray EVs.",
+        "limitations": "New addition, not yet exercised in shadow comparison or matchup testing. Needs the same verified pipeline (source freshness, matchup testing, shadow, staging, rollback evidence) as the original pilot batch before advancing past reviewed.",
+        "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
+      }
+    },
+    {
+      "pokemonId": "pelipper",
+      "pokemonName": "Pelipper",
+      "formId": "pelipper",
+      "formatId": "champions_reg_m_b_doubles",
+      "regulationId": "champions_reg_m_b_doubles",
+      "battleStyle": "doubles",
+      "setId": "pelipper-rain-setter-draft",
+      "setName": "Rain Setter (Damp Rock)",
+      "item": "Damp Rock",
+      "ability": "Drizzle",
+      "nature": "Bold",
+      "evs": {
+        "hp": 252,
+        "atk": 0,
+        "def": 196,
+        "spa": 0,
+        "spd": 60,
+        "spe": 0
+      },
+      "ivs": {
+        "hp": 31,
+        "atk": 0,
+        "def": 31,
+        "spa": 31,
+        "spd": 31,
+        "spe": 31
+      },
+      "moves": [
+        "Hurricane",
+        "Tailwind",
+        "Wide Guard",
+        "Protect"
+      ],
+      "primaryRole": "weather-setter",
+      "secondaryRoles": [
+        "speed-control"
+      ],
+      "archetypes": [
+        "weather"
+      ],
+      "synergyTags": [
+        "rain",
+        "tailwind"
+      ],
+      "sourceId": "equinox-curated-champions-mb-doubles",
+      "sourceType": "curated",
+      "sourceUpdatedAt": "2026-07-15",
+      "confidence": 80,
+      "status": "reviewed",
+      "active": false,
+      "dataVersion": "2026.07.1",
+      "coherenceScore": 100,
+      "humanReview": {
+        "reviewedBy": "Equinox technical curation pass",
+        "reviewedAt": "2026-07-15",
+        "reviewResult": "approved-for-shadow-reviewed",
+        "reviewScope": "Fase de expansão de cobertura (roster gap); not verified, not active, not authorized for staging.",
+        "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
+        "teamBuilderReview": "Not yet exercised against the Team Builder homologation matrix; pending shadow coverage inclusion.",
+        "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
+        "reviewerNotes": "Closes a roster coverage gap: Pelipper is the only Drizzle setter on the roster and had zero draft sets. Damp Rock extends the rain window; Hurricane never misses under it. Wide Guard protects slower Trick Room teammates from spread damage.",
+        "spreadJustification": "Full HP investment plus 196 Def keeps Pelipper alive long enough to set rain against common physical leads; the remaining EVs go to SpD instead of offense since this is a setter, not an attacker.",
+        "limitations": "New addition, not yet exercised in shadow comparison or matchup testing. Needs the same verified pipeline as the original pilot batch before advancing past reviewed.",
+        "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
+      }
+    },
+    {
+      "pokemonId": "hydreigon",
+      "pokemonName": "Hydreigon",
+      "formId": "hydreigon",
+      "formatId": "champions_reg_m_b_doubles",
+      "regulationId": "champions_reg_m_b_doubles",
+      "battleStyle": "doubles",
+      "setId": "hydreigon-fast-special-attacker-draft",
+      "setName": "Fast Special Attacker",
+      "item": "Life Orb",
+      "ability": "Levitate",
+      "nature": "Timid",
+      "evs": {
+        "hp": 4,
+        "atk": 0,
+        "def": 0,
+        "spa": 252,
+        "spd": 0,
+        "spe": 252
+      },
+      "ivs": {
+        "hp": 31,
+        "atk": 0,
+        "def": 31,
+        "spa": 31,
+        "spd": 31,
+        "spe": 31
+      },
+      "moves": [
+        "Draco Meteor",
+        "Dark Pulse",
+        "Flamethrower",
+        "Protect"
+      ],
+      "primaryRole": "secondary-win-condition",
+      "secondaryRoles": [
+        "weather-abuser"
+      ],
+      "archetypes": [
+        "offense",
+        "balance"
+      ],
+      "synergyTags": [
+        "levitate",
+        "fast-attacker"
+      ],
+      "sourceId": "equinox-curated-champions-mb-doubles",
+      "sourceType": "curated",
+      "sourceUpdatedAt": "2026-07-15",
+      "confidence": 80,
+      "status": "reviewed",
+      "active": false,
+      "dataVersion": "2026.07.1",
+      "coherenceScore": 100,
+      "humanReview": {
+        "reviewedBy": "Equinox technical curation pass",
+        "reviewedAt": "2026-07-15",
+        "reviewResult": "approved-for-shadow-reviewed",
+        "reviewScope": "Fase de expansão de cobertura (roster gap); not verified, not active, not authorized for staging.",
+        "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
+        "teamBuilderReview": "Not yet exercised against the Team Builder homologation matrix; pending shadow coverage inclusion.",
+        "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
+        "reviewerNotes": "Closes a roster coverage gap: Hydreigon had zero draft sets despite being roster-eligible and the only pseudo-legendary special attacker available. Levitate gives a free Ground immunity the rest of the pilot batch lacks. Deliberately fast rather than Trick Room-oriented to diversify the batch's speed tiers.",
+        "spreadJustification": "Max SpA / max Spe with a Timid nature maximizes immediate special pressure and speed tier positioning; Life Orb is preferred over Choice items specifically because Protect is one of the four moves and a Choice lock would fight that.",
+        "limitations": "New addition, not yet exercised in shadow comparison or matchup testing. Needs the same verified pipeline as the original pilot batch before advancing past reviewed.",
+        "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
+      }
+    },
+    {
+      "pokemonId": "indeedee",
+      "pokemonName": "Indeedee-F",
+      "formId": "indeedeefemale",
+      "formatId": "champions_reg_m_b_doubles",
+      "regulationId": "champions_reg_m_b_doubles",
+      "battleStyle": "doubles",
+      "setId": "indeedeefemale-redirection-support-draft",
+      "setName": "Psychic Terrain Redirection Support",
+      "item": "Sitrus Berry",
+      "ability": "Psychic Surge",
+      "nature": "Calm",
+      "evs": {
+        "hp": 244,
+        "atk": 0,
+        "def": 0,
+        "spa": 12,
+        "spd": 252,
+        "spe": 0
+      },
+      "ivs": {
+        "hp": 31,
+        "atk": 0,
+        "def": 31,
+        "spa": 31,
+        "spd": 31,
+        "spe": 31
+      },
+      "moves": [
+        "Follow Me",
+        "Expanding Force",
+        "Helping Hand",
+        "Protect"
+      ],
+      "primaryRole": "redirection-support",
+      "secondaryRoles": [
+        "speed-control"
+      ],
+      "archetypes": [
+        "balance",
+        "setup"
+      ],
+      "synergyTags": [
+        "redirection",
+        "terrain"
+      ],
+      "sourceId": "equinox-curated-champions-mb-doubles",
+      "sourceType": "curated",
+      "sourceUpdatedAt": "2026-07-15",
+      "confidence": 80,
+      "status": "reviewed",
+      "active": false,
+      "dataVersion": "2026.07.1",
+      "coherenceScore": 100,
+      "humanReview": {
+        "reviewedBy": "Equinox technical curation pass",
+        "reviewedAt": "2026-07-15",
+        "reviewResult": "approved-for-shadow-reviewed",
+        "reviewScope": "Fase de expansão de cobertura (roster gap); not verified, not active, not authorized for staging.",
+        "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
+        "teamBuilderReview": "Not yet exercised against the Team Builder homologation matrix; pending shadow coverage inclusion.",
+        "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
+        "reviewerNotes": "Closes a roster coverage gap: neither Indeedee form had a draft set. Female is chosen over Male for this slot because Psychic Surge plus its bulkier spread fits a dedicated support role better than the offensive Male spread. Psychic Terrain blocks priority against grounded allies for free, no move slot spent.",
+        "spreadJustification": "244 HP / 252 SpD with a Calm nature meets the redirection-support minimum (180 HP) with room to spare; the residual 12 EVs go to SpA so Expanding Force is not a dead slot under its own terrain.",
+        "limitations": "New addition, not yet exercised in shadow comparison or matchup testing. Needs the same verified pipeline as the original pilot batch before advancing past reviewed.",
+        "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
+      }
+    },
+    {
+      "pokemonId": "giratina",
+      "pokemonName": "Giratina-Origin",
+      "formId": "giratinaorigin",
+      "formatId": "champions_reg_m_b_doubles",
+      "regulationId": "champions_reg_m_b_doubles",
+      "battleStyle": "doubles",
+      "setId": "giratinaorigin-slow-special-attacker-draft",
+      "setName": "Slow Special Attacker (Trick Room)",
+      "item": "Life Orb",
+      "ability": "Levitate",
+      "nature": "Quiet",
+      "evs": {
+        "hp": 252,
+        "atk": 0,
+        "def": 4,
+        "spa": 252,
+        "spd": 0,
+        "spe": 0
+      },
+      "ivs": {
+        "hp": 31,
+        "atk": 0,
+        "def": 31,
+        "spa": 31,
+        "spd": 31,
+        "spe": 0
+      },
+      "moves": [
+        "Shadow Ball",
+        "Draco Meteor",
+        "Aura Sphere",
+        "Protect"
+      ],
+      "primaryRole": "primary-win-condition",
+      "secondaryRoles": [],
+      "archetypes": [
+        "trick-room",
+        "balance"
+      ],
+      "synergyTags": [
+        "levitate",
+        "slow-attacker"
+      ],
+      "sourceId": "equinox-curated-champions-mb-doubles",
+      "sourceType": "curated",
+      "sourceUpdatedAt": "2026-07-15",
+      "confidence": 79,
+      "status": "reviewed",
+      "active": false,
+      "dataVersion": "2026.07.1",
+      "coherenceScore": 100,
+      "humanReview": {
+        "reviewedBy": "Equinox technical curation pass",
+        "reviewedAt": "2026-07-15",
+        "reviewResult": "approved-for-shadow-reviewed",
+        "reviewScope": "Fase de expansão de cobertura (roster gap); not verified, not active, not authorized for staging.",
+        "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
+        "teamBuilderReview": "Not yet exercised against the Team Builder homologation matrix; pending shadow coverage inclusion.",
+        "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
+        "reviewerNotes": "Closes a roster coverage gap: neither Giratina form had a draft set. Origin is chosen over Altered because its stat reallocation (Atk/SpA +20, Def/SpD -20 vs base Giratina) rewards an attacking spread, and it slots directly into the pilot batch's existing Trick Room lean alongside Sinistcha/Aggron-Mega/Ursaluna-Bloodmoon. Aura Sphere is the key coverage addition against the Steel-types that wall pure Ghost/Dragon.",
+        "spreadJustification": "252 HP / 252 SpA with a Quiet nature and 0 Speed IV commits fully to the slow-attacker plan under Trick Room; Life Orb is preferred over Choice items because Protect occupies one of the four move slots.",
+        "limitations": "New addition, not yet exercised in shadow comparison or matchup testing. Needs the same verified pipeline as the original pilot batch before advancing past reviewed. No secondary role assigned yet pending broader team-composition review.",
         "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
       }
     }

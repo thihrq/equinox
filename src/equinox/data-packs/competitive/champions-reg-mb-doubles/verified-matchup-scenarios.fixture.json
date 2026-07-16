@@ -100,6 +100,61 @@
       "evidenceLevel": "internal-scenario-review",
       "reviewResult": "approved",
       "notes": "Approved as internal tactical evidence only; not ladder or tournament proof."
+    },
+    {
+      "scenarioId": "pelipper-rain-setup-vs-suicune-special-wall",
+      "label": "Pelipper rain setup anchored by Suicune's bulk",
+      "lead": ["Pelipper", "Suicune"],
+      "opposingThreats": ["Flutter Mane", "Urshifu-Rapid-Strike", "Landorus-Therian"],
+      "validationGoal": "Validate that Pelipper's rain support and Wide Guard let Suicune tank incoming spread damage while establishing rain-turn tempo.",
+      "approvedForSets": ["pelipper-rain-setter-draft", "suicune-bulky-special-wall-draft"],
+      "evidenceLevel": "internal-scenario-review",
+      "reviewResult": "approved",
+      "notes": "Approved as internal tactical evidence only; not ladder or tournament proof."
+    },
+    {
+      "scenarioId": "pelipper-rain-into-hydreigon-fast-pressure",
+      "label": "Pelipper rain tempo into Hydreigon fast pressure",
+      "lead": ["Pelipper", "Hydreigon"],
+      "opposingThreats": ["Iron Hands", "Tornadus", "Gholdengo"],
+      "validationGoal": "Validate that Tailwind and rain tempo from Pelipper let Hydreigon's Draco Meteor and Dark Pulse pressure the board before slower threats can respond.",
+      "approvedForSets": ["pelipper-rain-setter-draft", "hydreigon-fast-special-attacker-draft"],
+      "evidenceLevel": "internal-scenario-review",
+      "reviewResult": "approved",
+      "notes": "Approved as internal tactical evidence only; not ladder or tournament proof."
+    },
+    {
+      "scenarioId": "hydreigon-fast-attack-vs-indeedeefemale-terrain-support",
+      "label": "Hydreigon fast attack behind Psychic Terrain support",
+      "lead": ["Hydreigon", "Indeedee-F"],
+      "opposingThreats": ["Urshifu-Rapid-Strike", "Rillaboom", "Flutter Mane"],
+      "validationGoal": "Validate that Psychic Terrain's priority block protects Hydreigon's approach while Expanding Force adds a second special angle.",
+      "approvedForSets": ["hydreigon-fast-special-attacker-draft", "indeedeefemale-redirection-support-draft"],
+      "evidenceLevel": "internal-scenario-review",
+      "reviewResult": "approved",
+      "notes": "Approved as internal tactical evidence only; not ladder or tournament proof."
+    },
+    {
+      "scenarioId": "indeedeefemale-terrain-support-vs-giratinaorigin-trick-room",
+      "label": "Indeedee-F redirection support for Giratina-Origin",
+      "lead": ["Indeedee-F", "Giratina-Origin"],
+      "opposingThreats": ["Chi-Yu", "Amoonguss", "Farigiraf"],
+      "validationGoal": "Validate that Follow Me redirection buys Giratina-Origin a safe turn to apply Draco Meteor and Shadow Ball pressure under slow, Trick Room-adjacent play.",
+      "approvedForSets": ["indeedeefemale-redirection-support-draft", "giratinaorigin-slow-special-attacker-draft"],
+      "evidenceLevel": "internal-scenario-review",
+      "reviewResult": "approved",
+      "notes": "Approved as internal tactical evidence only; not ladder or tournament proof."
+    },
+    {
+      "scenarioId": "giratinaorigin-trick-room-vs-suicune-special-wall",
+      "label": "Giratina-Origin slow attacker behind Suicune's bulk",
+      "lead": ["Giratina-Origin", "Suicune"],
+      "opposingThreats": ["Whimsicott", "Tornadus", "Porygon2"],
+      "validationGoal": "Validate that Suicune's bulk and Icy Wind speed control let Giratina-Origin's big special attacks land safely against faster leads.",
+      "approvedForSets": ["giratinaorigin-slow-special-attacker-draft", "suicune-bulky-special-wall-draft"],
+      "evidenceLevel": "internal-scenario-review",
+      "reviewResult": "approved",
+      "notes": "Approved as internal tactical evidence only; not ladder or tournament proof."
     }
   ]
 }

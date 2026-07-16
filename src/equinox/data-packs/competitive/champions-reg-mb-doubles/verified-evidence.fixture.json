@@ -108,6 +108,66 @@
       "rollbackEvidence": "approved",
       "limitationsResolved": false,
       "notes": "The Minimize slot still requires explicit format matchup testing before verified."
+    },
+    {
+      "setId": "suicune-bulky-special-wall-draft",
+      "approvedMatchupScenarios": ["pelipper-rain-setup-vs-suicune-special-wall", "giratinaorigin-trick-room-vs-suicune-special-wall"],
+      "matchupTesting": "approved",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "New coverage-expansion set. Internal scenario evidence recorded; staging matchup review against the live pack is still pending before verified."
+    },
+    {
+      "setId": "pelipper-rain-setter-draft",
+      "approvedMatchupScenarios": ["pelipper-rain-setup-vs-suicune-special-wall", "pelipper-rain-into-hydreigon-fast-pressure"],
+      "matchupTesting": "approved",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "New coverage-expansion set. Internal scenario evidence recorded; staging matchup review against the live pack is still pending before verified."
+    },
+    {
+      "setId": "hydreigon-fast-special-attacker-draft",
+      "approvedMatchupScenarios": ["pelipper-rain-into-hydreigon-fast-pressure", "hydreigon-fast-attack-vs-indeedeefemale-terrain-support"],
+      "matchupTesting": "approved",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "New coverage-expansion set. Internal scenario evidence recorded; staging matchup review against the live pack is still pending before verified."
+    },
+    {
+      "setId": "indeedeefemale-redirection-support-draft",
+      "approvedMatchupScenarios": ["hydreigon-fast-attack-vs-indeedeefemale-terrain-support", "indeedeefemale-terrain-support-vs-giratinaorigin-trick-room"],
+      "matchupTesting": "approved",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "New coverage-expansion set. Internal scenario evidence recorded; staging matchup review against the live pack is still pending before verified."
+    },
+    {
+      "setId": "giratinaorigin-slow-special-attacker-draft",
+      "approvedMatchupScenarios": ["indeedeefemale-terrain-support-vs-giratinaorigin-trick-room", "giratinaorigin-trick-room-vs-suicune-special-wall"],
+      "matchupTesting": "approved",
+      "sourceFreshnessReview": "approved",
+      "shadowReview": "approved",
+      "stagingReview": "pending",
+      "exportParityReview": "approved",
+      "rollbackEvidence": "approved",
+      "limitationsResolved": false,
+      "notes": "New coverage-expansion set. Internal scenario evidence recorded; staging matchup review against the live pack is still pending before verified."
     }
   ]
 }
