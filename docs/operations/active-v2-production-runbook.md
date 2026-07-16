@@ -341,7 +341,34 @@ Exit codes: `0` = advance, `4` = hold (aguardar/revisar), `1` = rollback, `2` = 
 
 ---
 
-## 11. Matriz de bloqueios (referência rápida)
+## 11. Monitoramento de custo (adendo seção 13)
+
+**Cobertura parcial aplicada por código** (2026-07-16): o adendo pede leituras do Atlas, tráfego, CPU, memória, logs, custo por mil requisições e projeção para 100%. Só a primeira e a penúltima são realistas de calcular sem acesso a infraestrutura real — CPU, memória e logs do Render **não são cobertos** e não têm nenhum substituto neste ambiente.
+
+`ActiveV2CostProjectionEngine.ts` projeta **operações Mongo** (não dinheiro, a menos que uma tarifa real seja informada) a partir do volume de requisições observado na telemetria. O perfil de leitura/escrita (`ActiveV2CostProjectionPolicy.ts`) não é uma estimativa solta — reflete literalmente as chamadas a `readActiveV2CanaryConfig`/`readActiveV2RuntimeControl`/`setsCol.find` em `ActiveV2RuntimeShadowOrchestrator.ts` (Fase 3), o único caminho de runtime com código real hoje: 2 leituras de config + 1 leitura por Pokémon do time sugerido comparado (padrão: 3) + 1 escrita de telemetria = 5 leituras/1 escrita por requisição avaliada, com o time padrão.
+
+**Quando a Fase 5+ implementar a leitura real de `pokemonsets_v2` para *servir* respostas (não só comparar em shadow), este perfil precisa ser recalibrado** — hoje ele só descreve o shadow.
+
+### Comandos permitidos
+
+```bash
+# Sem tarifa real informada -> so contagem de operacoes, nunca dinheiro
+npm run sets:active-v2-cost-projection:evaluate -- --events <eventos.json> --traffic-basis shadow
+
+# Com tarifa real do Atlas (as 3 flags sao obrigatorias juntas)
+npm run sets:active-v2-cost-projection:evaluate -- \
+  --events <eventos.json> --traffic-basis percentage --current-percentage 10 \
+  --cost-per-thousand-reads <n> --cost-per-thousand-writes <n> --currency USD \
+  [--output-json <path>]
+```
+
+`--traffic-basis shadow` assume que o volume observado já representa 100% do tráfego elegível (todo request do formato coberto é avaliado em shadow, sem seleção percentual). `--traffic-basis percentage --current-percentage N` reescala o volume observado como se representasse N% do tráfego elegível total, para projetar os demais percentuais.
+
+**Validação:** `npm run sets:active-v2-cost-projection:offline:check` (política + engine: perfil de I/O confere com o código real do orquestrador, reescala de tráfego, custo omitido sem tarifa, custo calculado corretamente com tarifa, tamanho de time customizável).
+
+---
+
+## 12. Matriz de bloqueios (referência rápida)
 
 | Marco | Bloqueio obrigatório | Status nesta branch |
 |---|---|---|
@@ -353,6 +380,7 @@ Exit codes: `0` = advance, `4` = hold (aguardar/revisar), `1` = rollback, `2` = 
 | Rollout 100% (Fase 10) | Quatro olhos + runbook + alertas completos | Runbook nasce aqui; quatro olhos e alertas prontos, não exercitados ao vivo |
 | Progressão de fase (Fases 3, 5-10) | Critério de dias+volume por fase, sem alerta crítico nem breaker disparado | ✅ Código pronto e testado offline (seção 10) — recomendação, não executa a transição sozinho |
 | Congelamento de dados (adendo 3.3) | Nenhuma publicação nova durante `internal`/`percentage` sem override justificado | ✅ Aplicado por código no publisher (seção 9) — falta aprovador nomeado para a exceção (governança, não código) |
+| Monitoramento de custo (adendo seção 13) | Leituras Mongo + custo/1k req + projeção 100% | ✅ Operações Mongo cobertas (seção 11); ❌ CPU/memória/logs/billing Render seguem fora de escopo, exigem Atlas/Render real |
 
 ---
 
@@ -364,4 +392,5 @@ Exit codes: `0` = advance, `4` = hold (aguardar/revisar), `1` = rollback, `2` = 
 | 2026-07-16 | Adiciona Fase 2 (Runtime Read Homologation): leitura estritamente read-only de `pokemonsets_v2`, com "zero leitura da coleção legada" e "mesmo comportamento com a flag desligada" garantidos por construção do código, não apenas por teste. |
 | 2026-07-16 | Adiciona Fase 3 (Runtime Shadow Mode): primeira integração real em `TeamController.suggest`, escopo reduzido a comparação de dados de set (sem re-executar o algoritmo de recomendação). Renumera as seções 3-10 para 4-11. |
 | 2026-07-16 | Todo o pipeline (Fase 1-5, 2A, 4B) validado pela primeira vez contra MongoDB local real (não só offline/mockado) via `mongodb-memory-server` — ver `docs/data-audit/active-v2-local-mongo-validation-v1-report.md` e `scripts-local/README.md`. Corrigiu 3 categorias de bugs reais só visíveis com Mongo real. |
-| 2026-07-16 | Implementa os dois requisitos transversais da seção 13 que não dependem do Atlas: estado `hold` nos gates operacionais (seção 10, `ActiveV2CanaryPhaseProgressionGate`) e enforcement de congelamento de dados no publisher (seção 9, `ActiveV2DataFreezeGuard`). Monitoramento de custo (o terceiro requisito da seção 13) segue pendente — é o mais dependente de dados reais de infraestrutura (Atlas/Render). |
+| 2026-07-16 | Implementa os dois requisitos transversais da seção 13 que não dependem do Atlas: estado `hold` nos gates operacionais (seção 10, `ActiveV2CanaryPhaseProgressionGate`) e enforcement de congelamento de dados no publisher (seção 9, `ActiveV2DataFreezeGuard`). |
+| 2026-07-16 | Adiciona seção 11 (Monitoramento de custo): projeção de operações Mongo (`ActiveV2CostProjectionEngine`) grounded no perfil real de I/O do orquestrador de shadow mode, com conversão para dinheiro só quando uma tarifa real do Atlas é explicitamente informada. CPU, memória, logs e billing de Render seguem fora de escopo — exigem acesso real à infraestrutura. Renumera "Matriz de bloqueios" de seção 11 para 12. |
