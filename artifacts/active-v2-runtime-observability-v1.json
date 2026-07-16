@@ -1,0 +1,75 @@
+{
+  "policyVersion": "active-v2-runtime-observability-v1",
+  "generatedAt": "2026-07-16T01:06:30.716Z",
+  "metrics": {
+    "windowStartedAt": "2026-07-15T09:00:00.000Z",
+    "windowEndedAt": "2026-07-15T09:34:30.000Z",
+    "requestCount": 24,
+    "baseline": {
+      "successCount": 24,
+      "errorCount": 0,
+      "latency": {
+        "p50": 160,
+        "p95": 180,
+        "p99": 180
+      }
+    },
+    "v2": {
+      "successCount": 24,
+      "errorCount": 0,
+      "timeoutCount": 0,
+      "skippedCount": 0,
+      "latency": {
+        "p50": 170,
+        "p95": 190,
+        "p99": 190
+      }
+    },
+    "fallback": {
+      "count": 1,
+      "reasonCounts": {
+        "v2-error": 0,
+        "v2-timeout": 0,
+        "v2-disabled": 1,
+        "circuit-breaker": 0,
+        "force-baseline": 0,
+        "digest-mismatch": 0,
+        "unknown": 0
+      }
+    },
+    "classificationCounts": {
+      "blocker": 0,
+      "regression": 0,
+      "human-review-needed": 0,
+      "improvement": 1,
+      "acceptable-divergence": 0,
+      "equivalent": 23
+    },
+    "observedPublishRunIds": [
+      "publish-run-sample-fixture-1"
+    ],
+    "observedActiveV2DataDigests": [
+      "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000"
+    ],
+    "segments": {
+      "format": {
+        "champions_reg_m_b_doubles": 24
+      },
+      "teamIdentity": {
+        "balanced": 6,
+        "offensive": 6,
+        "defensive": 6,
+        "anti-meta": 6
+      },
+      "archetype": {
+        "trick-room": 6,
+        "weather-rain": 6,
+        "bulky-pivot": 6,
+        "balanced-offense": 6
+      }
+    }
+  },
+  "manifestHealth": null,
+  "alerts": [],
+  "hasCriticalAlert": false
+}
