@@ -16,28 +16,7 @@ const getStars = (score?: number) => {
   return '★★★★★'.slice(0, value).padEnd(5, '☆');
 };
 
-const getReadingTime = (option: TeamOption) => {
-  const totalItems =
-    (option.coach?.earlyGame.length ?? 0) +
-    (option.coach?.midGame.length ?? 0) +
-    (option.coach?.lateGame.length ?? 0) +
-    (option.coach?.winConditions.length ?? 0);
 
-  return Math.max(18, Math.min(45, totalItems * 4));
-};
-
-const getBattlePlanQuote = (option: TeamOption, locale: Locale) => {
-  if (option.aiBuilder?.battlePlanSummary) {
-    return translateContent(option.aiBuilder.battlePlanSummary, locale);
-  }
-
-  const lead = option.coach?.leadSuggestions[0] ?? option.suggestedPokemons[0]?.name ?? 'sua melhor abertura';
-  const winCondition = option.coach?.winConditions[0] ?? option.suggestedPokemons[1]?.name ?? 'sua condição de vitória';
-  const closer = option.suggestedPokemons[2]?.name ?? winCondition;
-
-  const quote = `Abra com ${lead}, transforme trocas neutras em vantagem posicional e prepare ${closer} para finalizar quando os checks estiverem enfraquecidos.`;
-  return translateContent(quote, locale);
-};
 
 export function BattlePlanHero({ option, identityLabel, format, locale, formatScore, formatPercent }: BattlePlanHeroProps) {
   const threatCoverage = formatPercent((option.threatAnalysis?.averageScore ?? 0) / 100);
@@ -72,11 +51,4 @@ export function BattlePlanHero({ option, identityLabel, format, locale, formatSc
   );
 }
 
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <article className="eq-battle-plan-metric">
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </article>
-  );
-}
+
