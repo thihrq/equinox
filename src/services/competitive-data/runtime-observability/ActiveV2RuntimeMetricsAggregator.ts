@@ -13,6 +13,7 @@ const FALLBACK_REASONS: ActiveV2RuntimeFallbackReason[] = [
   'circuit-breaker',
   'force-baseline',
   'digest-mismatch',
+  'no-v2-data',
   'unknown',
 ];
 

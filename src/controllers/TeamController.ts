@@ -1,9 +1,12 @@
 import { Request, Response } from 'express';
+import * as crypto from 'crypto';
+import mongoose from 'mongoose';
 import { TeamService, TeamSuggestionInputError } from '../services/TeamService';
 import { TeamIdentity } from '../equinox/recommendation/CandidateScoreEngine';
 import { appConfig } from '../config/env';
 import { LeadStrategyRecommendationService } from '../services/LeadStrategyRecommendationService';
 import { PokemonInput, LeadMode } from '../equinox/vgc/LeadBuildTypes';
+import { runActiveV2RuntimeShadow } from '../services/competitive-data/runtime-shadow/ActiveV2RuntimeShadowOrchestrator';
 
 const ALLOWED_IDENTITIES: TeamIdentity[] = [
   'balanced',
@@ -150,14 +153,33 @@ export class TeamController {
         return;
       }
 
+      const resolvedFormat = String(format || 'vanilla');
+      const resolvedTeamIdentity = normalizeTeamIdentity(teamIdentity);
+      const startedAt = Date.now();
       const result = await TeamService.suggestComplements(
         normalizedTeam,
-        String(format || 'vanilla'),
+        resolvedFormat,
         Boolean(allowLegendaries),
-        normalizeTeamIdentity(teamIdentity),
+        resolvedTeamIdentity,
       );
+      const baselineLatencyMs = Date.now() - startedAt;
 
       res.json(result);
+
+      // Fase 3 — Runtime Shadow Mode. Disparado somente APÓS a resposta já
+      // ter sido enviada; nunca pode afetar o que o usuário recebeu. Mesmo
+      // padrão fire-and-forget já usado em src/server.ts para trabalho de
+      // background não crítico.
+      const primaryTeamSuggestedPokemons = (result as { topTeams?: Array<{ suggestedPokemons?: unknown }> }).topTeams?.[0]?.suggestedPokemons as
+        | { name: string; item: string; ability: string; nature: string; moves: string[] }[]
+        | undefined ?? [];
+      void runActiveV2RuntimeShadow(mongoose.connection, {
+        requestId: crypto.randomUUID(),
+        format: resolvedFormat,
+        teamIdentity: resolvedTeamIdentity,
+        primaryTeamSuggestedPokemons,
+        baselineLatencyMs,
+      }).catch(error => console.warn('[Equinox] Active V2 runtime shadow failed (ignored):', error));
     } catch (error) {
       if (error instanceof TeamSuggestionInputError) {
         res.status(error.statusCode).json({

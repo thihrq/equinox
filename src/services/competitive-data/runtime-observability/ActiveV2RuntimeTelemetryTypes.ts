@@ -9,6 +9,7 @@ export type ActiveV2RuntimeFallbackReason =
   | 'circuit-breaker'
   | 'force-baseline'
   | 'digest-mismatch'
+  | 'no-v2-data'
   | 'unknown';
 
 export interface ActiveV2RuntimeTelemetryEvent {
