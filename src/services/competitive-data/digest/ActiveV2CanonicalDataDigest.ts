@@ -10,10 +10,53 @@ const EXCLUDED_FIELDS = new Set([
   'publishedAt',
   'publishRunId',
   'previousPublishRunId',
+  'sourceActiveRunId',
   'active',
   'productionActivatedAt',
   'productionDeactivatedAt',
+  // Os campos abaixo foram descobertos comparando, campo a campo, um
+  // registro real de staging com o mesmo registro já publicado em
+  // pokemonsets_v2 (rodando a homologação de leitura da Fase 2 contra um
+  // Mongo real — nenhum teste offline com Mongo mockado jamais exerceria
+  // essa comparação estrutural). Duas causas distintas:
+  //
+  // 1. `role` é exigido pelo schema Mongoose de PokemonSetV2 mas é sempre
+  //    derivado de `primaryRole` no momento da publicação (ver
+  //    ActiveV2ProductionPublisher.ts) — não existe nos registros de
+  //    staging. `legal`, `validationErrors` e `validationWarnings` são
+  //    preenchidos por valores padrão do schema quando ausentes do
+  //    documento inserido — também nunca fazem parte do conteúdo curado
+  //    real hoje.
+  'role',
+  'legal',
+  'validationErrors',
+  'validationWarnings',
+  'importedAt',
+  //
+  // 2. O schema estrito do Mongoose (strict mode) descarta, silenciosamente,
+  //    qualquer campo do documento de staging que não esteja declarado no
+  //    schema de PokemonSetV2 — isso inclui toda a metadata de governança/
+  //    linhagem de promoção (quem revisou, quando foi verificado/ativado em
+  //    staging). Essa metadata é sobre o PROCESSO de chegar até aqui, não
+  //    sobre o conteúdo competitivo em si — mesma categoria de
+  //    `publishRunId`/`previousPublishRunId`, já excluídos acima.
+  'humanReview',
+  'verifiedAt',
+  'verifiedRunId',
+  'activatedAt',
+  'activatedFromStatus',
+  'activationMetadata',
+  'activeRunId',
+  'previousVerifiedRunId',
 ]);
+
+/** Chaves cujo valor deve ser normalizado como data (string ISO), mesmo
+ * quando a fonte às vezes traz uma string de data "solta" (ex: leitura
+ * bruta de staging via driver, sem cast de schema) e outras vezes um
+ * `Date` real do Mongoose (ex: leitura de um documento já publicado) —
+ * sem isso, a mesma data semântica gera dois hashes diferentes dependendo
+ * de qual lado do pipeline a leu. */
+const DATE_NORMALIZED_FIELDS = new Set(['sourceUpdatedAt']);
 
 /**
  * Normaliza e ordena recursivamente as propriedades de um valor/objeto para fins de hashing canônico.
@@ -43,10 +86,20 @@ export function canonicalizeValue(val: any): any {
       }
       
       let canonicalized = canonicalizeValue(plainObj[key]);
-      
+
       // Regra especial: ordenar alfabeticamente os arrays competitivos
       if ((key === 'moves' || key === 'roles' || key === 'tags') && Array.isArray(canonicalized)) {
         canonicalized = [...canonicalized].sort((a, b) => String(a).localeCompare(String(b)));
+      }
+
+      // Regra especial: normalizar campos de data que podem chegar como
+      // string solta OU como Date real, dependendo de qual estágio do
+      // pipeline os leu.
+      if (DATE_NORMALIZED_FIELDS.has(key) && canonicalized !== null) {
+        const parsed = new Date(canonicalized);
+        if (!Number.isNaN(parsed.getTime())) {
+          canonicalized = parsed.toISOString();
+        }
       }
       
       sortedObj[key] = canonicalized;

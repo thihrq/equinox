@@ -123,6 +123,9 @@
     "sets:active-v2-runtime-shadow:comparator:check": "ts-node src/scripts/validateActiveV2ShadowSetComparator.ts",
     "sets:active-v2-runtime-shadow:orchestrator:check": "ts-node src/scripts/validateActiveV2RuntimeShadowOrchestrator.ts",
     "sets:active-v2-runtime-shadow:offline:check": "ts-node src/scripts/validateActiveV2RuntimeShadowOffline.ts",
+    "local-mongo:start": "node scripts-local/start-local-mongo.js",
+    "local-mongo:create-indexes": "node scripts-local/create-production-indexes.js",
+    "local-mongo:restore-drill": "node scripts-local/restore-drill.js",
     "sets:active-staging:config:check": "ts-node src/scripts/validateActiveStagingHomologationConfig.ts",
     "sets:active-staging:monitoring:check": "ts-node src/scripts/validateActiveStagingHomologationMonitoring.ts",
     "sets:active-staging:repository:check": "ts-node src/scripts/validateActiveStagingRepository.ts",
@@ -154,6 +157,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^26.1.0",
+    "mongodb-memory-server": "^11.2.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
   }
