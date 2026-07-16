@@ -49,7 +49,35 @@ npm run sets:active-v2-production:rollback -- --publish-run-id <id> [--dry-run]
 
 ## 2. Runtime Read Homologation (Fase 2)
 
-Ainda não implementado nesta branch como CLI dedicado — a leitura read-only de `pokemonsets_v2` é validada indiretamente por `sets:staging:homologate` (contra staging) e pelos testes de digest/lineage do pipeline de publicação (Fase 1). Quando o runtime real existir, esta seção deve documentar o comando de homologação read-only e seus critérios (uma versão ativa por `setId`, zero fallback, zero leitura da coleção legada).
+### Sinais de incidente
+- `homologateActiveV2RuntimeRead` reporta `approved: false` (exit 1).
+- `MANIFEST_HEALTH_ISSUE` — mesma causa raiz do circuit breaker (seção 4); considerar acioná-lo se isso ocorrer com a flag de leitura ligada em produção.
+- `INCOMPLETE_ACTIVE_SET` — um `setId` listado no manifesto ativo não foi encontrado entre os registros ativos lidos. Isso é o sintoma exato de um fallback silencioso que a Fase 2 existe para prevenir.
+
+### Comandos permitidos
+```bash
+npm run sets:active-v2-runtime-read:homologate -- [--output-json <path>] [--output-markdown <path>]
+```
+
+### Flags
+- `EQUINOX_ACTIVE_V2_RUNTIME_READ_ENABLED=true` — sem essa flag (padrão), o comando roda em modo `baseline-only` e **nem tenta** ler `pokemonsets_v2`. Isso não é um branch condicional depois da leitura; é a garantia estrutural do critério "mesmo comportamento quando a flag estiver desligada".
+- Com a flag ligada: `MONGO_URI`/`MONGODB_URI` obrigatório.
+- O leitor (`ActiveV2RuntimeReader.ts`) só conhece os nomes `pokemonsets_v2` e `publication_manifests` — a coleção legada `pokemonsets` nunca é referenciada no código deste caminho, tornando "zero leitura da coleção legada" uma garantia por construção, testada em `validateActiveV2RuntimeReader.ts` (spy que falha se `pokemonsets` for solicitado).
+
+### Responsáveis
+- Leitura/homologação: qualquer responsável autorizado. É somente leitura (0 writes) — não há uma "escrita" a ser aprovada aqui.
+
+### Rollback
+Não aplicável — comando somente leitura. Se `approved: false`, o rollback é o mesmo da causa raiz identificada (rollback de publicação, seção 1, ou reativação do circuit breaker, seção 4), não desta homologação em si.
+
+### Validação pós-rollback
+Rodar `sets:active-v2-runtime-read:homologate` novamente e confirmar `approved: SIM` antes de prosseguir para a Fase 3.
+
+### Coleta de evidência
+- Relatório JSON/Markdown gerado pelo próprio comando quando `--output-*` é passado, mesmo padrão das demais fases.
+
+### Comunicação
+- Esta homologação é um pré-requisito silencioso — não precisa de comunicação própria, mas seu resultado (`approved`) deve ser conferido antes de qualquer decisão de avançar para o Runtime Shadow Mode (Fase 3).
 
 ---
 
@@ -247,3 +275,4 @@ Publicações em `pokemonsets_v2` ficam congeladas durante qualquer janela de ob
 | Data | Mudança |
 |---|---|
 | 2026-07-15 | Criação inicial. Cobre Fase 1 (publicação/rollback), Fase 2A (observabilidade), Fase 4B (circuit breaker), Fase 4 (canário público/percentuais), Fase 5 (canário interno/HMAC), restore drill (pendente), congelamento de dados, teto de hold. |
+| 2026-07-16 | Adiciona Fase 2 (Runtime Read Homologation): leitura estritamente read-only de `pokemonsets_v2`, com "zero leitura da coleção legada" e "mesmo comportamento com a flag desligada" garantidos por construção do código, não apenas por teste. |
