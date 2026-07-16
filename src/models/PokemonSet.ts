@@ -47,8 +47,21 @@ export interface IPokemonSet extends Document {
   validationWarnings?: string[];
   status?: 'active' | 'verified' | 'reviewed' | 'deprecated' | 'quarantined' | 'draft';
   active?: boolean;
+  setKey?: string;
   verifiedAt?: Date;
   verifiedRunId?: string;
+  activeRunId?: string;
+  activatedAt?: Date;
+  activatedFromStatus?: 'verified';
+  previousVerifiedRunId?: string;
+  activationMetadata?: {
+    runId?: string;
+    targetCollection?: 'pokemonsets_v2_staging';
+    executedAt?: Date;
+    source?: 'verified-to-active-staging-v1';
+  };
+  rolledBackAt?: Date;
+  rolledBackFromActiveRunId?: string;
   dataVersion?: string;
   contentHash?: string;
 }
@@ -100,8 +113,21 @@ const PokemonSetSchema = new Schema<IPokemonSet>({
   validationWarnings: [{ type: String }],
   status: { type: String, enum: ['active', 'verified', 'reviewed', 'deprecated', 'quarantined', 'draft'], default: 'draft', index: true },
   active: { type: Boolean, default: false, index: true },
+  setKey: { type: String, index: true },
   verifiedAt: { type: Date },
   verifiedRunId: { type: String, index: true },
+  activeRunId: { type: String, index: true },
+  activatedAt: { type: Date, index: true },
+  activatedFromStatus: { type: String, enum: ['verified'] },
+  previousVerifiedRunId: { type: String },
+  activationMetadata: {
+    runId: { type: String },
+    targetCollection: { type: String },
+    executedAt: { type: Date },
+    source: { type: String },
+  },
+  rolledBackAt: { type: Date },
+  rolledBackFromActiveRunId: { type: String },
   dataVersion: { type: String },
   contentHash: { type: String }
 });
@@ -109,6 +135,8 @@ const PokemonSetSchema = new Schema<IPokemonSet>({
 PokemonSetSchema.index({ pokemonName: 1, formatId: 1 });
 PokemonSetSchema.index({ pokemonId: 1, formId: 1, regulationId: 1, battleStyle: 1 });
 PokemonSetSchema.index({ formatId: 1, status: 1, legal: 1, confidence: -1 });
+PokemonSetSchema.index({ setKey: 1, active: 1 });
+PokemonSetSchema.index({ activeRunId: 1, status: 1 });
 PokemonSetSchema.index({ setId: 1, dataVersion: 1 }, { unique: true, sparse: true });
 
 export const PokemonSet = mongoose.model<IPokemonSet>('PokemonSet', PokemonSetSchema);

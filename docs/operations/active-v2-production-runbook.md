@@ -1,0 +1,249 @@
+# Active V2 Production Runbook
+
+**Status:** Runbook incremental (adendo 4.7). Nasce antes da execução real da Fase 3 (Runtime Shadow Mode) e é ampliado a cada fase. Esta versão cobre até a Fase 5 (Canário Interno). Nenhum procedimento aqui foi exercitado contra um Atlas de produção real — todo comando abaixo foi validado apenas offline/dry-run neste ambiente. Antes do primeiro uso real, confirme que o comando ainda corresponde ao código (`git log` no arquivo referenciado).
+
+## 0. Como usar este documento
+
+- Cada seção de fase segue a mesma estrutura mínima do adendo 4.7: **sinais de incidente**, **comandos permitidos**, **flags**, **responsáveis**, **rollback**, **validação pós-rollback**, **coleta de evidência**, **comunicação**.
+- Todo comando aqui é `npm run <script>`, executado a partir da raiz do repositório, branch `feature/active-v2-production-publication-and-gates` (ou a branch que a suceder após merge).
+- **Nenhum comando de escrita real funciona sem as flags de ambiente explícitas listadas.** Isso é deliberado — a ausência de flag é o comportamento seguro por padrão em todo o pipeline.
+- "Responsável" abaixo é um papel, não uma pessoa nomeada — preencher com o nome real na hora do incidente e registrar no changelog.
+
+## 1. Publicação e rollback de dados (Fase 1 — Production Publication)
+
+### Sinais de incidente
+- `publishActiveV2Production.ts` retorna exit code diferente de 0.
+- Digest recalculado (`ActiveV2CanonicalDataDigest`) diverge do digest do manifesto ativo.
+- `pokemonsets` (coleção legada) sofre qualquer escrita não intencional — isso é sempre um incidente crítico, nunca esperado.
+
+### Comandos permitidos
+```bash
+npm run sets:active-v2-production:publish -- --acceptance-report <path> --publish-run-id <id> [--dry-run]
+npm run sets:active-v2-production:rollback -- --publish-run-id <id> [--dry-run]
+```
+
+### Flags obrigatórias
+- `MONGO_URI` ou `MONGODB_URI`
+- `EQUINOX_ENABLE_ACTIVE_V2_PRODUCTION_PUBLICATION=true`
+- Dry-run: `EQUINOX_ALLOW_DATABASE_WRITES=false` (obrigatório — dry-run com writes=true é recusado)
+- Execução real: `EQUINOX_ALLOW_DATABASE_WRITES=true` e `EQUINOX_ACTIVE_V2_PRODUCTION_TARGET=pokemonsets_v2`
+
+### Responsáveis
+- Publicação: 1 responsável autorizado (fora de janela canária ativa) ou 2 aprovadores (durante exceção de congelamento — ver seção 6).
+
+### Rollback
+`rollbackActiveV2Production.ts` desativa a versão publicada e reativa a anterior via `setTransitions`, em uma única transação. Não executa deletes. Execução imediata permitida, sem aprovação prévia — é uma ação de recuperação, não uma mudança de estado.
+
+### Validação pós-rollback
+1. `npm run sets:active-v2-production:publish -- --dry-run` deve reportar `no-op` para o `publishRunId` revertido.
+2. Confirmar via `ActiveV2RuntimeManifestHealth` (seção 3) que `digestMatchesManifest = true` e `manifestRecordCountMatchesActiveSetCount = true`.
+
+### Coleta de evidência
+- Saída completa (stdout) do comando de rollback.
+- `publishRunId` anterior e novo, registrados no changelog (seção 6).
+
+### Comunicação
+- Notificar antes de iniciar publicação real fora de horário de baixo tráfego.
+
+---
+
+## 2. Runtime Read Homologation (Fase 2)
+
+Ainda não implementado nesta branch como CLI dedicado — a leitura read-only de `pokemonsets_v2` é validada indiretamente por `sets:staging:homologate` (contra staging) e pelos testes de digest/lineage do pipeline de publicação (Fase 1). Quando o runtime real existir, esta seção deve documentar o comando de homologação read-only e seus critérios (uma versão ativa por `setId`, zero fallback, zero leitura da coleção legada).
+
+---
+
+## 3. Observabilidade (Fase 2A)
+
+### Sinais de incidente
+Os 9 alertas mínimos, avaliados por `ActiveV2RuntimeAlertEvaluator`: `V2_ERROR_RATE`, `V2_TIMEOUT_RATE`, `FALLBACK_RATE`, `BLOCKER_CLASSIFICATION_PRESENT`, `P95_LATENCY_DEGRADATION`, `ZERO_ACTIVE_SETS`, `MULTIPLE_ACTIVE_VERSIONS`, `MANIFEST_INCONSISTENCY`, `DIGEST_MISMATCH`.
+
+### Comandos permitidos
+```bash
+npm run sets:active-v2-runtime-observability:evaluate -- --input <telemetria.json> [--output-json <path>] [--output-markdown <path>] [--with-manifest-health]
+npm run sets:active-v2-runtime-observability:inject-synthetic-alert -- [--output-json <path>] [--output-markdown <path>]
+```
+
+### Flags
+- `--with-manifest-health` exige `MONGO_URI`/`MONGODB_URI`. Sem essa flag, apenas métricas de telemetria são avaliadas (sem os 4 alertas estruturais).
+
+### Responsáveis
+- Leitura/monitoramento: qualquer responsável autorizado. Não é uma ação de escrita.
+
+### Rollback
+Não aplicável — este comando é somente leitura (0 writes).
+
+### Validação pós-rollback
+N/A.
+
+### Coleta de evidência
+- `docs/data-audit/active-v2-runtime-observability-v1-report.md` e o JSON correspondente em `artifacts/` — gerados automaticamente pelo próprio comando quando `--output-*` é passado.
+- Para o gate de injeção sintética: `docs/data-audit/active-v2-runtime-observability-synthetic-injection-v1-report.md`.
+
+### Comunicação
+- `hasCriticalAlert=true` (exit code 1) deve ser tratado como sinal para avaliar o acionamento do circuit breaker (seção 4), não silenciosamente ignorado.
+
+---
+
+## 4. Circuit Breaker (Fase 4B)
+
+### Sinais de incidente
+Qualquer alerta de severidade `critical` da seção 3, sustentado, é motivo para acionar `force-baseline`.
+
+### Comandos permitidos
+```bash
+npm run sets:active-v2-circuit-breaker:status
+npm run sets:active-v2-circuit-breaker:force-baseline -- --operator <nome> --reason <texto> [--triggered-by manual|automatic] [--reason-code <CODIGO>]
+npm run sets:active-v2-circuit-breaker:reactivate -- --approver-one <nome> --approver-two <nome> --reason <texto>
+```
+
+### Flags
+- `MONGO_URI`/`MONGODB_URI` sempre.
+- Escrita do estado do breaker exige `EQUINOX_ACTIVE_V2_CIRCUIT_BREAKER_WRITE_ROLE=true` — **flag distinta** de `EQUINOX_ALLOW_DATABASE_WRITES` (adendo 3.2/refinamento 8.4). Só conceder essa flag à credencial/role dedicada, nunca à credencial geral da aplicação.
+
+### Responsáveis
+- **Acionamento (`force-baseline`): execução imediata, 1 operador, sem aprovação prévia.** É uma ação de proteção, não pode esperar aprovação.
+- **Reativação: 2 aprovadores distintos, obrigatório.** O CLI recusa (`exit 2`) se os dois nomes forem iguais.
+
+### Rollback
+O "rollback" do circuit breaker é a própria reativação (retirar `force-baseline`). Não há uma ação de rollback separada — o breaker em si já é o mecanismo de recuperação para o Active V2.
+
+### Validação pós-rollback (pós-reativação)
+1. `npm run sets:active-v2-circuit-breaker:status` deve reportar `mode: NORMAL` e `requiresManualRecovery: NAO`.
+2. Rodar novamente `sets:active-v2-runtime-observability:evaluate --with-manifest-health` e confirmar `hasCriticalAlert=false` antes de considerar o incidente encerrado.
+
+### Coleta de evidência
+- `docs/data-audit/active-v2-runtime-flag-changelog.md` recebe uma linha automática a cada trip/reativação (timestamp UTC, responsável, aprovador, valor anterior/novo, motivo).
+
+### Comunicação
+- Acionamento do breaker é sempre comunicado à equipe imediatamente (não espera o changelog ser lido).
+- Reativação é comunicada antes de ser executada, já que reabre o caminho para tráfego no Active V2.
+
+---
+
+## 5. Canary Infrastructure e percentuais (Fase 4)
+
+### Sinais de incidente
+- `checkActiveV2CanaryConfig` mostra um modo/percentual inesperado (mudança não registrada no changelog).
+- Discrepância entre o modo esperado (última entrada do changelog) e o modo lido do banco.
+
+### Comandos permitidos
+```bash
+npm run sets:active-v2-canary:status
+npm run sets:active-v2-canary:set-mode -- --mode <off|shadow|internal|percentage|full> [--percentage <N>] --responsible <nome> --reason <texto> [--approver-two <nome>] [--executive-approver <nome>] [--new-canary-campaign-id <id>] [--new-seed <valor>]
+```
+
+### Flags
+- `MONGO_URI`/`MONGODB_URI` sempre.
+- Escrita exige `EQUINOX_ACTIVE_V2_CANARY_CONFIG_WRITE_ROLE=true` (flag dedicada, mesmo princípio da seção 4).
+
+### Responsáveis (controle de quatro olhos — adendo 4.2)
+| Transição alvo | Aprovadores exigidos |
+|---|---|
+| off / shadow / internal | 1 (`--responsible`) |
+| percentage ≤ 10% | 1 (`--responsible`, revisão registrada) |
+| percentage > 10% | 2 (`--responsible` + `--approver-two`, distintos) |
+| full (100%) | 2 técnicos + 1 executivo (`--executive-approver`, distinto dos outros dois) |
+
+O CLI recusa (`exit 2`) qualquer transição sem os aprovadores exigidos pelo tier — isso é aplicado por código (`ActiveV2CanaryTransitionPolicy.ts`), não depende de disciplina manual.
+
+### Regra de seed (adendo 4.1)
+A seed é imutável dentro de uma campanha (`canaryCampaignId`). Mudar a seed sem fornecer um `--new-canary-campaign-id` junto é rejeitado com `SEED_CHANGE_REQUIRES_NEW_CAMPAIGN`. Isso preserva a amostragem cumulativa (quem está nos 5% permanece nos 10%, 25%, etc.).
+
+### Rollback
+Voltar ao modo/percentual anterior é uma transição normal pelo mesmo `set-mode`, sujeita ao mesmo tier de aprovação do modo de **destino** (não do modo de origem) — reduzir de 25% para 10%, por exemplo, ainda é classificado pelo alvo (10%, tier de 1 aprovador).
+
+### Validação pós-rollback
+1. `npm run sets:active-v2-canary:status` confirma o modo/percentual esperado.
+2. Confirmar no changelog que a linha da mudança foi registrada com o motivo correto.
+
+### Coleta de evidência
+- Mesma linha do changelog da seção 4 (`active-v2-runtime-flag-changelog.md`) — breaker e canário compartilham o arquivo.
+
+### Comunicação
+- Toda mudança acima de 10% é comunicada antes da execução (aprovação de duas pessoas já implica isso na prática).
+- 50% → 100% (full) é comunicada com antecedência à liderança técnica, dado o requisito de aprovação executiva.
+
+---
+
+## 6. Canário Interno / HMAC (Fase 5)
+
+### Sinais de incidente
+- Taxa elevada de `NONCE_ALREADY_USED` fora de um cenário de replay conhecido (pode indicar um bug de cliente reenviando requisições).
+- `NO_ACTIVE_SECRET` — janela de rotação de segredo mal configurada (todos os segredos expiraram ou nenhum começou a valer ainda).
+- `RATE_LIMIT_EXCEEDED` sustentado para um subject legítimo — pode indicar um loop de retry indevido no lado do cliente.
+
+### Comandos permitidos
+```bash
+npm run sets:active-v2-internal-canary:sign -- --subject <nome> --request-path </caminho> [--secret <valor>]
+npm run sets:active-v2-internal-canary:check -- --subject <s> --timestamp <epochMs> --nonce <n> --signature <sig> --request-path </caminho>
+```
+
+### Flags
+- `EQUINOX_ACTIVE_V2_CANARY_HMAC_SECRETS` (JSON, nunca no Mongo — ver `ActiveV2InternalCanarySecretRegistry.ts`).
+- `EQUINOX_ACTIVE_V2_CANARY_SUBJECT_ALLOWLIST` (comma-separated).
+- `MONGO_URI`/`MONGODB_URI` para o `:check` (nonce store e rate limiter são compartilhados via Mongo).
+
+### Responsáveis
+- Adicionar/remover um subject da allowlist é uma mudança de configuração de deploy (variável de ambiente), não uma escrita em runtime — trate com o mesmo rigor de qualquer mudança de flag estática (revisão registrada).
+- Rotação de segredo: gerar o novo segredo, publicá-lo com `activeFrom` no futuro próximo e `activeUntil` do segredo antigo definido (nunca revogar um segredo instantaneamente sem sobreposição — isso quebra qualquer cliente com um `signActiveV2InternalCanaryRequest` já em voo).
+
+### Rollback
+Reverter a variável de ambiente do segredo/allowlist ao valor anterior (redeploy). Não há estado dinâmico a reverter no Mongo além do nonce/rate-limit stores, que se auto-expiram (TTL) e não precisam de rollback manual.
+
+### Validação pós-rollback
+- Rodar `sets:active-v2-internal-canary:sign` seguido de `:check` com um subject de teste conhecido e confirmar `authorized: SIM`.
+
+### Coleta de evidência
+- Console output do `:check` já inclui `[CANARY AUTH] subject=... authorized=... reason=...` — nunca inclui IP a menos que explicitamente solicitado (política de privacidade, adendo 3.5).
+
+### Comunicação
+- Rotação de segredo é comunicada à equipe com antecedência suficiente para atualizar qualquer automação de teste que assine requisições.
+
+---
+
+## 7. Restore drill (transversal, antes da primeira escrita real)
+
+Ainda não executado neste ambiente (exige Atlas real — ver limitação geral no topo deste documento). Procedimento planejado (adendo 3.7):
+
+1. Snapshot do ambiente.
+2. Restauração em cluster/banco isolado (nunca sobre produção).
+3. Validação de contagens, índices, manifestos e digests no ambiente restaurado.
+4. Relatório do restore drill, publicado em `docs/data-audit/`.
+
+Este drill é um bloqueio formal antes da primeira escrita real em `pokemonsets_v2`/`publication_manifests` — não pode ser pulado mesmo que os testes offline estejam 100% verdes.
+
+---
+
+## 8. Congelamento de dados durante janela canária (adendo 3.3)
+
+Publicações em `pokemonsets_v2` ficam congeladas durante qualquer janela de observação canária ativa (Fase 6 em diante). Exceção só para: incidente crítico, correção de blocker, vulnerabilidade, ou erro grave de integridade de dados — e exige aprovação de duas pessoas com `reasonCode` registrado (adendo 4.2).
+
+**Ponto em aberto não resolvido nesta branch:** o adendo identifica que falta um aprovador *nomeado* (papel formal, não apenas "duas pessoas quaisquer") para essa exceção especificamente. Isso é uma decisão de governança organizacional, não uma lacuna de código — precisa ser definida pela equipe antes do primeiro canário público (Fase 6).
+
+---
+
+## 9. Teto de `hold` por volume insuficiente (adendo 4.3)
+
+`ActiveV2RolloutHoldPolicy.ts` define o teto: **21 dias corridos**. Ao atingir o teto, a fase não pode permanecer em `hold` silenciosamente — exige revisão humana explícita e registrada (prosseguir, ajustar o piso de volume, ou encerrar a fase). Não há automação de alerta para esse teto ainda; monitorar manualmente a data de início do `hold` até que a Fase 6+ implemente o rastreamento de janela por estágio.
+
+---
+
+## 10. Matriz de bloqueios (referência rápida)
+
+| Marco | Bloqueio obrigatório | Status nesta branch |
+|---|---|---|
+| Primeira escrita real | Restore drill concluído | Pendente (seção 7) |
+| Runtime Shadow (Fase 3) | Fase 2A + teste de injeção sintética | ✅ Código pronto e testado offline (seção 3) |
+| Canary Infrastructure (Fase 4) | Circuit breaker dinâmico + role de escrita restrita | ✅ Código pronto e testado offline (seção 4) |
+| Canary interno (Fase 5) | HMAC + nonce store compartilhado | ✅ Código pronto e testado offline (seção 6) |
+| Canary 25% (Fase 8) | Fase 4A (teste de capacidade no Atlas) | Não iniciado — exige Atlas real |
+| Rollout 100% (Fase 10) | Quatro olhos + runbook + alertas completos | Runbook nasce aqui; quatro olhos e alertas prontos, não exercitados ao vivo |
+
+---
+
+## Changelog deste runbook
+
+| Data | Mudança |
+|---|---|
+| 2026-07-15 | Criação inicial. Cobre Fase 1 (publicação/rollback), Fase 2A (observabilidade), Fase 4B (circuit breaker), Fase 4 (canário público/percentuais), Fase 5 (canário interno/HMAC), restore drill (pendente), congelamento de dados, teto de hold. |

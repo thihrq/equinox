@@ -1,0 +1,578 @@
+[
+  {
+    "eventId": "sample-evt-1",
+    "occurredAt": "2026-07-15T09:00:00.000Z",
+    "requestId": "sample-req-1",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "balanced",
+    "archetype": "trick-room",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 140
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 150,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-2",
+    "occurredAt": "2026-07-15T09:01:30.000Z",
+    "requestId": "sample-req-2",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "offensive",
+    "archetype": "weather-rain",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 150
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 160,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-3",
+    "occurredAt": "2026-07-15T09:03:00.000Z",
+    "requestId": "sample-req-3",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "defensive",
+    "archetype": "bulky-pivot",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 160
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 170,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-4",
+    "occurredAt": "2026-07-15T09:04:30.000Z",
+    "requestId": "sample-req-4",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "anti-meta",
+    "archetype": "balanced-offense",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 170
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 180,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-5",
+    "occurredAt": "2026-07-15T09:06:00.000Z",
+    "requestId": "sample-req-5",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "balanced",
+    "archetype": "trick-room",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 180
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 190,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-6",
+    "occurredAt": "2026-07-15T09:07:30.000Z",
+    "requestId": "sample-req-6",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "offensive",
+    "archetype": "weather-rain",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 140
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 150,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "improvement",
+      "scoreDelta": 8
+    }
+  },
+  {
+    "eventId": "sample-evt-7",
+    "occurredAt": "2026-07-15T09:09:00.000Z",
+    "requestId": "sample-req-7",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "defensive",
+    "archetype": "bulky-pivot",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 150
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 160,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-8",
+    "occurredAt": "2026-07-15T09:10:30.000Z",
+    "requestId": "sample-req-8",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "anti-meta",
+    "archetype": "balanced-offense",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 160
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 170,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-9",
+    "occurredAt": "2026-07-15T09:12:00.000Z",
+    "requestId": "sample-req-9",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "balanced",
+    "archetype": "trick-room",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 170
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 180,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-10",
+    "occurredAt": "2026-07-15T09:13:30.000Z",
+    "requestId": "sample-req-10",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "offensive",
+    "archetype": "weather-rain",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 180
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 190,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-11",
+    "occurredAt": "2026-07-15T09:15:00.000Z",
+    "requestId": "sample-req-11",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "defensive",
+    "archetype": "bulky-pivot",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 140
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 150,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-12",
+    "occurredAt": "2026-07-15T09:16:30.000Z",
+    "requestId": "sample-req-12",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "anti-meta",
+    "archetype": "balanced-offense",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 150
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 160,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-13",
+    "occurredAt": "2026-07-15T09:18:00.000Z",
+    "requestId": "sample-req-13",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "balanced",
+    "archetype": "trick-room",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 160
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 170,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-14",
+    "occurredAt": "2026-07-15T09:19:30.000Z",
+    "requestId": "sample-req-14",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "offensive",
+    "archetype": "weather-rain",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 170
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 180,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-15",
+    "occurredAt": "2026-07-15T09:21:00.000Z",
+    "requestId": "sample-req-15",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "defensive",
+    "archetype": "bulky-pivot",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 180
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 190,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-16",
+    "occurredAt": "2026-07-15T09:22:30.000Z",
+    "requestId": "sample-req-16",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "anti-meta",
+    "archetype": "balanced-offense",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 140
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 150,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-17",
+    "occurredAt": "2026-07-15T09:24:00.000Z",
+    "requestId": "sample-req-17",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "balanced",
+    "archetype": "trick-room",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 150
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 160,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-18",
+    "occurredAt": "2026-07-15T09:25:30.000Z",
+    "requestId": "sample-req-18",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "offensive",
+    "archetype": "weather-rain",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 160
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 170,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-19",
+    "occurredAt": "2026-07-15T09:27:00.000Z",
+    "requestId": "sample-req-19",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "defensive",
+    "archetype": "bulky-pivot",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 170
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 180,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-20",
+    "occurredAt": "2026-07-15T09:28:30.000Z",
+    "requestId": "sample-req-20",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "anti-meta",
+    "archetype": "balanced-offense",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 180
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 190,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-21",
+    "occurredAt": "2026-07-15T09:30:00.000Z",
+    "requestId": "sample-req-21",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "balanced",
+    "archetype": "trick-room",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 140
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 150,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-22",
+    "occurredAt": "2026-07-15T09:31:30.000Z",
+    "requestId": "sample-req-22",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "offensive",
+    "archetype": "weather-rain",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 150
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 160,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-23",
+    "occurredAt": "2026-07-15T09:33:00.000Z",
+    "requestId": "sample-req-23",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "defensive",
+    "archetype": "bulky-pivot",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 160
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 170,
+      "fallbackTriggered": true,
+      "fallbackReason": "v2-disabled"
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  },
+  {
+    "eventId": "sample-evt-24",
+    "occurredAt": "2026-07-15T09:34:30.000Z",
+    "requestId": "sample-req-24",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "anti-meta",
+    "archetype": "balanced-offense",
+    "publishRunId": "publish-run-sample-fixture-1",
+    "activeV2DataDigest": "sha256-sample-fixture-digest-0000000000000000000000000000000000000000000000000000",
+    "baseline": {
+      "outcome": "success",
+      "latencyMs": 170
+    },
+    "v2": {
+      "outcome": "success",
+      "latencyMs": 180,
+      "fallbackTriggered": false,
+      "fallbackReason": null
+    },
+    "comparison": {
+      "classification": "equivalent",
+      "scoreDelta": 0
+    }
+  }
+]

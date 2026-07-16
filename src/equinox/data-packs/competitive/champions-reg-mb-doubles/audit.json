@@ -1,18 +1,19 @@
 {
-  "generatedAt": "2026-07-12T00:00:00.000Z",
+  "generatedAt": "2026-07-15T00:00:00.000Z",
   "regulationId": "champions_reg_m_b_doubles",
   "formatId": "champions_reg_m_b_doubles",
   "battleStyle": "doubles",
   "dataVersion": "2026.07.1",
   "status": "reviewed",
   "reviewState": "staging-ready",
-  "recordCount": 9,
+  "recordCount": 14,
   "notes": [
-    "Fase 4 curation completed: all nine pilot sets are reviewed for staging validation.",
+    "Coverage expansion pass: five new sets added for the roster-eligible species that previously had zero draft sets (Suicune, Pelipper, Hydreigon, Indeedee-F, Giratina-Origin). All fourteen sets are reviewed for staging validation.",
+    "Five previously-blocked sets were re-curated in the same pass: sourceType reclassified from generated to curated for four of them (aggronmega-body-press-defensive-attacker-draft, incineroar-fast-taunt-pivot-draft, togekiss-bulky-redirection-support-draft, mukalola-special-wall-draft), and the flagged technical concerns were resolved and documented in each record's humanReview (see sets.json). This does NOT self-certify verified-evidence.fixture.json's stagingReview/limitationsResolved fields, which still require independent review — see verified-readiness-transition-report.md.",
     "No set is verified or active. Package remains blocked for production.",
     "Staging publish is allowed only to pokemonsets_v2_staging with EQUINOX_DATA_MODE=mongo and EQUINOX_ALLOW_DATABASE_WRITES=true."
   ],
-  "reviewedSets": 9,
+  "reviewedSets": 14,
   "verifiedSets": 0,
   "activeSets": 0,
   "draftSets": 0,
