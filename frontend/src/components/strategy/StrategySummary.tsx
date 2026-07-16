@@ -1,5 +1,5 @@
 import type { Locale } from '../../i18n/equinoxI18n';
-import { t, translateContent } from '../../i18n/equinoxI18n';
+import { translateContent } from '../../i18n/equinoxI18n';
 import type { TeamOption } from '../../types/equinox';
 
 interface StrategySummaryProps {
@@ -135,7 +135,7 @@ const validateUserModeD = (fullTeam: any[], locale: Locale): ModeValidationResul
   };
 };
 
-const getTacticalGuide = (option: TeamOption, format: string, locale: Locale): { name: string; strategy: string; roleLabel: string; score: number; errors: string[] }[] => {
+const getTacticalGuide = (option: TeamOption, _format: string, locale: Locale): { name: string; strategy: string; roleLabel: string; score: number; errors: string[] }[] => {
   const isVgc = !!option.vgcTeamPlan;
   const plan = option.vgcTeamPlan;
   const fullTeam = option.fullTeam && option.fullTeam.length > 0 ? option.fullTeam : option.suggestedPokemons;
@@ -206,9 +206,9 @@ const getTacticalGuide = (option: TeamOption, format: string, locale: Locale): {
     const hasTogekiss = fullNames.some(n => n.toLowerCase().includes('togekiss'));
     const hasCarracosta = fullNames.some(n => n.toLowerCase().includes('carracosta'));
     if (hasPelipper && hasSinistcha && hasTogekiss && hasCarracosta && hasIronHands) {
-      const vA = validateModeB(fullTeam, locale); // Togekiss + Sinistcha
-      const vB = validateModeA(fullTeam, locale); // Sinistcha + Iron Hands
-      const vC = validateModeC(fullTeam, locale); // Pelipper + Carracosta
+      const vA = validateUserModeB(fullTeam, locale); // Togekiss + Sinistcha
+      const vB = validateUserModeA(fullTeam, locale); // Sinistcha + Iron Hands
+      const vC = validateUserModeC(fullTeam, locale); // Pelipper + Carracosta
 
       const modeA = {
         name: locale === 'pt-BR' ? 'Trick Room com Fake Out (Lead Sinistcha + Iron Hands)' : 'Trick Room Setup Mode',
