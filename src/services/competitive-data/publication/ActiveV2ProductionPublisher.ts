@@ -4,6 +4,8 @@ import { PublicationManifest } from '../../../models/PublicationManifest';
 import { verifyProductionIndexesAndDuplicities } from './ActiveV2ProductionPreflight';
 import { validateLineageAndDigest } from './ActiveV2ProductionLineageValidator';
 import { calculateCanonicalActiveV2DataDigest } from '../digest/ActiveV2CanonicalDataDigest';
+import { assertActiveV2DataFreezeAllowsPublication } from './ActiveV2DataFreezeGuard';
+import { readActiveV2CanaryConfig } from '../runtime-control/ActiveV2CanaryConfigStore';
 import type { PublishOptions, PublishResult } from './ActiveV2ProductionTypes';
 import { ALLOWED_SOURCE_COLLECTION, ALLOWED_TARGET_COLLECTION, ALLOWED_MANIFEST_COLLECTION } from './ActiveV2ProductionPolicy';
 
@@ -27,6 +29,13 @@ export async function publishToProduction(
 
   // 2. Preflight passivo fora da transação
   await verifyProductionIndexesAndDuplicities(connection);
+
+  // 2.1 Congelamento de dados durante janela canária ativa (adendo seção 13)
+  const canaryConfig = await readActiveV2CanaryConfig(connection);
+  assertActiveV2DataFreezeAllowsPublication(canaryConfig, {
+    emergencyOverride: options.emergencyOverride ?? false,
+    emergencyJustification: options.emergencyJustification ?? null,
+  });
 
   const sourceActiveRunId = acceptanceReport.inputActiveRunId;
   if (!sourceActiveRunId) {
