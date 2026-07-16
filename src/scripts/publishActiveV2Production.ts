@@ -25,6 +25,15 @@ async function main(): Promise<void> {
   const sourceCollection = getArg('--source-collection') || 'pokemonsets_v2_staging';
   const targetCollection = getArg('--target-collection') || 'pokemonsets_v2';
   const dryRun = hasArg('--dry-run');
+  const emergencyOverride = hasArg('--emergency-override');
+  const emergencyJustification = getArg('--emergency-justification') ?? null;
+
+  // 1.1 Publicação emergencial durante congelamento de dados (adendo seção 13)
+  // exige justificativa explícita já na chamada — não basta a flag sozinha.
+  if (emergencyOverride && (!emergencyJustification || emergencyJustification.trim().length === 0)) {
+    console.error('[Equinox] Erro: --emergency-override exige --emergency-justification "<motivo>" nao vazio.');
+    process.exit(2);
+  }
 
   // 1. Validar se argumentos obrigatorios foram fornecidos
   if (!reportPath || !publishRunId) {
@@ -82,6 +91,8 @@ async function main(): Promise<void> {
       dryRun,
       sourceCollection,
       targetCollection,
+      emergencyOverride,
+      emergencyJustification,
     });
 
     console.log(`[Equinox] Resultado da Publicacao: Status [ ${result.status.toUpperCase()} ]`);

@@ -3,6 +3,9 @@ export interface PublishOptions {
   dryRun: boolean;
   sourceCollection: string;
   targetCollection: string;
+  /** Publicação emergencial durante janela canária ativa — ver ActiveV2DataFreezeGuard. */
+  emergencyOverride?: boolean;
+  emergencyJustification?: string | null;
 }
 
 export type PublishStatus = 'no-op' | 'success' | 'failed';

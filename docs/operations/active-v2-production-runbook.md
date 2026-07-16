@@ -292,15 +292,52 @@ Este drill é um bloqueio formal antes da primeira escrita real em `pokemonsets_
 
 ## 9. Congelamento de dados durante janela canária (adendo 3.3)
 
-Publicações em `pokemonsets_v2` ficam congeladas durante qualquer janela de observação canária ativa (Fase 6 em diante). Exceção só para: incidente crítico, correção de blocker, vulnerabilidade, ou erro grave de integridade de dados — e exige aprovação de duas pessoas com `reasonCode` registrado (adendo 4.2).
+**Aplicado por código** (2026-07-16): `ActiveV2DataFreezeGuard.ts`, chamado de dentro de `publishToProduction` (`ActiveV2ProductionPublisher.ts`) logo após o preflight passivo, antes de carregar qualquer registro de staging. Bloqueia automaticamente uma nova publicação (`publishRunId`) sempre que a configuração de canário lida em tempo real (`ActiveV2CanaryConfig.mode`) estiver em `internal` ou `percentage` — as duas fases com janela de observação pública/interna em andamento. `shadow`, `off` e `full` não são congelados: `shadow` não decide o que usuários reais recebem, e `full` já é o estado pós-rollout.
 
-**Ponto em aberto não resolvido nesta branch:** o adendo identifica que falta um aprovador *nomeado* (papel formal, não apenas "duas pessoas quaisquer") para essa exceção especificamente. Isso é uma decisão de governança organizacional, não uma lacuna de código — precisa ser definida pela equipe antes do primeiro canário público (Fase 6).
+### Publicação emergencial (exceção)
+
+Só prossegue com **ambas** as flags explícitas em `publishActiveV2Production.ts`:
+
+```bash
+npm run sets:active-v2-production:publish -- \
+  --acceptance-report <path> --publish-run-id <id> \
+  --emergency-override --emergency-justification "<motivo>"
+```
+
+`--emergency-justification` vazio ou ausente é rejeitado (exit code 2) mesmo com `--emergency-override` presente — a flag sozinha não basta. O guard só impede o *acidente* de publicar sem perceber que uma janela estava ativa; ele **não substitui** o processo manual completo do adendo, que continua exigindo, nesta ordem: 1) forçar baseline (`sets:active-v2-circuit-breaker:force-baseline`); 2) invalidar a janela de observação atual; 3) homologar o novo lote normalmente; 4) reiniciar a observação (`sets:active-v2-canary:set-mode`) depois de publicar.
+
+**Ponto em aberto não resolvido nesta branch:** o adendo identifica que falta um aprovador *nomeado* (papel formal, não apenas "duas pessoas quaisquer") para essa exceção especificamente. Isso é uma decisão de governança organizacional, não uma lacuna de código — o guard registra a justificativa textual, mas não impõe um segundo aprovador humano. Precisa ser definida pela equipe antes do primeiro canário público (Fase 6).
+
+**Validação:** `npm run sets:active-v2-production:freeze-guard:check` (8 casos offline: off/shadow/full liberados, internal/percentage bloqueados, override sem justificativa continua bloqueado, override completo libera e é sinalizado como `overridden`).
 
 ---
 
-## 10. Teto de `hold` por volume insuficiente (adendo 4.3)
+## 10. Progressão de fase e teto de `hold` (adendo 4.3, seção 13 "estado hold")
 
-`ActiveV2RolloutHoldPolicy.ts` define o teto: **21 dias corridos**. Ao atingir o teto, a fase não pode permanecer em `hold` silenciosamente — exige revisão humana explícita e registrada (prosseguir, ajustar o piso de volume, ou encerrar a fase). Não há automação de alerta para esse teto ainda; monitorar manualmente a data de início do `hold` até que a Fase 6+ implemente o rastreamento de janela por estágio.
+**Aplicado por código** (2026-07-16): o adendo original identificava que os gates operacionais precisavam de um terceiro estado além de aprovado/rejeitado — `hold`, que "mantém o percentual e amplia a observação". Isso é distinto dos Acceptance Gates (que avaliam qualidade de dados, não progresso de uma janela de tráfego real ao longo do tempo). `ActiveV2CanaryPhaseProgressionGate.ts` decide entre `advance`/`rollback`/`hold` para cada fase com janela própria (Fase 3 shadow, Fase 5 canário interno, Fases 6-9 canário público 5/10/25/50%, Fase 10 estabilização de 100%), combinando:
+
+- critérios de tempo+volume por fase (`ActiveV2CanaryPhaseProgressionPolicy.ts`, tabela extraída literalmente do adendo — ex: Fase 5 = 3 dias E 100 execuções válidas, Fase 6 = 7 dias E 1.000, ..., Fase 9 = 7 dias E 10.000);
+- alertas críticos da janela (reaproveita `evaluateActiveV2RuntimeAlerts` da Fase 2A);
+- estado do circuit breaker (Fase 4B) — `force-baseline` força `rollback` mesmo com critérios já atingidos;
+- o teto de 21 dias de `ActiveV2RolloutHoldPolicy.ts` — um `hold` que ultrapassa o teto é sinalizado com `holdExpired: true` no resultado, exigindo revisão humana explícita em vez de esperar indefinidamente.
+
+**É só uma recomendação, não uma transição automática** — o resultado ainda exige que um humano execute a mudança real via `sets:active-v2-canary:set-mode` (com o controle de quatro olhos aplicável ao percentual de destino).
+
+### Comandos permitidos
+
+```bash
+# Offline (sem Mongo) — informe a fase e o início da janela manualmente
+npm run sets:active-v2-rollout-hold:evaluate-progression -- \
+  --events <eventos.json> --phase-mode internal \
+  --phase-window-started-at <iso> [--circuit-breaker-mode force-baseline] [--output-json <path>]
+
+# Live — lê a fase/breaker/manifest-health reais do Mongo (MONGO_URI)
+npm run sets:active-v2-rollout-hold:evaluate-progression -- --events <eventos.json> --live
+```
+
+Exit codes: `0` = advance, `4` = hold (aguardar/revisar), `1` = rollback, `2` = argumentos inválidos, `3` = leitura/conexão falhou.
+
+**Validação:** `npm run sets:active-v2-rollout-hold:offline:check` (política + gate, cobrindo a cadeia completa de fases, precedência de rollback sobre advance, e expiração do teto de hold).
 
 ---
 
@@ -314,6 +351,8 @@ Publicações em `pokemonsets_v2` ficam congeladas durante qualquer janela de ob
 | Canary interno (Fase 5) | HMAC + nonce store compartilhado | ✅ Código pronto e testado offline (seção 7) |
 | Canary 25% (Fase 8) | Fase 4A (teste de capacidade no Atlas) | Não iniciado — exige Atlas real |
 | Rollout 100% (Fase 10) | Quatro olhos + runbook + alertas completos | Runbook nasce aqui; quatro olhos e alertas prontos, não exercitados ao vivo |
+| Progressão de fase (Fases 3, 5-10) | Critério de dias+volume por fase, sem alerta crítico nem breaker disparado | ✅ Código pronto e testado offline (seção 10) — recomendação, não executa a transição sozinho |
+| Congelamento de dados (adendo 3.3) | Nenhuma publicação nova durante `internal`/`percentage` sem override justificado | ✅ Aplicado por código no publisher (seção 9) — falta aprovador nomeado para a exceção (governança, não código) |
 
 ---
 
@@ -324,3 +363,5 @@ Publicações em `pokemonsets_v2` ficam congeladas durante qualquer janela de ob
 | 2026-07-15 | Criação inicial. Cobre Fase 1 (publicação/rollback), Fase 2A (observabilidade), Fase 4B (circuit breaker), Fase 4 (canário público/percentuais), Fase 5 (canário interno/HMAC), restore drill (pendente), congelamento de dados, teto de hold. |
 | 2026-07-16 | Adiciona Fase 2 (Runtime Read Homologation): leitura estritamente read-only de `pokemonsets_v2`, com "zero leitura da coleção legada" e "mesmo comportamento com a flag desligada" garantidos por construção do código, não apenas por teste. |
 | 2026-07-16 | Adiciona Fase 3 (Runtime Shadow Mode): primeira integração real em `TeamController.suggest`, escopo reduzido a comparação de dados de set (sem re-executar o algoritmo de recomendação). Renumera as seções 3-10 para 4-11. |
+| 2026-07-16 | Todo o pipeline (Fase 1-5, 2A, 4B) validado pela primeira vez contra MongoDB local real (não só offline/mockado) via `mongodb-memory-server` — ver `docs/data-audit/active-v2-local-mongo-validation-v1-report.md` e `scripts-local/README.md`. Corrigiu 3 categorias de bugs reais só visíveis com Mongo real. |
+| 2026-07-16 | Implementa os dois requisitos transversais da seção 13 que não dependem do Atlas: estado `hold` nos gates operacionais (seção 10, `ActiveV2CanaryPhaseProgressionGate`) e enforcement de congelamento de dados no publisher (seção 9, `ActiveV2DataFreezeGuard`). Monitoramento de custo (o terceiro requisito da seção 13) segue pendente — é o mais dependente de dados reais de infraestrutura (Atlas/Render). |
