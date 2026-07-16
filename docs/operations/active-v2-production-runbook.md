@@ -1,6 +1,6 @@
 # Active V2 Production Runbook
 
-**Status:** Runbook incremental (adendo 4.7). Nasce antes da execução real da Fase 3 (Runtime Shadow Mode) e é ampliado a cada fase. Esta versão cobre até a Fase 5 (Canário Interno). Nenhum procedimento aqui foi exercitado contra um Atlas de produção real — todo comando abaixo foi validado apenas offline/dry-run neste ambiente. Antes do primeiro uso real, confirme que o comando ainda corresponde ao código (`git log` no arquivo referenciado).
+**Status:** Runbook incremental (adendo 4.7). Ampliado a cada fase. Esta versão cobre até a Fase 5 (Canário Interno) e a primeira integração real da Fase 3 (Runtime Shadow Mode). Nenhum procedimento aqui foi exercitado contra um Atlas de produção real — todo comando abaixo foi validado apenas offline/dry-run neste ambiente, exceto a integração da Fase 3, que já está ligada em código de produção (`TeamController.suggest`) mas ainda nunca recebeu tráfego real. Antes do primeiro uso real, confirme que o comando ainda corresponde ao código (`git log` no arquivo referenciado).
 
 ## 0. Como usar este documento
 
@@ -29,18 +29,18 @@ npm run sets:active-v2-production:rollback -- --publish-run-id <id> [--dry-run]
 - Execução real: `EQUINOX_ALLOW_DATABASE_WRITES=true` e `EQUINOX_ACTIVE_V2_PRODUCTION_TARGET=pokemonsets_v2`
 
 ### Responsáveis
-- Publicação: 1 responsável autorizado (fora de janela canária ativa) ou 2 aprovadores (durante exceção de congelamento — ver seção 6).
+- Publicação: 1 responsável autorizado (fora de janela canária ativa) ou 2 aprovadores (durante exceção de congelamento — ver seção 8).
 
 ### Rollback
 `rollbackActiveV2Production.ts` desativa a versão publicada e reativa a anterior via `setTransitions`, em uma única transação. Não executa deletes. Execução imediata permitida, sem aprovação prévia — é uma ação de recuperação, não uma mudança de estado.
 
 ### Validação pós-rollback
 1. `npm run sets:active-v2-production:publish -- --dry-run` deve reportar `no-op` para o `publishRunId` revertido.
-2. Confirmar via `ActiveV2RuntimeManifestHealth` (seção 3) que `digestMatchesManifest = true` e `manifestRecordCountMatchesActiveSetCount = true`.
+2. Confirmar via `ActiveV2RuntimeManifestHealth` (seção 4) que `digestMatchesManifest = true` e `manifestRecordCountMatchesActiveSetCount = true`.
 
 ### Coleta de evidência
 - Saída completa (stdout) do comando de rollback.
-- `publishRunId` anterior e novo, registrados no changelog (seção 6).
+- `publishRunId` anterior e novo, registrados no changelog (seção 7).
 
 ### Comunicação
 - Notificar antes de iniciar publicação real fora de horário de baixo tráfego.
@@ -51,7 +51,7 @@ npm run sets:active-v2-production:rollback -- --publish-run-id <id> [--dry-run]
 
 ### Sinais de incidente
 - `homologateActiveV2RuntimeRead` reporta `approved: false` (exit 1).
-- `MANIFEST_HEALTH_ISSUE` — mesma causa raiz do circuit breaker (seção 4); considerar acioná-lo se isso ocorrer com a flag de leitura ligada em produção.
+- `MANIFEST_HEALTH_ISSUE` — mesma causa raiz do circuit breaker (seção 5); considerar acioná-lo se isso ocorrer com a flag de leitura ligada em produção.
 - `INCOMPLETE_ACTIVE_SET` — um `setId` listado no manifesto ativo não foi encontrado entre os registros ativos lidos. Isso é o sintoma exato de um fallback silencioso que a Fase 2 existe para prevenir.
 
 ### Comandos permitidos
@@ -68,7 +68,7 @@ npm run sets:active-v2-runtime-read:homologate -- [--output-json <path>] [--outp
 - Leitura/homologação: qualquer responsável autorizado. É somente leitura (0 writes) — não há uma "escrita" a ser aprovada aqui.
 
 ### Rollback
-Não aplicável — comando somente leitura. Se `approved: false`, o rollback é o mesmo da causa raiz identificada (rollback de publicação, seção 1, ou reativação do circuit breaker, seção 4), não desta homologação em si.
+Não aplicável — comando somente leitura. Se `approved: false`, o rollback é o mesmo da causa raiz identificada (rollback de publicação, seção 1, ou reativação do circuit breaker, seção 5), não desta homologação em si.
 
 ### Validação pós-rollback
 Rodar `sets:active-v2-runtime-read:homologate` novamente e confirmar `approved: SIM` antes de prosseguir para a Fase 3.
@@ -81,7 +81,52 @@ Rodar `sets:active-v2-runtime-read:homologate` novamente e confirmar `approved: 
 
 ---
 
-## 3. Observabilidade (Fase 2A)
+## 3. Runtime Shadow Mode (Fase 3)
+
+**Esta é a primeira seção deste runbook que descreve código já ligado a uma requisição real** (`POST /api/team/suggest` → `TeamController.suggest` → `src/services/competitive-data/runtime-shadow/ActiveV2RuntimeShadowOrchestrator.ts`), embora ainda sem tráfego real chegando (canário em modo `off` por padrão).
+
+### Escopo desta integração — leia antes de operar
+O caminho V2 em paralelo **não** re-executa o algoritmo de seleção de candidatos (`CandidateSelector`/`CandidateScoreEngine`/`CombinationSearchEngine`) contra dados V2 — isso exigiria clonar o pipeline inteiro de `TeamService.suggestComplements`, e a cobertura de dados V2 hoje (14 sets) tornaria a maior parte das comparações inúteis por falta de cobertura. Em vez disso, compara **dados de set** (item/ability/nature/moves) dos Pokémon que o baseline já escolheu, contra o set ativo correspondente em `pokemonsets_v2`, quando existir. EVs/IVs não são comparados porque o endpoint `/api/team/suggest` nunca os calcula — não há dado real para comparar.
+
+### Sinais de incidente
+- Qualquer erro relacionado a `runActiveV2RuntimeShadow` nos logs do servidor (`console.warn('[Equinox] Active V2 runtime shadow failed (ignored):' ...)`) — por design **nunca** afeta a resposta ao usuário, mas um volume alto e sustentado desses warnings indica um problema real (ex: Mongo instável) que vale investigar antes que afete outras partes do sistema.
+- Alertas da Fase 2A (seção 4) usando os eventos escritos por este caminho — a partir do momento em que o canário estiver em modo `shadow`, `evaluateActiveV2RuntimeObservability --with-manifest-health` passa a ter dados reais de `active_v2_runtime_telemetry` para avaliar.
+
+### Comandos permitidos
+Não há um CLI dedicado para esta fase — a execução acontece dentro do processo do servidor a cada requisição a `/api/team/suggest`, condicionada ao modo de canário (ver Flags). Para inspecionar o resultado, use os comandos já existentes da Fase 2A (seção 4) apontando para a coleção `active_v2_runtime_telemetry`.
+
+### Flags
+- **`EQUINOX_ACTIVE_V2_RUNTIME_SHADOW_ENABLED=true`** — interruptor estático de deploy, independente do Mongo. Sem essa flag (padrão), zero interação com o banco em qualquer requisição, mesmo que o canário esteja em `shadow`. É o kill-switch a usar se for preciso desligar este caminho sem depender do mesmo Mongo que pode estar com problema.
+- Modo de canário deve ser `shadow` (`npm run sets:active-v2-canary:set-mode -- --mode shadow ...`, seção 6) — sem isso, o código sai depois de 1 leitura (a config de canário) sem sequer ler o estado do circuit breaker.
+- A cadeia de precedência completa da Fase 4 se aplica: circuit breaker em `force-baseline` (seção 5) ou `EQUINOX_ACTIVE_V2_FORCE_BASELINE=true` suprimem a avaliação shadow mesmo com o canário em modo `shadow` (`resolveActiveV2RuntimeDecision` decide isso).
+- Só é avaliado para requisições com `format=champions_reg_m_b_doubles` — o único formato coberto pelos dados V2 hoje. Qualquer outro formato sai antes de qualquer chamada ao Mongo.
+- **Ordem das checagens, do mais barato para o mais caro:** formato (sem Mongo) → flag estática (sem Mongo) → config de canário (1 leitura) → estado do breaker, só se o canário já estiver em `shadow` (2ª leitura). No caso comum — feature desligada ou canário desligado — o custo é zero ou uma leitura, não duas em toda requisição.
+
+### Responsáveis
+- Ligar o modo `shadow`: mesma governança da seção 6 (transição para `shadow` exige 1 responsável).
+- Este caminho nunca escreve em `pokemonsets_v2` ou `pokemonsets` — a única escrita é um documento novo em `active_v2_runtime_telemetry` por requisição avaliada. Não há aprovação necessária para a leitura/comparação em si.
+
+### Rollback
+Não aplicável a este código diretamente — se o comportamento for indesejado, o rollback é voltar o modo de canário para `off` (seção 6) ou acionar o circuit breaker (seção 5), ambos já suprimem a chamada inteira.
+
+### Validação pós-rollback
+Confirmar via `npm run sets:active-v2-canary:status` que o modo voltou a `off`, e que os logs do servidor não mostram mais `[Equinox] Active V2 runtime shadow failed`.
+
+### Coleta de evidência
+- Documentos em `active_v2_runtime_telemetry` (consultar via `sets:active-v2-runtime-observability:evaluate --with-manifest-health`, seção 4).
+- Console warnings, se houver falhas (a falha nunca é silenciosa — sempre loga, mesmo não afetando a resposta).
+
+### Comunicação
+- Ligar o modo `shadow` pela primeira vez em produção deve ser comunicado à equipe — é o primeiro momento em que código Active V2 toca uma requisição real, mesmo que apenas em paralelo.
+
+### Limitações assumidas
+- Nenhum teste real contra tráfego de produção — só validado offline com conexão Mongo mockada (`validateActiveV2RuntimeShadowOrchestrator.ts`) e confirmando que o servidor sobe sem erro de import/inicialização.
+- Mesmo com a flag estática e o canário em `shadow`, cada requisição avaliada ainda faz 1 leitura de Mongo (config de canário) antes de decidir, e uma 2ª (estado do breaker) só quando o canário já está em `shadow` — sem cache. Para um volume alto de tráfego real com o canário deliberadamente em `shadow` por dias, cache com TTL curto é um candidato natural de otimização futura.
+- Compara apenas o **time principal** sugerido (`topTeams[0]`), não as 5 variantes retornadas — reduz volume de telemetria sem perder o sinal principal.
+
+---
+
+## 4. Observabilidade (Fase 2A)
 
 ### Sinais de incidente
 Os 9 alertas mínimos, avaliados por `ActiveV2RuntimeAlertEvaluator`: `V2_ERROR_RATE`, `V2_TIMEOUT_RATE`, `FALLBACK_RATE`, `BLOCKER_CLASSIFICATION_PRESENT`, `P95_LATENCY_DEGRADATION`, `ZERO_ACTIVE_SETS`, `MULTIPLE_ACTIVE_VERSIONS`, `MANIFEST_INCONSISTENCY`, `DIGEST_MISMATCH`.
@@ -109,14 +154,14 @@ N/A.
 - Para o gate de injeção sintética: `docs/data-audit/active-v2-runtime-observability-synthetic-injection-v1-report.md`.
 
 ### Comunicação
-- `hasCriticalAlert=true` (exit code 1) deve ser tratado como sinal para avaliar o acionamento do circuit breaker (seção 4), não silenciosamente ignorado.
+- `hasCriticalAlert=true` (exit code 1) deve ser tratado como sinal para avaliar o acionamento do circuit breaker (seção 5), não silenciosamente ignorado.
 
 ---
 
-## 4. Circuit Breaker (Fase 4B)
+## 5. Circuit Breaker (Fase 4B)
 
 ### Sinais de incidente
-Qualquer alerta de severidade `critical` da seção 3, sustentado, é motivo para acionar `force-baseline`.
+Qualquer alerta de severidade `critical` da seção 4, sustentado, é motivo para acionar `force-baseline`.
 
 ### Comandos permitidos
 ```bash
@@ -134,7 +179,7 @@ npm run sets:active-v2-circuit-breaker:reactivate -- --approver-one <nome> --app
 - **Reativação: 2 aprovadores distintos, obrigatório.** O CLI recusa (`exit 2`) se os dois nomes forem iguais.
 
 ### Rollback
-O "rollback" do circuit breaker é a própria reativação (retirar `force-baseline`). Não há uma ação de rollback separada — o breaker em si já é o mecanismo de recuperação para o Active V2.
+O "rollback" do circuit breaker é a própria reativação (retirar `force-baseline`). Não há uma ação de rollback separada — o breaker em si já é o mecanismo de recuperação para o Active V2, **incluindo o caminho shadow da Fase 3** (`resolveActiveV2RuntimeDecision` respeita `force-baseline` antes de checar o modo de canário).
 
 ### Validação pós-rollback (pós-reativação)
 1. `npm run sets:active-v2-circuit-breaker:status` deve reportar `mode: NORMAL` e `requiresManualRecovery: NAO`.
@@ -145,11 +190,11 @@ O "rollback" do circuit breaker é a própria reativação (retirar `force-basel
 
 ### Comunicação
 - Acionamento do breaker é sempre comunicado à equipe imediatamente (não espera o changelog ser lido).
-- Reativação é comunicada antes de ser executada, já que reabre o caminho para tráfego no Active V2.
+- Reativação é comunicada antes de ser executada, já que reabre o caminho para tráfego no Active V2 (inclusive o caminho shadow da Fase 3).
 
 ---
 
-## 5. Canary Infrastructure e percentuais (Fase 4)
+## 6. Canary Infrastructure e percentuais (Fase 4)
 
 ### Sinais de incidente
 - `checkActiveV2CanaryConfig` mostra um modo/percentual inesperado (mudança não registrada no changelog).
@@ -163,7 +208,7 @@ npm run sets:active-v2-canary:set-mode -- --mode <off|shadow|internal|percentage
 
 ### Flags
 - `MONGO_URI`/`MONGODB_URI` sempre.
-- Escrita exige `EQUINOX_ACTIVE_V2_CANARY_CONFIG_WRITE_ROLE=true` (flag dedicada, mesmo princípio da seção 4).
+- Escrita exige `EQUINOX_ACTIVE_V2_CANARY_CONFIG_WRITE_ROLE=true` (flag dedicada, mesmo princípio da seção 5).
 
 ### Responsáveis (controle de quatro olhos — adendo 4.2)
 | Transição alvo | Aprovadores exigidos |
@@ -174,6 +219,8 @@ npm run sets:active-v2-canary:set-mode -- --mode <off|shadow|internal|percentage
 | full (100%) | 2 técnicos + 1 executivo (`--executive-approver`, distinto dos outros dois) |
 
 O CLI recusa (`exit 2`) qualquer transição sem os aprovadores exigidos pelo tier — isso é aplicado por código (`ActiveV2CanaryTransitionPolicy.ts`), não depende de disciplina manual.
+
+**Ligar o modo `shadow` (Fase 3) usa o tier de 1 responsável**, mesmo que já esteja ligando código de produção real pela primeira vez — trate essa transição específica com o mesmo cuidado de comunicação de uma mudança maior, mesmo que a governança formal exija só 1 aprovador.
 
 ### Regra de seed (adendo 4.1)
 A seed é imutável dentro de uma campanha (`canaryCampaignId`). Mudar a seed sem fornecer um `--new-canary-campaign-id` junto é rejeitado com `SEED_CHANGE_REQUIRES_NEW_CAMPAIGN`. Isso preserva a amostragem cumulativa (quem está nos 5% permanece nos 10%, 25%, etc.).
@@ -186,7 +233,7 @@ Voltar ao modo/percentual anterior é uma transição normal pelo mesmo `set-mod
 2. Confirmar no changelog que a linha da mudança foi registrada com o motivo correto.
 
 ### Coleta de evidência
-- Mesma linha do changelog da seção 4 (`active-v2-runtime-flag-changelog.md`) — breaker e canário compartilham o arquivo.
+- Mesma linha do changelog da seção 5 (`active-v2-runtime-flag-changelog.md`) — breaker e canário compartilham o arquivo.
 
 ### Comunicação
 - Toda mudança acima de 10% é comunicada antes da execução (aprovação de duas pessoas já implica isso na prática).
@@ -194,7 +241,7 @@ Voltar ao modo/percentual anterior é uma transição normal pelo mesmo `set-mod
 
 ---
 
-## 6. Canário Interno / HMAC (Fase 5)
+## 7. Canário Interno / HMAC (Fase 5)
 
 ### Sinais de incidente
 - Taxa elevada de `NONCE_ALREADY_USED` fora de um cenário de replay conhecido (pode indicar um bug de cliente reenviando requisições).
@@ -230,7 +277,7 @@ Reverter a variável de ambiente do segredo/allowlist ao valor anterior (redeplo
 
 ---
 
-## 7. Restore drill (transversal, antes da primeira escrita real)
+## 8. Restore drill (transversal, antes da primeira escrita real)
 
 Ainda não executado neste ambiente (exige Atlas real — ver limitação geral no topo deste documento). Procedimento planejado (adendo 3.7):
 
@@ -243,7 +290,7 @@ Este drill é um bloqueio formal antes da primeira escrita real em `pokemonsets_
 
 ---
 
-## 8. Congelamento de dados durante janela canária (adendo 3.3)
+## 9. Congelamento de dados durante janela canária (adendo 3.3)
 
 Publicações em `pokemonsets_v2` ficam congeladas durante qualquer janela de observação canária ativa (Fase 6 em diante). Exceção só para: incidente crítico, correção de blocker, vulnerabilidade, ou erro grave de integridade de dados — e exige aprovação de duas pessoas com `reasonCode` registrado (adendo 4.2).
 
@@ -251,20 +298,20 @@ Publicações em `pokemonsets_v2` ficam congeladas durante qualquer janela de ob
 
 ---
 
-## 9. Teto de `hold` por volume insuficiente (adendo 4.3)
+## 10. Teto de `hold` por volume insuficiente (adendo 4.3)
 
 `ActiveV2RolloutHoldPolicy.ts` define o teto: **21 dias corridos**. Ao atingir o teto, a fase não pode permanecer em `hold` silenciosamente — exige revisão humana explícita e registrada (prosseguir, ajustar o piso de volume, ou encerrar a fase). Não há automação de alerta para esse teto ainda; monitorar manualmente a data de início do `hold` até que a Fase 6+ implemente o rastreamento de janela por estágio.
 
 ---
 
-## 10. Matriz de bloqueios (referência rápida)
+## 11. Matriz de bloqueios (referência rápida)
 
 | Marco | Bloqueio obrigatório | Status nesta branch |
 |---|---|---|
-| Primeira escrita real | Restore drill concluído | Pendente (seção 7) |
-| Runtime Shadow (Fase 3) | Fase 2A + teste de injeção sintética | ✅ Código pronto e testado offline (seção 3) |
-| Canary Infrastructure (Fase 4) | Circuit breaker dinâmico + role de escrita restrita | ✅ Código pronto e testado offline (seção 4) |
-| Canary interno (Fase 5) | HMAC + nonce store compartilhado | ✅ Código pronto e testado offline (seção 6) |
+| Primeira escrita real | Restore drill concluído | Pendente (seção 8) |
+| Runtime Shadow (Fase 3) | Fase 2A + teste de injeção sintética | ✅ Ligado em `TeamController.suggest`, testado offline (seção 3); nunca exercitado com tráfego real |
+| Canary Infrastructure (Fase 4) | Circuit breaker dinâmico + role de escrita restrita | ✅ Código pronto e testado offline (seção 6) |
+| Canary interno (Fase 5) | HMAC + nonce store compartilhado | ✅ Código pronto e testado offline (seção 7) |
 | Canary 25% (Fase 8) | Fase 4A (teste de capacidade no Atlas) | Não iniciado — exige Atlas real |
 | Rollout 100% (Fase 10) | Quatro olhos + runbook + alertas completos | Runbook nasce aqui; quatro olhos e alertas prontos, não exercitados ao vivo |
 
@@ -276,3 +323,4 @@ Publicações em `pokemonsets_v2` ficam congeladas durante qualquer janela de ob
 |---|---|
 | 2026-07-15 | Criação inicial. Cobre Fase 1 (publicação/rollback), Fase 2A (observabilidade), Fase 4B (circuit breaker), Fase 4 (canário público/percentuais), Fase 5 (canário interno/HMAC), restore drill (pendente), congelamento de dados, teto de hold. |
 | 2026-07-16 | Adiciona Fase 2 (Runtime Read Homologation): leitura estritamente read-only de `pokemonsets_v2`, com "zero leitura da coleção legada" e "mesmo comportamento com a flag desligada" garantidos por construção do código, não apenas por teste. |
+| 2026-07-16 | Adiciona Fase 3 (Runtime Shadow Mode): primeira integração real em `TeamController.suggest`, escopo reduzido a comparação de dados de set (sem re-executar o algoritmo de recomendação). Renumera as seções 3-10 para 4-11. |
