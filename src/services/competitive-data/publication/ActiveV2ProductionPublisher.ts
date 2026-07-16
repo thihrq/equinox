@@ -128,6 +128,13 @@ export async function publishToProduction(
       const { _id, ...cleanRec } = rec;
       return {
         ...cleanRec,
+        // PokemonSetV2Schema exige `role` (legado, singular) além de
+        // `primaryRole`/`secondaryRoles` (o par realmente usado pelo
+        // pipeline de curação/governança). Nenhum consumidor a jusante lê
+        // `.role` hoje, mas o schema o exige — sem isso, insertMany falha
+        // em runtime real (só descoberto rodando contra Mongo de verdade;
+        // os testes offline mockam o model e nunca exercitam essa validação).
+        role: cleanRec.role ?? cleanRec.primaryRole ?? 'unknown',
         publishRunId,
         previousPublishRunId: setTransitions.find(t => t.setId === rec.setId)?.previousPublishRunId || null,
         sourceActiveRunId,

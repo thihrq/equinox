@@ -36,7 +36,9 @@ function assertCheck(summary: StagingCheckSummary): void {
   if (summary.generatedVerifiedByRun !== 0) failures.push(`generatedVerifiedByRun must be 0, received ${summary.generatedVerifiedByRun}`);
   if (summary.duplicateSetIds !== 0) failures.push(`duplicateSetIds must be 0, received ${summary.duplicateSetIds}`);
   if (summary.productionWrites !== 0) failures.push(`productionWrites must be 0, received ${summary.productionWrites}`);
-  if (requireVerified && summary.blockedRecordsStillReviewed !== 5) failures.push(`blockedRecordsStillReviewed must be 5, received ${summary.blockedRecordsStillReviewed}`);
+  if (requireVerified && summary.blockedRecordsStillReviewed !== blockedSetIds.length) {
+    failures.push(`blockedRecordsStillReviewed must be ${blockedSetIds.length}, received ${summary.blockedRecordsStillReviewed}`);
+  }
   if (requireVerified && !summary.sameVerifiedRunIdForAllowlist) failures.push('sameVerifiedRunIdForAllowlist must be true.');
 
   if (failures.length > 0) {
