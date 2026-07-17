@@ -7,6 +7,74 @@ import { appConfig } from '../config/env';
 import { LeadStrategyRecommendationService } from '../services/LeadStrategyRecommendationService';
 import { PokemonInput, LeadMode } from '../equinox/vgc/LeadBuildTypes';
 import { runActiveV2RuntimeShadow } from '../services/competitive-data/runtime-shadow/ActiveV2RuntimeShadowOrchestrator';
+import {
+  resolveActiveV2RuntimeServe,
+  writeActiveV2RuntimeServeTelemetry,
+} from '../services/competitive-data/runtime-serve/ActiveV2RuntimeServeOrchestrator';
+import { ACTIVE_V2_INTERNAL_CANARY_AUTH_POLICY_V1 } from '../services/competitive-data/internal-canary-auth/ActiveV2InternalCanaryAuthPolicy';
+import type { ActiveV2InternalCanaryRequestHeaders } from '../services/competitive-data/internal-canary-auth/ActiveV2InternalCanaryAuthTypes';
+import type { ActiveV2ServeSuggestedPokemon } from '../services/competitive-data/runtime-serve/ActiveV2RuntimeServeTypes';
+
+type SuggestedPokemonEntry = {
+  name: string;
+  item: string;
+  ability: string;
+  nature: string;
+  moves: string[];
+  kit?: { item?: string; ability?: string; nature?: string; moves?: string[] };
+};
+
+/**
+ * Identificador determinístico para o hashing de canário (Fase 4) — formato
+ * + composição do time normalizado, sem depender de sessão/autenticação
+ * (que este endpoint não tem). Dá "stickiness": a mesma consulta de time
+ * sempre cai no mesmo balde, em vez de sortear um balde novo a cada
+ * requisição (o que aconteceria com um UUID aleatório).
+ */
+function buildActiveV2ServeIdentifier(format: string, team: string[]): string {
+  return `${format}:${[...team].sort().join(',')}`;
+}
+
+function extractInternalCanaryAuthHeaders(req: Request): Partial<ActiveV2InternalCanaryRequestHeaders> | null {
+  const { headerNames } = ACTIVE_V2_INTERNAL_CANARY_AUTH_POLICY_V1;
+  const readHeader = (name: string): string | undefined => {
+    const value = req.headers[name];
+    return typeof value === 'string' ? value : undefined;
+  };
+  const subject = readHeader(headerNames.subject);
+  const timestamp = readHeader(headerNames.timestamp);
+  const nonce = readHeader(headerNames.nonce);
+  const signature = readHeader(headerNames.signature);
+  if (!subject && !timestamp && !nonce && !signature) return null;
+  return { subject, timestamp, nonce, signature };
+}
+
+/**
+ * Sobrescreve item/ability/nature/moves no lugar dos dados do baseline —
+ * tanto os campos soltos quanto o sub-objeto `kit` duplicado (ver
+ * RecommendationAdapter.formatOption), que carregam os mesmos valores em
+ * dois lugares no mesmo objeto.
+ */
+function applyActiveV2Hydration(result: unknown, hydrated: ActiveV2ServeSuggestedPokemon[]): void {
+  const suggestedPokemons = (result as { topTeams?: Array<{ suggestedPokemons?: SuggestedPokemonEntry[] }> })
+    .topTeams?.[0]?.suggestedPokemons;
+  if (!Array.isArray(suggestedPokemons)) return;
+
+  for (const hydratedPokemon of hydrated) {
+    const target = suggestedPokemons.find(p => p?.name === hydratedPokemon.name);
+    if (!target) continue;
+    target.item = hydratedPokemon.item;
+    target.ability = hydratedPokemon.ability;
+    target.nature = hydratedPokemon.nature;
+    target.moves = hydratedPokemon.moves;
+    if (target.kit) {
+      target.kit.item = hydratedPokemon.item;
+      target.kit.ability = hydratedPokemon.ability;
+      target.kit.nature = hydratedPokemon.nature;
+      target.kit.moves = hydratedPokemon.moves;
+    }
+  }
+}
 
 const ALLOWED_IDENTITIES: TeamIdentity[] = [
   'balanced',
@@ -164,17 +232,46 @@ export class TeamController {
       );
       const baselineLatencyMs = Date.now() - startedAt;
 
+      const primaryTeamSuggestedPokemons = (result as { topTeams?: Array<{ suggestedPokemons?: unknown }> }).topTeams?.[0]?.suggestedPokemons as
+        | { name: string; item: string; ability: string; nature: string; moves: string[] }[]
+        | undefined ?? [];
+      const requestId = crypto.randomUUID();
+
+      // Active V2 — decide e, quando aplicável, hidrata os dados de set
+      // (item/ability/nature/moves) ANTES da resposta ser enviada, já que
+      // (ao contrário do shadow mode) isso precisa afetar o que o usuário
+      // recebe. Nunca lança: qualquer erro/timeout cai em baseline — ver
+      // ActiveV2RuntimeServeOrchestrator.
+      const serveResult = await resolveActiveV2RuntimeServe(mongoose.connection, {
+        requestId,
+        identifier: buildActiveV2ServeIdentifier(resolvedFormat, normalizedTeam),
+        format: resolvedFormat,
+        teamIdentity: resolvedTeamIdentity,
+        primaryTeamSuggestedPokemons,
+        baselineLatencyMs,
+        internalCanaryAuthHeaders: extractInternalCanaryAuthHeaders(req),
+        requestPath: req.path,
+      });
+      if (serveResult.hydratedSuggestedPokemons) {
+        applyActiveV2Hydration(result, serveResult.hydratedSuggestedPokemons);
+      }
+
       res.json(result);
+
+      if (serveResult.telemetryEvent) {
+        void writeActiveV2RuntimeServeTelemetry(mongoose.connection, serveResult.telemetryEvent)
+          .catch(error => console.warn('[Equinox] Active V2 runtime serve telemetry failed (ignored):', error));
+      }
 
       // Fase 3 — Runtime Shadow Mode. Disparado somente APÓS a resposta já
       // ter sido enviada; nunca pode afetar o que o usuário recebeu. Mesmo
       // padrão fire-and-forget já usado em src/server.ts para trabalho de
-      // background não crítico.
-      const primaryTeamSuggestedPokemons = (result as { topTeams?: Array<{ suggestedPokemons?: unknown }> }).topTeams?.[0]?.suggestedPokemons as
-        | { name: string; item: string; ability: string; nature: string; moves: string[] }[]
-        | undefined ?? [];
+      // background não crítico. Mutuamente exclusivo com o serving real
+      // acima por modo de canário (shadow nunca resulta em servePath
+      // active-v2), então `primaryTeamSuggestedPokemons` aqui sempre
+      // reflete o baseline original quando este caminho executa de fato.
       void runActiveV2RuntimeShadow(mongoose.connection, {
-        requestId: crypto.randomUUID(),
+        requestId,
         format: resolvedFormat,
         teamIdentity: resolvedTeamIdentity,
         primaryTeamSuggestedPokemons,

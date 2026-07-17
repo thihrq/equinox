@@ -3,6 +3,7 @@ import * as crypto from 'crypto';
 import { readActiveV2CanaryConfig } from '../runtime-control/ActiveV2CanaryConfigStore';
 import { readActiveV2RuntimeControl } from '../runtime-control/ActiveV2RuntimeControlStore';
 import { resolveActiveV2RuntimeDecision } from '../runtime-control/ActiveV2RuntimeDecisionResolver';
+import { ACTIVE_V2_COVERED_FORMAT } from '../runtime-control/ActiveV2RuntimeCoverage';
 import { compareBaselineAndV2Set, classifyActiveV2ShadowComparisons } from './ActiveV2ShadowSetComparator';
 import { ALLOWED_TARGET_COLLECTION } from '../publication/ActiveV2ProductionPolicy';
 import type { ActiveV2RuntimeShadowInput } from './ActiveV2RuntimeShadowTypes';
@@ -16,9 +17,6 @@ import type { ActiveV2RuntimeTelemetryEvent } from '../runtime-observability/Act
  * do pipeline Active V2 nesta sessão.
  */
 const TELEMETRY_COLLECTION = 'active_v2_runtime_telemetry';
-
-/** Único formato coberto pelos dados Active V2 hoje — ver roster.json/regulation.json. */
-const ACTIVE_V2_COVERED_FORMAT = 'champions_reg_m_b_doubles';
 
 /**
  * Interruptor estático, independente do Mongo. Enquanto desligado (padrão),
