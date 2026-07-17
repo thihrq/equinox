@@ -1,6 +1,6 @@
 # Active V2 Production Runbook
 
-**Status:** Runbook incremental (adendo 4.7). Ampliado a cada fase. Esta versão cobre até a Fase 5 (Canário Interno) e a primeira integração real da Fase 3 (Runtime Shadow Mode). Todo comando abaixo já foi validado contra um MongoDB **local** real (`scripts-local/`, ver `docs/data-audit/active-v2-local-mongo-validation-v1-report.md`) — não é o Atlas de produção, mas é mais do que apenas offline/mockado. Antes do primeiro uso real contra Atlas, confirme que o comando ainda corresponde ao código (`git log` no arquivo referenciado) e rode o restore drill oficial (seção 8) com as ferramentas reais do Atlas.
+**Status:** Runbook incremental (adendo 4.7). Ampliado a cada fase. Esta versão cobre até a Fase 5 (Canário Interno) e a primeira integração real da Fase 3 (Runtime Shadow Mode). Todo comando já foi validado contra um MongoDB local real (`scripts-local/`, ver `docs/data-audit/active-v2-local-mongo-validation-v1-report.md`). A partir de 2026-07-16, a pipeline de staging (import → publish staging → verified → active staging) e o restore drill oficial (seção 8) rodaram pela primeira vez contra o **Atlas de produção real** — não mais só local/offline. `pokemonsets_v2`/`publication_manifests` (a publicação em si) ainda não existem em produção.
 
 ## 0. Como usar este documento
 
@@ -279,14 +279,18 @@ Reverter a variável de ambiente do segredo/allowlist ao valor anterior (redeplo
 
 ## 8. Restore drill (transversal, antes da primeira escrita real)
 
-**Executado contra MongoDB local real** em 2026-07-16 (`npm run local-mongo:restore-drill`, ver `docs/data-audit/active-v2-local-mongo-validation-v1-report.md`) — 14/14 registros restaurados, digest idêntico, índices batendo. **Ainda não executado contra o Atlas real** — o drill local usa um mecanismo de snapshot/restore em nível de aplicação (via driver), não os binários `mongodump`/`mongorestore` (indisponíveis neste ambiente). Procedimento oficial (adendo 3.7), a repetir contra Atlas antes da primeira escrita real de produção:
+**Executado contra o Atlas real de produção** em 2026-07-16, com os binários oficiais `mongodump`/`mongorestore` (MongoDB Database Tools) — `scripts-local/atlas-restore-drill.js`, relatório em `docs/data-audit/active-v2-restore-drill-atlas-v1-report.json`. Resultado: `pokemonsets_v2_staging` (14/14 documentos) e `pokemonsets` (0/0) restaurados em um banco isolado (`test_restore_drill`, mesmo cluster, nunca sobre produção), contagens/índices/digest batendo 100%, banco isolado removido ao final. `pokemonsets_v2`/`publication_manifests` ainda não existem (cobrir aqui assim que a primeira publicação real acontecer).
 
-1. Snapshot do ambiente (com as ferramentas reais do Atlas).
-2. Restauração em cluster/banco isolado (nunca sobre produção).
-3. Validação de contagens, índices, manifestos e digests no ambiente restaurado.
-4. Relatório do restore drill, publicado em `docs/data-audit/`.
+Procedimento (adendo 3.7), implementado em duas etapas separadas — cada uma exige confirmação explícita antes de rodar, dado que a segunda escreve (ainda que só no banco isolado):
 
-Este drill é um bloqueio formal antes da primeira escrita real em `pokemonsets_v2`/`publication_manifests` **no Atlas de produção** — o drill local não substitui isso, só reduz o risco de o mecanismo em si estar quebrado.
+```bash
+node scripts-local/atlas-restore-drill.js dump     # 1. snapshot — só leitura da fonte
+node scripts-local/atlas-restore-drill.js restore  # 2. restaura no banco isolado, valida, limpa
+```
+
+**Incidente durante a primeira execução (documentado por transparência):** a primeira tentativa da etapa `restore` usou `--nsFrom`/`--nsTo` para redirecionar o restore para o banco isolado — essas flags só têm efeito restaurando um *diretório* de dump inteiro, não um arquivo `.bson` avulso (que é o que este script restaura, um por vez). Sem o remapeamento aplicado, o `mongorestore` restaurou de volta usando o namespace original embutido no dump — ou seja, executou um drop+restore *na própria coleção de produção* (`test.pokemonsets_v2_staging`), não no banco isolado. Impacto real: nenhum, porque o dump era uma cópia exata da mesma coleção sem nenhuma mudança no meio tempo (confirmado por leitura pós-incidente: 14 documentos, mesmos `activeRunId`/`verifiedRunId`/`active`). Corrigido usando `--db`/`--collection` explícitos (a forma correta de redirecionar o destino de um restore de arquivo único) — a segunda execução, já corrigida, restaurou corretamente no banco isolado. **Lição para qualquer script futuro que chame `mongorestore` com um `.bson` avulso: nunca confiar em `--nsFrom`/`--nsTo` nesse modo — usar sempre `--db`/`--collection`.**
+
+Este drill é um bloqueio formal antes da primeira escrita real em `pokemonsets_v2`/`publication_manifests` no Atlas de produção — agora concluído.
 
 ---
 
@@ -372,7 +376,7 @@ npm run sets:active-v2-cost-projection:evaluate -- \
 
 | Marco | Bloqueio obrigatório | Status nesta branch |
 |---|---|---|
-| Primeira escrita real | Restore drill concluído | ✅ Concluído contra Mongo local (seção 8); pendente contra Atlas real |
+| Primeira escrita real | Restore drill concluído | ✅ Concluído contra Atlas real com mongodump/mongorestore oficiais (seção 8, 2026-07-16) |
 | Runtime Shadow (Fase 3) | Fase 2A + teste de injeção sintética | ✅ Ligado em `TeamController.suggest`, testado offline e contra Mongo local real (seção 3); nunca exercitado via HTTP com tráfego real |
 | Canary Infrastructure (Fase 4) | Circuit breaker dinâmico + role de escrita restrita | ✅ Código pronto e testado offline (seção 6) |
 | Canary interno (Fase 5) | HMAC + nonce store compartilhado | ✅ Código pronto e testado offline (seção 7) |
@@ -394,3 +398,4 @@ npm run sets:active-v2-cost-projection:evaluate -- \
 | 2026-07-16 | Todo o pipeline (Fase 1-5, 2A, 4B) validado pela primeira vez contra MongoDB local real (não só offline/mockado) via `mongodb-memory-server` — ver `docs/data-audit/active-v2-local-mongo-validation-v1-report.md` e `scripts-local/README.md`. Corrigiu 3 categorias de bugs reais só visíveis com Mongo real. |
 | 2026-07-16 | Implementa os dois requisitos transversais da seção 13 que não dependem do Atlas: estado `hold` nos gates operacionais (seção 10, `ActiveV2CanaryPhaseProgressionGate`) e enforcement de congelamento de dados no publisher (seção 9, `ActiveV2DataFreezeGuard`). |
 | 2026-07-16 | Adiciona seção 11 (Monitoramento de custo): projeção de operações Mongo (`ActiveV2CostProjectionEngine`) grounded no perfil real de I/O do orquestrador de shadow mode, com conversão para dinheiro só quando uma tarifa real do Atlas é explicitamente informada. CPU, memória, logs e billing de Render seguem fora de escopo — exigem acesso real à infraestrutura. Renumera "Matriz de bloqueios" de seção 11 para 12. |
+| 2026-07-16 | Primeira execução real contra o Atlas de produção (`test`): pipeline de staging completa (14 registros publicados, 4 promovidos a active com `activeRunId` novo) e restore drill oficial com `mongodump`/`mongorestore` reais (seção 8) — 100% de match em contagens/índices/digest. Documenta um incidente real durante a primeira tentativa do restore (uso incorreto de `--nsFrom`/`--nsTo` em restore de arquivo único causou um drop+restore não intencional na própria coleção de produção, sem perda de dado) e a correção aplicada. |
