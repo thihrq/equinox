@@ -568,7 +568,6 @@ export class TeamService {
         exploitationRatio: teamIdentity === 'creative' ? 0.60 : performanceProfile.exploitationRatio,
         anchorCandidateLimit: performanceProfile.anchorCandidateLimit,
         perAnchorCombinations: performanceProfile.perAnchorCombinations,
-        maxPreFilterCandidates: performanceProfile.maxPreFilterCandidates,
         maxPreFilterTimeMs: performanceProfile.maxPreFilterTimeMs,
         maxPipelineTimeMs: performanceProfile.maxPipelineTimeMs,
       },
