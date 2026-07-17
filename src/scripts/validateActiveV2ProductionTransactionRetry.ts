@@ -1,4 +1,8 @@
-import { runInTransactionWithRetry, hasErrorLabel } from '../services/competitive-data/publication/ActiveV2ProductionTransactionRetry';
+import {
+  runInTransactionWithRetry,
+  hasErrorLabel,
+  isKnownAtlasTransientQuotaCheckError,
+} from '../services/competitive-data/publication/ActiveV2ProductionTransactionRetry';
 
 function makeTransientError(message = 'transient'): Error {
   const error = new Error(message) as Error & { hasErrorLabel: (label: string) => boolean };
@@ -139,6 +143,40 @@ async function runTests(): Promise<void> {
   const conn5 = makeFakeConnection(sessions5);
   await runInTransactionWithRetry(conn5, async () => 'ok', { retryDelayMs: 1 });
   if (sessions5[0].inTransaction()) throw new Error('Test 6 failed: expected session to be out of transaction after commit');
+
+  // --- Caso de Teste 7: reconhece o erro de checagem de quota transitoria do Atlas M0/Flex ---
+  const atlasQuotaError = new Error(
+    'Error determining if update will go over space quota: Error computing current atlas size: internal atlas error checking things: Failure getting dbStats: (MaxTimeMSExpired) operation exceeded time limit: context deadline exceeded'
+  );
+  if (!isKnownAtlasTransientQuotaCheckError(atlasQuotaError)) {
+    throw new Error('Test 7 failed: expected the real Atlas quota-check error message to be recognized as retryable');
+  }
+  const unrelatedError = new Error('RUN_ID_CONTENT_CONFLICT: something else entirely');
+  if (isKnownAtlasTransientQuotaCheckError(unrelatedError)) {
+    throw new Error('Test 7 failed: expected an unrelated error message to NOT be recognized as the Atlas quota-check error');
+  }
+
+  // --- Caso de Teste 8: retry tambem dispara para o erro de quota do Atlas (sem hasErrorLabel) ---
+  const sessions6: FakeSession[] = [];
+  const conn6 = makeFakeConnection(sessions6);
+  let attemptCount6 = 0;
+  let onRetryCalls6 = 0;
+  const result6 = await runInTransactionWithRetry(
+    conn6,
+    async () => {
+      attemptCount6++;
+      if (attemptCount6 < 2) {
+        throw new Error(
+          'Error determining if update will go over space quota: Error computing current atlas size: internal atlas error checking things: Failure getting dbStats: (MaxTimeMSExpired) operation exceeded time limit: context deadline exceeded'
+        );
+      }
+      return 'succeeded-after-atlas-quota-retry';
+    },
+    { retryDelayMs: 1, onRetry: () => onRetryCalls6++ }
+  );
+  if (result6 !== 'succeeded-after-atlas-quota-retry') throw new Error('Test 8 failed: expected success after retrying the Atlas quota-check error');
+  if (attemptCount6 !== 2) throw new Error(`Test 8 failed: expected 2 attempts, got ${attemptCount6}`);
+  if (onRetryCalls6 !== 1) throw new Error(`Test 8 failed: expected 1 onRetry call, got ${onRetryCalls6}`);
 
   console.log('[Equinox] Active V2 production transaction retry validation passed.');
 }
