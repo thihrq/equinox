@@ -4,6 +4,8 @@ dist/
 .env.example
 # Dump local do restore drill oficial contra o Atlas real (dados de produção em disco)
 .atlas-restore-drill-dump/
+# URI efêmera do mongodb-memory-server, gerada a cada execução de local-mongo:start
+scripts-local/.local-mongo-uri.txt
 
 # Local automation/tooling artifacts
 .agents/
