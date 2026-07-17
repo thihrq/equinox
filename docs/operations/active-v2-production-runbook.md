@@ -1,6 +1,6 @@
 # Active V2 Production Runbook
 
-**Status:** Runbook incremental (adendo 4.7). Ampliado a cada fase. Esta versão cobre até a Fase 5 (Canário Interno) e a primeira integração real da Fase 3 (Runtime Shadow Mode). Todo comando já foi validado contra um MongoDB local real (`scripts-local/`, ver `docs/data-audit/active-v2-local-mongo-validation-v1-report.md`). A partir de 2026-07-16, a pipeline de staging (import → publish staging → verified → active staging) e o restore drill oficial (seção 8) rodaram pela primeira vez contra o **Atlas de produção real** — não mais só local/offline. `pokemonsets_v2`/`publication_manifests` (a publicação em si) ainda não existem em produção.
+**Status:** Runbook incremental (adendo 4.7). Ampliado a cada fase. Esta versão cobre até a Fase 5 (Canário Interno) e a primeira integração real da Fase 3 (Runtime Shadow Mode). Todo comando já foi validado contra um MongoDB local real (`scripts-local/`, ver `docs/data-audit/active-v2-local-mongo-validation-v1-report.md`). A partir de 2026-07-16, a pipeline de staging, o restore drill oficial (seção 8) e **a primeira publicação real em produção** (`pokemonsets_v2`/`publication_manifests`, seção 1) rodaram pela primeira vez contra o **Atlas de produção real** — ver `docs/data-audit/active-v2-production-publication-atlas-v1-report.md` para o relatório completo, incluindo um bug real de produção (transações sem retry em `TransientTransactionError`) encontrado e corrigido no processo.
 
 ## 0. Como usar este documento
 
@@ -10,6 +10,8 @@
 - "Responsável" abaixo é um papel, não uma pessoa nomeada — preencher com o nome real na hora do incidente e registrar no changelog.
 
 ## 1. Publicação e rollback de dados (Fase 1 — Production Publication)
+
+**Executado pela primeira vez contra o Atlas de produção real em 2026-07-16** — `publishRunId=prod-run-2026-07-16-001`, 4 sets ativos, manifesto ativo com digest correto, `pokemonsets` intocada. Ver `docs/data-audit/active-v2-production-publication-atlas-v1-report.md`. A transação de publicação/rollback agora retenta automaticamente em `TransientTransactionError` (até 5 tentativas, ver `ActiveV2ProductionTransactionRetry.ts`) — necessário porque a primeira tentativa real falhou 4 vezes com um erro transitório de checagem de quota específico de clusters Atlas M0/Flex, sem nenhuma escrita parcial em nenhuma tentativa.
 
 ### Sinais de incidente
 - `publishActiveV2Production.ts` retorna exit code diferente de 0.
@@ -48,6 +50,8 @@ npm run sets:active-v2-production:rollback -- --publish-run-id <id> [--dry-run]
 ---
 
 ## 2. Runtime Read Homologation (Fase 2)
+
+**Executado pela primeira vez contra dados reais de produção em 2026-07-16** (logo após a primeira publicação real, seção 1) — `approved: true`, 4 registros lidos, 0 problemas. Primeira leitura real de ponta a ponta do caminho de produção V2.
 
 ### Sinais de incidente
 - `homologateActiveV2RuntimeRead` reporta `approved: false` (exit 1).
@@ -377,6 +381,7 @@ npm run sets:active-v2-cost-projection:evaluate -- \
 | Marco | Bloqueio obrigatório | Status nesta branch |
 |---|---|---|
 | Primeira escrita real | Restore drill concluído | ✅ Concluído contra Atlas real com mongodump/mongorestore oficiais (seção 8, 2026-07-16) |
+| Publicação em produção (Fase 1) | Restore drill + preflight + dry-run | ✅ Executado de verdade contra o Atlas real (seção 1, 2026-07-16) — `pokemonsets_v2`/`publication_manifests` existem em produção pela primeira vez, 4 sets ativos |
 | Runtime Shadow (Fase 3) | Fase 2A + teste de injeção sintética | ✅ Ligado em `TeamController.suggest`, testado offline e contra Mongo local real (seção 3); nunca exercitado via HTTP com tráfego real |
 | Canary Infrastructure (Fase 4) | Circuit breaker dinâmico + role de escrita restrita | ✅ Código pronto e testado offline (seção 6) |
 | Canary interno (Fase 5) | HMAC + nonce store compartilhado | ✅ Código pronto e testado offline (seção 7) |
@@ -399,3 +404,4 @@ npm run sets:active-v2-cost-projection:evaluate -- \
 | 2026-07-16 | Implementa os dois requisitos transversais da seção 13 que não dependem do Atlas: estado `hold` nos gates operacionais (seção 10, `ActiveV2CanaryPhaseProgressionGate`) e enforcement de congelamento de dados no publisher (seção 9, `ActiveV2DataFreezeGuard`). |
 | 2026-07-16 | Adiciona seção 11 (Monitoramento de custo): projeção de operações Mongo (`ActiveV2CostProjectionEngine`) grounded no perfil real de I/O do orquestrador de shadow mode, com conversão para dinheiro só quando uma tarifa real do Atlas é explicitamente informada. CPU, memória, logs e billing de Render seguem fora de escopo — exigem acesso real à infraestrutura. Renumera "Matriz de bloqueios" de seção 11 para 12. |
 | 2026-07-16 | Primeira execução real contra o Atlas de produção (`test`): pipeline de staging completa (14 registros publicados, 4 promovidos a active com `activeRunId` novo) e restore drill oficial com `mongodump`/`mongorestore` reais (seção 8) — 100% de match em contagens/índices/digest. Documenta um incidente real durante a primeira tentativa do restore (uso incorreto de `--nsFrom`/`--nsTo` em restore de arquivo único causou um drop+restore não intencional na própria coleção de produção, sem perda de dado) e a correção aplicada. |
+| 2026-07-16 | **Primeira publicação real em produção** (seção 1): `pokemonsets_v2`/`publication_manifests` passam a existir de verdade no Atlas, `publishRunId=prod-run-2026-07-16-001`, 4 sets ativos. Corrigido um bug real de produção no processo: `publishToProduction`/`rollbackProductionBatch` não retentavam `TransientTransactionError`, causando 4 falhas consecutivas (sem escrita parcial) contra um erro transitório de checagem de quota específico de clusters Atlas M0/Flex. Ver `ActiveV2ProductionTransactionRetry.ts` e `docs/data-audit/active-v2-production-publication-atlas-v1-report.md`. Fase 2 (Runtime Read Homologation) também executada pela primeira vez contra dados reais logo em seguida — `approved: true`. |
