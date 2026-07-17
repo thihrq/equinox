@@ -12,6 +12,11 @@
 6. **Publicação real** — ver seção 2 (bug encontrado e corrigido no meio do processo).
 7. **Confirmação pós-publicação** (leitura) — 4 documentos em `pokemonsets_v2` (todos `active=true`, `publishRunId=prod-run-2026-07-16-001`), 1 manifesto `active` com `recordCount=4` e o digest correto, `pokemonsets` (legada) intocada (0 documentos).
 8. **Homologação real da Fase 2** (`homologateActiveV2RuntimeRead`, com `EQUINOX_ACTIVE_V2_RUNTIME_READ_ENABLED=true`) — `approved: true`, 4 registros lidos, 0 problemas. Primeira leitura real de ponta a ponta do caminho de produção V2.
+9. **Idempotência** — republicar com o mesmo `publish-run-id` (`prod-run-2026-07-16-001`) retornou `NO-OP`/`RUN_ID_ALREADY_PUBLISHED_SAME_CONTENT`, zero escrita, estado confirmado idêntico por leitura.
+10. **Rollback real** — `rollbackActiveV2Production.ts --run-id prod-run-2026-07-16-001` (dry-run antes, depois real): os 4 sets ficaram `active=false`, manifesto passou a `status=rolled-back`. Funcionou de primeira, já com o retry automático da correção da seção 2.
+11. **Republicação final** — novo `publish-run-id` (`prod-run-2026-07-16-002`), mesmo acceptance report (staging inalterada). Resultado: 8 documentos totais em `pokemonsets_v2` (4 antigos de `prod-run-001`, `active=false`; 4 novos de `prod-run-002`, `active=true`) — o design de publicação imutável (nunca deleta, só desativa) funcionando exatamente como projetado. `previousActivePublishRunId=null` no novo manifesto, correto, já que não havia manifesto `active` no momento da republicação (o anterior estava `rolled-back`). Homologação da Fase 2 rodada de novo, confirmando que a leitura pega o manifesto novo corretamente (4 registros, 0 problemas).
+
+Com isso, o checklist completo da Fase 1 real (runbook, seção 11: restore drill, preflight, dry-run, publicação, idempotência, rollback, republicação) está fechado contra o Atlas de produção real.
 
 ## 2. Bug real encontrado e corrigido: transações sem retry em `TransientTransactionError`
 

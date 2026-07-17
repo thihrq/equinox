@@ -14,6 +14,7 @@ const FALLBACK_REASONS: ActiveV2RuntimeFallbackReason[] = [
   'force-baseline',
   'digest-mismatch',
   'no-v2-data',
+  'ambiguous-v2-data',
   'unknown',
 ];
 

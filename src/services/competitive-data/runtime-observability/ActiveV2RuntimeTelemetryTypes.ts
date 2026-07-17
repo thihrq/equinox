@@ -10,6 +10,13 @@ export type ActiveV2RuntimeFallbackReason =
   | 'force-baseline'
   | 'digest-mismatch'
   | 'no-v2-data'
+  /**
+   * Mais de um set ativo encontrado para o mesmo Pokémon+formato (a
+   * coleção permite isso — o índice único é por setId, não por
+   * pokemonName). Distinto de 'no-v2-data' porque sinaliza uma condição
+   * de curação a resolver (ambiguidade), não uma lacuna de cobertura.
+   */
+  | 'ambiguous-v2-data'
   | 'unknown';
 
 export interface ActiveV2RuntimeTelemetryEvent {

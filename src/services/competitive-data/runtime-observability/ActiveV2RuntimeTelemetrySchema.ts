@@ -9,6 +9,11 @@ const FALLBACK_REASONS = new Set([
   'circuit-breaker',
   'force-baseline',
   'digest-mismatch',
+  // 'no-v2-data' faltava aqui (bug real: todo evento de shadow com
+  // fallbackTriggered=true e' emitido com essa razao, mas essa lista
+  // rejeitava o proprio evento que o orquestrador real produz).
+  'no-v2-data',
+  'ambiguous-v2-data',
   'unknown',
 ]);
 const CLASSIFICATIONS = new Set([

@@ -72,6 +72,14 @@ interface CombinationSearchOptions {
    * Maximum trios added for each anchor candidate during diversity coverage.
    */
   perAnchorCombinations: number;
+
+  /**
+   * Caps how many candidates enter the O(n³) pre-filter loop that scores
+   * every valid trio before maxPipelineEvaluations is applied. Unlike the
+   * other options, this bounds the pre-filter itself, not just which trios
+   * proceed to the full pipeline — see FormatPerformanceProfile for why.
+   */
+  maxPreFilterCandidates: number;
 }
 
 interface OptimizedTrioCandidate {
@@ -109,6 +117,7 @@ export class CombinationSearchEngine {
       exploitationRatio: options?.exploitationRatio ?? 0.78,
       anchorCandidateLimit: options?.anchorCandidateLimit ?? 24,
       perAnchorCombinations: options?.perAnchorCombinations ?? 18,
+      maxPreFilterCandidates: options?.maxPreFilterCandidates ?? Infinity,
     };
   }
 
@@ -161,7 +170,7 @@ export class CombinationSearchEngine {
   ): { trios: OptimizedTrioCandidate[]; stats: OptimizerStats } {
     const { baseTeam, candidates, format } = params;
     const formatSolver = params.formatSolver ?? this.solverRegistry.getSolver(format);
-    const len = candidates.length;
+    const len = Math.min(candidates.length, this.options.maxPreFilterCandidates);
     const totalPossible = this.combinationCount(len, 3);
     const allValid: OptimizedTrioCandidate[] = [];
     let skippedInvalid = 0;
