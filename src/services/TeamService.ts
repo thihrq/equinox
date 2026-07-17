@@ -569,6 +569,8 @@ export class TeamService {
         anchorCandidateLimit: performanceProfile.anchorCandidateLimit,
         perAnchorCombinations: performanceProfile.perAnchorCombinations,
         maxPreFilterCandidates: performanceProfile.maxPreFilterCandidates,
+        maxPreFilterTimeMs: performanceProfile.maxPreFilterTimeMs,
+        maxPipelineTimeMs: performanceProfile.maxPipelineTimeMs,
       },
     ).findBestComplements({
       baseTeam: validCurrentTeam,
