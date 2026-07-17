@@ -30,11 +30,22 @@ export class ChampionsDoublesSolver extends BaseFormatSolver {
 
   public override getDiversityOptions() {
     return {
-      maxCandidates: 28,
-      topOverall: 18,
-      perRole: 5,
-      perType: 2,
-      minCandidates: 22,
+      // Incidente real 2026-07-17: com maxCandidates=28/topOverall=18, o
+      // bônus de pontuação de "abuser primário" (+260, muito acima de +105
+      // para suporte e -95 para quem não fecha nenhum slot crítico — ver
+      // FormatPlanResolver.ts) fazia o pool diversificado ficar dominado
+      // por abusers para times com viés de clima. A regra de composição
+      // permite no máximo 2 abusers primários no time final, então o pool
+      // reduzido não sobrava candidatos de suporte/setter suficientes para
+      // fechar nenhuma combinação válida — usuários reais recebiam zero
+      // resultados. Elevado para dar espaço real a esses papéis; seguro
+      // agora que CombinationSearchEngine tem orçamento de tempo próprio
+      // (não depende mais deste teto para não travar o Render Free).
+      maxCandidates: 45,
+      topOverall: 24,
+      perRole: 8,
+      perType: 3,
+      minCandidates: 30,
     };
   }
 
