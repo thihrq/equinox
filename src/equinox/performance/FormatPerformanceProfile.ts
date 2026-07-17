@@ -9,6 +9,14 @@ export interface FormatPerformanceProfile {
   maxCombinationsToKeep: number;
   anchorCandidateLimit: number;
   perAnchorCombinations: number;
+  /**
+   * Teto de candidatos considerados no pré-filtro combinatório de trios
+   * (busca O(n³) em CombinationSearchEngine, que roda por completo antes de
+   * aplicar maxPipelineEvaluations). Sem teto (Infinity) para não mudar o
+   * comportamento de perfis já validados; reduzido apenas onde a
+   * combinatória se provou cara demais para o CPU do Render Free.
+   */
+  maxPreFilterCandidates: number;
   note: string;
 }
 
@@ -33,6 +41,12 @@ function applyRuntimeProfile(profile: FormatPerformanceProfile): FormatPerforman
       anchorCandidateLimit: 7,
       perAnchorCombinations: 3,
       exploitationRatio: 0.9,
+      // Incidente real 2026-07-17: pré-filtro O(n³) sobre 28 candidatos
+      // (C(28,3)=3.276 avaliações síncronas de plano/mecânica VGC) travou o
+      // event loop inteiro no Render Free por vários minutos. C(12,3)=220
+      // mantém o pré-filtro na mesma ordem de grandeza do orçamento de
+      // pipeline completo (64) acima, sem esvaziar o espaço de busca.
+      maxPreFilterCandidates: 12,
     },
     'champions-singles-performance': {
       maxPipelineEvaluations: 64,
@@ -88,6 +102,7 @@ export class FormatPerformanceProfileRegistry {
         maxCombinationsToKeep: 180,
         anchorCandidateLimit: 18,
         perAnchorCombinations: 10,
+        maxPreFilterCandidates: Infinity,
         note: 'Prioriza trios já fortes contra a gauntlet Hardcore e evita rodar pipeline completo em milhares de composições redundantes.',
       });
     }
@@ -105,6 +120,7 @@ export class FormatPerformanceProfileRegistry {
         maxCombinationsToKeep: isDoubles ? 10 : 40,
         anchorCandidateLimit: isDoubles ? 4 : 10,
         perAnchorCombinations: isDoubles ? 1 : 3,
+        maxPreFilterCandidates: Infinity,
         note: 'Usa pré-ranking VGC leve de plano 6/4/leads, preserva o arquétipo e hidrata apenas finalistas para reduzir latência em fluxo interativo.',
       });
     }
@@ -118,6 +134,7 @@ export class FormatPerformanceProfileRegistry {
         maxCombinationsToKeep: 240,
         anchorCandidateLimit: 24,
         perAnchorCombinations: 14,
+        maxPreFilterCandidates: Infinity,
         note: 'Perfis Vanilla por jogo usam pools menores e ameaça limitada ao escopo da geração, então não precisam da busca ampla de ladder.',
       });
     }
@@ -131,6 +148,7 @@ export class FormatPerformanceProfileRegistry {
         maxCombinationsToKeep: 40,
         anchorCandidateLimit: 10,
         perAnchorCombinations: 3,
+        maxPreFilterCandidates: Infinity,
         note: 'Showdown/National Dex saiu do escopo do produto; aliases legados usam o solver de Champions Singles como fallback seguro.',
       });
     }
@@ -143,6 +161,7 @@ export class FormatPerformanceProfileRegistry {
       maxCombinationsToKeep: 260,
       anchorCandidateLimit: 24,
       perAnchorCombinations: 16,
+      maxPreFilterCandidates: Infinity,
       note: 'Perfil padrão para formatos genéricos sem data pack pesado.',
     });
   }
