@@ -2,6 +2,8 @@
 dist/
 .env
 .env.example
+# Dump local do restore drill oficial contra o Atlas real (dados de produção em disco)
+.atlas-restore-drill-dump/
 
 # Local automation/tooling artifacts
 .agents/
