@@ -385,7 +385,7 @@ Não re-executa o algoritmo de seleção de candidatos — só substitui dados d
 
 ### Sinais de incidente
 - `[Equinox] Active V2 runtime serve failed (ignored, baseline usado)` nos logs — nunca afeta a resposta (sempre cai em baseline), mas volume alto e sustentado indica Mongo instável.
-- Latência elevada em `/api/team/suggest` com o canário ativo — ao contrário do shadow mode, este caminho roda **antes** da resposta ser enviada; um timeout de 300ms (`V2_SERVE_TIMEOUT_MS`) limita o pior caso, mas não é gratuito.
+- Latência elevada em `/api/team/suggest` com o canário ativo — ao contrário do shadow mode, este caminho roda **antes** da resposta ser enviada; um timeout de 1500ms (`V2_SERVE_TIMEOUT_MS`, elevado de 300ms após validação real em produção — ver "Limitações assumidas") limita o pior caso, mas não é gratuito.
 - Alertas da Fase 2A (seção 4) usando os eventos escritos por este caminho — mesma coleção `active_v2_runtime_telemetry` do shadow mode, distinguível pelo `requestId` correlacionado nos logs do servidor.
 
 ### Comandos permitidos
@@ -418,7 +418,7 @@ Confirmar via `npm run sets:active-v2-canary:status` que o modo voltou a `off`, 
 ### Limitações assumidas
 - **Não testado via HTTP real de ponta a ponta neste ambiente.** A lógica de decisão/hidratação foi validada offline (12 cenários com conexão Mongo mockada, `validateActiveV2RuntimeServeOrchestrator.ts`) e a forma exata do objeto de resposta (`topTeams[0].suggestedPokemons`, incluindo o sub-objeto `kit` duplicado) foi confirmada lendo o código real de `RecommendationAdapter.formatOption`. A tentativa de rodar via servidor HTTP real contra Mongo local esbarrou em uma lacuna pré-existente e não relacionada a este trabalho: o mecanismo de seed automático de Pokémon do app (`runStartupSeedIfNeeded`) não popula dados neste ambiente, então nenhum formato consegue montar um time base sem Mongo com o roster real seedado — limitação de ambiente, não deste código.
 - Identificador de canário passou a ser determinístico (`formato:time-normalizado-ordenado`) em vez do UUID aleatório por requisição usado no shadow mode — dá "stickiness" (mesma consulta sempre cai no mesmo balde), mas não é uma identidade de usuário/sessão real (o endpoint não tem autenticação).
-- `publishRunId` só é registrado na telemetria quando pelo menos 1 Pokémon foi hidratado com sucesso; `activeV2DataDigest` fica sempre `null` (evitar uma leitura extra do manifesto dentro do orçamento de 300ms).
+- `publishRunId` só é registrado na telemetria quando pelo menos 1 Pokémon foi hidratado com sucesso; `activeV2DataDigest` fica sempre `null` (evitar uma leitura extra do manifesto dentro do orçamento de 1500ms).
 
 ---
 

@@ -158,7 +158,7 @@ async function runTests(): Promise<void> {
     if (result11.servePath !== 'baseline') throw new Error('Test 11 failed: expected baseline for mode=internal with invalid/unconfigured auth');
 
     // --- Caso de Teste 12: timeout -> fallback v2-timeout ---
-    const { connection: conn12 } = makeMockConnection({ canaryConfig: { mode: 'full', percentage: null }, v2Docs: [], findDelayMs: 400 });
+    const { connection: conn12 } = makeMockConnection({ canaryConfig: { mode: 'full', percentage: null }, v2Docs: [], findDelayMs: 1600 });
     const result12 = await resolveActiveV2RuntimeServe(conn12, baseInput());
     if (result12.servePath !== 'baseline') throw new Error('Test 12 failed: expected baseline on timeout');
     if (result12.telemetryEvent?.v2.fallbackReason !== 'v2-timeout') throw new Error('Test 12 failed: expected fallbackReason=v2-timeout');

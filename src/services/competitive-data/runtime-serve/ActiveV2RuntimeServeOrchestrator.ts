@@ -22,8 +22,18 @@ const TELEMETRY_COLLECTION = 'active_v2_runtime_telemetry';
  * desistir e servir baseline. Ao contrário do shadow mode (fire-and-forget,
  * latência não importa), este caminho roda ANTES da resposta ser enviada —
  * um Mongo lento aqui atrasaria toda requisição com o canário ligado.
+ *
+ * Era 300ms originalmente; validação real em produção (2026-07-17, Render
+ * Free) mostrou que isso é curto demais — em 4/4 requisições reais o
+ * caminho `internal` (autenticação HMAC com leitura+escrita de nonce/rate
+ * limit no Mongo, mais a própria leitura de pokemonsets_v2) estourou
+ * consistentemente os 300ms, mesmo em condições normais, nunca chegando a
+ * completar. O fallback funcionou corretamente (nunca quebrou a resposta),
+ * mas o canário nunca conseguia hidratar de verdade. 1500ms dá margem real
+ * pro Mongo responder sob o CPU limitado do tier gratuito, mantendo um
+ * teto — não é "sem limite".
  */
-const V2_SERVE_TIMEOUT_MS = 300;
+const V2_SERVE_TIMEOUT_MS = 1500;
 
 function baselineResult(): ActiveV2RuntimeServeResult {
   return { servePath: 'baseline', hydratedSuggestedPokemons: null, telemetryEvent: null };
