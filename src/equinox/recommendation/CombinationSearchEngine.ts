@@ -74,22 +74,18 @@ interface CombinationSearchOptions {
   perAnchorCombinations: number;
 
   /**
-   * Caps how many candidates enter the O(n³) pre-filter loop that scores
-   * every valid trio before maxPipelineEvaluations is applied. Unlike the
-   * other options, this bounds the pre-filter itself, not just which trios
-   * proceed to the full pipeline — see FormatPerformanceProfile for why.
-   */
-  maxPreFilterCandidates: number;
-
-  /**
-   * Wall-clock budget (ms) for the pre-filter loop. maxPreFilterCandidates
-   * bounds the *count* of combinations, but per-combination cost varies a
-   * lot under CPU throttling (observed: still >60s with only 220
-   * combinations on Render Free) — this is the real safety net, since it
+   * Wall-clock budget (ms) for the O(n³) pre-filter loop that scores every
+   * valid trio before maxPipelineEvaluations is applied. A candidate-count
+   * cap was tried first and reverted: truncating to the top-N scored
+   * candidates can produce a pool too homogeneous to satisfy composition
+   * constraints (real incident: the 12 top-scoring candidates for a
+   * rain-biased team were all Water-type, making it impossible to find any
+   * trio under the "max 3 Water-types" rule). A time budget instead lets
+   * the loop reach more diverse candidates further down the list, and
    * adapts to whatever the CPU is actually doing right now instead of a
-   * fixed guess. The loop keeps whatever valid trios it found so far when
-   * the budget runs out, same as if the candidate pool had simply been
-   * smaller.
+   * fixed guess. Combined with periodic yieldEventLoop() calls so Render's
+   * health check isn't starved. The loop keeps whatever valid trios it
+   * found so far when the budget runs out.
    */
   maxPreFilterTimeMs: number;
 
@@ -138,7 +134,6 @@ export class CombinationSearchEngine {
       exploitationRatio: options?.exploitationRatio ?? 0.78,
       anchorCandidateLimit: options?.anchorCandidateLimit ?? 24,
       perAnchorCombinations: options?.perAnchorCombinations ?? 18,
-      maxPreFilterCandidates: options?.maxPreFilterCandidates ?? Infinity,
       maxPreFilterTimeMs: options?.maxPreFilterTimeMs ?? Infinity,
       maxPipelineTimeMs: options?.maxPipelineTimeMs ?? Infinity,
     };
@@ -160,13 +155,14 @@ export class CombinationSearchEngine {
     const formatSolver = params.formatSolver ?? this.solverRegistry.getSolver(format);
     const best: EvaluatedCombination[] = [];
 
-    const { trios, stats } = this.buildOptimizedSearchSpace(params);
+    const { trios, stats } = await this.buildOptimizedSearchSpace(params);
 
     console.log(
       `[Equinox] CombinationOptimizer: possible=${stats.totalPossible}, valid=${stats.validGenerated}, evaluated=${stats.selectedForPipeline}, skippedInvalid=${stats.skippedInvalid}, exploitation=${this.options.exploitationRatio}, anchors=${this.options.anchorCandidateLimit}x${this.options.perAnchorCombinations}`,
     );
 
     const pipelineDeadline = Date.now() + this.options.maxPipelineTimeMs;
+    let pipelineIterations = 0;
 
     for (const candidate of trios) {
       if (Date.now() > pipelineDeadline) {
@@ -174,6 +170,13 @@ export class CombinationSearchEngine {
           `[Equinox] CombinationOptimizer: pipeline completo interrompido por orçamento de tempo (${this.options.maxPipelineTimeMs}ms) com ${best.length} times avaliados até então.`,
         );
         break;
+      }
+
+      // Cede o event loop periodicamente para que o health check do Render
+      // (timeout de 5s) consiga responder mesmo com o pipeline em andamento
+      // — sem isso, a instância é derrubada no meio da requisição.
+      if (++pipelineIterations % 5 === 0) {
+        await this.yieldEventLoop();
       }
 
       const fullTeam = formatSolver.normalizeFinalTeam([...baseTeam, ...candidate.trio], format);
@@ -197,16 +200,36 @@ export class CombinationSearchEngine {
     return best.sort(this.compareCombinations);
   }
 
-  private buildOptimizedSearchSpace(
+  /**
+   * Cede o controle ao event loop (setImmediate, não apenas um microtask) —
+   * necessário para que o health check HTTP do Render consiga ser atendido
+   * durante um laço síncrono longo. Um `await` de uma Promise já resolvida
+   * não basta: isso só processa microtasks, nunca a fila de I/O/timers onde
+   * o health check está esperando.
+   */
+  private yieldEventLoop(): Promise<void> {
+    return new Promise(resolve => setImmediate(resolve));
+  }
+
+  private async buildOptimizedSearchSpace(
     params: FindBestTriosParams,
-  ): { trios: OptimizedTrioCandidate[]; stats: OptimizerStats } {
+  ): Promise<{ trios: OptimizedTrioCandidate[]; stats: OptimizerStats }> {
     const { baseTeam, candidates, format } = params;
     const formatSolver = params.formatSolver ?? this.solverRegistry.getSolver(format);
-    const len = Math.min(candidates.length, this.options.maxPreFilterCandidates);
+    // Sem teto de contagem aqui: os candidatos já vêm ordenados por
+    // relevância (DiversityCandidateSelector), e cortar para os N
+    // primeiros pode produzir um pool homogêneo demais para satisfazer
+    // restrições de composição (ex.: incidente real 2026-07-17 — os 12
+    // candidatos mais bem pontuados para um time com viés de chuva eram
+    // TODOS do tipo Water, tornando impossível achar qualquer trio válido
+    // sob o limite de "no máximo 3 Water-types"). maxPreFilterTimeMs é o
+    // limite real de latência; não precisa de um teto de contagem também.
+    const len = candidates.length;
     const totalPossible = this.combinationCount(len, 3);
     const allValid: OptimizedTrioCandidate[] = [];
     let skippedInvalid = 0;
     let timedOut = false;
+    let iterations = 0;
     const deadline = Date.now() + this.options.maxPreFilterTimeMs;
 
     outer: for (let i = 0; i < len; i++) {
@@ -215,6 +238,10 @@ export class CombinationSearchEngine {
           if (Date.now() > deadline) {
             timedOut = true;
             break outer;
+          }
+
+          if (++iterations % 25 === 0) {
+            await this.yieldEventLoop();
           }
 
           const trio = [candidates[i], candidates[j], candidates[k]];
