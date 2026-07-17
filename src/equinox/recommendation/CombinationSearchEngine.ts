@@ -80,6 +80,27 @@ interface CombinationSearchOptions {
    * proceed to the full pipeline — see FormatPerformanceProfile for why.
    */
   maxPreFilterCandidates: number;
+
+  /**
+   * Wall-clock budget (ms) for the pre-filter loop. maxPreFilterCandidates
+   * bounds the *count* of combinations, but per-combination cost varies a
+   * lot under CPU throttling (observed: still >60s with only 220
+   * combinations on Render Free) — this is the real safety net, since it
+   * adapts to whatever the CPU is actually doing right now instead of a
+   * fixed guess. The loop keeps whatever valid trios it found so far when
+   * the budget runs out, same as if the candidate pool had simply been
+   * smaller.
+   */
+  maxPreFilterTimeMs: number;
+
+  /**
+   * Same idea as maxPreFilterTimeMs, but for the second phase: running the
+   * full analysis pipeline on up to maxPipelineEvaluations trios. That
+   * phase only had a count budget before, with no time bound — under CPU
+   * throttling each pipeline run can be as expensive as pré-filtro work,
+   * so it needs the same wall-clock safety net.
+   */
+  maxPipelineTimeMs: number;
 }
 
 interface OptimizedTrioCandidate {
@@ -118,6 +139,8 @@ export class CombinationSearchEngine {
       anchorCandidateLimit: options?.anchorCandidateLimit ?? 24,
       perAnchorCombinations: options?.perAnchorCombinations ?? 18,
       maxPreFilterCandidates: options?.maxPreFilterCandidates ?? Infinity,
+      maxPreFilterTimeMs: options?.maxPreFilterTimeMs ?? Infinity,
+      maxPipelineTimeMs: options?.maxPipelineTimeMs ?? Infinity,
     };
   }
 
@@ -143,7 +166,16 @@ export class CombinationSearchEngine {
       `[Equinox] CombinationOptimizer: possible=${stats.totalPossible}, valid=${stats.validGenerated}, evaluated=${stats.selectedForPipeline}, skippedInvalid=${stats.skippedInvalid}, exploitation=${this.options.exploitationRatio}, anchors=${this.options.anchorCandidateLimit}x${this.options.perAnchorCombinations}`,
     );
 
+    const pipelineDeadline = Date.now() + this.options.maxPipelineTimeMs;
+
     for (const candidate of trios) {
+      if (Date.now() > pipelineDeadline) {
+        console.log(
+          `[Equinox] CombinationOptimizer: pipeline completo interrompido por orçamento de tempo (${this.options.maxPipelineTimeMs}ms) com ${best.length} times avaliados até então.`,
+        );
+        break;
+      }
+
       const fullTeam = formatSolver.normalizeFinalTeam([...baseTeam, ...candidate.trio], format);
       const normalizedTrio = fullTeam.slice(baseTeam.length);
 
@@ -174,10 +206,17 @@ export class CombinationSearchEngine {
     const totalPossible = this.combinationCount(len, 3);
     const allValid: OptimizedTrioCandidate[] = [];
     let skippedInvalid = 0;
+    let timedOut = false;
+    const deadline = Date.now() + this.options.maxPreFilterTimeMs;
 
-    for (let i = 0; i < len; i++) {
+    outer: for (let i = 0; i < len; i++) {
       for (let j = i + 1; j < len; j++) {
         for (let k = j + 1; k < len; k++) {
+          if (Date.now() > deadline) {
+            timedOut = true;
+            break outer;
+          }
+
           const trio = [candidates[i], candidates[j], candidates[k]];
           const trioSpecies = new Set(trio.map(pokemon => getSpeciesClauseKey(pokemon.name)));
           if (trioSpecies.size !== trio.length) {
@@ -199,6 +238,12 @@ export class CombinationSearchEngine {
           });
         }
       }
+    }
+
+    if (timedOut) {
+      console.log(
+        `[Equinox] CombinationOptimizer: pré-filtro interrompido por orçamento de tempo (${this.options.maxPreFilterTimeMs}ms) com ${allValid.length} trios válidos encontrados até então.`,
+      );
     }
 
     allValid.sort((a, b) => b.heuristicScore - a.heuristicScore);
