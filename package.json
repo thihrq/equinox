@@ -78,6 +78,7 @@
     "sets:active-v2-production:publish": "ts-node src/scripts/publishActiveV2Production.ts",
     "sets:active-v2-production:rollback": "ts-node src/scripts/rollbackActiveV2Production.ts",
     "sets:active-v2-production:freeze-guard:check": "ts-node src/scripts/validateActiveV2DataFreezeGuard.ts",
+    "sets:active-v2-production:transaction-retry:check": "ts-node src/scripts/validateActiveV2ProductionTransactionRetry.ts",
     "sets:active-v2-production:offline:check": "ts-node src/scripts/validateActiveV2ProductionOffline.ts",
     "sets:active-v2-runtime-observability:evaluate": "ts-node src/scripts/evaluateActiveV2RuntimeObservability.ts",
     "sets:active-v2-runtime-observability:inject-synthetic-alert": "ts-node src/scripts/injectActiveV2RuntimeSyntheticAlert.ts",

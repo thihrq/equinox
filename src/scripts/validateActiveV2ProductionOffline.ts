@@ -8,7 +8,8 @@ const validationScripts = [
   'src/scripts/validateActiveV2ProductionPublisher.ts',
   'src/scripts/validateActiveV2ProductionRollback.ts',
   'src/scripts/validateActiveV2ProductionCliExitCodes.ts',
-  'src/scripts/validateActiveV2DataFreezeGuard.ts'
+  'src/scripts/validateActiveV2DataFreezeGuard.ts',
+  'src/scripts/validateActiveV2ProductionTransactionRetry.ts'
 ];
 
 function runOfflineSuite(): void {

@@ -6,6 +6,7 @@ import { validateLineageAndDigest } from './ActiveV2ProductionLineageValidator';
 import { calculateCanonicalActiveV2DataDigest } from '../digest/ActiveV2CanonicalDataDigest';
 import { assertActiveV2DataFreezeAllowsPublication } from './ActiveV2DataFreezeGuard';
 import { readActiveV2CanaryConfig } from '../runtime-control/ActiveV2CanaryConfigStore';
+import { runInTransactionWithRetry } from './ActiveV2ProductionTransactionRetry';
 import type { PublishOptions, PublishResult } from './ActiveV2ProductionTypes';
 import { ALLOWED_SOURCE_COLLECTION, ALLOWED_TARGET_COLLECTION, ALLOWED_MANIFEST_COLLECTION } from './ActiveV2ProductionPolicy';
 
@@ -107,106 +108,128 @@ export async function publishToProduction(
     };
   }
 
-  // 7. Execução sob transação única do MongoDB
-  const session = await connection.startSession();
-  session.startTransaction();
-
-  try {
-    const now = new Date();
-
-    // Determinar a publicação ativa anterior
-    const previousActiveManifest = await PublicationManifest.findOne({ status: 'active' }).session(session).exec();
-    const previousActivePublishRunId = previousActiveManifest ? previousActiveManifest.publishRunId : null;
-
-    // Buscar no banco registros ativamente vigentes
-    const existingActiveSets = await PokemonSetV2.find({ active: true }).session(session).exec();
-
-    // Mapear transições por documento
-    const setTransitions = stagingRecords.map(rec => {
-      const currentActive = existingActiveSets.find(x => x.setId === rec.setId);
-      return {
-        setId: rec.setId,
-        previousPublishRunId: currentActive ? currentActive.publishRunId : null,
-        newPublishRunId: publishRunId,
-      };
-    });
-
-    // Inserir os novos documentos na coleção de produção pokemonsets_v2 como inativos
-    const docsToInsert = stagingRecords.map(rec => {
-      // Clona o documento removendo o _id e campos transitórios
-      const { _id, ...cleanRec } = rec;
-      return {
-        ...cleanRec,
-        // PokemonSetV2Schema exige `role` (legado, singular) além de
-        // `primaryRole`/`secondaryRoles` (o par realmente usado pelo
-        // pipeline de curação/governança). Nenhum consumidor a jusante lê
-        // `.role` hoje, mas o schema o exige — sem isso, insertMany falha
-        // em runtime real (só descoberto rodando contra Mongo de verdade;
-        // os testes offline mockam o model e nunca exercitam essa validação).
-        role: cleanRec.role ?? cleanRec.primaryRole ?? 'unknown',
+  // 7. Execução sob transação única do MongoDB, com retry automático em
+  // TransientTransactionError (ver ActiveV2ProductionTransactionRetry.ts).
+  return runInTransactionWithRetry(
+    connection,
+    session =>
+      executeProductionPublishTransaction({
+        session,
+        stagingRecords,
         publishRunId,
-        previousPublishRunId: setTransitions.find(t => t.setId === rec.setId)?.previousPublishRunId || null,
         sourceActiveRunId,
-        active: false, // Começam inativos para o chaveamento atômico
-        publishedAt: now,
-      };
-    });
-
-    await PokemonSetV2.insertMany(docsToInsert, { session });
-
-    // Criar o manifesto de publicação inicial como prepared
-    const manifest = new PublicationManifest({
-      publishRunId,
-      previousActivePublishRunId,
-      sourceActiveRunId,
-      setIds: stagingRecords.map(r => r.setId),
-      recordCount: stagingRecords.length,
-      activeV2DataDigest,
-      acceptanceReportDigest: (acceptanceReport as any).inputEvidenceDigest || 'unknown',
-      shadowEvidenceDigest: (acceptanceReport as any).inputEvidenceDigest || 'unknown',
-      baselineSourceDigest: (acceptanceReport as any).baselineSourceDigest || 'unknown',
-      status: 'prepared',
-      setTransitions,
-    });
-    await manifest.save({ session });
-
-    // Desativar versões anteriores
-    await PokemonSetV2.updateMany(
-      { active: true, setId: { $in: stagingRecords.map(r => r.setId) } },
-      { $set: { active: false, productionDeactivatedAt: now } },
-      { session }
-    );
-
-    // Ativar versões recém-inseridas
-    await PokemonSetV2.updateMany(
-      { publishRunId, setId: { $in: stagingRecords.map(r => r.setId) } },
-      { $set: { active: true, productionActivatedAt: now } },
-      { session }
-    );
-
-    // Se havia um manifesto ativo anterior, muda status para 'published'
-    if (previousActiveManifest) {
-      previousActiveManifest.status = 'published';
-      await previousActiveManifest.save({ session });
+        activeV2DataDigest,
+        acceptanceReport,
+      }),
+    {
+      onRetry: (attempt, maxRetries, error) =>
+        console.warn(
+          `[Equinox] Transação de publicação falhou com TransientTransactionError (tentativa ${attempt}/${maxRetries}), tentando novamente: ${error instanceof Error ? error.message : String(error)}`
+        ),
     }
+  );
+}
 
-    // Mudar manifesto atual para active
-    manifest.status = 'active';
-    await manifest.save({ session });
+interface ExecuteProductionPublishTransactionInput {
+  session: mongoose.mongo.ClientSession;
+  stagingRecords: any[];
+  publishRunId: string;
+  sourceActiveRunId: string;
+  activeV2DataDigest: string;
+  acceptanceReport: any;
+}
 
-    // Commit transacional atômico
-    await session.commitTransaction();
-    session.endSession();
+async function executeProductionPublishTransaction(
+  input: ExecuteProductionPublishTransactionInput
+): Promise<PublishResult> {
+  const { session, stagingRecords, publishRunId, sourceActiveRunId, activeV2DataDigest, acceptanceReport } = input;
 
+  const now = new Date();
+
+  // Determinar a publicação ativa anterior
+  const previousActiveManifest = await PublicationManifest.findOne({ status: 'active' }).session(session).exec();
+  const previousActivePublishRunId = previousActiveManifest ? previousActiveManifest.publishRunId : null;
+
+  // Buscar no banco registros ativamente vigentes
+  const existingActiveSets = await PokemonSetV2.find({ active: true }).session(session).exec();
+
+  // Mapear transições por documento
+  const setTransitions = stagingRecords.map(rec => {
+    const currentActive = existingActiveSets.find(x => x.setId === rec.setId);
     return {
-      status: 'success',
-      manifest: manifest.toObject(),
+      setId: rec.setId,
+      previousPublishRunId: currentActive ? currentActive.publishRunId : null,
+      newPublishRunId: publishRunId,
     };
-  } catch (error) {
-    if (session.inTransaction()) {
-      await session.abortTransaction();
-    }
-    session.endSession();
-    throw error;
+  });
+
+  // Inserir os novos documentos na coleção de produção pokemonsets_v2 como inativos
+  const docsToInsert = stagingRecords.map(rec => {
+    // Clona o documento removendo o _id e campos transitórios
+    const { _id, ...cleanRec } = rec;
+    return {
+      ...cleanRec,
+      // PokemonSetV2Schema exige `role` (legado, singular) além de
+      // `primaryRole`/`secondaryRoles` (o par realmente usado pelo
+      // pipeline de curação/governança). Nenhum consumidor a jusante lê
+      // `.role` hoje, mas o schema o exige — sem isso, insertMany falha
+      // em runtime real (só descoberto rodando contra Mongo de verdade;
+      // os testes offline mockam o model e nunca exercitam essa validação).
+      role: cleanRec.role ?? cleanRec.primaryRole ?? 'unknown',
+      publishRunId,
+      previousPublishRunId: setTransitions.find(t => t.setId === rec.setId)?.previousPublishRunId || null,
+      sourceActiveRunId,
+      active: false, // Começam inativos para o chaveamento atômico
+      publishedAt: now,
+    };
+  });
+
+  await PokemonSetV2.insertMany(docsToInsert, { session });
+
+  // Criar o manifesto de publicação inicial como prepared
+  const manifest = new PublicationManifest({
+    publishRunId,
+    previousActivePublishRunId,
+    sourceActiveRunId,
+    setIds: stagingRecords.map(r => r.setId),
+    recordCount: stagingRecords.length,
+    activeV2DataDigest,
+    acceptanceReportDigest: (acceptanceReport as any).inputEvidenceDigest || 'unknown',
+    shadowEvidenceDigest: (acceptanceReport as any).inputEvidenceDigest || 'unknown',
+    baselineSourceDigest: (acceptanceReport as any).baselineSourceDigest || 'unknown',
+    status: 'prepared',
+    setTransitions,
+  });
+  await manifest.save({ session });
+
+  // Desativar versões anteriores
+  await PokemonSetV2.updateMany(
+    { active: true, setId: { $in: stagingRecords.map(r => r.setId) } },
+    { $set: { active: false, productionDeactivatedAt: now } },
+    { session }
+  );
+
+  // Ativar versões recém-inseridas
+  await PokemonSetV2.updateMany(
+    { publishRunId, setId: { $in: stagingRecords.map(r => r.setId) } },
+    { $set: { active: true, productionActivatedAt: now } },
+    { session }
+  );
+
+  // Se havia um manifesto ativo anterior, muda status para 'published'
+  if (previousActiveManifest) {
+    previousActiveManifest.status = 'published';
+    await previousActiveManifest.save({ session });
   }
+
+  // Mudar manifesto atual para active
+  manifest.status = 'active';
+  await manifest.save({ session });
+
+  // Commit fica a cargo do chamador (publishToProduction), que também
+  // trata retry de TransientTransactionError.
+  return {
+    status: 'success',
+    manifest: manifest.toObject(),
+  };
 }

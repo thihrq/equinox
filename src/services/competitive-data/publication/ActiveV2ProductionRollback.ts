@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { PokemonSetV2 } from '../../../models/PokemonSetV2';
 import { PublicationManifest } from '../../../models/PublicationManifest';
+import { runInTransactionWithRetry } from './ActiveV2ProductionTransactionRetry';
 import type { RollbackOptions, RollbackResult } from './ActiveV2ProductionTypes';
 
 /**
@@ -33,59 +34,54 @@ export async function rollbackProductionBatch(
     };
   }
 
-  // 3. Execução sob Transação MongoDB
-  const session = await connection.startSession();
-  session.startTransaction();
+  // 3. Execução sob Transação MongoDB, com retry automático em
+  // TransientTransactionError (ver ActiveV2ProductionTransactionRetry.ts).
+  return runInTransactionWithRetry(
+    connection,
+    async session => {
+      const now = new Date();
 
-  try {
-    const now = new Date();
+      // Reverter cada set de acordo com setTransitions
+      for (const transition of manifest.setTransitions) {
+        const { setId, previousPublishRunId } = transition;
 
-    // Reverter cada set de acordo com setTransitions
-    for (const transition of manifest.setTransitions) {
-      const { setId, previousPublishRunId } = transition;
-
-      // Desativar a versão atual da run
-      await PokemonSetV2.updateOne(
-        { setId, publishRunId, active: true },
-        { $set: { active: false, productionDeactivatedAt: now } },
-        { session }
-      );
-
-      // Reativar a versão anterior (se houver)
-      if (previousPublishRunId) {
+        // Desativar a versão atual da run
         await PokemonSetV2.updateOne(
-          { setId, publishRunId: previousPublishRunId },
-          { $set: { active: true }, $unset: { productionDeactivatedAt: 1 } },
+          { setId, publishRunId, active: true },
+          { $set: { active: false, productionDeactivatedAt: now } },
+          { session }
+        );
+
+        // Reativar a versão anterior (se houver)
+        if (previousPublishRunId) {
+          await PokemonSetV2.updateOne(
+            { setId, publishRunId: previousPublishRunId },
+            { $set: { active: true }, $unset: { productionDeactivatedAt: 1 } },
+            { session }
+          );
+        }
+      }
+
+      // Mudar status do manifesto atual
+      manifest.status = 'rolled-back';
+      await manifest.save({ session });
+
+      // Se houver um manifesto anterior associado, reativar seu status para 'active'
+      if (manifest.previousActivePublishRunId) {
+        await PublicationManifest.updateOne(
+          { publishRunId: manifest.previousActivePublishRunId },
+          { $set: { status: 'active' } },
           { session }
         );
       }
+
+      return { status: 'success' as const };
+    },
+    {
+      onRetry: (attempt, maxRetries, error) =>
+        console.warn(
+          `[Equinox] Transação de rollback falhou com TransientTransactionError (tentativa ${attempt}/${maxRetries}), tentando novamente: ${error instanceof Error ? error.message : String(error)}`
+        ),
     }
-
-    // Mudar status do manifesto atual
-    manifest.status = 'rolled-back';
-    await manifest.save({ session });
-
-    // Se houver um manifesto anterior associado, reativar seu status para 'active'
-    if (manifest.previousActivePublishRunId) {
-      await PublicationManifest.updateOne(
-        { publishRunId: manifest.previousActivePublishRunId },
-        { $set: { status: 'active' } },
-        { session }
-      );
-    }
-
-    // Commit da transação
-    await session.commitTransaction();
-    session.endSession();
-
-    return {
-      status: 'success',
-    };
-  } catch (error) {
-    if (session.inTransaction()) {
-      await session.abortTransaction();
-    }
-    session.endSession();
-    throw error;
-  }
+  );
 }
