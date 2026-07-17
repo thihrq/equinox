@@ -10,19 +10,17 @@ export interface FormatPerformanceProfile {
   anchorCandidateLimit: number;
   perAnchorCombinations: number;
   /**
-   * Teto de candidatos considerados no pré-filtro combinatório de trios
-   * (busca O(n³) em CombinationSearchEngine, que roda por completo antes de
-   * aplicar maxPipelineEvaluations). Sem teto (Infinity) para não mudar o
-   * comportamento de perfis já validados; reduzido apenas onde a
-   * combinatória se provou cara demais para o CPU do Render Free.
-   */
-  maxPreFilterCandidates: number;
-  /**
-   * Wall-clock budget (ms) for the same pré-filtro loop. O teto de
-   * candidatos sozinho se provou insuficiente em produção (ainda >60s com
-   * 220 combinações sob CPU throttling do Render Free) — este é o limite
-   * real, pois se adapta à velocidade de CPU do momento em vez de um
-   * palpite fixo. Infinity nos perfis não afetados.
+   * Orçamento de tempo (ms) para o pré-filtro combinatório de trios (busca
+   * O(n³) em CombinationSearchEngine, que roda antes de aplicar
+   * maxPipelineEvaluations). Um teto de *contagem* de candidatos foi
+   * tentado primeiro e causou um bug real: cortar para os N candidatos
+   * mais bem pontuados pode produzir um pool homogêneo demais para
+   * satisfazer restrições de composição (incidente 2026-07-17 — os 12
+   * melhores candidatos para um time com viés de chuva eram todos do tipo
+   * Water, tornando impossível achar qualquer trio válido). Um orçamento
+   * de tempo deixa o laço explorar candidatos mais diversos mais abaixo na
+   * lista, e se adapta à velocidade real de CPU em vez de um palpite fixo.
+   * Infinity nos perfis não afetados.
    */
   maxPreFilterTimeMs: number;
   /** Mesma ideia, mas para a fase de pipeline completo (maxPipelineEvaluations). */
@@ -53,13 +51,14 @@ function applyRuntimeProfile(profile: FormatPerformanceProfile): FormatPerforman
       exploitationRatio: 0.9,
       // Incidente real 2026-07-17: pré-filtro O(n³) sobre 28 candidatos
       // (C(28,3)=3.276 avaliações síncronas de plano/mecânica VGC) travou o
-      // event loop inteiro no Render Free por vários minutos. C(12,3)=220
-      // mantém o pré-filtro na mesma ordem de grandeza do orçamento de
-      // pipeline completo (64) acima, sem esvaziar o espaço de busca.
-      maxPreFilterCandidates: 12,
-      // Mesmo com o teto acima, uma tentativa real ainda estourou 60s+ sob
-      // throttling do Render Free — o teto de tempo é o limite que
-      // realmente garante latência máxima previsível.
+      // event loop inteiro no Render Free por vários minutos. Um teto de
+      // *contagem* de candidatos (tentativa anterior, revertida) causou
+      // outro bug: cortar para os N mais bem pontuados pode produzir um
+      // pool homogêneo demais para passar nas restrições de composição.
+      // O orçamento de tempo abaixo, combinado com yield periódico do
+      // event loop (ver CombinationSearchEngine.yieldEventLoop), é o
+      // limite real — deixa o laço avançar por candidatos mais diversos
+      // sem travar o health check do Render (timeout de 5s).
       maxPreFilterTimeMs: 2500,
       maxPipelineTimeMs: 2500,
     },
@@ -117,7 +116,6 @@ export class FormatPerformanceProfileRegistry {
         maxCombinationsToKeep: 180,
         anchorCandidateLimit: 18,
         perAnchorCombinations: 10,
-        maxPreFilterCandidates: Infinity,
         maxPreFilterTimeMs: Infinity,
         maxPipelineTimeMs: Infinity,
         note: 'Prioriza trios já fortes contra a gauntlet Hardcore e evita rodar pipeline completo em milhares de composições redundantes.',
@@ -137,7 +135,6 @@ export class FormatPerformanceProfileRegistry {
         maxCombinationsToKeep: isDoubles ? 10 : 40,
         anchorCandidateLimit: isDoubles ? 4 : 10,
         perAnchorCombinations: isDoubles ? 1 : 3,
-        maxPreFilterCandidates: Infinity,
         maxPreFilterTimeMs: Infinity,
         maxPipelineTimeMs: Infinity,
         note: 'Usa pré-ranking VGC leve de plano 6/4/leads, preserva o arquétipo e hidrata apenas finalistas para reduzir latência em fluxo interativo.',
@@ -153,7 +150,6 @@ export class FormatPerformanceProfileRegistry {
         maxCombinationsToKeep: 240,
         anchorCandidateLimit: 24,
         perAnchorCombinations: 14,
-        maxPreFilterCandidates: Infinity,
         maxPreFilterTimeMs: Infinity,
         maxPipelineTimeMs: Infinity,
         note: 'Perfis Vanilla por jogo usam pools menores e ameaça limitada ao escopo da geração, então não precisam da busca ampla de ladder.',
@@ -169,7 +165,6 @@ export class FormatPerformanceProfileRegistry {
         maxCombinationsToKeep: 40,
         anchorCandidateLimit: 10,
         perAnchorCombinations: 3,
-        maxPreFilterCandidates: Infinity,
         maxPreFilterTimeMs: Infinity,
         maxPipelineTimeMs: Infinity,
         note: 'Showdown/National Dex saiu do escopo do produto; aliases legados usam o solver de Champions Singles como fallback seguro.',
@@ -184,7 +179,6 @@ export class FormatPerformanceProfileRegistry {
       maxCombinationsToKeep: 260,
       anchorCandidateLimit: 24,
       perAnchorCombinations: 16,
-      maxPreFilterCandidates: Infinity,
       maxPreFilterTimeMs: Infinity,
       maxPipelineTimeMs: Infinity,
       note: 'Perfil padrão para formatos genéricos sem data pack pesado.',
