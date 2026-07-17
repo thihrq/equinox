@@ -71,6 +71,24 @@ async function runTests(): Promise<void> {
   const parsed = parseActiveV2RuntimeTelemetryEvent(VALID_EVENT);
   if (parsed.eventId !== 'evt-1') throw new Error('Test 9 failed: expected parsed event to preserve eventId');
 
+  // --- Caso de Teste 10: fallbackReason='no-v2-data' e' aceito (bug real corrigido —
+  // esse valor faltava na allowlist e rejeitava exatamente o evento que o
+  // orquestrador de shadow real emite quando um Pokemon nao tem set V2) ---
+  const noV2DataEvent = {
+    ...VALID_EVENT,
+    v2: { outcome: 'skipped', latencyMs: null, fallbackTriggered: true, fallbackReason: 'no-v2-data' },
+  };
+  const result10 = validateActiveV2RuntimeTelemetryEventShape(noV2DataEvent);
+  if (!result10.valid) throw new Error(`Test 10 failed: expected fallbackReason='no-v2-data' to be accepted, got: ${result10.errors.join(', ')}`);
+
+  // --- Caso de Teste 11: fallbackReason='ambiguous-v2-data' e' aceito ---
+  const ambiguousEvent = {
+    ...VALID_EVENT,
+    v2: { outcome: 'skipped', latencyMs: null, fallbackTriggered: true, fallbackReason: 'ambiguous-v2-data' },
+  };
+  const result11 = validateActiveV2RuntimeTelemetryEventShape(ambiguousEvent);
+  if (!result11.valid) throw new Error(`Test 11 failed: expected fallbackReason='ambiguous-v2-data' to be accepted, got: ${result11.errors.join(', ')}`);
+
   console.log('[Equinox] Active V2 runtime telemetry schema validation passed.');
 }
 
