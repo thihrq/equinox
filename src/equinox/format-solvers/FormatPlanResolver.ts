@@ -193,7 +193,34 @@ export function countTypeMembersForPlan(team: PokemonData[], format: string, typ
   return team.filter(pokemon => getPokemonTypes(pokemon, format).map(normalize).includes(target)).length;
 }
 
+/**
+ * resolveFormatPlan só depende de baseTeam+format+mode, que ficam fixos
+ * durante toda uma busca combinatória (CombinationSearchEngine chama isso
+ * uma vez por candidato avaliado, potencialmente milhares de vezes por
+ * requisição). Memoizado por referência de baseTeam — incidente real
+ * 2026-07-17: essa recomputação redundante era um dos maiores custos por
+ * iteração do pré-filtro, contribuindo para o orçamento de tempo estourar
+ * antes de a busca alcançar candidatos além dos primeiros mais bem
+ * pontuados.
+ */
+const resolvedFormatPlanCache = new WeakMap<PokemonData[], Map<string, ResolvedFormatPlan>>();
+
 export function resolveFormatPlan(baseTeam: PokemonData[], format: string, mode: EquinoxFormatMode): ResolvedFormatPlan {
+  const cacheKey = `${format}|${mode}`;
+  let byKey = resolvedFormatPlanCache.get(baseTeam);
+  if (!byKey) {
+    byKey = new Map();
+    resolvedFormatPlanCache.set(baseTeam, byKey);
+  }
+  const cached = byKey.get(cacheKey);
+  if (cached) return cached;
+
+  const plan = computeFormatPlan(baseTeam, format, mode);
+  byKey.set(cacheKey, plan);
+  return plan;
+}
+
+function computeFormatPlan(baseTeam: PokemonData[], format: string, mode: EquinoxFormatMode): ResolvedFormatPlan {
   const signals: string[] = [];
   const weatherScores = (Object.keys(WEATHER) as WeatherPlanFamily[]).map(family => {
     const explicitSetters = baseTeam.filter(pokemon => hasWeatherSetterForPlan(pokemon, format, family)).length;
