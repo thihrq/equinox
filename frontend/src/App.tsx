@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Moon, Sun, TriangleAlert } from 'lucide-react';
 import type { ExplanationEntry, SuggestionResponse, TeamIdentity, TeamOption } from './types/equinox';
 import type { Locale } from './i18n/equinoxI18n';
@@ -760,11 +760,32 @@ function EmptyState({ locale, onUseExampleCore }: { locale: Locale; onUseExample
 }
 
 function LoadingState({ locale }: { locale: Locale }) {
+  const stageKeys = ['loadingStage1', 'loadingStage2', 'loadingStage3', 'loadingStage4'] as const;
+  const [stageIndex, setStageIndex] = useState(0);
+
+  useEffect(() => {
+    setStageIndex(0);
+    const interval = setInterval(() => {
+      setStageIndex(current => (current + 1) % stageKeys.length);
+    }, 1800);
+    return () => clearInterval(interval);
+  }, [stageKeys.length]);
+
   return (
     <section className="eq-loading-v2">
-      <span className="eq-loader-ring eq-loader-ring--stage" aria-hidden="true" />
+      <div className="eq-line eq-line--anim" aria-hidden="true" style={{ width: '160px', marginBottom: '20px' }} />
       <h2>{t(locale, 'loadingTitle')}</h2>
       <p>{t(locale, 'loadingText')}</p>
+      <ul className="eq-loading-stages" aria-live="polite">
+        {stageKeys.map((key, index) => (
+          <li
+            key={key}
+            className={index === stageIndex ? 'is-current' : index < stageIndex ? 'is-done' : ''}
+          >
+            {t(locale, key)}
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
