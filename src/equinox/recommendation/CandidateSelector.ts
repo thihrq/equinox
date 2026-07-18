@@ -84,7 +84,13 @@ export class CandidateSelector {
     const top = rankedWithScore.slice(0, limit);
 
     if (plan?.primaryWeather) {
-      this.reserveWeatherPlanSupport(top, rankedWithScore, plan.primaryWeather, format);
+      const diag = this.reserveWeatherPlanSupport(top, rankedWithScore, plan.primaryWeather, format);
+      console.log(
+        `[Equinox] CandidateSelector: reserva de suporte (${plan.primaryWeather}) -- ` +
+        `piso=${diag.reserve}, suporte-inicial=${diag.initialSupportCount}, ` +
+        `disponiveis-para-resgate=${diag.rescueAvailable}, resgatados=${diag.rescuedNames.length}` +
+        (diag.rescuedNames.length ? `: ${diag.rescuedNames.join(', ')}` : ''),
+      );
     }
 
     const selected = top.map(item => item.pokemon);
@@ -144,7 +150,8 @@ export class CandidateSelector {
     ranked: { pokemon: PokemonData; score: number }[],
     family: WeatherPlanFamily,
     format: string,
-  ): void {
+  ): { reserve: number; initialSupportCount: number; rescueAvailable: number; rescuedNames: string[] } {
+    const rescuedNames: string[] = [];
     // isTurnControlForPlan/isPivotForPlan/isRedirectionForPlan checam só o
     // moveset do candidato (Taunt, U-turn, Fake Out...), sem olhar se ele
     // TAMBÉM é abuser primário -- muitos dos próprios abusers de sol
@@ -164,28 +171,33 @@ export class CandidateSelector {
 
     const reserve = Math.min(CandidateSelector.MIN_WEATHER_PLAN_SUPPORT_RESERVE, top.length);
     let supportCount = top.filter(qualifiesAsSupport).length;
-    if (supportCount >= reserve) return;
+    const initialSupportCount = supportCount;
 
     const inTop = new Set(top.map(item => item.pokemon));
     const rescueCandidates = ranked.filter(item => !inTop.has(item.pokemon) && qualifiesAsSupport(item));
 
-    for (const rescue of rescueCandidates) {
-      if (supportCount >= reserve) break;
+    if (supportCount < reserve) {
+      for (const rescue of rescueCandidates) {
+        if (supportCount >= reserve) break;
 
-      let evictIndex = -1;
-      let evictScore = Infinity;
-      for (let i = 0; i < top.length; i++) {
-        if (hasPrimaryWeatherAbuserForPlan(top[i].pokemon, format, family) && top[i].score < evictScore) {
-          evictScore = top[i].score;
-          evictIndex = i;
+        let evictIndex = -1;
+        let evictScore = Infinity;
+        for (let i = 0; i < top.length; i++) {
+          if (hasPrimaryWeatherAbuserForPlan(top[i].pokemon, format, family) && top[i].score < evictScore) {
+            evictScore = top[i].score;
+            evictIndex = i;
+          }
         }
+
+        if (evictIndex === -1) break;
+
+        top.splice(evictIndex, 1, rescue);
+        supportCount++;
+        rescuedNames.push(rescue.pokemon.name);
       }
-
-      if (evictIndex === -1) break;
-
-      top.splice(evictIndex, 1, rescue);
-      supportCount++;
     }
+
+    return { reserve, initialSupportCount, rescueAvailable: rescueCandidates.length, rescuedNames };
   }
 
   private isBanned(name: string): boolean {
