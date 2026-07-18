@@ -232,6 +232,13 @@ export class CombinationSearchEngine {
     let iterations = 0;
     const deadline = Date.now() + this.options.maxPreFilterTimeMs;
 
+    // Instrumentação temporária (incidente 2026-07-17): descobrir onde o
+    // tempo por iteração realmente vai sob throttling do Render Free.
+    // Remover depois que o gargalo for identificado e corrigido.
+    let nsNormalize = 0n;
+    let nsIsValidTeam = 0n;
+    let nsHeuristic = 0n;
+
     outer: for (let i = 0; i < len; i++) {
       for (let j = i + 1; j < len; j++) {
         for (let k = j + 1; k < len; k++) {
@@ -251,21 +258,38 @@ export class CombinationSearchEngine {
             continue;
           }
 
+          let t0 = process.hrtime.bigint();
           const fullTeam = formatSolver.normalizeFinalTeam([...baseTeam, ...trio], format);
+          let t1 = process.hrtime.bigint();
+          nsNormalize += t1 - t0;
 
-          if (!this.isValidTeam(fullTeam, baseTeam, format, formatSolver)) {
+          t0 = process.hrtime.bigint();
+          const isValid = this.isValidTeam(fullTeam, baseTeam, format, formatSolver);
+          t1 = process.hrtime.bigint();
+          nsIsValidTeam += t1 - t0;
+
+          if (!isValid) {
             skippedInvalid++;
             continue;
           }
 
+          t0 = process.hrtime.bigint();
+          const heuristicScore = this.calculateHeuristicScore(trio, params, formatSolver);
+          t1 = process.hrtime.bigint();
+          nsHeuristic += t1 - t0;
+
           allValid.push({
             trio,
             signature: this.getSignature(trio),
-            heuristicScore: this.calculateHeuristicScore(trio, params, formatSolver),
+            heuristicScore,
           });
         }
       }
     }
+
+    console.log(
+      `[Equinox] CombinationOptimizer PROFILING: iterations=${iterations}, normalizeFinalTeam=${Number(nsNormalize) / 1e6}ms, isValidTeam=${Number(nsIsValidTeam) / 1e6}ms, calculateHeuristicScore=${Number(nsHeuristic) / 1e6}ms, avgPerIteration=${Number(nsNormalize + nsIsValidTeam + nsHeuristic) / 1e6 / Math.max(1, iterations)}ms`,
+    );
 
     if (timedOut) {
       console.log(
