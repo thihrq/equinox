@@ -46,6 +46,7 @@ import { appConfig } from '../config/env';
 import { FormatLegalityRules } from '../equinox/recommendation/FormatLegalityRules';
 import { FormatSolverRegistry } from '../equinox/format-solvers/FormatSolverRegistry';
 import { resolveFormatPlan } from '../equinox/format-solvers/FormatPlanResolver';
+import { inferVgcArchetype } from '../equinox/vgc/VgcTeamBuilding';
 
 
 export type TeamSuggestionInputErrorCode =
@@ -612,6 +613,27 @@ export class TeamService {
     console.timeEnd('RecommendationAdapter');
 
     console.log(`[Equinox] TopTeams returned=${response.topTeams.length}`);
+
+    // Achado real 2026-07-18: quando os Pokémon da base não fecham nenhum
+    // arquétipo VGC coerente entre si (ex.: Charizard manda um sinal fraco
+    // de "sun" via Solar Power sem sinergia real com Lapras/Jolteon), a
+    // busca combinatória estoura o orçamento de tempo sem achar nenhuma
+    // combinação válida e o usuário só via topTeams:[] sem explicação.
+    // inferVgcArchetype já existe e é barato quando chamado com 1 Pokémon
+    // só -- expõe o sinal individual de cada membro da base pra o usuário
+    // entender o porquê e (numa próxima etapa) escolher um caminho.
+    if (response.topTeams.length === 0 && formatSolver.usesDoublesMechanicContracts) {
+      (response as typeof response & { archetypeConflict?: unknown }).archetypeConflict = validCurrentTeam.map(pokemon => {
+        const analysis = inferVgcArchetype([pokemon], format);
+        return {
+          pokemon: pokemon.name,
+          archetypeId: analysis.id,
+          label: analysis.label,
+          confidence: analysis.confidence,
+          signals: analysis.signals,
+        };
+      });
+    }
 
     RecommendationCache.set(cacheKey, response);
     const updatedCacheStats = RecommendationCache.stats();
