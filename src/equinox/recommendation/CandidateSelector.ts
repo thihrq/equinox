@@ -145,12 +145,22 @@ export class CandidateSelector {
     family: WeatherPlanFamily,
     format: string,
   ): void {
+    // isTurnControlForPlan/isPivotForPlan/isRedirectionForPlan checam só o
+    // moveset do candidato (Taunt, U-turn, Fake Out...), sem olhar se ele
+    // TAMBÉM é abuser primário -- muitos dos próprios abusers de sol
+    // (Venusaur, Exeggutor...) carregam algum desses golpes de utilidade
+    // no set. Sem excluir explicitamente hasPrimaryWeatherAbuserForPlan,
+    // a reserva era preenchida por abusers disfarçados de suporte e nunca
+    // disparava a troca real (achado real 2026-07-18: possible=9139,
+    // valid=0 idêntico antes/depois desta correção, provando que a
+    // primeira versão não teve efeito nenhum no pool).
     const qualifiesAsSupport = (item: { pokemon: PokemonData; score: number }): boolean =>
-      hasWeatherSetterForPlan(item.pokemon, format, family) ||
-      hasWeatherSupportForPlan(item.pokemon, format, family) ||
-      isTurnControlForPlan(item.pokemon) ||
-      isRedirectionForPlan(item.pokemon) ||
-      isPivotForPlan(item.pokemon);
+      !hasPrimaryWeatherAbuserForPlan(item.pokemon, format, family) &&
+      (hasWeatherSetterForPlan(item.pokemon, format, family) ||
+        hasWeatherSupportForPlan(item.pokemon, format, family) ||
+        isTurnControlForPlan(item.pokemon) ||
+        isRedirectionForPlan(item.pokemon) ||
+        isPivotForPlan(item.pokemon));
 
     const reserve = Math.min(CandidateSelector.MIN_WEATHER_PLAN_SUPPORT_RESERVE, top.length);
     let supportCount = top.filter(qualifiesAsSupport).length;
