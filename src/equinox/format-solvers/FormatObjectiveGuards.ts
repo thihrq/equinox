@@ -127,7 +127,28 @@ function weatherMove(family: WeatherFamily): string {
   return family === 'rain' ? 'Rain Dance' : family === 'sun' ? 'Sunny Day' : family === 'sand' ? 'Sandstorm' : 'Snowscape';
 }
 
+// Achado real 2026-07-18: chamado a partir de validateCommonTeam a cada
+// iteração do pré-filtro de CombinationSearchEngine (até milhares de
+// vezes por requisição), sempre com o mesmo baseTeam -- exatamente o
+// padrão que já motivou o cache de resolveFormatPlan em
+// FormatPlanResolver.ts (incidente 2026-07-17). Sem memoização aqui,
+// detectWeatherPlan refazia 4 famílias x 3 filtros sobre o time base em
+// toda chamada, mesmo com resolveFormatPlan já cacheado ao lado --
+// reordenar evaluateFormatTeamObjective pra rodar antes de
+// validateFinalTeam (commit f339e44) só reduziu skippedInvalid de 74
+// para 103 em 2500ms porque esse custo redundante continuava lá.
+const detectedWeatherPlanCache = new WeakMap<PokemonData[], Map<string, WeatherFamily | undefined>>();
+
 function detectWeatherPlan(team: PokemonData[], format: string): WeatherFamily | undefined {
+  let byFormat = detectedWeatherPlanCache.get(team);
+  if (!byFormat) {
+    byFormat = new Map();
+    detectedWeatherPlanCache.set(team, byFormat);
+  }
+  if (byFormat.has(format)) {
+    return byFormat.get(format);
+  }
+
   const families = (Object.keys(WEATHER) as WeatherFamily[])
     .map(family => ({
       family,
@@ -138,7 +159,9 @@ function detectWeatherPlan(team: PokemonData[], format: string): WeatherFamily |
     .filter(entry => entry.setters > 0 || entry.abusers > 0)
     .sort((a, b) => (b.setters * 3 + b.abusers * 2 + b.support) - (a.setters * 3 + a.abusers * 2 + a.support));
 
-  return families[0]?.family;
+  const result = families[0]?.family;
+  byFormat.set(format, result);
+  return result;
 }
 
 function hasOpposingWeather(pokemon: PokemonData, format: string, family: WeatherFamily): boolean {
