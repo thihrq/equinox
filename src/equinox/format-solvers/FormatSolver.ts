@@ -1,5 +1,6 @@
 import { PokemonData } from '../core/AnalysisContext';
 import type { TeamIdentity } from '../recommendation/CandidateScoreEngine';
+import type { CoverageRequirement } from '../recommendation/DiversityCandidateSelector';
 
 export type EquinoxFormatMode =
   | 'vanilla'
@@ -92,6 +93,14 @@ export interface FormatSolver {
   normalizeFinalTeam(team: PokemonData[], format: string): PokemonData[];
 
   getDiversityOptions(): DiversitySelectionOptions;
+
+  /**
+   * Requisitos de cobertura mecânica que a diversificação deve garantir
+   * antes da busca combinatória, além do que VgcRole consegue expressar.
+   * Formatos sem contratos de mecânica de Doubles retornam [] (default
+   * em BaseFormatSolver) e mantêm o comportamento atual inalterado.
+   */
+  getMandatoryMechanicCoverage(baseTeam: PokemonData[], format: string): CoverageRequirement[];
 
   adjustCandidateScore(params: FormatCandidateScoreParams): number;
 

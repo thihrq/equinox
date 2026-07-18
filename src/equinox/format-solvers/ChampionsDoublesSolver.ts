@@ -1,11 +1,13 @@
 import { PokemonData } from '../core/AnalysisContext';
 import { getSpeciesClauseKey, getPokemonTypes, getVariant } from '../utils/PokemonUtils';
 import { enforceUniqueVgcHeldItems, isAbilityLegalForPokemon, isMegaOption, optimizeVgcSet } from '../utils/VgcSetOptimizer';
-import { evaluateVgcArchetypeCompatibility, evaluateVgcSetQuality } from '../vgc/VgcArchetypeBlueprints';
+import { evaluateVgcArchetypeCompatibility, evaluateVgcSetQuality, getMechanicSlotsForPokemon, VGC_ARCHETYPE_BLUEPRINTS } from '../vgc/VgcArchetypeBlueprints';
 import { evaluateVgcCandidateFit, inferVgcArchetype } from '../vgc/VgcTeamBuilding';
 import { BaseFormatSolver } from './BaseFormatSolver';
 import { FormatCandidateScoreParams, SetSourceInput } from './FormatSolver';
 import { resolveFormatPlan } from './FormatPlanResolver';
+import type { CandidateScoreResult } from '../recommendation/CandidateScoreEngine';
+import type { CoverageRequirement } from '../recommendation/DiversityCandidateSelector';
 
 export class ChampionsDoublesSolver extends BaseFormatSolver {
   public readonly mode = 'champions_doubles' as const;
@@ -47,6 +49,28 @@ export class ChampionsDoublesSolver extends BaseFormatSolver {
       perType: 3,
       minCandidates: 30,
     };
+  }
+
+  public override getMandatoryMechanicCoverage(baseTeam: PokemonData[], format: string): CoverageRequirement[] {
+    // VgcRole (usado por groupByRole no DiversityCandidateSelector) não
+    // distingue tipo de clima, Terrain, proteção/abuser de Trick Room ou
+    // Tailwind como conceito próprio -- ver VgcMechanicSlotId em
+    // VgcArchetypeBlueprints.ts, a moeda granular que evaluateVgcArchetypeCompatibility
+    // realmente exige. Sem isso, um candidato que carrega o único slot
+    // crítico do arquétipo pode não ter score bruto para o topOverall e
+    // não ter bucket de role equivalente, ficando fora do pool antes da
+    // busca combinatória -- derrubando toda combinação final por falta
+    // desse slot (achado real 2026-07-18, 12 dos 16 arquétipos afetados).
+    const archetype = inferVgcArchetype(baseTeam, format);
+    const blueprint = VGC_ARCHETYPE_BLUEPRINTS[archetype.id];
+    const criticalSlots = blueprint.critical.filter(requirement => requirement.critical);
+
+    return criticalSlots.map(requirement => ({
+      id: `mechanic:${requirement.id}`,
+      perRequirement: 3,
+      matches: (candidate: CandidateScoreResult) =>
+        getMechanicSlotsForPokemon(candidate.pokemon, format).has(requirement.id),
+    }));
   }
 
   public override adjustCandidateScore(params: FormatCandidateScoreParams): number {

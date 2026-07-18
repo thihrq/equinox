@@ -9,6 +9,18 @@ interface DiversitySelectorOptions {
   minCandidates: number;
 }
 
+/**
+ * Requisito de cobertura garantida na diversificação, independente da
+ * taxonomia grosseira de VgcRole usada em groupByRole. Quem decide o que
+ * é um requisito (ex.: um VgcMechanicSlotId crítico do arquétipo atual)
+ * é o FormatSolver -- este seletor permanece agnóstico de formato.
+ */
+export interface CoverageRequirement {
+  id: string;
+  perRequirement: number;
+  matches: (candidate: CandidateScoreResult) => boolean;
+}
+
 export class DiversityCandidateSelector {
   public select(
     scoredCandidates: CandidateScoreResult[],
@@ -19,6 +31,7 @@ export class DiversityCandidateSelector {
       perType: 3,
       minCandidates: 30,
     },
+    coverageRequirements: CoverageRequirement[] = [],
   ): CandidateScoreResult[] {
     const selected = new Map<string, CandidateScoreResult>();
 
@@ -37,6 +50,23 @@ export class DiversityCandidateSelector {
     const typeBuckets = this.groupByType(scoredCandidates);
     for (const bucket of typeBuckets.values()) {
       bucket.slice(0, options.perType).forEach(add);
+    }
+
+    /**
+     * Rede de segurança de cobertura mecânica:
+     * groupByRole usa VgcRole, uma taxonomia grosseira demais para
+     * representar conceitos como tipo de clima (sol/chuva/areia/neve),
+     * Terrain, proteção de Trick Room ou Tailwind como distinto de
+     * "Speed Control" genérico. Um candidato que carrega o único slot
+     * crítico disponível para o arquétipo do time base pode não ter
+     * score bruto para entrar no topOverall e não ter bucket de role
+     * equivalente -- ficando fora do pool antes da busca combinatória
+     * e derrubando toda combinação final por falta desse slot. Esse
+     * passo roda antes do fallback de ranking geral para que slots
+     * críticos tenham prioridade sobre preenchimento cego por score.
+     */
+    for (const requirement of coverageRequirements) {
+      scoredCandidates.filter(requirement.matches).slice(0, requirement.perRequirement).forEach(add);
     }
 
     /**
