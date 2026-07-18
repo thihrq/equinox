@@ -583,7 +583,7 @@ export default function App() {
 
         {!result && !loading && <EmptyState locale={locale} onUseExampleCore={handleUseExampleCore} />}
         {loading && <LoadingState locale={locale} />}
-        {result && !selectedOption && !leadResult && !loading && <NoResultsState locale={locale} />}
+        {result && !selectedOption && !leadResult && !loading && <NoResultsState locale={locale} onUseExampleCore={handleUseExampleCore} />}
 
         {leadResult && !loading && (
           <LeadStrategyPanel
@@ -757,7 +757,7 @@ function LoadingState({ locale }: { locale: Locale }) {
   );
 }
 
-function NoResultsState({ locale }: { locale: Locale }) {
+function NoResultsState({ locale, onUseExampleCore }: { locale: Locale; onUseExampleCore: (core: string[]) => void }) {
   return (
     <section className="eq-empty-v2 eq-empty-v2--compact">
       <div className="eq-empty-v2__copy">
@@ -782,6 +782,20 @@ function NoResultsState({ locale }: { locale: Locale }) {
           <strong>{t(locale, 'noResultsStepCore')}</strong>
           <p>{t(locale, 'noResultsStepCoreText')}</p>
         </article>
+      </div>
+      <div className="eq-empty-v2__examples">
+        <div>
+          <strong>{t(locale, 'noResultsExampleTitle')}</strong>
+          <p>{t(locale, 'noResultsExampleText')}</p>
+        </div>
+        <div className="eq-empty-core-list">
+          {exampleCores.map(core => (
+            <button key={core.join('-')} type="button" className="eq-empty-core-button" onClick={() => onUseExampleCore(core)}>
+              <span>{t(locale, 'useExampleCore')}</span>
+              <strong>{core.join(' / ')}</strong>
+            </button>
+          ))}
+        </div>
       </div>
     </section>
   );
