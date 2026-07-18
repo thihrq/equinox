@@ -42,6 +42,12 @@ jobs:
         env:
           VITE_BASE_PATH: /equinox/
           VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'https://equinox-api-c7zy.onrender.com' }}
+          # Achado real 2026-07-18: o fluxo Build-Around-Lead (LeadStrategyPanel,
+          # commit 4c1838e) já estava implementado, mas nunca foi ligado aqui --
+          # ficava sempre invisível em produção. Religado depois de corrigir os
+          # bugs reais do backend que ele depende (LeadStrategyRecommendationService/
+          # LeadCompletionSearch) na mesma sessão.
+          VITE_ENABLE_LEAD_BUILDER: 'true'
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
