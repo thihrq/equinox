@@ -2,7 +2,7 @@ import { PokemonData } from '../core/AnalysisContext';
 import { getSpeciesClauseKey, getPokemonTypes, getVariant } from '../utils/PokemonUtils';
 import { enforceUniqueVgcHeldItems, isAbilityLegalForPokemon, isMegaOption, optimizeVgcSet } from '../utils/VgcSetOptimizer';
 import { evaluateVgcArchetypeCompatibility, evaluateVgcSetQuality } from '../vgc/VgcArchetypeBlueprints';
-import { evaluateVgcCandidateFit, evaluateVgcTeamPlan } from '../vgc/VgcTeamBuilding';
+import { evaluateVgcCandidateFit, inferVgcArchetype } from '../vgc/VgcTeamBuilding';
 import { BaseFormatSolver } from './BaseFormatSolver';
 import { FormatCandidateScoreParams, SetSourceInput } from './FormatSolver';
 import { resolveFormatPlan } from './FormatPlanResolver';
@@ -83,8 +83,20 @@ export class ChampionsDoublesSolver extends BaseFormatSolver {
     const items = team.map(pokemon => pokemon.item).filter(Boolean) as string[];
     if (new Set(items).size < items.length) hardFailures.push('Item Clause violada.');
 
-    const plan = evaluateVgcTeamPlan(team, format);
-    const compatibility = evaluateVgcArchetypeCompatibility(team, format, plan.archetype.id);
+    // validateFinalTeam só precisa do archetype.id para checar
+    // compatibilidade -- evaluateVgcTeamPlan (usada em outros lugares para
+    // exibir análise completa ao usuário) também computa roleCoverage,
+    // mechanicCoverage, modeAnalysis, matchupReadiness, recommendations,
+    // concerns e teamInsights, tudo descartado aqui. Medido em produção
+    // (2026-07-17): ~322ms por chamada, e esta função roda milhares de
+    // vezes por requisição dentro do pré-filtro combinatório de
+    // CombinationSearchEngine -- era o gargalo real por trás do orçamento
+    // de tempo estourar sem nunca achar um trio válido. archetype.id vem
+    // de inferVgcArchetype(team, format), chamada como primeiro passo
+    // dentro de evaluateVgcTeamPlan e usada sem modificação -- chamar
+    // direto é comportamentalmente idêntico, só sem o trabalho descartado.
+    const archetype = inferVgcArchetype(team, format);
+    const compatibility = evaluateVgcArchetypeCompatibility(team, format, archetype.id);
     hardFailures.push(...compatibility.hardFailures);
     warnings.push(...compatibility.warnings);
 
