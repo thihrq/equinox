@@ -450,6 +450,7 @@ export class LeadStrategyRecommendationService {
     const diversifiedResults = new DiversityCandidateSelector().select(
       scoredCandidates,
       formatSolver.getDiversityOptions(),
+      formatSolver.getMandatoryMechanicCoverage(baseTeam, format),
     );
 
     const diversifiedCandidates = diversifiedResults.map(r => r.pokemon);

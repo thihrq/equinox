@@ -2,6 +2,7 @@ import { PokemonData } from '../core/AnalysisContext';
 import { generateBasicKit, getMegaStone, getPokemonTypes, getVariant } from '../utils/PokemonUtils';
 import { resolveLegalAbility } from '../utils/VgcSetOptimizer';
 import { FormatSolver, SetSourceInput, DiversitySelectionOptions, FormatCandidateScoreParams, FormatTeamValidationResult } from './FormatSolver';
+import type { CoverageRequirement } from '../recommendation/DiversityCandidateSelector';
 
 const normalize = (value?: string): string =>
   String(value ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -85,6 +86,10 @@ export abstract class BaseFormatSolver implements FormatSolver {
       perType: 3,
       minCandidates: 30,
     };
+  }
+
+  public getMandatoryMechanicCoverage(_baseTeam: PokemonData[], _format: string): CoverageRequirement[] {
+    return [];
   }
 
   public adjustCandidateScore(_params: FormatCandidateScoreParams): number {

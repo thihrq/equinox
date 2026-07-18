@@ -419,6 +419,7 @@ export class TeamService {
     const diversifiedResults = new DiversityCandidateSelector().select(
       scoredCandidates,
       formatSolver.getDiversityOptions(),
+      formatSolver.getMandatoryMechanicCoverage(validCurrentTeam, format),
     );
 
     const diversifiedCandidates = diversifiedResults.map(result => result.pokemon);
