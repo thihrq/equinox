@@ -8,7 +8,7 @@ import { generateBasicKit, getMegaBaseName, getMegaStone, getSpeciesClauseKey, g
 import { CompetitiveKitGenerator } from '../equinox/utils/CompetitiveKitGenerator';
 import { PokemonData } from '../equinox/core/AnalysisContext';
 import { CandidateSelector } from '../equinox/recommendation/CandidateSelector';
-import { CandidateScoreEngine, type TeamIdentity } from '../equinox/recommendation/CandidateScoreEngine';
+import { CandidateScoreEngine, type TeamIdentity, type CandidateScoreResult } from '../equinox/recommendation/CandidateScoreEngine';
 import { DiversityCandidateSelector } from '../equinox/recommendation/DiversityCandidateSelector';
 import { FormatSolverRegistry } from '../equinox/format-solvers/FormatSolverRegistry';
 import { resolveFormatPlan } from '../equinox/format-solvers/FormatPlanResolver';
@@ -38,7 +38,7 @@ import { CompetitivePokemonSet, withCompetitiveSet } from '../equinox/competitiv
 import { calculateTeamDataCoverage } from '../equinox/competitive/TeamDataCoverage';
 import { compareLegacyAndV2Sets } from '../equinox/competitive/CompetitiveSetShadowComparator';
 import pilotCompetitiveSets from '../equinox/data-packs/competitive/champions-reg-mb-doubles/sets.json';
-import { enforceUniqueVgcHeldItems } from '../equinox/utils/VgcSetOptimizer';
+import { enforceUniqueVgcHeldItems, isMegaOption } from '../equinox/utils/VgcSetOptimizer';
 import { CompetitiveSetValidationInput } from '../equinox/data-validation/CompetitiveValidationTypes';
 
 // ─── Service ──────────────────────────────────────────────────────────────────
@@ -416,6 +416,57 @@ export class LeadStrategyRecommendationService {
 
   // ─── Busca e Score de Candidatos ───────────────────────────────────────────
 
+  // Achado real 2026-07-18: o beam search de LeadCompletionSearch.ts monta
+  // o time em 4 estágios (2->3->4->5->6), e no estágio final (adicionar o
+  // 6º membro) 76% de todas as tentativas eram rejeitadas só por "mais de
+  // uma opção Mega no time" (rejectedMega=1000 de 1320), zerando o beam
+  // inteiro pra leads sem sinal de clima forte o bastante pra dominar o
+  // ranking (ex.: Incineroar+Amoonguss). Causa: candidatos Mega tendem a
+  // pontuar mais alto (stats maiores), então o pool diversificado ficava
+  // com muitas opções de Mega de espécies diferentes -- como só 1 Mega é
+  // permitido por time, assim que uma branch do beam trava seu Mega, a
+  // maior parte do pool vira inútil pra ela, e no estágio final quase não
+  // sobra candidato não-Mega pras poucas vagas restantes de cada branch.
+  // Reserva aqui um piso de 70% de candidatos não-Mega no pool final,
+  // resgatando do pool mais amplo (scoredCandidates, pré-diversidade) e
+  // trocando pelos Mega de menor score -- mantém boas opções de Mega
+  // disponíveis (as de maior score sobrevivem) sem deixar o pool inteiro
+  // refém de uma única vaga por time.
+  private reserveNonMegaCandidates(
+    diversifiedResults: CandidateScoreResult[],
+    scoredCandidates: CandidateScoreResult[],
+  ): CandidateScoreResult[] {
+    const pool = [...diversifiedResults];
+    const nonMegaFloor = Math.ceil(pool.length * 0.7);
+    let nonMegaCount = pool.filter(result => !isMegaOption(result.pokemon)).length;
+    if (nonMegaCount >= nonMegaFloor) return pool;
+
+    const inPool = new Set(pool.map(result => result.pokemon));
+    const rescueCandidates = scoredCandidates
+      .filter(result => !inPool.has(result.pokemon) && !isMegaOption(result.pokemon))
+      .sort((a, b) => b.score - a.score);
+
+    for (const rescue of rescueCandidates) {
+      if (nonMegaCount >= nonMegaFloor) break;
+
+      let evictIndex = -1;
+      let evictScore = Infinity;
+      for (let i = 0; i < pool.length; i++) {
+        if (isMegaOption(pool[i].pokemon) && pool[i].score < evictScore) {
+          evictScore = pool[i].score;
+          evictIndex = i;
+        }
+      }
+
+      if (evictIndex === -1) break;
+
+      pool.splice(evictIndex, 1, rescue);
+      nonMegaCount++;
+    }
+
+    return pool.sort((a, b) => b.score - a.score);
+  }
+
   private async fetchAndScoreCandidates(
     baseTeam: PokemonData[],
     format: string,
@@ -453,7 +504,8 @@ export class LeadStrategyRecommendationService {
       formatSolver.getMandatoryMechanicCoverage(baseTeam, format),
     );
 
-    const diversifiedCandidates = diversifiedResults.map(r => r.pokemon);
+    const rebalancedResults = this.reserveNonMegaCandidates(diversifiedResults, scoredCandidates);
+    const diversifiedCandidates = rebalancedResults.map(r => r.pokemon);
     const lockedFormatPlan = resolveFormatPlan(baseTeam, format, formatSolver.mode);
 
     // Hidratar candidatos com sets competitivos
