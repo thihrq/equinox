@@ -1,9 +1,19 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Clipboard } from 'lucide-react';
 import type { Locale } from '../../i18n/equinoxI18n';
+import type { CSSProperties } from 'react';
 import type { CompetitiveStatSpread, PokemonData } from '../../types/lead';
 import { getPokemonSpriteUrl } from '../../utils/pokemonSprites';
 import { toShowdown } from '../../utils/competitiveTeamExport';
+import { getPokemonTypeColor } from '../../utils/pokemonTypeColors';
+
+const hexToRgba = (hex: string, alpha: number): string => {
+  const value = hex.replace('#', '');
+  const r = parseInt(value.slice(0, 2), 16);
+  const g = parseInt(value.slice(2, 4), 16);
+  const b = parseInt(value.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
 
 interface CompetitiveTeamGridProps {
   team: PokemonData[];
@@ -59,9 +69,17 @@ export const CompetitiveTeamGrid: React.FC<CompetitiveTeamGridProps> = ({ team, 
           const set = member.competitiveSet;
           const isLead = leadNames?.some(name => name === member.name) ?? false;
           const isExpanded = expanded.has(member.name);
+          const typeColors = (member.types ?? [])
+            .map(type => ({ type, color: getPokemonTypeColor(type) }))
+            .filter((entry): entry is { type: string; color: string } => entry.color !== null);
+          const accentColor = typeColors[0]?.color;
 
           return (
-            <article key={member.name} className={`eq-pokemon-card-v3 eq-competitive-set-card ${isLead ? 'eq-pokemon-card-v3--lead' : ''}`}>
+            <article
+              key={member.name}
+              className={`eq-pokemon-card-v3 eq-competitive-set-card ${isLead ? 'eq-pokemon-card-v3--lead' : ''}`}
+              style={accentColor ? ({ '--eq-type-accent': accentColor } as CSSProperties) : undefined}
+            >
               <button
                 type="button"
                 className="eq-competitive-set-card__summary"
@@ -78,6 +96,15 @@ export const CompetitiveTeamGrid: React.FC<CompetitiveTeamGridProps> = ({ team, 
                   }}
                 />
                 <span className="eq-competitive-set-card__name">{member.name}</span>
+                {typeColors.length > 0 && (
+                  <span className="eq-type-pills">
+                    {typeColors.map(({ type, color }) => (
+                      <span key={type} className="eq-type-pill" style={{ background: hexToRgba(color, 0.18), color }}>
+                        {type}
+                      </span>
+                    ))}
+                  </span>
+                )}
                 <span className="eq-competitive-set-card__meta">{set?.item ?? member.item}</span>
                 <span className="eq-competitive-set-card__meta">{set?.ability ?? member.ability}</span>
                 {isExpanded ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />}

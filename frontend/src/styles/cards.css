@@ -51,6 +51,8 @@
   font-size: 24px;
   font-weight: 900;
   letter-spacing: -0.04em;
+  font-family: var(--eq-font-mono, ui-monospace, monospace);
+  font-variant-numeric: tabular-nums;
 }
 
 .eq-ds-metric__hint {

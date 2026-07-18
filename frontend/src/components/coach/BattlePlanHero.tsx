@@ -11,10 +11,7 @@ interface BattlePlanHeroProps {
   formatPercent: (value?: number) => string;
 }
 
-const getStars = (score?: number) => {
-  const value = Math.max(0, Math.min(5, Math.round((score ?? 0) / 25)));
-  return '★★★★★'.slice(0, value).padEnd(5, '☆');
-};
+const getStarCount = (score?: number) => Math.max(0, Math.min(5, Math.round((score ?? 0) / 25)));
 
 
 
@@ -26,7 +23,10 @@ export function BattlePlanHero({ option, identityLabel, format, locale, formatSc
     <section className="eq-battle-plan-hero-compact">
       <div className="eq-battle-hero-header">
         <h2>{locale === 'pt-BR' ? `${t(locale, 'teamPrefix')} ${translatedIdentity}` : `${translatedIdentity} ${t(locale, 'teamSuffix')}`}</h2>
-        <span className="eq-battle-hero-stars">{getStars(option.score?.total)}</span>
+        <span className="eq-battle-hero-stars" aria-label={`${getStarCount(option.score?.total)} / 5`}>
+          {'★'.repeat(getStarCount(option.score?.total))}
+          <span className="eq-battle-hero-stars--empty">{'★'.repeat(5 - getStarCount(option.score?.total))}</span>
+        </span>
       </div>
 
       <div className="eq-battle-hero-metrics">

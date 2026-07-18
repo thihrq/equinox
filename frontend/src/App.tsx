@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, TriangleAlert } from 'lucide-react';
 import type { ExplanationEntry, SuggestionResponse, TeamIdentity, TeamOption } from './types/equinox';
 import type { Locale } from './i18n/equinoxI18n';
 import { t } from './i18n/equinoxI18n';
@@ -183,6 +183,7 @@ export default function App() {
     if (family === activeFormatFamily) return;
     setBuildMode('complete-core');
     setResult(null);
+    setError('');
 
     if (family === 'vanilla') {
       setFormat('vanilla_fire_red');
@@ -329,7 +330,10 @@ export default function App() {
                   <label className="eq-format-select">
                     <select
                       value={format}
-                      onChange={event => setFormat(event.target.value)}
+                      onChange={event => {
+                        setFormat(event.target.value);
+                        setError('');
+                      }}
                       aria-label={t(locale, 'vanillaGame')}
                     >
                       {Object.entries(vanillaGamesByGroup).map(([group, options]) => (
@@ -365,6 +369,7 @@ export default function App() {
                           setFormat(option.value);
                           setBuildMode('complete-core');
                           setResult(null);
+                          setError('');
                         }}
                       >
                         <strong>{option.label}</strong>
@@ -533,7 +538,12 @@ export default function App() {
             </button>
           </div>
 
-          {error && <p className="eq-error-message" role="alert" style={{ marginBottom: '22px' }}>{error}</p>}
+          {error && (
+            <p className="eq-error-message" role="alert" style={{ marginBottom: '22px' }}>
+              <TriangleAlert size={16} aria-hidden="true" />
+              <span>{error}</span>
+            </p>
+          )}
 
           <div style={{ marginTop: '16px' }}>
             <button

@@ -474,6 +474,7 @@ export class RecommendationAdapter {
           ability,
           item,
           moves,
+          types: pokemon.types ?? [],
           battleInsight: this.buildBattleInsight(pokemon, format),
         };
       }),
@@ -500,6 +501,7 @@ export class RecommendationAdapter {
           ability,
           item,
           moves,
+          types: pokemon.types ?? [],
           battleInsight: this.buildBattleInsight(pokemon, format),
         };
       }),

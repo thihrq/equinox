@@ -80,6 +80,7 @@ export interface SuggestedPokemon {
   moves?: string[];
   nature?: string;
   role?: string;
+  types?: string[];
 }
 
 export interface ScoreBreakdown {
