@@ -288,7 +288,7 @@ export class CombinationSearchEngine {
     }
 
     console.log(
-      `[Equinox] CombinationOptimizer PROFILING: iterations=${iterations}, normalizeFinalTeam=${Number(nsNormalize) / 1e6}ms, isValidTeam=${Number(nsIsValidTeam) / 1e6}ms, calculateHeuristicScore=${Number(nsHeuristic) / 1e6}ms, avgPerIteration=${Number(nsNormalize + nsIsValidTeam + nsHeuristic) / 1e6 / Math.max(1, iterations)}ms`,
+      `[Equinox] CombinationOptimizer PROFILING: iterations=${iterations}, normalizeFinalTeam=${Number(nsNormalize) / 1e6}ms, isValidTeam=${Number(nsIsValidTeam) / 1e6}ms (hasConflict=${Number(this.profConflict) / 1e6}ms, sunCore=${Number(this.profSunCore) / 1e6}ms, validateFinalTeam=${Number(this.profValidateFinalTeam) / 1e6}ms, evaluateFormatTeamObjective=${Number(this.profObjective) / 1e6}ms), calculateHeuristicScore=${Number(nsHeuristic) / 1e6}ms, avgPerIteration=${Number(nsNormalize + nsIsValidTeam + nsHeuristic) / 1e6 / Math.max(1, iterations)}ms`,
     );
 
     if (timedOut) {
@@ -674,6 +674,13 @@ export class CombinationSearchEngine {
     return penalty;
   }
 
+  // Instrumentação temporária (incidente 2026-07-17): ver comentário em
+  // buildOptimizedSearchSpace. Remover junto com o resto do profiling.
+  private profConflict = 0n;
+  private profSunCore = 0n;
+  private profValidateFinalTeam = 0n;
+  private profObjective = 0n;
+
   private isValidTeam(team: PokemonData[], baseTeam: PokemonData[], format: string, formatSolver: FormatSolver): boolean {
     const names = new Set(team.map(pokemon => getSpeciesClauseKey(pokemon.name)));
     if (names.size !== team.length) {
@@ -702,16 +709,21 @@ export class CombinationSearchEngine {
     }
 
     if (formatSolver.usesDoublesMechanicContracts) {
+      let t0 = process.hrtime.bigint();
       const baseHasConflict = this.hasConflict(baseTeam, format);
-      if (!baseHasConflict && this.hasConflict(team, format)) {
+      const teamHasConflict = !baseHasConflict && this.hasConflict(team, format);
+      this.profConflict += process.hrtime.bigint() - t0;
+      if (teamHasConflict) {
         console.log('[DEBUG-REJECT] Conflito de eixos na equipe inteira');
         return false;
       }
 
+      t0 = process.hrtime.bigint();
       const baseHasSunSetter = baseTeam.some(pokemon => hasActiveSunSetterForVgc(pokemon, format));
       const baseHasPrimarySunAbuser = baseTeam.some(pokemon => hasPrimarySunAbuserForVgc(pokemon, format));
       const teamHasPrimarySunAbuser = team.some(pokemon => hasPrimarySunAbuserForVgc(pokemon, format));
       const baseHasLikelyTrickRoomCore = hasLikelyTrickRoomCoreForVgc(baseTeam, format);
+      this.profSunCore += process.hrtime.bigint() - t0;
 
       if (baseHasSunSetter && !baseHasPrimarySunAbuser && !teamHasPrimarySunAbuser && !baseHasLikelyTrickRoomCore) {
         console.log('[DEBUG-REJECT] Sun core inválido');
@@ -719,18 +731,22 @@ export class CombinationSearchEngine {
       }
     }
 
+    let t0 = process.hrtime.bigint();
     const validation = formatSolver.validateFinalTeam(team, format);
+    this.profValidateFinalTeam += process.hrtime.bigint() - t0;
     if (!validation.valid) {
       console.log('[DEBUG-REJECT] validateFinalTeam inválido:', validation.hardFailures);
       return false;
     }
 
+    t0 = process.hrtime.bigint();
     const objective = evaluateFormatTeamObjective({
       mode: formatSolver.mode,
       baseTeam,
       team,
       format,
     });
+    this.profObjective += process.hrtime.bigint() - t0;
 
     if (objective.hardFailures.length > 0) {
       console.log('[DEBUG-REJECT] objective.hardFailures:', objective.hardFailures);
