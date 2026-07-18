@@ -861,6 +861,27 @@ img { display: block; }
   letter-spacing: -0.02em;
 }
 
+.eq-option-tab-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.eq-option-tab-icon {
+  color: var(--eq-subtle);
+  flex-shrink: 0;
+}
+
+.eq-option-tabs-v3 button[data-intent="offensive"] { border-color: var(--eq-tab-offensive-soft); }
+.eq-option-tabs-v3 button[data-intent="defensive"] { border-color: var(--eq-tab-defensive-soft); }
+.eq-option-tabs-v3 button[data-intent="antimeta"] { border-color: var(--eq-tab-antimeta-soft); }
+.eq-option-tabs-v3 button[data-intent="creative"] { border-color: var(--eq-tab-creative-soft); }
+
+.eq-option-tabs-v3 button[data-intent="offensive"] .eq-option-tab-icon { color: var(--eq-tab-offensive); }
+.eq-option-tabs-v3 button[data-intent="defensive"] .eq-option-tab-icon { color: var(--eq-tab-defensive); }
+.eq-option-tabs-v3 button[data-intent="antimeta"] .eq-option-tab-icon { color: var(--eq-tab-antimeta); }
+.eq-option-tabs-v3 button[data-intent="creative"] .eq-option-tab-icon { color: var(--eq-tab-creative); }
+
 .eq-option-tabs-v3 button small {
   grid-column: 1 / -1;
   color: var(--eq-subtle);
@@ -3442,6 +3463,16 @@ img { display: block; }
   --eq-color-warning-soft: rgba(224, 180, 88, 0.14);
   --eq-color-danger: #e08a84;
   --eq-color-danger-soft: rgba(224, 138, 132, 0.14);
+
+  /* Tingimento das abas de estratégia — intenção, não marca nem estado */
+  --eq-tab-offensive: #e0917a;
+  --eq-tab-offensive-soft: rgba(224, 145, 122, 0.14);
+  --eq-tab-defensive: #7fa8d6;
+  --eq-tab-defensive-soft: rgba(127, 168, 214, 0.14);
+  --eq-tab-antimeta: #b48fd6;
+  --eq-tab-antimeta-soft: rgba(180, 143, 214, 0.14);
+  --eq-tab-creative: #7fc4b8;
+  --eq-tab-creative-soft: rgba(127, 196, 184, 0.14);
 }
 
 .eq-ad-rail {
@@ -3481,6 +3512,15 @@ img { display: block; }
   --eq-color-warning-soft: #f1e2c4;
   --eq-color-danger: #a3413b;
   --eq-color-danger-soft: #f2dcda;
+
+  --eq-tab-offensive: #b85c3f;
+  --eq-tab-offensive-soft: #f0ddd3;
+  --eq-tab-defensive: #3f6ba5;
+  --eq-tab-defensive-soft: #d9e4f0;
+  --eq-tab-antimeta: #7a5aa5;
+  --eq-tab-antimeta-soft: #e6ddf0;
+  --eq-tab-creative: #3f8a7a;
+  --eq-tab-creative-soft: #d9ece7;
 }
 
 .eq-app-shell,
@@ -3664,7 +3704,15 @@ img { display: block; }
   align-items: start;
   padding-bottom: 22px;
   margin-bottom: 22px;
-  border-bottom: 1px solid var(--eq-border-subtle);
+}
+
+.eq-line {
+  height: 2px;
+  border: 0;
+  border-radius: 2px;
+  margin: 0 0 22px;
+  background: linear-gradient(90deg, var(--eq-color-dawn), var(--eq-color-dusk));
+  opacity: 0.75;
 }
 
 .eq-header-copy {

@@ -243,7 +243,7 @@ export default function App() {
 
     if (buildMode === 'build-around-lead') {
       if (leadTeam.some(pokemon => pokemon.trim() === '')) {
-        setError(locale === 'pt-BR' ? 'Por favor, preencha os dois Pokémon da lead.' : 'Please fill both lead Pokémon.');
+        setError(locale === 'pt-BR' ? 'Preencha os dois Pokémon da lead para analisar.' : 'Fill in both lead Pokémon to analyze.');
         return;
       }
     } else {
@@ -300,6 +300,7 @@ export default function App() {
             <span>{t(locale, 'appRole')}</span>
           </div>
         </div>
+        <div className="eq-line" aria-hidden="true" style={{ marginBottom: '18px' }} />
 
         <form className="eq-builder-panel" onSubmit={analyzeTeam}>
           <details className="eq-builder-disclosure" style={{ marginBottom: '16px' }}>
@@ -590,6 +591,7 @@ export default function App() {
             </button>
           </div>
         </header>
+        <div className="eq-line" aria-hidden="true" />
 
         {!result && !loading && <EmptyState locale={locale} onUseExampleCore={handleUseExampleCore} />}
         {loading && <LoadingState locale={locale} />}
