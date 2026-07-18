@@ -25,6 +25,7 @@ import {
 import type { FormatSolver } from '../format-solvers/FormatSolver';
 import { FormatSolverRegistry } from '../format-solvers/FormatSolverRegistry';
 import { evaluateFormatTeamObjective } from '../format-solvers/FormatObjectiveGuards';
+import { hasPrimaryWeatherAbuserForPlan, resolveFormatPlan } from '../format-solvers/FormatPlanResolver';
 
 export interface EvaluatedCombination {
   team: PokemonData[];
@@ -211,10 +212,64 @@ export class CombinationSearchEngine {
     return new Promise(resolve => setImmediate(resolve));
   }
 
+  // Achado real 2026-07-18: o laço triplo i<j<k abaixo visita as
+  // combinações na ordem do array de candidatos (que vem ordenado por
+  // score do DiversityCandidateSelector) -- e como i é o laço mais
+  // externo, um prefixo longo de candidatos com o mesmo perfil consome
+  // uma fração desproporcional das combinações possíveis antes de i
+  // avançar. Quando a base já contribui 1+ abuser primário de clima
+  // (sand_balance: Tyranitar/Excadrill/Garchomp), o teto vira
+  // max(2,baseAbusers) e o bônus de pontuação de abuser primário (+260,
+  // ver FormatPlanResolver) deixa o pool inteiro concentrado no topo do
+  // ranking -- o pré-filtro gasta os 2500ms de orçamento (ver
+  // FormatPerformanceProfile) preso numa região matematicamente inválida
+  // do espaço de busca sem nunca alcançar candidatos mais abaixo que
+  // fechariam um trio legal (produção real: possible=8436, valid=0).
+  // Intercalar não-abusers entre os abusers antes do laço não muda o
+  // conjunto final de trios válidos quando o pré-filtro completa dentro
+  // do orçamento (mesmas C(n,3) combinações, mesmo allValid ao final) --
+  // só garante que o prefixo de baixo índice, onde o laço gasta a maior
+  // parte do tempo, tenha uma mistura real em vez de ser só abuser.
+  private reorderForWeatherPlanBalance(
+    candidates: PokemonData[],
+    baseTeam: PokemonData[],
+    format: string,
+    formatSolver: FormatSolver,
+  ): PokemonData[] {
+    if (formatSolver.mode !== 'champions_doubles') return candidates;
+
+    const plan = resolveFormatPlan(baseTeam, format, formatSolver.mode);
+    const family = plan.primaryWeather;
+    if (!family) return candidates;
+
+    const abusers: PokemonData[] = [];
+    const others: PokemonData[] = [];
+    for (const candidate of candidates) {
+      if (hasPrimaryWeatherAbuserForPlan(candidate, format, family)) {
+        abusers.push(candidate);
+      } else {
+        others.push(candidate);
+      }
+    }
+
+    if (abusers.length === 0 || others.length === 0) return candidates;
+
+    const interleaved: PokemonData[] = [];
+    let abuserIndex = 0;
+    let otherIndex = 0;
+    while (abuserIndex < abusers.length || otherIndex < others.length) {
+      if (otherIndex < others.length) interleaved.push(others[otherIndex++]);
+      if (otherIndex < others.length) interleaved.push(others[otherIndex++]);
+      if (abuserIndex < abusers.length) interleaved.push(abusers[abuserIndex++]);
+    }
+
+    return interleaved;
+  }
+
   private async buildOptimizedSearchSpace(
     params: FindBestTriosParams,
   ): Promise<{ trios: OptimizedTrioCandidate[]; stats: OptimizerStats }> {
-    const { baseTeam, candidates, format } = params;
+    const { baseTeam, format } = params;
     const formatSolver = params.formatSolver ?? this.solverRegistry.getSolver(format);
     // Sem teto de contagem aqui: os candidatos já vêm ordenados por
     // relevância (DiversityCandidateSelector), e cortar para os N
@@ -224,6 +279,7 @@ export class CombinationSearchEngine {
     // TODOS do tipo Water, tornando impossível achar qualquer trio válido
     // sob o limite de "no máximo 3 Water-types"). maxPreFilterTimeMs é o
     // limite real de latência; não precisa de um teto de contagem também.
+    const candidates = this.reorderForWeatherPlanBalance(params.candidates, baseTeam, format, formatSolver);
     const len = candidates.length;
     const totalPossible = this.combinationCount(len, 3);
     const allValid: OptimizedTrioCandidate[] = [];
