@@ -697,12 +697,23 @@ export class CombinationSearchEngine {
       }
     }
 
-    const validation = formatSolver.validateFinalTeam(team, format);
-    if (!validation.valid) {
-      console.log('[DEBUG-REJECT] validateFinalTeam inválido:', validation.hardFailures);
-      return false;
-    }
-
+    // Achado real 2026-07-18: evaluateFormatTeamObjective (que cobre tetos
+    // por contagem como "no máximo 2 abusers primários" e "no máximo N
+    // Water-types em Rain") só faz .filter() sobre os 6 Pokémon do time
+    // com checagens de habilidade/movimento -- muito mais barato que
+    // formatSolver.validateFinalTeam (que roda inferVgcArchetype +
+    // evaluateVgcArchetypeCompatibility, ~322ms/chamada originalmente,
+    // ~33ms mesmo após a otimização de 2b6f18f). Quando os candidatos no
+    // topo do ranking são redundantes na mesma categoria (ex.: os 5
+    // primeiros de uma lista todos abusers de clima), o laço de
+    // buildOptimizedSearchSpace fica preso testando repetidamente trios
+    // que só evaluateFormatTeamObjective já rejeitaria -- gastando o
+    // orçamento de tempo inteiro no caminho caro antes de alcançar
+    // candidatos mais abaixo no ranking que fechariam um trio válido
+    // (produção real: possible=9139, valid=0, apenas 74 avaliados em
+    // 2500ms, todos presos numa região do espaço de busca matematicamente
+    // inválida). Checar o barato primeiro deixa os trios doomed muito mais
+    // rápidos de descartar, sem mudar o resultado final de nenhum trio.
     const objective = evaluateFormatTeamObjective({
       mode: formatSolver.mode,
       baseTeam,
@@ -712,6 +723,12 @@ export class CombinationSearchEngine {
 
     if (objective.hardFailures.length > 0) {
       console.log('[DEBUG-REJECT] objective.hardFailures:', objective.hardFailures);
+      return false;
+    }
+
+    const validation = formatSolver.validateFinalTeam(team, format);
+    if (!validation.valid) {
+      console.log('[DEBUG-REJECT] validateFinalTeam inválido:', validation.hardFailures);
       return false;
     }
 
