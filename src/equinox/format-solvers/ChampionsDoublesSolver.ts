@@ -2,6 +2,7 @@ import { PokemonData } from '../core/AnalysisContext';
 import { getSpeciesClauseKey, getPokemonTypes, getVariant } from '../utils/PokemonUtils';
 import { enforceUniqueVgcHeldItems, isAbilityLegalForPokemon, isMegaOption, optimizeVgcSet } from '../utils/VgcSetOptimizer';
 import { evaluateVgcArchetypeCompatibility, evaluateVgcSetQuality, getMechanicSlotsForPokemon, VGC_ARCHETYPE_BLUEPRINTS } from '../vgc/VgcArchetypeBlueprints';
+import type { VgcMechanicSlotId } from '../vgc/VgcArchetypeBlueprints';
 import { evaluateVgcCandidateFit, inferVgcArchetype } from '../vgc/VgcTeamBuilding';
 import { BaseFormatSolver } from './BaseFormatSolver';
 import { FormatCandidateScoreParams, SetSourceInput } from './FormatSolver';
@@ -51,19 +52,39 @@ export class ChampionsDoublesSolver extends BaseFormatSolver {
     };
   }
 
+  // Slots de VgcMechanicSlotId sem NENHUM bucket equivalente em VgcRole --
+  // groupByRole no DiversityCandidateSelector não tem como resgatar um
+  // candidato que só carrega um desses. Terrain, proteção/setter/abuser de
+  // Trick Room e recuperação secundária de clima. weather_setter_*,
+  // weather_abuser_*_primary, tailwind_setter e premium_redirection ficam
+  // FORA desta lista de propósito: já têm cobertura parcial via os buckets
+  // genéricos 'Weather Setter'/'Weather Abuser'/'Speed Control'/'Redirection'
+  // -- injetar candidatos extras para eles duplica a concentração desses
+  // papéis no pool. Achado real 2026-07-18: com weather_abuser_sun_primary
+  // incluído aqui, o pool de sun_offense ficou tão denso de abusers que
+  // quase todo trio colidia com o teto de "no máximo 2 abusers primários"
+  // (FormatPlanResolver.ts:386), e a busca combinatória estourava o
+  // orçamento de tempo sem achar nenhuma combinação válida -- resultado
+  // real: possible=9139, valid=0. Times sem esse teto (Trick Room/Terrain)
+  // não sofrem esse efeito colateral, por isso a injeção continua segura
+  // para eles.
+  private static readonly ZERO_ROLE_COVERAGE_SLOTS = new Set<VgcMechanicSlotId>([
+    'terrain_setter_psychic',
+    'terrain_abuser_psychic',
+    'terrain_setter_any',
+    'terrain_abuser_any',
+    'trick_room_setter',
+    'trick_room_abuser',
+    'trick_room_protection',
+    'weather_control_secondary',
+  ]);
+
   public override getMandatoryMechanicCoverage(baseTeam: PokemonData[], format: string): CoverageRequirement[] {
-    // VgcRole (usado por groupByRole no DiversityCandidateSelector) não
-    // distingue tipo de clima, Terrain, proteção/abuser de Trick Room ou
-    // Tailwind como conceito próprio -- ver VgcMechanicSlotId em
-    // VgcArchetypeBlueprints.ts, a moeda granular que evaluateVgcArchetypeCompatibility
-    // realmente exige. Sem isso, um candidato que carrega o único slot
-    // crítico do arquétipo pode não ter score bruto para o topOverall e
-    // não ter bucket de role equivalente, ficando fora do pool antes da
-    // busca combinatória -- derrubando toda combinação final por falta
-    // desse slot (achado real 2026-07-18, 12 dos 16 arquétipos afetados).
     const archetype = inferVgcArchetype(baseTeam, format);
     const blueprint = VGC_ARCHETYPE_BLUEPRINTS[archetype.id];
-    const criticalSlots = blueprint.critical.filter(requirement => requirement.critical);
+    const criticalSlots = blueprint.critical.filter(
+      requirement => requirement.critical && ChampionsDoublesSolver.ZERO_ROLE_COVERAGE_SLOTS.has(requirement.id),
+    );
 
     return criticalSlots.map(requirement => ({
       id: `mechanic:${requirement.id}`,
