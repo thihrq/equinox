@@ -174,16 +174,26 @@ function expandBeam(
   beamWidth: number,
 ): BeamEntry[] {
   const expanded: BeamEntry[] = [];
+  // Instrumentação temporária (achado real 2026-07-18): auditoria geral
+  // encontrou suggestFromLead retornando 0 estratégias completas para
+  // leads sem sinal de clima (ex.: Incineroar+Amoonguss) -- searchLeadCompletions
+  // some com o beam em algum dos 4 estágios sem indicar qual checagem é
+  // responsável. Loga contagem de rejeição por motivo pra diagnosticar
+  // com dado real em vez de suposição.
+  let rejectedSpecies = 0;
+  let rejectedMega = 0;
+  let rejectedItem = 0;
+  let rejectedValidity = 0;
 
   for (const entry of beam) {
     for (const candidate of candidates) {
       // Verificar Species Clause
-      if (violatesSpeciesClause(entry.team, candidate)) continue;
+      if (violatesSpeciesClause(entry.team, candidate)) { rejectedSpecies++; continue; }
 
       // Verificar limite de Mega Evolution
-      if (violatesMegaLimit(entry.team, candidate)) continue;
+      if (violatesMegaLimit(entry.team, candidate)) { rejectedMega++; continue; }
 
-      if (hasDuplicateItem(entry.team, candidate)) continue;
+      if (hasDuplicateItem(entry.team, candidate)) { rejectedItem++; continue; }
 
       // Calcular score do candidato no contexto do time parcial
       const candidateScore = scoreCandidateForStrategy(
@@ -196,7 +206,7 @@ function expandBeam(
       const newTeam = [...entry.team, candidate];
 
       // Validar time parcial com FormatObjectiveGuards
-      if (!isPartialTeamValid(newTeam, format)) continue;
+      if (!isPartialTeamValid(newTeam, format)) { rejectedValidity++; continue; }
 
       expanded.push({
         team: newTeam,
@@ -204,6 +214,11 @@ function expandBeam(
       });
     }
   }
+
+  console.log(
+    `[LeadBuild] expandBeam(${strategy.id}): beamIn=${beam.length} candidates=${candidates.length} -> expanded=${expanded.length} ` +
+    `(rejectedSpecies=${rejectedSpecies}, rejectedMega=${rejectedMega}, rejectedItem=${rejectedItem}, rejectedValidity=${rejectedValidity})`,
+  );
 
   // Ordenar por score cumulativo e manter apenas os top N
   expanded.sort((a, b) => b.cumulativeScore - a.cumulativeScore);
