@@ -233,7 +233,7 @@ const hasAny = (values: string[], targets: string[]): boolean => {
   return values.some(value => normalizedTargets.includes(normalize(value)));
 };
 
-const isTrickRoomArchetype = (archetype: VgcArchetypeId): boolean =>
+export const isTrickRoomArchetype = (archetype: VgcArchetypeId): boolean =>
   ['hard_trick_room', 'sun_trick_room', 'psychic_terrain_trick_room', 'rain_trick_room'].includes(archetype);
 
 const isSunArchetype = (archetype: VgcArchetypeId): boolean =>

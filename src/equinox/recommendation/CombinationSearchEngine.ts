@@ -12,6 +12,7 @@ import {
   isLikelyRedirectionSupportForVgc,
   isLikelyTrickRoomSetterForVgc,
   isPremiumTrickRoomRedirectionForVgc,
+  isTrickRoomArchetype,
 } from '../vgc/VgcTeamBuilding';
 import { evaluateVgcArchetypeCompatibility, evaluateVgcMechanicBlueprint } from '../vgc/VgcArchetypeBlueprints';
 import { isAbilityLegalForPokemon, isMegaOption } from '../utils/VgcSetOptimizer';
@@ -539,7 +540,17 @@ export class CombinationSearchEngine {
       score -= architectureCompatibility.warnings.length * 32 * penaltyScale;
       score -= vgcPlan.roleCoverage.redundancyWarnings.length * 6 * penaltyScale;
 
-      if (baseHasLikelyTrickRoomCore) {
+      // Achado real 2026-07-18 (revisão pokemon-vgc-pro-player): este bloco
+      // só rodava com baseHasLikelyTrickRoomCore, calculado só sobre os 3
+      // Pokémon que o usuário digitou -- mas o setter de Trick Room quase
+      // sempre entra como CANDIDATO durante a própria busca (ex.: base
+      // Incineroar/Rillaboom/Amoonguss não tem nenhum sinal de TR; quem
+      // fecha o plano é Slowbro-Mega, adicionado pela busca). Nesse caso o
+      // bloco inteiro -- incluindo a penalidade de Speed média -- nunca
+      // executava, mesmo com o time FINAL resolvendo pra hard_trick_room
+      // com 92% de confiança. Adicionado OR com o arquétipo já resolvido
+      // do time completo (vgcPlan.archetype.id, calculado linhas acima).
+      if (baseHasLikelyTrickRoomCore || isTrickRoomArchetype(vgcPlan.archetype.id)) {
         const hasPremiumTrickRoomRedirection = fullTeam.some(pokemon => isPremiumTrickRoomRedirectionForVgc(pokemon));
         const hasAnyRedirection = fullTeam.some(pokemon => isLikelyRedirectionSupportForVgc(pokemon));
         const trickRoomSetterCount = fullTeam.filter(pokemon => isLikelyTrickRoomSetterForVgc(pokemon)).length;
