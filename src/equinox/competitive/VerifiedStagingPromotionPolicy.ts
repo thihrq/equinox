@@ -14,6 +14,12 @@ export const VERIFIED_STAGING_PROMOTION_ALLOWLIST = [
   'pelipper-rain-setter-draft',
   'hydreigon-fast-special-attacker-draft',
   'indeedeefemale-redirection-support-draft',
+  'sinistcha-redirection-support-draft',
+  'aggronmega-body-press-defensive-attacker-draft',
+  'incineroar-fast-taunt-pivot-draft',
+  'togekiss-bulky-redirection-support-draft',
+  'mukalola-special-wall-draft',
+  'giratinaorigin-slow-special-attacker-draft',
 ] as const;
 
 export type VerifiedStagingPromotionSetId = typeof VERIFIED_STAGING_PROMOTION_ALLOWLIST[number];

@@ -9,6 +9,12 @@ export const ACTIVE_STAGING_SET_ALLOWLIST = [
   'pelipper-rain-setter-draft',
   'hydreigon-fast-special-attacker-draft',
   'indeedeefemale-redirection-support-draft',
+  'sinistcha-redirection-support-draft',
+  'aggronmega-body-press-defensive-attacker-draft',
+  'incineroar-fast-taunt-pivot-draft',
+  'togekiss-bulky-redirection-support-draft',
+  'mukalola-special-wall-draft',
+  'giratinaorigin-slow-special-attacker-draft',
 ] as const;
 
 export type ActiveStagingHomologationSetId = typeof ACTIVE_STAGING_SET_ALLOWLIST[number];
@@ -68,6 +74,46 @@ export const ACTIVE_STAGING_HOMOLOGATION_SCENARIOS: ActiveStagingHomologationSce
     expectedPresentedSetIds: [
       'hydreigon-fast-special-attacker-draft',
       'indeedeefemale-redirection-support-draft',
+    ],
+  },
+  {
+    id: 'sinistcha-redirection-aggronmega-bodypress',
+    leadPokemon: ['Sinistcha', 'Aggron-Mega'],
+    expectedPresentedSetIds: [
+      'sinistcha-redirection-support-draft',
+      'aggronmega-body-press-defensive-attacker-draft',
+    ],
+  },
+  {
+    id: 'togekiss-ursalunabloodmoon',
+    leadPokemon: ['Togekiss', 'Ursaluna-Bloodmoon'],
+    expectedPresentedSetIds: [
+      'togekiss-bulky-redirection-support-draft',
+      'ursalunabloodmoon-slow-special-breaker-draft',
+    ],
+  },
+  {
+    id: 'mukalola-sinistcha-trickroom',
+    leadPokemon: ['Muk-Alola', 'Sinistcha'],
+    expectedPresentedSetIds: [
+      'mukalola-special-wall-draft',
+      'sinistcha-bulky-trick-room-setter-draft',
+    ],
+  },
+  {
+    id: 'incineroar-taunt-ursalunabloodmoon',
+    leadPokemon: ['Incineroar', 'Ursaluna-Bloodmoon'],
+    expectedPresentedSetIds: [
+      'incineroar-fast-taunt-pivot-draft',
+      'ursalunabloodmoon-slow-special-breaker-draft',
+    ],
+  },
+  {
+    id: 'indeedeefemale-giratinaorigin',
+    leadPokemon: ['Indeedee-F', 'Giratina-Origin'],
+    expectedPresentedSetIds: [
+      'indeedeefemale-redirection-support-draft',
+      'giratinaorigin-slow-special-attacker-draft',
     ],
   },
 ];

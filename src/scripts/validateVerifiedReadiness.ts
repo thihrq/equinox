@@ -23,12 +23,12 @@ assert(records.length === 14, `Verified readiness expects 14 pilot records, rece
 assert(records.every(record => record.status === 'reviewed'), 'Verified readiness gate requires all pilot records to remain reviewed.');
 assert(evaluation.aggregate.activeCount === 0, 'Verified readiness gate forbids active pilot records.');
 assert(evaluation.aggregate.verifiedCount === 0, 'Verified readiness gate forbids verified pilot records.');
-assert(evaluation.promotionReady.length === 8, `Verified readiness expects 8 promotion-ready records, received ${evaluation.promotionReady.length}.`);
-assert(evaluation.blocked.length === 6, `Verified readiness expects 6 blocked records, received ${evaluation.blocked.length}.`);
+assert(evaluation.promotionReady.length === 14, `Verified readiness expects 14 promotion-ready records, received ${evaluation.promotionReady.length}.`);
+assert(evaluation.blocked.length === 0, `Verified readiness expects 0 blocked records, received ${evaluation.blocked.length}.`);
 assert(evaluation.promotionReady.every(record => record.sourceType === 'curated'), 'Only curated records may be promotion-ready.');
 assert(evaluation.blocked.every(record => record.blockers.length > 0), 'Blocked records must have at least one readiness blocker.');
 
-console.log('[Equinox] Verified readiness validation passed: 8 records promotion-ready, 6 remain blocked.');
+console.log('[Equinox] Verified readiness validation passed: 14 records promotion-ready, 0 remain blocked.');
 console.log(JSON.stringify({
   aggregate: evaluation.aggregate,
   blockedSets: evaluation.blocked.map(result => ({
