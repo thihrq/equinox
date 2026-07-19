@@ -247,7 +247,12 @@ function isPremiumRedirection(pokemon: PokemonData): boolean {
     getVgcMechanicTags(pokemon).some(tag => tag.mechanic === 'redirection' && tag.primary && tag.confidence >= 0.8);
 }
 
-export function getMechanicSlotsForPokemon(pokemon: PokemonData, format: string): Set<VgcMechanicSlotId> {
+export function getMechanicSlotsForPokemon(
+  pokemon: PokemonData,
+  format: string,
+  options: { strictMoves?: boolean } = {},
+): Set<VgcMechanicSlotId> {
+  const strictMoves = options.strictMoves ?? false;
   const slots = new Set<VgcMechanicSlotId>();
   const abilities = getAbilityValues(pokemon, format);
   const moves = getMoveValues(pokemon);
@@ -268,11 +273,21 @@ export function getMechanicSlotsForPokemon(pokemon: PokemonData, format: string)
   if (hasTerrainSetter(pokemon)) slots.add('terrain_setter_any');
   if (hasTerrainAbuser(pokemon)) slots.add('terrain_abuser_any');
 
-  if (isVgcMechanicTrickRoomSetter(pokemon) || hasAny(moves, ['Trick Room'])) slots.add('trick_room_setter');
+  // Achado real 2026-07-18: trick_room_setter e tailwind_setter só existem
+  // de fato através de um golpe específico (não há caminho automático via
+  // ability, ao contrário de setters de clima com Drought/Drizzle/etc.) --
+  // então o ramo isVgcMechanic*(pokemon), que consulta capacidade estática
+  // por espécie (ex.: Dragonite sempre marcado tailwind/setter confidence
+  // 0.58, mesmo sem Tailwind no set gerado), infla mechanicCoverage do time
+  // final com uma capacidade que o set entregue não executa. strictMoves
+  // restringe esses dois slots ao golpe real quando reportando o time
+  // final; os outros ~17 call sites (seleção de candidatos, blueprints de
+  // arquétipo) continuam usando a capacidade de espécie como antes.
+  if ((!strictMoves && isVgcMechanicTrickRoomSetter(pokemon)) || hasAny(moves, ['Trick Room'])) slots.add('trick_room_setter');
   if (isVgcMechanicTrickRoomAbuser(pokemon) || (isSlowEnoughForTrickRoom(pokemon, format) && (hasPhysicalDamage(pokemon, format) || hasSpecialDamage(pokemon, format)))) slots.add('trick_room_abuser');
   if (isRedirection(pokemon) || hasAny(abilities, ['Armor Tail', 'Queenly Majesty', 'Psychic Surge']) || hasAny(moves, ['Fake Out', 'Helping Hand', 'Wide Guard', 'Quick Guard'])) slots.add('trick_room_protection');
 
-  if (isVgcMechanicTailwindSetter(pokemon) || hasAny(moves, ['Tailwind'])) slots.add('tailwind_setter');
+  if ((!strictMoves && isVgcMechanicTailwindSetter(pokemon)) || hasAny(moves, ['Tailwind'])) slots.add('tailwind_setter');
   if (hasSpeedControl(pokemon, format) || hasAny(abilities, WEATHER_SPEED_DOUBLING_ABILITIES)) slots.add('speed_control');
   if (hasTurnControl(pokemon, format)) slots.add('turn_control');
   if (isRedirection(pokemon)) slots.add('redirection');
@@ -724,7 +739,11 @@ export function evaluateVgcMechanicBlueprint(
   const detectedSlots = createEmptySlotMap();
 
   for (const pokemon of team) {
-    for (const slotId of getMechanicSlotsForPokemon(pokemon, format)) {
+    // strictMoves: true -- este é o relatório de mechanicCoverage mostrado
+    // ao usuário sobre o TIME FINAL, então precisa refletir o set entregue,
+    // não a capacidade teórica da espécie (ver comentário em
+    // getMechanicSlotsForPokemon).
+    for (const slotId of getMechanicSlotsForPokemon(pokemon, format, { strictMoves: true })) {
       detectedSlots[slotId] = detectedSlots[slotId] ?? [];
       detectedSlots[slotId].push(pokemon.name);
     }

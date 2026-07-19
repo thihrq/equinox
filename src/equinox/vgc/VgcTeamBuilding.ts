@@ -1387,7 +1387,13 @@ function evaluateMatchups(team: PokemonData[], format: string): VgcMatchupReadin
 
   if (rain >= 70) notes.push('Boa resposta contra Rain: há controle de clima/velocidade e pressão de turno.');
   if (trickRoom < 60) notes.push('Atenção contra Trick Room: falta redundância de Taunt/Encore/Fake Out/Imprison.');
-  if (weatherWar < 60) notes.push('Atenção contra guerra de clima: preserve setter ou tenha Sunny Day/Rain Dance secundário.');
+  // Achado real 2026-07-18: weatherWar mede resiliência geral contra clima
+  // adversário (Pivot/Speed Control ajudam mesmo sem clima próprio), mas o
+  // texto "preserve setter" só faz sentido pra um time que TEM clima -- o
+  // aviso disparava pra times sem nenhum Weather Setter/Abuser (ex.: Hard
+  // Trick Room puro), pedindo pra "preservar" um setter inexistente.
+  const hasOwnWeatherEngine = roles['Weather Setter'].length > 0 || roles['Weather Abuser'].length > 0;
+  if (weatherWar < 60 && hasOwnWeatherEngine) notes.push('Atenção contra guerra de clima: preserve setter ou tenha Sunny Day/Rain Dance secundário.');
 
   const overallScore = clamp((rain + trickRoom + tailwindOffense + setupRedirection + weatherWar) / 5);
 

@@ -7,6 +7,15 @@ import {
 import { AnalysisEngine } from '../core/AnalysisEngine';
 import { getVariant } from '../utils/PokemonUtils';
 
+const SPEED_CONTROL_MOVES = [
+  'trick room',
+  'tailwind',
+  'thunder wave',
+  'icy wind',
+  'electroweb',
+  'sticky web',
+];
+
 export class SpeedEngine implements AnalysisEngine {
   public readonly name = 'SpeedEngine';
 
@@ -100,7 +109,23 @@ export class SpeedEngine implements AnalysisEngine {
       );
     });
 
-    return hasNaturallyFastPokemon || hasSpeedTag;
+    // Achado real 2026-07-18: a checagem de tag acima só olha
+    // pokemon.competitive.utilityTags/offensiveTags -- que nem sempre
+    // carrega 'Trick Room' mesmo quando o set gerado tem o golpe de
+    // verdade (ex.: Slowbro-Mega com Trick Room no moveset final
+    // reportava hasSpeedControl=false). Checar o array de moves real
+    // fecha esse ponto cego sem depender do dado de tag estar completo.
+    const hasSpeedControlMove = context.selectedPokemon.some(pokemon =>
+      this.hasSpeedControlMoveInSet(pokemon),
+    );
+
+    return hasNaturallyFastPokemon || hasSpeedTag || hasSpeedControlMove;
+  }
+
+  private hasSpeedControlMoveInSet(pokemon: PokemonData): boolean {
+    return (pokemon.moves ?? []).some(move =>
+      SPEED_CONTROL_MOVES.includes(String(move).toLowerCase()),
+    );
   }
 
   private getSpeedProfile(
@@ -190,8 +215,10 @@ export class SpeedEngine implements AnalysisEngine {
   }
 
   private hasTrickRoomTag(context: AnalysisContext): boolean {
-    return context.selectedPokemon.some(pokemon =>
-      pokemon.competitive?.utilityTags?.includes('Trick Room'),
+    return context.selectedPokemon.some(
+      pokemon =>
+        pokemon.competitive?.utilityTags?.includes('Trick Room') ||
+        (pokemon.moves ?? []).some(move => String(move).toLowerCase() === 'trick room'),
     );
   }
 }

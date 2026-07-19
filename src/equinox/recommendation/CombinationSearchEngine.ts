@@ -544,10 +544,19 @@ export class CombinationSearchEngine {
         const hasAnyRedirection = fullTeam.some(pokemon => isLikelyRedirectionSupportForVgc(pokemon));
         const trickRoomSetterCount = fullTeam.filter(pokemon => isLikelyTrickRoomSetterForVgc(pokemon)).length;
         const trickRoomAbuserCount = fullTeam.filter(pokemon => isLikelyTrickRoomAbuserForVgc(pokemon, format)).length;
+        // Achado real 2026-07-18 (revisão pokemon-vgc-pro-player): o corte
+        // de Speed >=90 deixava uma "zona cinzenta" de 56-89 sem nenhuma
+        // penalidade -- isLikelyTrickRoomAbuserForVgc só classifica como
+        // abuser de verdade quem tem Speed <=55 (ou tag/espécie curada), e
+        // quem fica entre 56 e 89 (ex.: Kommo-o Speed 85) passava sem
+        // pontuação negativa nenhuma, apesar de não se beneficiar de Trick
+        // Room. Baixado pra >=76 pra cobrir esse intervalo sem penalizar
+        // picks moderadamente lentos (56-75) que ainda funcionam dentro da
+        // sala na prática.
         const fastNonTrickRoomPieces = fullTeam.filter(pokemon => {
           const key = pokemon.name.toLowerCase().replace(/[^a-z0-9]/g, '');
           const speed = Number(getVariant(pokemon, format)?.baseStats?.spe ?? 0);
-          return speed >= 90 &&
+          return speed >= 76 &&
             !isLikelyTrickRoomAbuserForVgc(pokemon, format) &&
             !isLikelyRedirectionSupportForVgc(pokemon) &&
             !['farigiraf'].includes(key);

@@ -2,7 +2,7 @@ import { AnalysisContext, PokemonData } from '../core/AnalysisContext';
 import { AnalysisEngine } from '../core/AnalysisEngine';
 import { getVariant } from '../utils/PokemonUtils';
 
-const REQUIRED_ROLES = [
+const BASE_REQUIRED_ROLES = [
   'Physical Wall',
   'Special Wall',
   'Hazard Setter',
@@ -12,10 +12,13 @@ const REQUIRED_ROLES = [
   'Wallbreaker',
 ];
 
+const SPEED_CONTROL_MOVES = ['trick room', 'tailwind', 'thunder wave', 'icy wind', 'electroweb', 'sticky web'];
+
 export class RoleEngine implements AnalysisEngine {
   public readonly name = 'RoleEngine';
 
   public execute(context: AnalysisContext): void {
+    const requiredRoles = this.getRequiredRoles(context.format);
     const detectedRoles: Record<string, number> = {};
 
     for (const pokemon of context.selectedPokemon) {
@@ -26,14 +29,14 @@ export class RoleEngine implements AnalysisEngine {
       }
     }
 
-    const missingRoles = REQUIRED_ROLES.filter(role => !detectedRoles[role]);
+    const missingRoles = requiredRoles.filter(role => !detectedRoles[role]);
 
     const duplicatedRoles = Object.entries(detectedRoles)
       .filter(([, count]) => count >= 3)
       .map(([role]) => role);
 
     const roleCoverageRatio =
-      (REQUIRED_ROLES.length - missingRoles.length) / REQUIRED_ROLES.length;
+      (requiredRoles.length - missingRoles.length) / requiredRoles.length;
 
     context.analysis.roles = {
       detectedRoles,
@@ -44,10 +47,25 @@ export class RoleEngine implements AnalysisEngine {
 
     context.score.roles = this.calculateRoleScore(
       context,
+      requiredRoles,
       detectedRoles,
       missingRoles,
       duplicatedRoles,
     );
+  }
+
+  // Achado real 2026-07-18: REQUIRED_ROLES era uma lista fixa aplicada a
+  // qualquer formato -- Hazard Setter/Hazard Removal são marginais em VGC
+  // Doubles real (o controle de campo prioritário ali é Trick
+  // Room/Tailwind/clima/terrain, não stacking de hazard como em Singles),
+  // então times Doubles legítimos sempre perdiam pontuação por "função
+  // ausente" em algo que não faz parte do plano de vitória do formato.
+  private getRequiredRoles(format: string): string[] {
+    if (format.endsWith('_doubles')) {
+      return BASE_REQUIRED_ROLES.filter(role => role !== 'Hazard Setter' && role !== 'Hazard Removal');
+    }
+
+    return BASE_REQUIRED_ROLES;
   }
 
   private inferRoles(pokemon: PokemonData, format: string): string[] {
@@ -81,7 +99,14 @@ export class RoleEngine implements AnalysisEngine {
       roles.add('Wallbreaker');
     }
 
-    if (spe >= 100) {
+    // Achado real 2026-07-18: só marcava "Speed Control" por Speed base
+    // alta (>=100), então um setter de Trick Room genuíno (tipicamente
+    // muito lento, é o oposto do padrão de time rápido) nunca contribuía
+    // com esse role -- mesmo carregando o golpe de verdade no set final.
+    const moveValues = (pokemon.moves ?? []).map(move => String(move).toLowerCase());
+    const hasSpeedControlMove = moveValues.some(move => SPEED_CONTROL_MOVES.includes(move));
+
+    if (spe >= 100 || hasSpeedControlMove) {
       roles.add('Speed Control');
     }
 
@@ -112,13 +137,14 @@ export class RoleEngine implements AnalysisEngine {
 
   private calculateRoleScore(
     context: AnalysisContext,
+    requiredRoles: string[],
     detectedRoles: Record<string, number>,
     missingRoles: string[],
     duplicatedRoles: string[],
   ): number {
     let score = 0;
 
-    for (const role of REQUIRED_ROLES) {
+    for (const role of requiredRoles) {
       if (detectedRoles[role]) {
         score += 6;
 
