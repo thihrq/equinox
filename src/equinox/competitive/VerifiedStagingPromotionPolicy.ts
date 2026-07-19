@@ -10,6 +10,10 @@ export const VERIFIED_STAGING_PROMOTION_ALLOWLIST = [
   'aggronmega-slow-physical-breaker-draft',
   'incineroar-bulky-slow-pivot-draft',
   'ursalunabloodmoon-slow-special-breaker-draft',
+  'suicune-bulky-special-wall-draft',
+  'pelipper-rain-setter-draft',
+  'hydreigon-fast-special-attacker-draft',
+  'indeedeefemale-redirection-support-draft',
 ] as const;
 
 export type VerifiedStagingPromotionSetId = typeof VERIFIED_STAGING_PROMOTION_ALLOWLIST[number];
@@ -78,8 +82,8 @@ export function validateVerifiedPromotionEligibility(
   const blockedSetIds = evaluation.blocked.map(record => record.setId).sort();
 
   const failures: string[] = [];
-  if (eligibleSetIds.length !== 4) failures.push(`eligibleCount must be 4, received ${eligibleSetIds.length}`);
-  if (expectedSetIds.length !== 4) failures.push(`allowlistCount must be 4, received ${expectedSetIds.length}`);
+  if (eligibleSetIds.length !== expectedSetIds.length) failures.push(`eligibleCount must be ${expectedSetIds.length}, received ${eligibleSetIds.length}`);
+  if (expectedSetIds.length !== VERIFIED_STAGING_PROMOTION_ALLOWLIST.length) failures.push(`allowlistCount must be ${VERIFIED_STAGING_PROMOTION_ALLOWLIST.length}, received ${expectedSetIds.length}`);
   if (eligibleSetIds.join('|') !== expectedSetIds.join('|')) {
     failures.push(`eligibleIds must equal allowlistIds. eligible=${eligibleSetIds.join(',')} allowlist=${expectedSetIds.join(',')}`);
   }
