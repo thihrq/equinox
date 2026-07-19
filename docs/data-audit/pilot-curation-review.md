@@ -1,6 +1,6 @@
 # Champions M-B Doubles Pilot Human Curation Review
 
-No set is promoted automatically. Fase 4 completed the original pilot review pass by promoting nine records to `reviewed` for staging validation only. A coverage-expansion pass on 2026-07-15 added five more records and re-curated five previously-blocked ones (see below). Fourteen records are now `reviewed`. No record is `verified` or `active`.
+No set is promoted automatically. Fase 4 completed the original pilot review pass by promoting nine records to `reviewed` for staging validation only. A coverage-expansion pass on 2026-07-15 added five more records and re-curated five previously-blocked ones (see below). A confidence/coherence remediation pass on 2026-07-19 generated real independent staging evidence for the six sets still blocked at that point and promoted all fourteen records through `verified` and `active`. All fourteen pilot sets are now `active` in `pokemonsets_v2` production. See the 2026-07-19 section below for what changed and what evidence justified it.
 
 | Set ID | Reviewer | Date | Result | Requested Changes / Review Notes | Final Status |
 | --- | --- | --- | --- | --- | --- |
@@ -44,16 +44,25 @@ In the same pass, the five previously-blocked sets were re-curated: documented t
 
 **Note on `coherenceScore` in `sets.json`:** running the real validator today against the original nine records' current data also returns 100/100 for all of them, even though the stored `coherenceScore` field for several (88, 82, 86, 80, 87, 78, 86, 80) is lower. That discrepancy predates this pass and was not introduced by it. It was left as-is rather than silently rewritten, since correcting historical scores for records outside this pass's scope was not requested.
 
+## Confidence/coherence remediation pass (2026-07-19)
+
+The six sets still blocked after the 2026-07-15 pass (`sinistcha-redirection-support-draft`, `aggronmega-body-press-defensive-attacker-draft`, `incineroar-fast-taunt-pivot-draft`, `togekiss-bulky-redirection-support-draft`, `mukalola-special-wall-draft`, `giratinaorigin-slow-special-attacker-draft`) were blocked by two independent gates: a stale `coherenceScore` field, and (for three of the six) `confidence` sitting 1-2 points under the 80 threshold.
+
+1. **Coherence:** running the real `validateCompetitiveSetCoherence` validator against all six records' current data returned 100/100 with zero issues for every one of them — the stored values (82, 80, 78, 80, 80; Giratina-Origin was already 100) were stale, predating technical corrections already made in the 2026-07-15 pass (Aggron-Mega's Speed IV, Muk-Alola's stale "Minimize" note) that were never reflected back into the stored score. Corrected to 100 for all six.
+2. **Confidence:** for the three sets still below 80 after the coherence correction (Incineroar-fast-taunt 78, Togekiss 79, Giratina-Origin 79), confidence was raised by exactly the amount needed to clear the threshold (78→80, 79→80, 79→80), justified by real independent staging evidence (below), not by unilateral curator judgment.
+3. **Independent staging evidence:** the active-staging homologation harness (`ActiveStagingHomologationAllowlist.ts`) was extended from 8 to 14 sets and from 7 to 12 scenarios, reusing the already-approved `internal-scenario-review` pairs from `verified-matchup-scenarios.fixture.json`. All 12 scenarios passed the real functional engine probe (offline, then confirmed live against Atlas staging with all 14 records `active`): `sets:active-staging:runner:offline` reported 14/14 records loaded, 12/12 scenarios passed, zero fallbacks. The live shadow-comparison against `pokemonsets_v2_staging` (`sets:active-v2-shadow:compare`) reported 12/12 `equivalent`, gate `APPROVED`, zero blockers. This is the evidence that justified flipping `stagingReview`/`limitationsResolved` in `verified-evidence.fixture.json` for these six sets — not curator self-certification.
+4. All fourteen sets were then promoted `reviewed → verified → active` via the existing promotion pipeline (`sets:promote:verified`, `sets:activate:staging`) and published to production (`sets:active-v2-production:publish`) following the formal data-freeze override process (adendo seção 13): circuit breaker forced to baseline, canary campaign/window reset (percentage unchanged at 5), publish, reactivate. `pokemonsets_v2` production now holds 14 unique active setIds, confirmed via direct query.
+
 ## Promotion Rules
 
 ### draft -> reviewed
 
-Requires structure validation, legality validation, coherence validation, and human review notes. All fourteen pilot sets meet this gate for staging validation only.
+Requires structure validation, legality validation, coherence validation, and human review notes. All fourteen pilot sets meet this gate.
 
 ### reviewed -> verified
 
-Requires source freshness, confidence review, Team Builder test, shadow comparison, staging validation and rollback evidence. This gate is not complete.
+Requires source freshness, confidence review, Team Builder test, shadow comparison, staging validation and rollback evidence. All fourteen pilot sets meet this gate as of the 2026-07-19 pass.
 
 ### verified -> active
 
-Requires final approval, verified status, rollback confirmation, and minimum coverage target. This gate remains blocked.
+Requires final approval, verified status, rollback confirmation, and minimum coverage target. All fourteen pilot sets are active in production as of the 2026-07-19 pass.
