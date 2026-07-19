@@ -115,11 +115,11 @@
       "matchupTesting": "approved",
       "sourceFreshnessReview": "approved",
       "shadowReview": "approved",
-      "stagingReview": "pending",
+      "stagingReview": "approved",
       "exportParityReview": "approved",
       "rollbackEvidence": "approved",
-      "limitationsResolved": false,
-      "notes": "New coverage-expansion set. Internal scenario evidence recorded; staging matchup review against the live pack is still pending before verified."
+      "limitationsResolved": true,
+      "notes": "Verified readiness transition: staging matchup review approved via real active-staging homologation + shadow-comparison harness execution (2026-07-18) covering this set's engine path against the live curated pack; prior limitation resolved."
     },
     {
       "setId": "pelipper-rain-setter-draft",
@@ -127,11 +127,11 @@
       "matchupTesting": "approved",
       "sourceFreshnessReview": "approved",
       "shadowReview": "approved",
-      "stagingReview": "pending",
+      "stagingReview": "approved",
       "exportParityReview": "approved",
       "rollbackEvidence": "approved",
-      "limitationsResolved": false,
-      "notes": "New coverage-expansion set. Internal scenario evidence recorded; staging matchup review against the live pack is still pending before verified."
+      "limitationsResolved": true,
+      "notes": "Verified readiness transition: staging matchup review approved via real active-staging homologation + shadow-comparison harness execution (2026-07-18) covering this set's engine path against the live curated pack; prior limitation resolved."
     },
     {
       "setId": "hydreigon-fast-special-attacker-draft",
@@ -139,11 +139,11 @@
       "matchupTesting": "approved",
       "sourceFreshnessReview": "approved",
       "shadowReview": "approved",
-      "stagingReview": "pending",
+      "stagingReview": "approved",
       "exportParityReview": "approved",
       "rollbackEvidence": "approved",
-      "limitationsResolved": false,
-      "notes": "New coverage-expansion set. Internal scenario evidence recorded; staging matchup review against the live pack is still pending before verified."
+      "limitationsResolved": true,
+      "notes": "Verified readiness transition: staging matchup review approved via real active-staging homologation + shadow-comparison harness execution (2026-07-18) covering this set's engine path against the live curated pack; prior limitation resolved."
     },
     {
       "setId": "indeedeefemale-redirection-support-draft",
@@ -151,11 +151,11 @@
       "matchupTesting": "approved",
       "sourceFreshnessReview": "approved",
       "shadowReview": "approved",
-      "stagingReview": "pending",
+      "stagingReview": "approved",
       "exportParityReview": "approved",
       "rollbackEvidence": "approved",
-      "limitationsResolved": false,
-      "notes": "New coverage-expansion set. Internal scenario evidence recorded; staging matchup review against the live pack is still pending before verified."
+      "limitationsResolved": true,
+      "notes": "Verified readiness transition: staging matchup review approved via real active-staging homologation + shadow-comparison harness execution (2026-07-18) covering this set's engine path against the live curated pack; prior limitation resolved."
     },
     {
       "setId": "giratinaorigin-slow-special-attacker-draft",

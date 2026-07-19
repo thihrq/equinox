@@ -1,4 +1,9 @@
-import { ACTIVE_STAGING_HOMOLOGATION_SCENARIOS } from './ActiveStagingHomologationAllowlist';
+import {
+  ACTIVE_STAGING_HOMOLOGATION_SCENARIOS,
+  ACTIVE_STAGING_SET_ALLOWLIST,
+} from './ActiveStagingHomologationAllowlist';
+
+const EXPECTED_ACTIVE_RECORD_COUNT = ACTIVE_STAGING_SET_ALLOWLIST.length;
 import { buildActiveStagingEngineInput } from './ActiveStagingEngineAdapter';
 import { runActiveStagingFunctionalEngineProbe } from './ActiveStagingFunctionalEngineProbe';
 import { applyActiveStagingTraceToTeamData } from './ActiveStagingTeamDataTracker';
@@ -23,7 +28,7 @@ export function runActiveStagingHomologationWithRecords(
       engineResult.teamDataGeneratedFallbacks === 0 &&
       engineResult.teamDataUnknownSets === 0 &&
       engineResult.fullTeamEvaluationExecuted === true &&
-      teamData.expectedActiveV2SetsResolvedFromMongo.length === 4 &&
+      teamData.expectedActiveV2SetsResolvedFromMongo.length === records.length &&
       teamData.expectedActiveV2SetsPresentedToEngine.length === 2 &&
       teamData.expectedActiveV2SetsAppliedToTeamData.length === 2 &&
       teamData.localPilotFallbackUsed === false &&
@@ -59,12 +64,12 @@ export function runActiveStagingHomologationWithRecords(
     scenariosWithZeroFallbacks: scenarios.filter((scenario) => scenario.teamDataGeneratedFallbacks === 0 && scenario.teamDataUnknownSets === 0).length,
     localPilotFallbackUsed: scenarios.some((scenario) => scenario.localPilotFallbackUsed) as false,
     readyForAtlasReadOnlyHomologation:
-      records.length === 4 &&
-      scenarios.length === 4 &&
+      records.length === EXPECTED_ACTIVE_RECORD_COUNT &&
+      scenarios.length === ACTIVE_STAGING_HOMOLOGATION_SCENARIOS.length &&
       scenarios.every((scenario) => scenario.passed) &&
       scenarios.every((scenario) => scenario.engineExecuted) &&
       scenarios.every((scenario) => scenario.fullTeamEvaluationExecuted) &&
-      uniquePresented.size === 4,
+      uniquePresented.size === EXPECTED_ACTIVE_RECORD_COUNT,
   };
 
   return { aggregate, scenarios };

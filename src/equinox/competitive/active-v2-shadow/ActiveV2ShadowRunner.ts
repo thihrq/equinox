@@ -1,4 +1,10 @@
-import { ACTIVE_STAGING_HOMOLOGATION_SCENARIOS } from '../active-staging/ActiveStagingHomologationAllowlist';
+import {
+  ACTIVE_STAGING_HOMOLOGATION_SCENARIOS,
+  ACTIVE_STAGING_SET_ALLOWLIST,
+} from '../active-staging/ActiveStagingHomologationAllowlist';
+
+const EXPECTED_SCENARIO_COUNT = ACTIVE_STAGING_HOMOLOGATION_SCENARIOS.length;
+const EXPECTED_ACTIVE_V2_RECORD_COUNT = ACTIVE_STAGING_SET_ALLOWLIST.length;
 import type { ActiveStagingSetRecord } from '../active-staging/ActiveStagingHomologationTypes';
 import { compareShadowPathResults } from './ActiveV2ShadowComparators';
 import { ActiveV2ShadowGateError } from './ActiveV2ShadowGates';
@@ -28,7 +34,7 @@ function executeActiveV2ShadowComparison(input: ActiveV2ShadowRunnerInput): Acti
     .map(record => record.activeRunId?.trim())
     .filter((runId): runId is string => Boolean(runId)))].sort();
   const activeV2RecordsMissingRunId = input.activeV2Records.filter(record => !record.activeRunId?.trim()).length;
-  const activeV2SourceStateReproducible = input.activeV2Records.length === 4
+  const activeV2SourceStateReproducible = input.activeV2Records.length === EXPECTED_ACTIVE_V2_RECORD_COUNT
     && activeV2RecordsMissingRunId === 0
     && activeV2SourceRunIds.length === 1;
   const scenarios: ActiveV2ShadowScenarioResult[] = ACTIVE_STAGING_HOMOLOGATION_SCENARIOS.map(scenario => {
@@ -95,11 +101,11 @@ function executeActiveV2ShadowComparison(input: ActiveV2ShadowRunnerInput): Acti
   };
 
   aggregate.readyForCompetitiveAcceptanceGate =
-    aggregate.scenariosCompared === 4 &&
-    aggregate.scenariosWithBaselineExecution === 4 &&
-    aggregate.scenariosWithActiveV2Execution === 4 &&
-    aggregate.scenariosWithSameInput === 4 &&
-    aggregate.scenariosWithRecordedDifferences === 4 &&
+    aggregate.scenariosCompared === EXPECTED_SCENARIO_COUNT &&
+    aggregate.scenariosWithBaselineExecution === EXPECTED_SCENARIO_COUNT &&
+    aggregate.scenariosWithActiveV2Execution === EXPECTED_SCENARIO_COUNT &&
+    aggregate.scenariosWithSameInput === EXPECTED_SCENARIO_COUNT &&
+    aggregate.scenariosWithRecordedDifferences === EXPECTED_SCENARIO_COUNT &&
     aggregate.baselineFallbackUsed === false &&
     aggregate.activeV2FallbackUsed === false &&
     aggregate.activeV2SourceStateReproducible === true &&
