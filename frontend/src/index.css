@@ -5,6 +5,7 @@
 @import "./styles/sidebar.css";
 @import "./styles/cards.css";
 @import "./styles/buttons.css";
+@import "./styles/lead-panel.css";
 @import "./styles/animations.css";
 
 :root {

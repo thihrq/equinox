@@ -153,14 +153,16 @@ export class LeadStrategyRecommendationService {
 
     const bestOverallTeam = strategyResults[0]?.completions[0]?.fullTeam ?? hydratedLead;
     const dataCoverage = calculateTeamDataCoverage(bestOverallTeam);
-    const warnings = strategyResults.flatMap(result => [
-      ...result.teamEvaluation.warnings,
-      ...(result.dataCoverage?.notes ?? []),
-      ...result.quartets.flatMap(quartet => [
-        ...quartet.assessment.warnings.map(issue => issue.message),
-        ...quartet.assessment.matchupRisks.map(issue => issue.message),
-      ]),
-    ]);
+    const warnings = strategyResults.length > 0
+      ? strategyResults.flatMap(result => [
+          ...result.teamEvaluation.warnings,
+          ...(result.dataCoverage?.notes ?? []),
+          ...result.quartets.flatMap(quartet => [
+            ...quartet.assessment.warnings.map(issue => issue.message),
+            ...quartet.assessment.matchupRisks.map(issue => issue.message),
+          ]),
+        ])
+      : ['Nenhuma das estratégias candidatas produziu um time completo que passasse nos critérios de qualidade (score geral, cobertura de roles e balanço ofensivo mínimos).'];
 
     const response: LeadSuggestionResult = {
       lead: [hydratedLead[0].name, hydratedLead[1].name],
