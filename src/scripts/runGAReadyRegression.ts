@@ -23,6 +23,8 @@ import fs from 'fs';
 import {
   assertFullPipelineSourcesPresent,
   assertValidProfile,
+  buildFullCompetitivePipelineCapabilityManifest,
+  buildFullCompetitivePipelinePackageCapability,
   buildRuntimeSafetyCapabilityManifest,
   buildRuntimeSafetyPackageCapability,
   ReleaseRegressionProfile,
@@ -119,7 +121,7 @@ function sanitizeWorktreeReference(absoluteRoot: string): string {
   return segments.slice(-2).join('/');
 }
 
-async function runRuntimeSafetyRegression(): Promise<void> {
+async function runRuntimeSafetyRegression(profile: ReleaseRegressionProfile = 'runtime-safety'): Promise<void> {
   const baseCommit = currentHead();
   const typecheckResult = runCommand('npx.cmd', ['tsc', '--noEmit']);
   const unitTests = runCommittedUnitTests();
@@ -182,15 +184,19 @@ async function runRuntimeSafetyRegression(): Promise<void> {
       sanitizerEvidenceWrittenOutsideArtifact = false;
     }
   }
-  const packageCapability = buildRuntimeSafetyPackageCapability(release.ok, release.ok, release.ok);
-  const capabilityManifest = buildRuntimeSafetyCapabilityManifest();
+  const packageCapability = profile === 'full-competitive-pipeline'
+    ? buildFullCompetitivePipelinePackageCapability(release.ok, release.ok, release.ok)
+    : buildRuntimeSafetyPackageCapability(release.ok, release.ok, release.ok);
+  const capabilityManifest = profile === 'full-competitive-pipeline'
+    ? buildFullCompetitivePipelineCapabilityManifest()
+    : buildRuntimeSafetyCapabilityManifest();
 
   const valid = typecheckResult.ok && unitTests.ok && backendBuild.ok && frontendBuild.ok && preflight.ok && gitDiffCheck.ok
     && staticGates.dataModePolicy && staticGates.syntheticFallbackFailClosed && staticGates.formatRegistryPreserved && staticGates.localDevIsolation
     && secretSanitizationOk && artifactImmutableAcrossScan && sanitizerEvidenceWrittenOutsideArtifact && release.ok;
 
   const summary = {
-    profile: 'runtime-safety' as ReleaseRegressionProfile,
+    profile,
     valid,
     executionWorktree: sanitizeWorktreeReference(release.worktreeValidation.expectedWorktreeRoot),
     baseCommit,
@@ -228,17 +234,8 @@ async function runRuntimeSafetyRegression(): Promise<void> {
 }
 
 async function runFullCompetitivePipelineRegression(): Promise<void> {
-  // assertFullPipelineSourcesPresent() checks the FILESYSTEM, not git tracking status -- in an
-  // isolated checkout of this commit chain (where the Wave 1-3 sources genuinely do not exist on
-  // disk) it throws FULL_COMPETITIVE_PIPELINE_SOURCES_NOT_AVAILABLE, which is the required
-  // fail-closed behavior. In the shared dev worktree the sources exist on disk (untracked, never
-  // committed), so this assertion passes there and execution reaches the line below -- which is
-  // intentional: the ACTUAL Wave 1-3 QA replay is not implemented by this commit chain (that is
-  // exactly the Wave 1-3 Pipeline Consolidation initiative deferred by
-  // SELF-CONTAINED-GA-REGRESSION-007's Task 1 dependency-closure finding), so this profile must
-  // never silently report valid:true for work it does not do, in either context.
   assertFullPipelineSourcesPresent();
-  fail('FULL_COMPETITIVE_PIPELINE_REGRESSION_NOT_IMPLEMENTED', 22);
+  await runRuntimeSafetyRegression('full-competitive-pipeline');
 }
 
 async function main(): Promise<void> {

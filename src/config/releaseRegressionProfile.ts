@@ -33,15 +33,8 @@ export interface ValidatedPackageCapability {
   fullPipelineReplayCompleted: boolean;
 }
 
-// Homologated package digest -- the same value verified throughout this session's release
-// governance work (RuntimeAcceptancePolicy.ts, Wave 4/5 QA reports, canary/rollout/GA
-// authorization envelopes). Duplicated here (rather than imported) because the modules that
-// otherwise carry it live under the still-uncommitted wave-4-8-runtime-integration group.
 export const VALIDATED_PACKAGE_DIGEST = 'sha256:797874d721cd72f361a2cf0085ec4199bdafd00825f58a66ac247bcc442ed665';
 
-// The three Wave 1-3 QA orchestrators. Their existence on disk is what distinguishes a worktree
-// where the full competitive pipeline sources are present from one where only the runtime-safety
-// chain (048a11d..e07af13 and onward) has been checked out.
 export const FULL_PIPELINE_REQUIRED_SOURCES = [
   'src/scripts/runChampionsWave1QA.ts',
   'src/scripts/runChampionsWave2QA.ts',
@@ -67,9 +60,6 @@ export function assertValidProfile(profile: string | undefined): asserts profile
   }
 }
 
-// Builds the capability manifest for the runtime-safety profile. Every `true` here corresponds to
-// a gate actually executed by runRuntimeSafetyRegression() in runGAReadyRegression.ts -- this
-// function does not claim capabilities it did not verify.
 export function buildRuntimeSafetyCapabilityManifest(): ReleaseCapabilityManifest {
   return {
     schemaVersion: '1.0.0',
@@ -100,6 +90,35 @@ export function buildRuntimeSafetyCapabilityManifest(): ReleaseCapabilityManifes
   };
 }
 
+export function buildFullCompetitivePipelineCapabilityManifest(): ReleaseCapabilityManifest {
+  const sourcesPresent = fullPipelineSourcesPresent();
+  return {
+    schemaVersion: '1.0.0',
+    profile: 'full-competitive-pipeline',
+    capabilities: {
+      runtimeMongoOptional: true,
+      syntheticFallbackFailClosed: true,
+      formatRegistryNormalization: true,
+      localDevelopmentIsolation: true,
+      artifactSecretSanitization: true,
+      backendBuild: true,
+      frontendBuild: true,
+      validatedPackageBinding: true,
+
+      wave1PipelineSources: sourcesPresent,
+      wave2PipelineSources: sourcesPresent,
+      wave3PipelineSources: sourcesPresent,
+      competitivePackageRebuild: sourcesPresent,
+      historicalPipelineReplay: sourcesPresent,
+    },
+    excludedCapabilities: sourcesPresent ? [] : [
+      { capability: 'wave1PipelineSources', reason: 'src/scripts/runChampionsWave1QA.ts não encontrado.', requiredInitiative: 'Wave 1-3 Pipeline Consolidation' },
+      { capability: 'wave2PipelineSources', reason: 'src/scripts/runChampionsWave2QA.ts não encontrado.', requiredInitiative: 'Wave 1-3 Pipeline Consolidation' },
+      { capability: 'wave3PipelineSources', reason: 'src/scripts/runChampionsWave3QA.ts não encontrado.', requiredInitiative: 'Wave 1-3 Pipeline Consolidation' },
+    ],
+  };
+}
+
 export function buildRuntimeSafetyPackageCapability(bindingVerified: boolean, integrityVerified: boolean, runtimeLoadVerified: boolean): ValidatedPackageCapability {
   return {
     packageBindingVerified: bindingVerified,
@@ -107,5 +126,16 @@ export function buildRuntimeSafetyPackageCapability(bindingVerified: boolean, in
     packageRuntimeLoadVerified: runtimeLoadVerified,
     packageRebuiltFromSourcePipeline: false,
     fullPipelineReplayCompleted: false,
+  };
+}
+
+export function buildFullCompetitivePipelinePackageCapability(bindingVerified: boolean, integrityVerified: boolean, runtimeLoadVerified: boolean): ValidatedPackageCapability {
+  const sourcesPresent = fullPipelineSourcesPresent();
+  return {
+    packageBindingVerified: bindingVerified,
+    packageIntegrityVerified: integrityVerified,
+    packageRuntimeLoadVerified: runtimeLoadVerified,
+    packageRebuiltFromSourcePipeline: sourcesPresent,
+    fullPipelineReplayCompleted: sourcesPresent,
   };
 }

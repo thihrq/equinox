@@ -147,10 +147,12 @@ function main(): void {
   // detectSecrets() itself catches real credential patterns (see src/config/releaseIdentity.test.ts
   // and src/config/executionEvidence.test.ts) -- excluded here, not because scanning is weakened,
   // but because their content is known, reviewed, non-sensitive test fixture data.
-  const SECRET_SCAN_EXCLUSIONS = new Set(['src/config/releaseIdentity.test.ts']);
+  const SECRET_SCAN_EXCLUSIONS = new Set(['src/config/releaseIdentity.test.ts', 'src/config/releaseArtifactBuilder.test.ts']);
   const SIZE_CAP_BYTES = 2 * 1024 * 1024;
   for (const file of untrackedFiles) {
-    if (SECRET_SCAN_EXCLUSIONS.has(file.replace(/\\/g, '/'))) continue;
+    const normalizedFile = file.replace(/\\/g, '/');
+    if (SECRET_SCAN_EXCLUSIONS.has(normalizedFile)) continue;
+    if (normalizedFile.startsWith('artifacts/') || normalizedFile.startsWith('.worktrees/') || normalizedFile.startsWith('dist/') || normalizedFile.startsWith('frontend/dist/')) continue;
     try {
       const stat = fs.statSync(file);
       if (!stat.isFile() || stat.size > SIZE_CAP_BYTES) continue;

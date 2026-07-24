@@ -66,7 +66,7 @@ async function main(): Promise<void> {
   const rcDir = path.resolve(`artifacts/release-governance/${releaseCandidateId}`);
   const identityPath = path.join(rcDir, 'digests', 'release-identity.json');
   if (!fs.existsSync(identityPath)) fail(`Missing release identity -- run sets:release:identity first: ${identityPath}`, 12);
-  const identity = JSON.parse(fs.readFileSync(identityPath, 'utf8')) as ReleaseIdentityEnvelope;
+  const identityEnvelope = JSON.parse(fs.readFileSync(identityPath, 'utf8')) as ReleaseIdentityEnvelope;
 
   const worktreeRoot = process.cwd();
   const backendBuildDir = path.join(worktreeRoot, 'dist');
@@ -76,34 +76,48 @@ async function main(): Promise<void> {
   for (const [label, dir] of [['backend', backendBuildDir], ['frontend', frontendDistDir]] as const) if (!fs.existsSync(dir)) fail(`Missing ${label} build output: ${dir} -- run sets:release:identity first`, 12);
 
   const metadata = {
-    releaseIdentity: identity,
-    buildInformation: { releaseCandidateId, baseCommit: identity.baseCommit, generatedAt: new Date().toISOString(), backendBuildDigest: identity.backendBuildDigest, frontendDistributionDigest: identity.frontendDistributionDigest },
+    releaseIdentity: identityEnvelope,
+    buildInformation: { releaseCandidateId, baseCommit: identityEnvelope.baseCommit, generatedAt: new Date().toISOString(), backendBuildDigest: identityEnvelope.backendBuildDigest, frontendDistributionDigest: identityEnvelope.frontendDistributionDigest },
     validatedPackageProvenance: { packageSource: 'versioned-validated-package' as const, packageId: EXPECTED_PACKAGE_ID, packageDigest: VALIDATED_PACKAGE_DIGEST, historicalArtifactConsumed: false },
+  };
+
+  const artifactIdentity = {
+    releaseCandidateId,
+    head: identityEnvelope.baseCommit,
+    baseCommit: identityEnvelope.baseCommit,
+    sourceTreeDigest: identityEnvelope.sourceTreeDigest,
+    backendBuildDigest: identityEnvelope.backendBuildDigest,
+    frontendBuildDigest: identityEnvelope.frontendDistributionDigest,
+    validatedPackageDigest: VALIDATED_PACKAGE_DIGEST,
   };
 
   const artifactDir1 = path.join(rcDir, 'builds', 'release-artifact');
   console.log('Building release artifact (attempt 1)...');
-  const build1 = await buildReleaseArtifact({ artifactDir: artifactDir1, backendBuildDir, frontendDistDir, validatedPackageDir, metadata });
+  const build1 = await buildReleaseArtifact({ artifactDir: artifactDir1, backendBuildDir, frontendDistDir, validatedPackageDir, metadata, identity: artifactIdentity });
   if (build1.secretCount > 0) fail(`RELEASE_ARTIFACT_SECRET_DETECTED: ${build1.secretCount} finding(s): ${JSON.stringify(build1.secretFindings)}`, 40);
   if (build1.personalPathCount > 0) fail(`RELEASE_ARTIFACT_PERSONAL_PATH_DETECTED: ${build1.personalPathCount} finding(s): ${JSON.stringify(build1.personalPathFindings)}`, 40);
 
   console.log('Verifying artifact (fresh recompute)...');
   const verification1 = await verifyReleaseArtifact(artifactDir1);
-  if (!verification1.digestMatch) fail(`RELEASE_ARTIFACT_VERIFY_FAILED: recorded=${verification1.recordedDigest} recomputed=${verification1.recomputedDigest}`, 40);
+  if (!verification1.digestMatch) fail(`RELEASE_ARTIFACT_VERIFY_FAILED: contentMatch=${verification1.contentDigestMatch} envelopeMatch=${verification1.envelopeDigestMatch} digestFileMatch=${verification1.digestFileMatch}`, 40);
 
   console.log('Building release artifact again (attempt 2, reproducibility check)...');
   const artifactDir2 = path.join(rcDir, 'builds', 'release-artifact-reproducibility-check');
-  const build2 = await buildReleaseArtifact({ artifactDir: artifactDir2, backendBuildDir, frontendDistDir, validatedPackageDir, metadata });
-  const reproducibleBuild = build1.artifactDigest === build2.artifactDigest;
+  const build2 = await buildReleaseArtifact({ artifactDir: artifactDir2, backendBuildDir, frontendDistDir, validatedPackageDir, metadata, identity: artifactIdentity });
+  // Both attempts share one metadata object, so an identical tree must produce an identical
+  // envelope digest. Across DIFFERENT candidates the envelope digest is expected to differ.
+  const reproducibleBuild = build1.releaseEnvelopeDigest === build2.releaseEnvelopeDigest && build1.contentDigest === build2.contentDigest;
   fs.rmSync(artifactDir2, { recursive: true, force: true }); // second build was only to prove reproducibility, not a second real artifact
 
   // Update the release identity envelope with the real artifact digest now that it exists.
-  const updatedIdentity: ReleaseIdentityEnvelope = { ...identity, releaseArtifactDigest: build1.artifactDigest };
+  const updatedIdentity: ReleaseIdentityEnvelope = { ...identityEnvelope, releaseArtifactDigest: build1.releaseEnvelopeDigest };
   writeAtomic(identityPath, `${JSON.stringify(updatedIdentity, null, 2)}\n`);
 
   const verificationReportDir = path.join(rcDir, 'verification');
   writeAtomic(path.join(verificationReportDir, 'artifact-verification.json'), `${JSON.stringify({
-    releaseCandidateId, artifactDigest: build1.artifactDigest, reproducibleBuild, verificationDigestMatch: verification1.digestMatch,
+    releaseCandidateId, schemaVersion: verification1.schemaVersion, contentDigest: build1.contentDigest, releaseEnvelopeDigest: build1.releaseEnvelopeDigest, reproducibleBuild, verificationDigestMatch: verification1.digestMatch,
+    contentDigestMatch: verification1.contentDigestMatch, envelopeDigestMatch: verification1.envelopeDigestMatch, digestFileMatch: verification1.digestFileMatch,
+    stableContentEntryCount: build1.manifestV2.entryClassification.stableContentEntryCount, releaseEnvelopeEntryCount: build1.manifestV2.entryClassification.releaseEnvelopeEntryCount, byteIdenticalReleaseArtifactClaimed: false,
     artifactSecretCount: build1.secretCount, artifactPersonalPathCount: build1.personalPathCount,
     packageDigestMatch: true, entryCount: build1.manifest.entries.length,
     packageSource: 'versioned-validated-package', packageId: EXPECTED_PACKAGE_ID, packageDigest: VALIDATED_PACKAGE_DIGEST, historicalArtifactConsumed: false,
@@ -111,7 +125,7 @@ async function main(): Promise<void> {
 
   const valid = reproducibleBuild && verification1.digestMatch && build1.secretCount === 0 && build1.personalPathCount === 0;
   console.log(JSON.stringify({
-    valid, releaseCandidateId, artifactDigest: build1.artifactDigest, reproducibleBuild, artifactSecretCount: build1.secretCount, artifactPersonalPathCount: build1.personalPathCount, entryCount: build1.manifest.entries.length,
+    valid, releaseCandidateId, schemaVersion: '2.0.0', contentDigest: build1.contentDigest, releaseEnvelopeDigest: build1.releaseEnvelopeDigest, byteIdenticalReleaseArtifactClaimed: false, reproducibleBuild, artifactSecretCount: build1.secretCount, artifactPersonalPathCount: build1.personalPathCount, entryCount: build1.manifest.entries.length,
     packageSource: 'versioned-validated-package', packageId: EXPECTED_PACKAGE_ID, packageDigest: VALIDATED_PACKAGE_DIGEST, historicalArtifactConsumed: false,
     mongoReads: 0, mongoWrites: 0, networkReads: 0, productionWrites: 0,
   }));

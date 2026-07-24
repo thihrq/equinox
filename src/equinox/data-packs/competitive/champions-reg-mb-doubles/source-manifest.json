@@ -1,0 +1,23 @@
+{
+  "packageId": "champions-reg-mb-doubles",
+  "packageVersion": "champions-mb-official-web-20260719T180956118Z",
+  "status": "pending",
+  "generatedAt": "2026-07-19T19:10:29.978Z",
+  "sources": [
+    {
+      "sourceId": "pokemon-showdown",
+      "authority": "canonical-mechanics",
+      "url": "https://play.pokemonshowdown.com/data",
+      "retrievedAt": "2026-07-19T19:10:29.978Z",
+      "digest": "sha256:e9ede79fedfdc6a9b8175c183a5fb5fa9550f39cffef3bbbd57ae28c3530eb20",
+      "scope": [
+        "species",
+        "moves",
+        "abilities",
+        "items",
+        "learnsets"
+      ]
+    }
+  ],
+  "packageDigest": "sha256:f4cc5c50fb193f6b4641a08c56fd9977005476a0a4d3dd0b236207252415b5f5"
+}

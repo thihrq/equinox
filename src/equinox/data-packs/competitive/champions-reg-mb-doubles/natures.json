@@ -1,0 +1,179 @@
+{
+  "natures": [
+    {
+      "natureId": "hardy",
+      "displayName": "hardy",
+      "increasedStat": null,
+      "decreasedStat": null,
+      "isNeutral": true
+    },
+    {
+      "natureId": "lonely",
+      "displayName": "lonely",
+      "increasedStat": "attack",
+      "decreasedStat": "defense",
+      "isNeutral": false
+    },
+    {
+      "natureId": "brave",
+      "displayName": "brave",
+      "increasedStat": "attack",
+      "decreasedStat": "speed",
+      "isNeutral": false
+    },
+    {
+      "natureId": "adamant",
+      "displayName": "adamant",
+      "increasedStat": "attack",
+      "decreasedStat": "specialAttack",
+      "isNeutral": false
+    },
+    {
+      "natureId": "naughty",
+      "displayName": "naughty",
+      "increasedStat": "attack",
+      "decreasedStat": "specialDefense",
+      "isNeutral": false
+    },
+    {
+      "natureId": "bold",
+      "displayName": "bold",
+      "increasedStat": "defense",
+      "decreasedStat": "attack",
+      "isNeutral": false
+    },
+    {
+      "natureId": "docile",
+      "displayName": "docile",
+      "increasedStat": null,
+      "decreasedStat": null,
+      "isNeutral": true
+    },
+    {
+      "natureId": "relaxed",
+      "displayName": "relaxed",
+      "increasedStat": "defense",
+      "decreasedStat": "speed",
+      "isNeutral": false
+    },
+    {
+      "natureId": "impish",
+      "displayName": "impish",
+      "increasedStat": "defense",
+      "decreasedStat": "specialAttack",
+      "isNeutral": false
+    },
+    {
+      "natureId": "lax",
+      "displayName": "lax",
+      "increasedStat": "defense",
+      "decreasedStat": "specialDefense",
+      "isNeutral": false
+    },
+    {
+      "natureId": "timid",
+      "displayName": "timid",
+      "increasedStat": "speed",
+      "decreasedStat": "attack",
+      "isNeutral": false
+    },
+    {
+      "natureId": "hasty",
+      "displayName": "hasty",
+      "increasedStat": "speed",
+      "decreasedStat": "defense",
+      "isNeutral": false
+    },
+    {
+      "natureId": "serious",
+      "displayName": "serious",
+      "increasedStat": null,
+      "decreasedStat": null,
+      "isNeutral": true
+    },
+    {
+      "natureId": "jolly",
+      "displayName": "jolly",
+      "increasedStat": "speed",
+      "decreasedStat": "specialAttack",
+      "isNeutral": false
+    },
+    {
+      "natureId": "naive",
+      "displayName": "naive",
+      "increasedStat": "speed",
+      "decreasedStat": "specialDefense",
+      "isNeutral": false
+    },
+    {
+      "natureId": "modest",
+      "displayName": "modest",
+      "increasedStat": "specialAttack",
+      "decreasedStat": "attack",
+      "isNeutral": false
+    },
+    {
+      "natureId": "mild",
+      "displayName": "mild",
+      "increasedStat": "specialAttack",
+      "decreasedStat": "defense",
+      "isNeutral": false
+    },
+    {
+      "natureId": "quiet",
+      "displayName": "quiet",
+      "increasedStat": "specialAttack",
+      "decreasedStat": "speed",
+      "isNeutral": false
+    },
+    {
+      "natureId": "bashful",
+      "displayName": "bashful",
+      "increasedStat": null,
+      "decreasedStat": null,
+      "isNeutral": true
+    },
+    {
+      "natureId": "rash",
+      "displayName": "rash",
+      "increasedStat": "specialAttack",
+      "decreasedStat": "specialDefense",
+      "isNeutral": false
+    },
+    {
+      "natureId": "calm",
+      "displayName": "calm",
+      "increasedStat": "specialDefense",
+      "decreasedStat": "attack",
+      "isNeutral": false
+    },
+    {
+      "natureId": "gentle",
+      "displayName": "gentle",
+      "increasedStat": "specialDefense",
+      "decreasedStat": "defense",
+      "isNeutral": false
+    },
+    {
+      "natureId": "sassy",
+      "displayName": "sassy",
+      "increasedStat": "specialDefense",
+      "decreasedStat": "speed",
+      "isNeutral": false
+    },
+    {
+      "natureId": "careful",
+      "displayName": "careful",
+      "increasedStat": "specialDefense",
+      "decreasedStat": "specialAttack",
+      "isNeutral": false
+    },
+    {
+      "natureId": "quirky",
+      "displayName": "quirky",
+      "increasedStat": null,
+      "decreasedStat": null,
+      "isNeutral": true
+    }
+  ]
+}

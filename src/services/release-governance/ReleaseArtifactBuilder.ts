@@ -7,15 +7,32 @@ import path from 'path';
 import crypto from 'crypto';
 import { buildDeterministicManifest, DeterministicManifest } from './DeterministicManifestBuilder';
 import { detectSecrets } from './ReleaseIdentity';
+import { canonicalEntriesDigest, classifyReleaseArtifactEntry, partitionReleaseManifestEntries } from '../../config/releaseArtifactEntryClassification';
+import { ReleaseArtifactManifestV2, TREE_DIGEST_EXCLUSIONS } from '../../config/releaseArtifactManifestV2';
 
 export interface ReleaseArtifactBuildResult {
   artifactDir: string;
   manifest: DeterministicManifest;
-  artifactDigest: string;
+  manifestV2: ReleaseArtifactManifestV2;
+  /** Digest of the entries that must be identical across two builds of the same commit. */
+  contentDigest: string;
+  /** Digest of the complete release/ tree -- unique per release candidate by design. */
+  releaseEnvelopeDigest: string;
   secretCount: number;
   personalPathCount: number;
   secretFindings: Array<{ file: string; labels: string[] }>;
   personalPathFindings: string[];
+}
+
+/** Identity inputs the v2 manifest declares alongside its digests. */
+export interface ReleaseArtifactIdentityInput {
+  releaseCandidateId: string;
+  head: string;
+  baseCommit?: string;
+  sourceTreeDigest: string;
+  backendBuildDigest: string;
+  frontendBuildDigest: string;
+  validatedPackageDigest: string;
 }
 
 // A "personal path" here means a Windows user-profile path leaking into shipped artifact content
@@ -64,8 +81,9 @@ export async function buildReleaseArtifact(input: {
   frontendDistDir: string;
   validatedPackageDir: string;
   metadata: Record<string, unknown>;
+  identity: ReleaseArtifactIdentityInput;
 }): Promise<ReleaseArtifactBuildResult> {
-  const { artifactDir, backendBuildDir, frontendDistDir, validatedPackageDir, metadata } = input;
+  const { artifactDir, backendBuildDir, frontendDistDir, validatedPackageDir, metadata, identity } = input;
 
   fs.rmSync(artifactDir, { recursive: true, force: true });
   fs.mkdirSync(path.join(artifactDir, 'release', 'backend'), { recursive: true });
@@ -97,12 +115,58 @@ export async function buildReleaseArtifact(input: {
     if (PERSONAL_PATH_PATTERN.test(content)) personalPathFindings.push(file);
   }
 
+  // Everything under release/ is final at this point -- content, stable metadata and envelope
+  // metadata alike. Nothing writes into the tree after this line: the manifest and the digest file
+  // are siblings of release/, not children, which is why TREE_DIGEST_EXCLUSIONS is empty and no
+  // self-reference is possible. The envelope identity file inside the tree permanently carries
+  // releaseArtifactDigest: null; only its copy outside the tree is ever populated with the digest.
   const manifest = await buildDeterministicManifest(path.join(artifactDir, 'release'), 'release-artifact');
-  const artifactDigest = manifest.manifestDigest;
-  fs.writeFileSync(path.join(artifactDir, 'release-artifact-manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
-  fs.writeFileSync(path.join(artifactDir, 'release-artifact-digest.txt'), `${artifactDigest}\n`, 'utf8');
 
-  return { artifactDir, manifest, artifactDigest, secretCount: secretFindings.length, personalPathCount: personalPathFindings.length, secretFindings, personalPathFindings };
+  // Fail-closed: an entry nobody classified means the tree is not shaped the way this contract
+  // describes, so no digest computed over it would carry the meaning it claims.
+  const partition = partitionReleaseManifestEntries(manifest.entries);
+  const contentDigest = canonicalEntriesDigest(partition.stableContentEntries);
+  const releaseEnvelopeDigest = canonicalEntriesDigest(manifest.entries);
+
+  const manifestV2: ReleaseArtifactManifestV2 = {
+    schemaVersion: '2.0.0',
+    releaseCandidateId: identity.releaseCandidateId,
+    generatedAt: new Date().toISOString(),
+    commit: { head: identity.head, ...(identity.baseCommit ? { baseCommit: identity.baseCommit } : {}) },
+    digests: {
+      contentDigest,
+      releaseEnvelopeDigest,
+      sourceTreeDigest: identity.sourceTreeDigest,
+      backendBuildDigest: identity.backendBuildDigest,
+      frontendBuildDigest: identity.frontendBuildDigest,
+      validatedPackageDigest: identity.validatedPackageDigest,
+    },
+    digestSemantics: {
+      contentDigest: { algorithm: 'sha256', source: 'deterministic-manifest-partition', includes: 'stable-content', excludes: 'release-envelope' },
+      releaseEnvelopeDigest: { algorithm: 'sha256', source: 'complete-release-tree', includes: 'all-release-artifact-entries', uniquePerReleaseCandidate: true },
+    },
+    reproducibility: {
+      deterministicContentClaimed: true,
+      byteIdenticalReleaseArtifactClaimed: false,
+      releaseEnvelopeUniqueByDesign: true,
+      variableFields: ['releaseCandidateId', 'generatedAt'],
+      variableEntries: partition.releaseEnvelopeEntries.map(entry => entry.path).sort(),
+    },
+    entryClassification: {
+      stableContentEntryCount: partition.stableContentEntries.length,
+      releaseEnvelopeEntryCount: partition.releaseEnvelopeEntries.length,
+      unclassifiedEntryCount: 0,
+    },
+    treeDigestExclusions: TREE_DIGEST_EXCLUSIONS,
+    entries: manifest.entries.map(entry => ({ ...entry, classification: classifyReleaseArtifactEntry(entry.path).classification })),
+  };
+
+  fs.writeFileSync(path.join(artifactDir, 'release-artifact-manifest.json'), `${JSON.stringify(manifestV2, null, 2)}\n`, 'utf8');
+  // The digest file carries the ENVELOPE digest: it is the identity of this specific artifact, which
+  // is what an integrity check of this artifact has to match. contentDigest lives in the manifest.
+  fs.writeFileSync(path.join(artifactDir, 'release-artifact-digest.txt'), `${releaseEnvelopeDigest}\n`, 'utf8');
+
+  return { artifactDir, manifest, manifestV2, contentDigest, releaseEnvelopeDigest, secretCount: secretFindings.length, personalPathCount: personalPathFindings.length, secretFindings, personalPathFindings };
 }
 
 const digestString = (value: string): string => `sha256:${crypto.createHash('sha256').update(value).digest('hex')}`;
