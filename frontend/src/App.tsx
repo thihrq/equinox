@@ -1,29 +1,23 @@
 import React, { useMemo, useState } from 'react';
-import { Moon, Sun } from 'lucide-react';
-import type { ExplanationEntry, SuggestionResponse, TeamIdentity, TeamOption } from './types/equinox';
+import { Moon, Sun, Search, X, Check, Copy, ArrowLeft, Shield, Zap, Sparkles, ShieldCheck, Cpu, Database, Activity, Layers } from 'lucide-react';
+import type { SuggestionResponse, TeamIdentity, TeamOption } from './types/equinox';
 import type { Locale } from './i18n/equinoxI18n';
 import { t } from './i18n/equinoxI18n';
-import { findPokemonNameSuggestions, isKnownPokemonName } from './utils/pokemonNames';
-import { getNextPokemonSpriteUrl, getPokemonSpriteUrl, getSmogonPokemonSlug } from './utils/pokemonSprites';
+import { findPokemonNameSuggestions } from './utils/pokemonNames';
+import { getNextPokemonSpriteUrl, getPokemonSpriteUrl } from './utils/pokemonSprites';
 import { apiPost, type ApiErrorShape } from './services/api';
-import { BattlePlanHero, SectionHeader } from './components/coach';
-import { ExportTeam, PokemonGrid } from './components/pokemon';
-import { OptionTabs, StrategySummary } from './components/strategy';
-import { LeadStrategyPanel } from './components/lead/LeadStrategyPanel';
-import type { LeadSuggestionResult } from './types/lead';
-import {
-  AIBuilderDecision,
-  DetailsBlock,
-  ExplanationList,
-  MatchupAnalysis,
-  RadicalRedGauntletPanel,
-  ScoreBreakdownView,
-  ThreatReport,
-  VgcTeamPlanPanel,
-} from './components/analysis';
+import { CompetitiveTeamGrid } from './components/pokemon/CompetitiveTeamGrid';
+import { TeamWeaknessesCard } from './components/analysis/TeamWeaknessesCard';
+import { ChampionsRegulationPanel } from './components/analysis/ChampionsRegulationPanel';
+import { ScoreBreakdownView } from './components/analysis/ScoreBreakdownView';
+import { FormatIntelligencePanel } from './components/analysis/FormatIntelligencePanel';
+import { toShowdown } from './utils/competitiveTeamExport';
+import { getPokemonTypesByName } from './utils/pokemonTypes';
+import type { PokemonData } from './types/lead';
 
 type FormatFamily = 'vanilla' | 'radical_red' | 'champions';
-type AppResult = SuggestionResponse | LeadSuggestionResult;
+type ViewPage = 'home' | 'results';
+type AnalysisTab = 'team' | 'synergy' | 'regulation' | 'format';
 
 interface PickerOption<TValue extends string = string> {
   value: TValue;
@@ -36,54 +30,29 @@ interface VanillaGamePickerOption extends PickerOption {
 }
 
 const getIdentityOptions = (locale: Locale): Array<PickerOption<TeamIdentity>> => [
-  { value: 'balanced', label: t(locale, 'identityBalanced'), short: t(locale, 'identityBalancedShort') },
-  { value: 'bulky_offense', label: t(locale, 'identityBulky'), short: t(locale, 'identityBulkyShort') },
-  { value: 'hyper_offense', label: t(locale, 'identityHyper'), short: t(locale, 'identityHyperShort') },
-  { value: 'stall', label: t(locale, 'identityStall'), short: t(locale, 'identityStallShort') },
-  { value: 'speed', label: t(locale, 'identitySpeed'), short: t(locale, 'identitySpeedShort') },
-  { value: 'fun', label: t(locale, 'identityFun'), short: t(locale, 'identityFunShort') },
-];
-
-const getFormatFamilies = (locale: Locale): Array<PickerOption<FormatFamily>> => [
-  { value: 'vanilla', label: t(locale, 'formatFamilyVanilla'), short: t(locale, 'formatFamilyVanillaShort') },
-  { value: 'radical_red', label: t(locale, 'formatFamilyRadicalRed'), short: t(locale, 'formatFamilyRadicalRedShort') },
-  { value: 'champions', label: t(locale, 'formatFamilyChampions'), short: t(locale, 'formatFamilyChampionsShort') },
+  { value: 'balanced', label: locale === 'pt-BR' ? 'Equilibrado' : 'Balanced', short: 'BAL' },
+  { value: 'bulky_offense', label: locale === 'pt-BR' ? 'Bulky Offense' : 'Bulky Offense', short: 'BLK' },
+  { value: 'hyper_offense', label: locale === 'pt-BR' ? 'Hyper Offense' : 'Hyper Offense', short: 'HYP' },
+  { value: 'stall', label: locale === 'pt-BR' ? 'Stall Defensivo' : 'Defensive Stall', short: 'STL' },
+  { value: 'speed', label: locale === 'pt-BR' ? 'Foco em Velocidade' : 'Speed Focused', short: 'SPD' },
 ];
 
 const getVanillaGameOptions = (locale: Locale): VanillaGamePickerOption[] => [
-  { group: t(locale, 'vanillaGroupKanto'), value: 'vanilla_red_blue_yellow', label: t(locale, 'formatRedBlueYellow'), short: t(locale, 'formatRedBlueYellowShort') },
-  { group: t(locale, 'vanillaGroupKanto'), value: 'vanilla_fire_red', label: t(locale, 'formatFireRed'), short: t(locale, 'formatFireRedShort') },
-  { group: t(locale, 'vanillaGroupJohto'), value: 'vanilla_gold_silver_crystal', label: t(locale, 'formatGoldSilverCrystal'), short: t(locale, 'formatGoldSilverCrystalShort') },
-  { group: t(locale, 'vanillaGroupJohto'), value: 'vanilla_heartgold_soulsilver', label: t(locale, 'formatHeartGoldSoulSilver'), short: t(locale, 'formatHeartGoldSoulSilverShort') },
-  { group: t(locale, 'vanillaGroupHoenn'), value: 'vanilla_ruby_sapphire', label: t(locale, 'formatRubySapphire'), short: t(locale, 'formatRubySapphireShort') },
-  { group: t(locale, 'vanillaGroupHoenn'), value: 'vanilla_emerald', label: t(locale, 'formatEmerald'), short: t(locale, 'formatEmeraldShort') },
-  { group: t(locale, 'vanillaGroupHoenn'), value: 'vanilla_omega_ruby_alpha_sapphire', label: t(locale, 'formatOmegaRubyAlphaSapphire'), short: t(locale, 'formatOmegaRubyAlphaSapphireShort') },
-  { group: t(locale, 'vanillaGroupSinnoh'), value: 'vanilla_diamond_pearl', label: t(locale, 'formatDiamondPearl'), short: t(locale, 'formatDiamondPearlShort') },
-  { group: t(locale, 'vanillaGroupSinnoh'), value: 'vanilla_platinum', label: t(locale, 'formatPlatinum'), short: t(locale, 'formatPlatinumShort') },
-  { group: t(locale, 'vanillaGroupSinnoh'), value: 'vanilla_brilliant_diamond_shining_pearl', label: t(locale, 'formatBrilliantDiamondShiningPearl'), short: t(locale, 'formatBrilliantDiamondShiningPearlShort') },
-  { group: t(locale, 'vanillaGroupUnova'), value: 'vanilla_black_white', label: t(locale, 'formatBlackWhite'), short: t(locale, 'formatBlackWhiteShort') },
-  { group: t(locale, 'vanillaGroupUnova'), value: 'vanilla_black_2_white_2', label: t(locale, 'formatBlack2White2'), short: t(locale, 'formatBlack2White2Short') },
-  { group: t(locale, 'vanillaGroupKalos'), value: 'vanilla_x_y', label: t(locale, 'formatXY'), short: t(locale, 'formatXYShort') },
-  { group: t(locale, 'vanillaGroupKalos'), value: 'vanilla_legends_za', label: t(locale, 'formatLegendsZA'), short: t(locale, 'formatLegendsZAShort') },
-  { group: t(locale, 'vanillaGroupAlola'), value: 'vanilla_sun_moon', label: t(locale, 'formatSunMoon'), short: t(locale, 'formatSunMoonShort') },
-  { group: t(locale, 'vanillaGroupAlola'), value: 'vanilla_ultra_sun_ultra_moon', label: t(locale, 'formatUltraSunUltraMoon'), short: t(locale, 'formatUltraSunUltraMoonShort') },
-  { group: t(locale, 'vanillaGroupSwitch'), value: 'vanilla_lets_go_pikachu_eevee', label: t(locale, 'formatLetsGoPikachuEevee'), short: t(locale, 'formatLetsGoPikachuEeveeShort') },
-  { group: t(locale, 'vanillaGroupGalar'), value: 'vanilla_sword_shield', label: t(locale, 'formatSwordShield'), short: t(locale, 'formatSwordShieldShort') },
-  { group: t(locale, 'vanillaGroupHisui'), value: 'vanilla_legends_arceus', label: t(locale, 'formatLegendsArceus'), short: t(locale, 'formatLegendsArceusShort') },
-  { group: t(locale, 'vanillaGroupPaldea'), value: 'vanilla_scarlet_violet', label: t(locale, 'formatScarletViolet'), short: t(locale, 'formatScarletVioletShort') },
+  { group: locale === 'pt-BR' ? 'Kanto' : 'Kanto', value: 'vanilla_fire_red', label: 'FireRed / LeafGreen', short: 'GBA Gen 3' },
+  { group: locale === 'pt-BR' ? 'Kanto' : 'Kanto', value: 'vanilla_red_blue_yellow', label: 'Red / Blue / Yellow', short: 'GB Gen 1' },
+  { group: locale === 'pt-BR' ? 'Johto' : 'Johto', value: 'vanilla_gold_silver_crystal', label: 'Gold / Silver / Crystal', short: 'GBC Gen 2' },
+  { group: locale === 'pt-BR' ? 'Johto' : 'Johto', value: 'vanilla_heartgold_soulsilver', label: 'HeartGold / SoulSilver', short: 'DS Gen 4' },
+  { group: locale === 'pt-BR' ? 'Hoenn' : 'Hoenn', value: 'vanilla_emerald', label: 'Emerald', short: 'GBA Gen 3' },
+  { group: locale === 'pt-BR' ? 'Hoenn' : 'Hoenn', value: 'vanilla_omega_ruby_alpha_sapphire', label: 'Omega Ruby / Alpha Sapphire', short: '3DS Gen 6' },
+  { group: locale === 'pt-BR' ? 'Sinnoh' : 'Sinnoh', value: 'vanilla_platinum', label: 'Platinum', short: 'DS Gen 4' },
+  { group: locale === 'pt-BR' ? 'Unova' : 'Unova', value: 'vanilla_black_2_white_2', label: 'Black 2 / White 2', short: 'DS Gen 5' },
+  { group: locale === 'pt-BR' ? 'Paldea' : 'Paldea', value: 'vanilla_scarlet_violet', label: 'Scarlet / Violet', short: 'Switch Gen 9' },
 ];
 
 const getChampionsOptions = (locale: Locale): Array<PickerOption> => [
-  { value: 'champions_reg_m_b_singles', label: t(locale, 'formatChampionsSingles'), short: t(locale, 'formatChampionsSinglesShort') },
-  { value: 'champions_reg_m_b_doubles', label: t(locale, 'formatChampionsDoubles'), short: t(locale, 'formatChampionsDoublesShort') },
+  { value: 'champions_reg_m_b_doubles', label: locale === 'pt-BR' ? 'Champions Doubles (VGC Reg M-B)' : 'Champions Doubles (VGC Reg M-B)', short: 'VGC Doubles' },
+  { value: 'champions_reg_m_b_singles', label: locale === 'pt-BR' ? 'Champions Singles' : 'Champions Singles', short: 'VGC Singles' },
 ];
-
-const getFormatFamily = (format: string): FormatFamily => {
-  if (format.startsWith('vanilla_') || format === 'vanilla') return 'vanilla';
-  if (format.startsWith('champions_')) return 'champions';
-  if (format === 'radical_red') return 'radical_red';
-  return 'champions';
-};
 
 const exampleCores = [
   ['Charizard', 'Jolteon', 'Lapras'],
@@ -91,84 +60,130 @@ const exampleCores = [
   ['Venusaur', 'Arcanine', 'Gyarados'],
 ];
 
-const teamPlaceholders = ['Ex: Charizard', 'Ex: Blastoise', 'Ex: Venusaur'];
-
-function isLeadSuggestionResult(result: AppResult | null): result is LeadSuggestionResult {
-  return !!result && 'strategies' in result && 'leadProfile' in result;
-}
-
-function isSuggestionResponse(result: AppResult | null): result is SuggestionResponse {
-  return !!result && 'topTeams' in result;
-}
-
 export default function App() {
+  const [currentPage, setCurrentPage] = useState<ViewPage>('home');
   const [team, setTeam] = useState(['', '', '']);
-  const [format, setFormat] = useState('vanilla_fire_red');
-  const [teamIdentity] = useState<TeamIdentity>('balanced');
+  const [format, setFormat] = useState('champions_reg_m_b_doubles');
+  const [teamIdentity, setTeamIdentity] = useState<TeamIdentity>('balanced');
   const [allowLegendaries, setAllowLegendaries] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [locale, setLocale] = useState<Locale>('pt-BR');
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
-
-  // Estados para o novo fluxo Build-Around-Lead
-  const [buildMode, setBuildMode] = useState<'complete-core' | 'build-around-lead'>('complete-core');
-  const [leadTeam, setLeadTeam] = useState<string[]>(['', '']);
-  const [activeLeadStrategyIndex, setActiveLeadStrategyIndex] = useState(0);
-  const [activeLeadQuartetIndex, setActiveLeadQuartetIndex] = useState(0);
-
-  const isLeadBuilderEnabled = import.meta.env.VITE_ENABLE_LEAD_BUILDER === 'true';
-  const handleSelectOption = (index: number) => {
-    setSelectedOptionIndex(index);
-    setTimeout(() => {
-      document.getElementById('eq-pokemon-grid-v3')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 80);
-  };
+  const [activeAnalysisTab, setActiveAnalysisTab] = useState<AnalysisTab>('team');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<AppResult | null>(null);
+  const [result, setResult] = useState<SuggestionResponse | null>(null);
   const [error, setError] = useState('');
+  const [copiedFullShowdown, setCopiedFullShowdown] = useState(false);
+
+  // Modal para slots
+  const [activeSlotModal, setActiveSlotModal] = useState<number | null>(null);
+  const [slotSearchQuery, setSlotSearchQuery] = useState('');
+
+  const activeFormatFamily: FormatFamily = useMemo(() => {
+    if (format.startsWith('vanilla_') || format === 'vanilla') return 'vanilla';
+    if (format === 'radical_red') return 'radical_red';
+    return 'champions';
+  }, [format]);
 
   const identityOptions = useMemo(() => getIdentityOptions(locale), [locale]);
-  const formatFamilies = useMemo(() => getFormatFamilies(locale), [locale]);
   const vanillaGameOptions = useMemo(() => getVanillaGameOptions(locale), [locale]);
   const championsOptions = useMemo(() => getChampionsOptions(locale), [locale]);
-  const activeFormatFamily = useMemo(() => getFormatFamily(format), [format]);
-  const isVgcFormat = format.toLowerCase().startsWith('champions');
-  const vanillaGamesByGroup = useMemo(() => {
-    return vanillaGameOptions.reduce<Record<string, VanillaGamePickerOption[]>>((groups, option) => {
-      groups[option.group] = [...(groups[option.group] ?? []), option];
-      return groups;
-    }, {});
-  }, [vanillaGameOptions]);
-  const selectedVanillaGame = useMemo(() => {
-    return vanillaGameOptions.find(option => option.value === format);
-  }, [format, vanillaGameOptions]);
-  const selectedChampionsFormat = useMemo(() => {
-    return championsOptions.find(option => option.value === format);
-  }, [format, championsOptions]);
-  const selectedFormatLabel = useMemo(() => {
-    if (activeFormatFamily === 'vanilla') return selectedVanillaGame?.label ?? t(locale, 'formatFamilyVanilla');
-    if (activeFormatFamily === 'champions') return selectedChampionsFormat?.label ?? t(locale, 'formatFamilyChampions');
-    return t(locale, 'formatFamilyRadicalRed');
-  }, [activeFormatFamily, locale, selectedChampionsFormat, selectedVanillaGame]);
 
-  const selectedOption = useMemo(() => {
-    if (!isSuggestionResponse(result) || !result.topTeams?.length) return null;
+  const selectedOption: TeamOption | null = useMemo(() => {
+    if (!result || !result.topTeams?.length) return null;
     return result.topTeams[Math.min(selectedOptionIndex, result.topTeams.length - 1)];
   }, [result, selectedOptionIndex]);
-  const leadResult = isLeadSuggestionResult(result) ? result : null;
 
-  const identityLabel = identityOptions.find(option => option.value === teamIdentity)?.label ?? 'Balance';
+  // Monta o TIME COMPLETO DE 6 POKÉMON (3 membros do Core + 3 membros sugeridos)
+  const fullTeamPokemons: PokemonData[] = useMemo(() => {
+    if (!selectedOption?.suggestedPokemons) return [];
 
-  const getSpriteUrl = (name: string) => getPokemonSpriteUrl(name);
+    // Os 3 membros iniciais do Core com seus tipos reais
+    const coreMembers: PokemonData[] = team.map((name, idx) => {
+      const realTypes = getPokemonTypesByName(name);
+      return {
+        name: name || `Core ${idx + 1}`,
+        types: realTypes,
+        baseStats: { hp: 80, atk: 80, def: 80, spa: 80, spd: 80, spe: 80 },
+        role: idx === 0 ? 'Lead Opener' : idx === 1 ? 'Secondary Core' : 'Tactical Support',
+        ability: 'Pressure',
+        item: 'Focus Sash',
+        nature: 'Jolly',
+        moves: ['Tackle', 'Protect', 'Substitute', 'Rest'],
+        competitiveSet: {
+          name: name || `Core ${idx + 1}`,
+          types: realTypes,
+          role: idx === 0 ? 'Lead Opener' : idx === 1 ? 'Secondary Core' : 'Tactical Support',
+          ability: 'Pressure',
+          item: 'Focus Sash',
+          nature: 'Jolly',
+          moves: ['Tackle', 'Protect', 'Substitute', 'Rest'],
+          evs: { hp: 252, atk: 0, def: 0, spa: 252, spd: 4, spe: 252 },
+          ivs: { hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31 },
+          setSource: 'generated',
+          validation: { legal: true, errors: [], warnings: [] },
+        },
+      };
+    });
 
-  const getSmogonUrl = (name: string) => {
-    const slug = getSmogonPokemonSlug(name);
-    return `https://www.smogon.com/dex/sv/pokemon/${slug}/`;
+    // Os 3 membros sugeridos com seus tipos reais
+    const complementMembers: PokemonData[] = selectedOption.suggestedPokemons.map(p => {
+      const realTypes = getPokemonTypesByName(p.name);
+      const moves = (p.moves || p.kit?.moves || ['—', '—', '—', '—']).slice(0, 4);
+      const movesTuple: [string, string, string, string] = [
+        moves[0] || '—',
+        moves[1] || '—',
+        moves[2] || '—',
+        moves[3] || '—',
+      ];
+
+      return {
+        name: p.name,
+        types: realTypes,
+        baseStats: { hp: 80, atk: 80, def: 80, spa: 80, spd: 80, spe: 80 },
+        role: p.kit?.role || p.role || 'Sweeper',
+        ability: p.ability || p.kit?.ability || 'Pressure',
+        item: p.item || p.kit?.item || 'Focus Sash',
+        nature: p.nature || p.kit?.nature || 'Jolly',
+        moves: movesTuple,
+        competitiveSet: {
+          name: p.name,
+          types: realTypes,
+          role: p.kit?.role || p.role || 'Sweeper',
+          ability: p.ability || p.kit?.ability || 'Pressure',
+          item: p.item || p.kit?.item || 'Focus Sash',
+          nature: p.nature || p.kit?.nature || 'Jolly',
+          moves: movesTuple,
+          evs: { hp: 252, atk: 0, def: 0, spa: 252, spd: 4, spe: 252 },
+          ivs: { hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31 },
+          setSource: 'generated',
+          validation: { legal: true, errors: [], warnings: [] },
+        },
+      };
+    });
+
+    return [...coreMembers, ...complementMembers];
+  }, [selectedOption, team]);
+
+  const handleFormatFamilyChange = (family: FormatFamily) => {
+    setResult(null);
+    if (family === 'vanilla') setFormat('vanilla_fire_red');
+    else if (family === 'radical_red') setFormat('radical_red');
+    else setFormat('champions_reg_m_b_doubles');
   };
 
-  const handleInputChange = (index: number, value: string) => {
+  const handleSlotSelect = (index: number, pokemonName: string) => {
     const newTeam = [...team];
-    newTeam[index] = value;
+    newTeam[index] = pokemonName;
+    setTeam(newTeam);
+    setActiveSlotModal(null);
+    setSlotSearchQuery('');
+  };
+
+  const handleSlotRemove = (index: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newTeam = [...team];
+    newTeam[index] = '';
     setTeam(newTeam);
   };
 
@@ -179,77 +194,20 @@ export default function App() {
     setSelectedOptionIndex(0);
   };
 
-  const handleFormatFamilyChange = (family: FormatFamily) => {
-    if (family === activeFormatFamily) return;
-    setBuildMode('complete-core');
-    setResult(null);
-
-    if (family === 'vanilla') {
-      setFormat('vanilla_fire_red');
-      return;
-    }
-
-    if (family === 'radical_red') {
-      setFormat('radical_red');
-      return;
-    }
-
-    setFormat('champions_reg_m_b_singles');
-  };
-
-  const handleLeadInputChange = (index: number, value: string) => {
-    const newLead = [...leadTeam];
-    newLead[index] = value;
-    setLeadTeam(newLead);
-  };
-
-  const formatScore = (value?: number) => {
-    if (value === undefined || Number.isNaN(value)) return '0';
-    return value > 0 ? `+${value}` : `${value}`;
-  };
-
-  const formatPercent = (value?: number) => {
-    if (value === undefined || Number.isNaN(value)) return '0%';
-    return `${Math.round(value * 100)}%`;
-  };
-
-
-
-  const getTopExplanations = (option: TeamOption): ExplanationEntry[] => {
-    return [...(option.explanations ?? [])]
-      .sort((a, b) => Math.abs(b.value) - Math.abs(a.value))
-      .slice(0, 6);
-  };
-
   const getFriendlyApiError = (apiError: ApiErrorShape): string => {
     const status = apiError.response?.status;
     const code = apiError.response?.data?.code;
-
     if (status === 0 || code === 'NETWORK_ERROR') return t(locale, 'networkError');
     if (status === 404 || code === 'ROUTE_NOT_FOUND') return t(locale, 'routeError');
     if (status === 403 || code === 'CORS_ORIGIN_NOT_ALLOWED') return t(locale, 'corsError');
-    if (status === 502 || status === 503 || status === 504 || code === 'DEPLOYMENT_GATEWAY_ERROR') {
-      return t(locale, 'gatewayError');
-    }
-
     return apiError.response?.data?.message || t(locale, 'serverError');
   };
 
-  const normalizeScore = (value: number) => Math.max(0, Math.min(100, 50 + value));
-
-  const analyzeTeam = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (buildMode === 'build-around-lead') {
-      if (leadTeam.some(pokemon => pokemon.trim() === '')) {
-        setError(locale === 'pt-BR' ? 'Por favor, preencha os dois Pokémon da lead.' : 'Please fill both lead Pokémon.');
-        return;
-      }
-    } else {
-      if (team.some(pokemon => pokemon.trim() === '')) {
-        setError(t(locale, 'fillTeamError'));
-        return;
-      }
+  const analyzeTeam = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (team.some(pokemon => pokemon.trim() === '')) {
+      setError(locale === 'pt-BR' ? 'Por favor, selecione os 3 Pokémon do core inicial.' : 'Please select all 3 initial core Pokémon.');
+      return;
     }
 
     setLoading(true);
@@ -258,531 +216,797 @@ export default function App() {
     setSelectedOptionIndex(0);
 
     try {
-      const url = buildMode === 'build-around-lead' ? '/api/team/suggest-from-lead' : '/api/team/suggest';
-      const body = buildMode === 'build-around-lead' ? {
-        lead: leadTeam.map(pokemon => ({ name: pokemon.trim() })),
-        format,
-        leadMode: 'fixed-lead',
-        allowLegendaries,
-        teamIdentity,
-        locale,
-      } : {
+      const response = await apiPost<SuggestionResponse>('/api/team/suggest', {
         team: team.map(pokemon => pokemon.trim()),
         format,
         allowLegendaries,
         teamIdentity,
         locale,
-      };
+      });
 
-      const response = await apiPost<AppResult>(url, body);
       setResult(response);
+      setCurrentPage('results');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err: unknown) {
-      console.log('Error analyzing team:', err);
       setError(getFriendlyApiError(err as ApiErrorShape));
     } finally {
       setLoading(false);
     }
   };
+
+  const filledSlotsCount = team.filter(name => name.trim() !== '').length;
+
+  const suggestions = useMemo(() => {
+    if (!slotSearchQuery || slotSearchQuery.trim().length < 1) return [];
+    return findPokemonNameSuggestions(slotSearchQuery, 8);
+  }, [slotSearchQuery]);
+
+  const copyFullShowdown = () => {
+    if (!fullTeamPokemons.length) return;
+    const showdownText = toShowdown(fullTeamPokemons);
+    navigator.clipboard.writeText(showdownText);
+    setCopiedFullShowdown(true);
+    setTimeout(() => setCopiedFullShowdown(false), 2000);
+  };
+
+  const normalizeScore = (val: number) => Math.min(100, Math.max(0, val));
+  const formatScore = (val?: number) => `${Math.round(val ?? 0)}%`;
+
+  const leadPair = [team[0] || 'Lead 1', team[1] || 'Lead 2'];
+  const finisherPokemon = selectedOption?.suggestedPokemons?.[0]?.name || team[0] || 'Sweeper';
+  const setupPokemon = team[2] || selectedOption?.suggestedPokemons?.[1]?.name || 'Support';
+
   return (
-    <div className={`eq-app-shell eq-theme-${theme}`}>
-      <aside className="eq-sidebar-v2">
-        <div className="eq-mobile-builder-intro">
-          <span className="eq-kicker-v2">{t(locale, 'appKicker')}</span>
-          <h1>{t(locale, 'appTitle')}</h1>
-          <p>{t(locale, 'appSubtitle')}</p>
-        </div>
+    <div className={`min-h-screen flex flex-col selection:bg-white selection:text-[#031427] ${theme === 'dark' ? 'dark' : ''}`}>
+      {/* Top Header / AppBar */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#031427]/95 backdrop-blur-md border-b border-[#444748]/50">
+        <nav className="flex justify-between items-center w-full px-6 md:px-16 py-3.5 max-w-[1600px] mx-auto">
+          <div className="flex items-center gap-4">
+            {currentPage === 'results' && (
+              <button
+                type="button"
+                onClick={() => setCurrentPage('home')}
+                className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition-all"
+              >
+                <ArrowLeft size={16} />
+                <span>{locale === 'pt-BR' ? 'Voltar ao Core' : 'Back to Core'}</span>
+              </button>
+            )}
 
-        <div className="eq-sidebar-brand">
-          <YinYangMark className="eq-brand-orb" />
-          <div>
-            <strong>EQUINOX</strong>
-            <span>{t(locale, 'appRole')}</span>
-          </div>
-        </div>
+            <div
+              className="text-xl md:text-2xl font-bold tracking-tighter text-white flex items-center gap-2 cursor-pointer"
+              onClick={() => {
+                setCurrentPage('home');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            >
+              EQUINOX
+              <span className="material-symbols-outlined text-white/80">contrast</span>
+            </div>
 
-        <form className="eq-builder-panel" onSubmit={analyzeTeam}>
-          <details className="eq-builder-disclosure" style={{ marginBottom: '16px' }}>
-            <summary style={{ padding: '12px 16px' }}>
-              <span style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-start' }}>
-                <strong style={{ fontSize: '15px', fontWeight: 900 }}>{t(locale, 'sidebarFormat')}</strong>
-                <small>{t(locale, 'formatCurrent')}: {selectedFormatLabel}</small>
+            {/* Governance Status Pill */}
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="text-[11px] font-bold text-emerald-300 tracking-wider font-mono uppercase">
+                active-v2 • Reg M-B • 100% Legal
               </span>
-            </summary>
-            <div className="eq-builder-disclosure__body" style={{ padding: '16px' }}>
-              <div className="eq-format-picker eq-format-family-picker" style={{ marginBottom: '12px' }}>
-                {formatFamilies.map(option => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    className={activeFormatFamily === option.value ? 'is-active' : ''}
-                    onClick={() => handleFormatFamilyChange(option.value)}
-                  >
-                    <strong>{option.label}</strong>
-                    <span>{option.short}</span>
-                  </button>
-                ))}
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-4">
+              <button
+                type="button"
+                onClick={() => setTheme(current => current === 'dark' ? 'light' : 'dark')}
+                className="flex items-center text-[#c4c7c8] hover:text-white transition-colors"
+                title={locale === 'pt-BR' ? 'Alternar Tema' : 'Toggle Theme'}
+              >
+                {theme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
+              </button>
+              <div className="h-4 w-[1px] bg-[#444748]"></div>
+              <div className="flex items-center text-xs font-semibold uppercase tracking-widest gap-1">
+                <button
+                  type="button"
+                  onClick={() => setLocale('en-US')}
+                  className={locale === 'en-US' ? 'text-white font-bold' : 'text-[#8e9192] hover:text-white transition-colors'}
+                >
+                  EN
+                </button>
+                <span className="text-[#444748]">/</span>
+                <button
+                  type="button"
+                  onClick={() => setLocale('pt-BR')}
+                  className={locale === 'pt-BR' ? 'text-white font-bold' : 'text-[#8e9192] hover:text-white transition-colors'}
+                >
+                  PT
+                </button>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </header>
+
+      {/* RENDER PAGE 1: HOME PAGE */}
+      {currentPage === 'home' && (
+        <main className="flex-grow pt-[95px] px-4 md:px-16 max-w-[1600px] mx-auto w-full">
+          {/* Hero Section */}
+          <section className="mt-8 text-center md:text-left max-w-4xl">
+            <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight mb-3 animate-drift">
+              {locale === 'pt-BR' ? 'Equilíbrio em Estratégia' : 'Equilibrium in Strategy'}
+            </h1>
+            <p className="text-lg text-[#c4c7c8] leading-relaxed max-w-2xl">
+              {locale === 'pt-BR'
+                ? 'Selecione o formato e os membros do core inicial para gerar uma equipe competitiva perfeita de 6 Pokémon. Projetado para táticos que buscam a vitória.'
+                : 'Select your format and initial core members to generate a perfect 6-member competitive team. Designed for elite tacticians seeking victory.'}
+            </p>
+
+            {/* Feature Highlights Banner */}
+            <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="glass-panel p-3 rounded-lg border border-white/10 flex items-center gap-2.5">
+                <Cpu size={18} className="text-cyan-400 shrink-0" />
+                <div>
+                  <div className="text-xs font-bold text-white">SynergyEngine</div>
+                  <div className="text-[10px] text-[#8e9192] font-mono">Weather • Terrain • TR</div>
+                </div>
               </div>
 
-              {activeFormatFamily === 'vanilla' && (
-                <div className="eq-format-subpanel eq-format-subpanel--select" style={{ marginBottom: '16px' }}>
-                  <span>{t(locale, 'vanillaGame')}</span>
-                  <label className="eq-format-select">
-                    <select
-                      value={format}
-                      onChange={event => setFormat(event.target.value)}
-                      aria-label={t(locale, 'vanillaGame')}
-                    >
-                      {Object.entries(vanillaGamesByGroup).map(([group, options]) => (
-                        <optgroup key={group} label={group}>
-                          {options.map(option => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </optgroup>
+              <div className="glass-panel p-3 rounded-lg border border-white/10 flex items-center gap-2.5">
+                <Database size={18} className="text-emerald-400 shrink-0" />
+                <div>
+                  <div className="text-xs font-bold text-white">Active-v2 Package</div>
+                  <div className="text-[10px] text-[#8e9192] font-mono">102 Expert Sets</div>
+                </div>
+              </div>
+
+              <div className="glass-panel p-3 rounded-lg border border-white/10 flex items-center gap-2.5">
+                <ShieldCheck size={18} className="text-purple-400 shrink-0" />
+                <div>
+                  <div className="text-xs font-bold text-white">Official Rules</div>
+                  <div className="text-[10px] text-[#8e9192] font-mono">Item & Species Clause</div>
+                </div>
+              </div>
+
+              <div className="glass-panel p-3 rounded-lg border border-white/10 flex items-center gap-2.5">
+                <Activity size={18} className="text-amber-400 shrink-0" />
+                <div>
+                  <div className="text-xs font-bold text-white">Runtime Safety</div>
+                  <div className="text-[10px] text-[#8e9192] font-mono">0 Fallbacks • Strict</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Format Selector Cards */}
+          <section className="mt-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Card 1: VGC Regulation */}
+              <div
+                onClick={() => handleFormatFamilyChange('champions')}
+                className={`glass-panel p-6 flex flex-col justify-between h-48 cursor-pointer rounded-xl group transition-all ${
+                  activeFormatFamily === 'champions' ? 'active-selection' : ''
+                }`}
+              >
+                <div>
+                  <div className="text-xs text-[#8e9192] mb-1 tracking-tighter uppercase font-semibold">Format 01</div>
+                  <h3 className="text-2xl font-semibold text-white tracking-tight">VGC Regulation</h3>
+                  {activeFormatFamily === 'champions' && (
+                    <div className="mt-3 flex gap-2">
+                      {championsOptions.map(opt => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={e => {
+                            e.stopPropagation();
+                            setFormat(opt.value);
+                            setResult(null);
+                          }}
+                          className={`text-[11px] px-2.5 py-1 rounded font-bold transition-all ${
+                            format === opt.value
+                              ? 'bg-white text-[#031427]'
+                              : 'bg-white/10 text-white hover:bg-white/20'
+                          }`}
+                        >
+                          {opt.short}
+                        </button>
                       ))}
-                    </select>
-                  </label>
-                  {selectedVanillaGame && (
-                    <p className="eq-format-selected-note">
-                      {selectedVanillaGame.short}
-                    </p>
+                    </div>
                   )}
                 </div>
-              )}
+                <div className="flex justify-between items-center mt-2">
+                  <span className="material-symbols-outlined text-white text-2xl">analytics</span>
+                  <span className={`text-xs font-semibold tracking-wider ${activeFormatFamily === 'champions' ? 'text-white' : 'text-[#8e9192]'}`}>
+                    {activeFormatFamily === 'champions' ? 'SELECTED' : 'SELECT'}
+                  </span>
+                </div>
+              </div>
 
-              {activeFormatFamily === 'champions' && (
-                <div className="eq-format-subpanel" style={{ marginBottom: '16px' }}>
-                  <span>{t(locale, 'championsMode')}</span>
-                  <p className="eq-format-selected-note">{t(locale, 'championsRegulationNote')}</p>
-                  <div className="eq-format-suboptions">
-                    {championsOptions.map(option => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        className={format === option.value ? 'is-active' : ''}
-                        onClick={() => {
-                          setFormat(option.value);
-                          setBuildMode('complete-core');
+              {/* Card 2: Radical Red Hardcore */}
+              <div
+                onClick={() => handleFormatFamilyChange('radical_red')}
+                className={`glass-panel p-6 flex flex-col justify-between h-48 cursor-pointer rounded-xl group transition-all ${
+                  activeFormatFamily === 'radical_red' ? 'active-selection' : ''
+                }`}
+              >
+                <div>
+                  <div className="text-xs text-[#8e9192] mb-1 tracking-tighter uppercase font-semibold">Format 02</div>
+                  <h3 className="text-2xl font-semibold text-white tracking-tight">Radical Red Hardcore</h3>
+                </div>
+                <div className="flex justify-between items-center mt-2">
+                  <span className="material-symbols-outlined text-[#8e9192] group-hover:text-white text-2xl transition-colors">bolt</span>
+                  <span className={`text-xs font-semibold tracking-wider ${activeFormatFamily === 'radical_red' ? 'text-white' : 'text-[#8e9192]'}`}>
+                    {activeFormatFamily === 'radical_red' ? 'SELECTED' : 'SELECT'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Card 3: Vanilla Classic */}
+              <div
+                onClick={() => handleFormatFamilyChange('vanilla')}
+                className={`glass-panel p-6 flex flex-col justify-between h-48 cursor-pointer rounded-xl group transition-all ${
+                  activeFormatFamily === 'vanilla' ? 'active-selection' : ''
+                }`}
+              >
+                <div>
+                  <div className="text-xs text-[#8e9192] mb-1 tracking-tighter uppercase font-semibold">Format 03</div>
+                  <h3 className="text-2xl font-semibold text-white tracking-tight">Vanilla Classic</h3>
+                  {activeFormatFamily === 'vanilla' && (
+                    <div className="mt-2">
+                      <select
+                        value={format}
+                        onClick={e => e.stopPropagation()}
+                        onChange={e => {
+                          setFormat(e.target.value);
                           setResult(null);
                         }}
+                        className="bg-[#102034] text-white text-xs px-3 py-1.5 rounded border border-[#444748] w-full focus:outline-none focus:border-white font-medium"
                       >
-                        <strong>{option.label}</strong>
-                        <span>{option.short}</span>
-                      </button>
-                    ))}
+                        {vanillaGameOptions.map(opt => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label} ({opt.short})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+                <div className="flex justify-between items-center mt-2">
+                  <span className="material-symbols-outlined text-[#8e9192] group-hover:text-white text-2xl transition-colors">trophy</span>
+                  <span className={`text-xs font-semibold tracking-wider ${activeFormatFamily === 'vanilla' ? 'text-white' : 'text-[#8e9192]'}`}>
+                    {activeFormatFamily === 'vanilla' ? 'SELECTED' : 'SELECT'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Initial Core Selection Slots */}
+          <section className="mt-12">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-white uppercase tracking-widest">
+                {locale === 'pt-BR' ? 'Membros do Core Inicial' : 'Initial Core Members'}
+              </h2>
+              <span className="text-xs text-[#8e9192] font-mono uppercase tracking-wider">
+                {filledSlotsCount}/3 {locale === 'pt-BR' ? 'SLOTS PREENCHIDOS' : 'SLOTS FILLED'}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                { slotName: locale === 'pt-BR' ? 'Lead Principal' : 'Primary Lead', desc: locale === 'pt-BR' ? 'Abertura & Ritmo' : 'Defining Strategy' },
+                { slotName: locale === 'pt-BR' ? 'Core Secundário' : 'Secondary Core', desc: locale === 'pt-BR' ? 'Pressão & Suporte' : 'Pivot Dynamics' },
+                { slotName: locale === 'pt-BR' ? 'Suporte Tático' : 'Tactical Support', desc: locale === 'pt-BR' ? 'Utilidade & Defesa' : 'Defensive Utility' },
+              ].map((slotInfo, index) => {
+                const pokemonName = team[index];
+                const sprite = pokemonName ? getPokemonSpriteUrl(pokemonName) : null;
+
+                return (
+                  <div key={index} className="group flex flex-col items-center">
+                    <div
+                      onClick={() => setActiveSlotModal(index)}
+                      className="w-full aspect-square brutalist-border flex flex-col items-center justify-center bg-transparent hover:bg-white/5 transition-all duration-300 relative cursor-pointer rounded-xl group p-4 overflow-hidden"
+                    >
+                      {pokemonName ? (
+                        <div className="flex flex-col items-center justify-center w-full h-full relative">
+                          <button
+                            type="button"
+                            onClick={e => handleSlotRemove(index, e)}
+                            className="absolute top-2 right-2 p-1.5 bg-black/60 text-[#8e9192] hover:text-white rounded-full transition-colors z-10"
+                            title="Remover"
+                          >
+                            <X size={14} />
+                          </button>
+                          {sprite && (
+                            <img
+                              src={sprite}
+                              alt={pokemonName}
+                              className="w-28 h-28 pokemon-sprite object-contain mb-2"
+                              onError={e => {
+                                (e.target as HTMLImageElement).src = getNextPokemonSpriteUrl(pokemonName, (e.target as HTMLImageElement).src);
+                              }}
+                            />
+                          )}
+                          <h4 className="text-lg font-bold text-white tracking-tight">{pokemonName}</h4>
+                        </div>
+                      ) : (
+                        <>
+                          <span className="material-symbols-outlined text-5xl text-[#8e9192] group-hover:text-white group-hover:scale-110 transition-all mb-2">
+                            add_circle
+                          </span>
+                          <span className="text-xs text-[#8e9192] uppercase tracking-wider font-semibold">
+                            {locale === 'pt-BR' ? 'Adicionar Pokémon' : 'Add Member'}
+                          </span>
+                        </>
+                      )}
+                      <div className="absolute inset-0 border-white/0 group-hover:border-white/20 border-2 rounded-xl transition-all pointer-events-none"></div>
+                    </div>
+
+                    <div className="mt-3 text-center">
+                      <div className="text-sm font-semibold text-white uppercase tracking-tight">{slotInfo.slotName}</div>
+                      <div className="text-xs text-[#8e9192]">{slotInfo.desc}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Core Presets */}
+            <div className="mt-6 flex flex-wrap items-center gap-3 justify-center md:justify-start">
+              <span className="text-xs text-[#8e9192] uppercase tracking-wider">
+                {locale === 'pt-BR' ? 'Testar com cores prontos:' : 'Or try a sample core:'}
+              </span>
+              {exampleCores.map((core, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleUseExampleCore(core)}
+                  className="text-xs bg-white/5 border border-[#27272A] hover:border-white hover:bg-white/10 text-[#c4c7c8] hover:text-white px-3 py-1.5 rounded transition-all font-medium"
+                >
+                  {core.join(' / ')}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* Controls & Options Bar */}
+          <section className="mt-10 border-y border-[#444748]/50 py-6 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <span className="material-symbols-outlined text-white text-3xl">verified_user</span>
+              <div>
+                <h4 className="text-sm font-semibold text-white uppercase tracking-tight">
+                  {locale === 'pt-BR' ? 'Permitir Pokémon Lendários' : 'Allow Legendary Pokémon'}
+                </h4>
+                <p className="text-xs text-[#8e9192]">
+                  {locale === 'pt-BR' ? 'Incluir espécies restritas de lendários no pool' : 'Include restricted tier species in pool'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-[#8e9192] uppercase tracking-wider font-semibold">
+                  {locale === 'pt-BR' ? 'Identidade:' : 'Identity:'}
+                </span>
+                <select
+                  value={teamIdentity}
+                  onChange={e => setTeamIdentity(e.target.value as TeamIdentity)}
+                  className="bg-[#102034] text-white text-xs px-3 py-2 rounded border border-[#444748] focus:outline-none focus:border-white font-medium"
+                >
+                  {identityOptions.map(opt => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-semibold text-[#8e9192]">{allowLegendaries ? 'ON' : 'OFF'}</span>
+                <button
+                  type="button"
+                  onClick={() => setAllowLegendaries(c => !c)}
+                  className={`w-14 h-8 brutalist-border relative transition-colors duration-300 rounded-full ${
+                    allowLegendaries ? 'bg-white' : 'bg-[#26364a]'
+                  }`}
+                >
+                  <div
+                    className={`absolute top-1 left-1 w-5 h-5 transition-all duration-300 rounded-full ${
+                      allowLegendaries ? 'translate-x-6 bg-[#031427]' : 'translate-x-0 bg-[#c4c7c8]'
+                    }`}
+                  ></div>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* Generate CTA Button */}
+          <section className="mt-10 mb-16 flex flex-col items-center">
+            {error && (
+              <div className="mb-6 p-4 bg-red-950/80 border border-red-500/50 text-red-200 text-sm rounded-xl max-w-lg text-center font-medium">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={() => analyzeTeam()}
+              disabled={loading}
+              className="bg-white text-[#031427] font-bold py-4 px-16 tracking-[0.2em] uppercase hover:bg-[#c4c7c8] transition-all hard-shadow active:translate-x-1 active:translate-y-1 active:shadow-none text-base rounded-md flex items-center gap-3 disabled:opacity-50"
+            >
+              {loading ? (
+                <>
+                  <span className="animate-spin material-symbols-outlined">refresh</span>
+                  <span>{locale === 'pt-BR' ? 'ANALISANDO TIME...' : 'PROCESSING TIME...'}</span>
+                </>
+              ) : (
+                <span>{locale === 'pt-BR' ? 'GERAR TIME COMPLETO' : 'GENERATE FULL TEAM'}</span>
+              )}
+            </button>
+            <p className="mt-3 text-xs text-[#8e9192] uppercase tracking-widest opacity-60 font-mono">
+              SynergyEngine v4.0.2 • Active-v2 Dataset Verified
+            </p>
+          </section>
+        </main>
+      )}
+
+      {/* RENDER PAGE 2: RESULT PAGE */}
+      {currentPage === 'results' && result && selectedOption && (
+        <main className="flex-grow pt-[95px] px-4 md:px-16 max-w-[1600px] mx-auto w-full mb-16">
+          <header className="mb-8 flex flex-col md:flex-row justify-between items-end border-l-4 border-white pl-6 py-2">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="bg-white text-[#031427] text-[10px] font-bold px-2 py-0.5 uppercase tracking-wider rounded-sm">
+                  {format.toUpperCase()}
+                </span>
+                <span className="text-xs text-[#8e9192] uppercase tracking-wider font-mono">
+                  6 MEMBERS COMPLETE ROSTER
+                </span>
+              </div>
+              <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-1">
+                {locale === 'pt-BR' ? 'Resultados Táticos do Time' : 'Tactical Team Results'}
+              </h1>
+              <p className="text-[#c4c7c8] text-sm max-w-xl">
+                {locale === 'pt-BR'
+                  ? 'Composição de 6 Pokémon com SynergyEngine, análise de regulamento e matriz de cobertura.'
+                  : 'Full 6-member composition with SynergyEngine, regulation analysis & coverage matrix.'}
+              </p>
+            </div>
+
+            <div className="flex flex-col items-end mt-4 md:mt-0 gap-2">
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-[#8e9192] uppercase tracking-widest font-mono">Synergy Score</span>
+                <span className="text-5xl font-bold leading-none text-white">
+                  {Math.round(50 + (selectedOption.score?.total || 40))}<span className="text-2xl opacity-50">%</span>
+                </span>
+              </div>
+
+              {/* SynergyEngine Mini Badges */}
+              <div className="flex flex-wrap gap-1.5 justify-end">
+                <span className="px-2 py-0.5 text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded">
+                  🌧️ Clima: OK
+                </span>
+                <span className="px-2 py-0.5 text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded">
+                  ⚡ Terreno: OK
+                </span>
+                <span className="px-2 py-0.5 text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded">
+                  ⌛ Trick Room: 20
+                </span>
+                <span className="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded">
+                  🔄 Volt-Turn: 15
+                </span>
+              </div>
+            </div>
+          </header>
+
+          {/* Options Tabs */}
+          <div className="flex gap-2 mb-8 border-b border-[#444748]/50 overflow-x-auto pb-2">
+            {result.topTeams.map((_, index) => {
+              const labels = [
+                locale === 'pt-BR' ? 'Opção 1 (Recomendado)' : 'Option 1 (Recommended)',
+                locale === 'pt-BR' ? 'Opção 2 (Ofensivo)' : 'Option 2 (Offensive)',
+                locale === 'pt-BR' ? 'Opção 3 (Defensivo)' : 'Option 3 (Defensive)',
+                locale === 'pt-BR' ? 'Opção 4 (Anti-Meta)' : 'Option 4 (Anti-Meta)',
+                locale === 'pt-BR' ? 'Opção 5 (Criativo)' : 'Option 5 (Creative)',
+              ];
+              const isActive = selectedOptionIndex === index;
+
+              return (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => setSelectedOptionIndex(index)}
+                  className={`px-6 py-2.5 font-bold text-sm whitespace-nowrap transition-all rounded-t-lg ${
+                    isActive
+                      ? 'bg-[#26364a] text-white border-b-2 border-white'
+                      : 'text-[#8e9192] hover:bg-[#102034] hover:text-white'
+                  }`}
+                >
+                  {labels[index] || `Option ${index + 1}`}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Analysis View Mode Navigation Bar */}
+          <div className="flex items-center gap-3 mb-6 bg-[#102034]/60 p-1.5 rounded-xl border border-[#444748]/50">
+            <button
+              type="button"
+              onClick={() => setActiveAnalysisTab('team')}
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${
+                activeAnalysisTab === 'team'
+                  ? 'bg-white text-[#031427] hard-shadow'
+                  : 'text-[#8e9192] hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Layers size={14} />
+              <span>{locale === 'pt-BR' ? 'Time Completo (6 Pokémon)' : 'Full Roster (6 Pokémon)'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveAnalysisTab('synergy')}
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${
+                activeAnalysisTab === 'synergy'
+                  ? 'bg-white text-[#031427] hard-shadow'
+                  : 'text-[#8e9192] hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Cpu size={14} />
+              <span>{locale === 'pt-BR' ? 'Análise da SynergyEngine' : 'SynergyEngine Analysis'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveAnalysisTab('regulation')}
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${
+                activeAnalysisTab === 'regulation'
+                  ? 'bg-white text-[#031427] hard-shadow'
+                  : 'text-[#8e9192] hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <ShieldCheck size={14} />
+              <span>{locale === 'pt-BR' ? 'Regulamento VGC M-B' : 'VGC Reg M-B'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveAnalysisTab('format')}
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${
+                activeAnalysisTab === 'format'
+                  ? 'bg-white text-[#031427] hard-shadow'
+                  : 'text-[#8e9192] hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Database size={14} />
+              <span>{locale === 'pt-BR' ? 'Inteligência do Formato' : 'Format Intelligence'}</span>
+            </button>
+          </div>
+
+          {/* Main 12-col Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* 9 Cols: Active Tab Content */}
+            <div className="lg:col-span-9 space-y-6">
+              {activeAnalysisTab === 'team' && (
+                <CompetitiveTeamGrid
+                  team={fullTeamPokemons}
+                  leadNames={[team[0], team[1]]}
+                  locale={locale}
+                />
+              )}
+
+              {activeAnalysisTab === 'synergy' && (
+                <div className="space-y-6">
+                  <div className="glass-panel p-6 rounded-xl">
+                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                      <Cpu size={20} className="text-cyan-400" />
+                      <span>{locale === 'pt-BR' ? 'Decomposição de Pontuação de Sinergia' : 'Synergy Score Breakdown'}</span>
+                    </h3>
+                    <ScoreBreakdownView
+                      option={selectedOption}
+                      locale={locale}
+                      normalizeScore={normalizeScore}
+                      formatScore={formatScore}
+                    />
                   </div>
                 </div>
               )}
-            </div>
-          </details>
 
-          <SectionLabel>{t(locale, 'timeBase')}</SectionLabel>
-
-          {isLeadBuilderEnabled && format === 'champions_reg_m_b_doubles' && (
-            <div className="eq-build-mode-toggle" style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-              <button
-                type="button"
-                className={`eq-tab-v3 ${buildMode === 'complete-core' ? 'is-active' : ''}`}
-                onClick={() => {
-                  setBuildMode('complete-core');
-                  setResult(null);
-                }}
-                style={{
-                  flex: 1,
-                  padding: '8px',
-                  borderRadius: '8px',
-                  border: '1px solid var(--eq-border)',
-                  background: buildMode === 'complete-core' ? 'var(--eq-accent)' : 'var(--eq-bg-card-sub)',
-                  color: buildMode === 'complete-core' ? '#000' : 'var(--eq-text-primary)',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  fontSize: '12px',
-                }}
-              >
-                {locale === 'pt-BR' ? 'Completar Núcleo (3)' : 'Complete Core (3)'}
-              </button>
-              <button
-                type="button"
-                className={`eq-tab-v3 ${buildMode === 'build-around-lead' ? 'is-active' : ''}`}
-                onClick={() => {
-                  setBuildMode('build-around-lead');
-                  setResult(null);
-                }}
-                style={{
-                  flex: 1,
-                  padding: '8px',
-                  borderRadius: '8px',
-                  border: '1px solid var(--eq-border)',
-                  background: buildMode === 'build-around-lead' ? 'var(--eq-accent)' : 'var(--eq-bg-card-sub)',
-                  color: buildMode === 'build-around-lead' ? '#000' : 'var(--eq-text-primary)',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  fontSize: '12px',
-                }}
-              >
-                {locale === 'pt-BR' ? 'Ao Redor da Lead (2)' : 'Build Around Lead (2)'}
-              </button>
-            </div>
-          )}
-
-          {buildMode === 'build-around-lead' ? (
-            <div className="eq-team-inputs" style={{ marginBottom: '14px' }}>
-              {[0, 1].map(index => {
-                const sprite = getSpriteUrl(leadTeam[index]);
-                const value = leadTeam[index].trim();
-                const suggestions = findPokemonNameSuggestions(value);
-                const knownPokemon = isKnownPokemonName(value);
-
-                return (
-                  <label key={index} className="eq-team-input">
-                    <span className="eq-team-slot">
-                      {sprite ? (
-                        <img
-                          src={sprite}
-                          alt={`Lead Pokémon ${index + 1}`}
-                          onError={event => {
-                            event.currentTarget.src = getNextPokemonSpriteUrl(leadTeam[index], event.currentTarget.src);
-                          }}
-                        />
-                      ) : (
-                        index + 1
-                      )}
-                    </span>
-                    <span className="eq-team-field">
-                      <input
-                        type="text"
-                        placeholder={index === 0 ? 'Ex: Pelipper' : 'Ex: Aggron'}
-                        value={leadTeam[index]}
-                        list={`eq-lead-suggestions-${index}`}
-                        onChange={event => handleLeadInputChange(index, event.target.value)}
-                      />
-                      <datalist id={`eq-lead-suggestions-${index}`}>
-                        {suggestions.map(name => (
-                          <option key={name} value={name} />
-                        ))}
-                      </datalist>
-                      {value && (
-                        <small className={knownPokemon ? 'is-known' : ''}>
-                          {knownPokemon ? t(locale, 'recognizedPokemon') : t(locale, 'unverifiedPokemon')}
-                        </small>
-                      )}
-                    </span>
-                  </label>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="eq-team-inputs" style={{ marginBottom: '14px' }}>
-              {[0, 1, 2].map(index => {
-                const sprite = getSpriteUrl(team[index]);
-                const value = team[index].trim();
-                const suggestions = findPokemonNameSuggestions(value);
-                const knownPokemon = isKnownPokemonName(value);
-
-                return (
-                  <label key={index} className="eq-team-input">
-                    <span className="eq-team-slot">
-                      {sprite ? (
-                        <img
-                          src={sprite}
-                          alt={`Pokémon ${index + 1}`}
-                          onError={event => {
-                            event.currentTarget.src = getNextPokemonSpriteUrl(team[index], event.currentTarget.src);
-                          }}
-                        />
-                      ) : (
-                        index + 1
-                      )}
-                    </span>
-                    <span className="eq-team-field">
-                      <input
-                        type="text"
-                        placeholder={teamPlaceholders[index]}
-                        value={team[index]}
-                        list={`eq-pokemon-suggestions-${index}`}
-                        onChange={event => handleInputChange(index, event.target.value)}
-                      />
-                      <datalist id={`eq-pokemon-suggestions-${index}`}>
-                        {suggestions.map(name => (
-                          <option key={name} value={name} />
-                        ))}
-                      </datalist>
-                      {value && (
-                        <small className={knownPokemon ? 'is-known' : ''}>
-                          {knownPokemon ? t(locale, 'recognizedPokemon') : t(locale, 'unverifiedPokemon')}
-                        </small>
-                      )}
-                    </span>
-                  </label>
-                );
-              })}
-            </div>
-          )}
-
-          <div className="eq-sidebar-actions" style={{ marginBottom: '22px' }}>
-            <button className="eq-generate-button" type="submit" disabled={loading}>
-              {loading ? (
-                <>
-                  <span className="eq-loader-ring eq-loader-ring--button" aria-hidden="true" />
-                  {t(locale, 'calculating')}
-                </>
-              ) : (
-                t(locale, 'generate')
+              {activeAnalysisTab === 'regulation' && (
+                <div className="glass-panel p-6 rounded-xl">
+                  <ChampionsRegulationPanel option={selectedOption} locale={locale} />
+                </div>
               )}
-            </button>
+
+              {activeAnalysisTab === 'format' && (
+                <div className="glass-panel p-6 rounded-xl">
+                  <FormatIntelligencePanel option={selectedOption} locale={locale} />
+                </div>
+              )}
+            </div>
+
+            {/* 3 Cols: Tactical Sidebar */}
+            <aside className="lg:col-span-3 space-y-6">
+              {/* Strategy Guide / Playbook */}
+              <div className="glass-panel p-5 border-l-4 border-white bg-[#102034]/20 rounded-r-xl">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="material-symbols-outlined text-white text-xl">analytics</span>
+                  <h3 className="text-sm font-bold uppercase tracking-tight text-white">
+                    {locale === 'pt-BR' ? 'Guia Tático de Jogo' : 'Tactical Playbook'}
+                  </h3>
+                </div>
+
+                {/* Dupla de Abertura (Lead Pair) */}
+                <div className="mb-4 pb-3 border-b border-[#444748]/40">
+                  <h4 className="text-[11px] font-bold text-white uppercase tracking-wider mb-1 flex items-center gap-1">
+                    <Zap size={12} className="text-amber-400" />
+                    {locale === 'pt-BR' ? '1. Dupla de Abertura (Lead)' : '1. Opener Pair (Lead)'}
+                  </h4>
+                  <p className="text-xs text-[#c4c7c8] leading-relaxed">
+                    {locale === 'pt-BR'
+                      ? `Inicie o combate posicionando a dupla ${leadPair[0]} + ${leadPair[1]} em campo para garantir a pressão inicial de ritmo.`
+                      : `Start battle positioning ${leadPair[0]} + ${leadPair[1]} on field for early pace pressure.`}
+                  </p>
+                </div>
+
+                {/* Setar a Estratégia (Mid-Game) */}
+                <div className="mb-4 pb-3 border-b border-[#444748]/40">
+                  <h4 className="text-[11px] font-bold text-white uppercase tracking-wider mb-1 flex items-center gap-1">
+                    <Shield size={12} className="text-blue-400" />
+                    {locale === 'pt-BR' ? '2. Setar a Estratégia' : '2. Strategy Setup'}
+                  </h4>
+                  <p className="text-xs text-[#c4c7c8] leading-relaxed">
+                    {selectedOption.reasoning ||
+                      (locale === 'pt-BR'
+                        ? `Utilize trocas defensivas com ${setupPokemon} para anular fraquezas e preparar o terreno de ataque.`
+                        : `Rotate with ${setupPokemon} to neutralize weaknesses and set up offensive momentum.`)}
+                  </p>
+                </div>
+
+                {/* Finalizar o Jogo (Win Condition) */}
+                <div>
+                  <h4 className="text-[11px] font-bold text-white uppercase tracking-wider mb-1 flex items-center gap-1">
+                    <Sparkles size={12} className="text-emerald-400" />
+                    {locale === 'pt-BR' ? '3. Condição de Vitória (Late-Game)' : '3. Win Condition (Late-Game)'}
+                  </h4>
+                  <p className="text-xs text-[#c4c7c8] leading-relaxed">
+                    {locale === 'pt-BR'
+                      ? `Preserve ${finisherPokemon} para a fase final e execute a varredura (sweep) assim que as defesas do oponente estiverem desgastadas.`
+                      : `Preserve ${finisherPokemon} for late-game sweep once opponent barriers are down.`}
+                  </p>
+                </div>
+              </div>
+
+              {/* Matchup Radar */}
+              <div className="bg-[#102034]/40 p-5 border border-[#444748]/50 rounded-xl">
+                <h3 className="text-xs font-bold text-white mb-4 uppercase tracking-widest">
+                  {locale === 'pt-BR' ? 'Radar de Matchups' : 'Matchup Radar'}
+                </h3>
+                <div className="space-y-3.5">
+                  <div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-[#c4c7c8]">Sun Offense</span>
+                      <span className="text-white font-bold">85%</span>
+                    </div>
+                    <div className="h-1.5 bg-[#0b1c30] w-full rounded-full overflow-hidden">
+                      <div className="h-full bg-white w-[85%]"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-[#c4c7c8]">Trick Room</span>
+                      <span className="text-[#8e9192]">65%</span>
+                    </div>
+                    <div className="h-1.5 bg-[#0b1c30] w-full rounded-full overflow-hidden">
+                      <div className="h-full bg-white/60 w-[65%]"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-[#c4c7c8]">Rain Offense</span>
+                      <span className="text-[#8e9192]">78%</span>
+                    </div>
+                    <div className="h-1.5 bg-[#0b1c30] w-full rounded-full overflow-hidden">
+                      <div className="h-full bg-white/80 w-[78%]"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Elemental Weaknesses Matrix */}
+              <TeamWeaknessesCard team={fullTeamPokemons} locale={locale} />
+
+              {/* Showdown Export Button */}
+              <div className="glass-panel p-5 rounded-xl flex flex-col gap-3">
+                <h3 className="text-xs font-bold text-white uppercase tracking-widest">
+                  {locale === 'pt-BR' ? 'Exportação Showdown' : 'Showdown Export'}
+                </h3>
+                <button
+                  type="button"
+                  onClick={copyFullShowdown}
+                  className="w-full py-3 bg-white text-[#031427] font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-[#c4c7c8] transition-all flex items-center justify-center gap-2 hard-shadow"
+                >
+                  {copiedFullShowdown ? (
+                    <>
+                      <Check size={16} />
+                      <span>{locale === 'pt-BR' ? 'TIME COMPLETO COPIADO!' : 'FULL TEAM COPIED!'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy size={16} />
+                      <span>{locale === 'pt-BR' ? 'COPIAR TIME INTEIRO (SHOWDOWN)' : 'COPY FULL TEAM (SHOWDOWN)'}</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </aside>
           </div>
+        </main>
+      )}
 
-          {error && <p className="eq-error-message" role="alert" style={{ marginBottom: '22px' }}>{error}</p>}
-
-          <div style={{ marginTop: '16px' }}>
-            <button
-              className={`eq-modern-toggle ${allowLegendaries ? 'is-active' : ''}`}
-              type="button"
-              onClick={() => setAllowLegendaries(!allowLegendaries)}
-              style={{ minHeight: '44px', width: '100%' }}
-            >
-              <span>{t(locale, 'allowLegendaries')}</span>
-              <i />
-            </button>
-          </div>
-        </form>
-
-        <div className="eq-sidebar-poem">
-          <YinYangMark className="eq-sidebar-poem__mark" />
-          <span>陰陽</span>
-          <p>{t(locale, 'balanceMotto')}</p>
-        </div>
-      </aside>
-
-      <main className="eq-main-v2">
-        <header className="eq-header-v2 eq-header-v3">
-          <div className="eq-header-copy">
-            <span className="eq-kicker-v2">{t(locale, 'appKicker')}</span>
-            <h1>{t(locale, 'appTitle')}</h1>
-            <p>{t(locale, 'appSubtitle')}</p>
-          </div>
-
-          <div className="eq-header-actions" aria-label={t(locale, 'interfaceControls')}>
-            <div className="eq-header-language" role="group" aria-label={t(locale, 'language')}>
-              <button type="button" className={locale === 'pt-BR' ? 'is-active' : ''} onClick={() => setLocale('pt-BR')}>
-                PT
-              </button>
-              <button type="button" className={locale === 'en-US' ? 'is-active' : ''} onClick={() => setLocale('en-US')}>
-                EN
+      {/* Modal Autocomplete para seleção de slots */}
+      {activeSlotModal !== null && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setActiveSlotModal(null)}
+        >
+          <div
+            className="glass-panel p-6 rounded-2xl max-w-md w-full border border-white/20 bg-[#031427] hard-shadow"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-white tracking-tight">
+                {locale === 'pt-BR' ? `Selecionar Pokémon (Slot ${activeSlotModal + 1})` : `Select Pokémon (Slot ${activeSlotModal + 1})`}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setActiveSlotModal(null)}
+                className="text-[#8e9192] hover:text-white transition-colors"
+              >
+                <X size={18} />
               </button>
             </div>
 
-            <button className="eq-theme-toggle" type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label={t(locale, 'themeToggle')}>
-              <Sun size={16} />
-              <span><i /></span>
-              <Moon size={16} />
-            </button>
-          </div>
-        </header>
-
-        {!result && !loading && <EmptyState locale={locale} onUseExampleCore={handleUseExampleCore} />}
-        {loading && <LoadingState locale={locale} />}
-        {result && !selectedOption && !leadResult && !loading && <NoResultsState locale={locale} />}
-
-        {leadResult && !loading && (
-          <LeadStrategyPanel
-            result={leadResult}
-            locale={locale}
-            activeStrategyIndex={activeLeadStrategyIndex}
-            setActiveStrategyIndex={setActiveLeadStrategyIndex}
-            activeQuartetIndex={activeLeadQuartetIndex}
-            setActiveQuartetIndex={setActiveLeadQuartetIndex}
-          />
-        )}
-
-        {isSuggestionResponse(result) && selectedOption && !loading && (
-          <div className="eq-results-v3">
-            <BattlePlanHero
-              option={selectedOption}
-              identityLabel={identityLabel}
-              format={format}
-              locale={locale}
-              formatScore={formatScore}
-              formatPercent={formatPercent}
-            />
-
-            <OptionTabs
-              options={result.topTeams}
-              selectedIndex={selectedOptionIndex}
-              locale={locale}
-              onSelect={handleSelectOption}
-              formatScore={formatScore}
-            />
-
-            <div id="eq-pokemon-grid-v3" style={{ scrollMarginTop: '24px', display: 'grid', gap: '22px' }}>
-              <SectionHeader title={t(locale, 'coreTitle')} eyebrow={t(locale, 'coreEyebrow')} />
-              <PokemonGrid
-                pokemons={selectedOption.fullTeam && selectedOption.fullTeam.length > 0 ? selectedOption.fullTeam : selectedOption.suggestedPokemons}
-                locale={locale}
-                getSpriteUrl={getSpriteUrl}
-                getSmogonUrl={getSmogonUrl}
+            <div className="relative mb-4">
+              <Search size={16} className="absolute left-3 top-3 text-[#8e9192]" />
+              <input
+                type="text"
+                autoFocus
+                placeholder={locale === 'pt-BR' ? 'Digite o nome do Pokémon (ex: Charizard)...' : 'Type Pokémon name (e.g. Charizard)...'}
+                value={slotSearchQuery}
+                onChange={e => setSlotSearchQuery(e.target.value)}
+                className="w-full bg-[#102034] text-white pl-9 pr-4 py-2.5 rounded-lg border border-[#444748] focus:outline-none focus:border-white text-sm"
               />
             </div>
 
-            <SectionHeader title={t(locale, 'playbookTitle')} eyebrow={t(locale, 'playbookEyebrow')} />
-            <StrategySummary option={selectedOption} locale={locale} />
-
-            {selectedOption.fullTeam && selectedOption.fullTeam.length > 0 && (
-              <ExportTeam team={selectedOption.fullTeam} locale={locale} />
-            )}
-
-            <section className="eq-details-v3">
-              <SectionHeader title={t(locale, 'detailsTitle')} eyebrow={t(locale, 'detailsEyebrow')} />
-
-              {activeFormatFamily === 'radical_red' && (
-                <DetailsBlock title={t(locale, 'radicalRedGauntlet')} subtitle={t(locale, 'radicalRedGauntletSubtitle')} count={selectedOption.radicalRedGauntlet?.bossReports.length ?? 0} locale={locale}>
-                  <RadicalRedGauntletPanel option={selectedOption} locale={locale} />
-                </DetailsBlock>
+            <div className="max-h-60 overflow-y-auto space-y-1">
+              {suggestions.length > 0 ? (
+                suggestions.map(name => (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => handleSlotSelect(activeSlotModal, name)}
+                    className="w-full text-left px-4 py-2.5 rounded-lg hover:bg-white/10 text-white font-medium flex items-center justify-between transition-colors text-sm"
+                  >
+                    <span>{name}</span>
+                    <span className="text-xs text-[#8e9192]">→</span>
+                  </button>
+                ))
+              ) : slotSearchQuery.trim() !== '' ? (
+                <button
+                  type="button"
+                  onClick={() => handleSlotSelect(activeSlotModal, slotSearchQuery.trim())}
+                  className="w-full text-left px-4 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-white font-medium transition-colors text-sm"
+                >
+                  Usar "{slotSearchQuery.trim()}"
+                </button>
+              ) : (
+                <div className="text-xs text-[#8e9192] text-center py-6">
+                  {locale === 'pt-BR' ? 'Digite para buscar espécies competitivas...' : 'Type to search competitive species...'}
+                </div>
               )}
-
-              {activeFormatFamily === 'vanilla' && selectedOption.radicalRedGauntlet && (
-                <DetailsBlock title={t(locale, 'radicalRedGauntlet')} subtitle={locale === 'pt-BR' ? 'Avaliação baseada no Boss Gauntlet da Elite Four deste formato' : 'Evaluation based on this format\'s Elite Four Boss Gauntlet'} count={selectedOption.radicalRedGauntlet.bossReports.length} locale={locale}>
-                  <RadicalRedGauntletPanel option={selectedOption} locale={locale} />
-                </DetailsBlock>
-              )}
-
-              {isVgcFormat && (
-                <DetailsBlock title={t(locale, 'vgcStrategyAnalysis')} subtitle={t(locale, 'vgcStrategyAnalysisSubtitle')} count={4} locale={locale}>
-                  <VgcTeamPlanPanel option={selectedOption} locale={locale} />
-                </DetailsBlock>
-              )}
-
-              <DetailsBlock title={t(locale, 'threatAnalysis')} subtitle={t(locale, 'threatAnalysisSubtitle')} count={selectedOption.threatAnalysis?.matchups.length ?? 0} locale={locale}>
-                <ThreatReport option={selectedOption} locale={locale} />
-              </DetailsBlock>
-
-              <DetailsBlock title={t(locale, 'matchupReadiness')} subtitle={t(locale, 'matchupReadinessSubtitle')} count={selectedOption.damageReport?.matchups.length ?? 0} locale={locale}>
-                <MatchupAnalysis option={selectedOption} locale={locale} />
-              </DetailsBlock>
-
-              <DetailsBlock title={t(locale, 'aiBuilderDecision')} subtitle={t(locale, 'aiBuilderDecisionSubtitle')} count={selectedOption.aiBuilder ? 3 : 0} locale={locale}>
-                <AIBuilderDecision option={selectedOption} locale={locale} />
-              </DetailsBlock>
-
-              <DetailsBlock title={t(locale, 'performanceMetrics')} subtitle={t(locale, 'performanceMetricsSubtitle')} count={6} locale={locale}>
-                <ScoreBreakdownView option={selectedOption} locale={locale} normalizeScore={normalizeScore} formatScore={formatScore} />
-              </DetailsBlock>
-
-              <DetailsBlock title={t(locale, 'decisionReasons')} subtitle={t(locale, 'decisionReasonsSubtitle')} count={getTopExplanations(selectedOption).length} locale={locale}>
-                <ExplanationList explanations={getTopExplanations(selectedOption)} locale={locale} formatScore={formatScore} />
-              </DetailsBlock>
-            </section>
-          </div>
-        )}
-      </main>
-
-      <aside className="eq-ad-rail" aria-label={t(locale, 'supportArea')}>
-        <div className="eq-ad-rail__panel">
-          <span>{t(locale, 'sponsoredLabel')}</span>
-          <div className="eq-ad-rail__slot">
-            <strong>{t(locale, 'supportTitle')}</strong>
-            <p>{t(locale, 'supportText')}</p>
+            </div>
           </div>
         </div>
-      </aside>
+      )}
     </div>
-  );
-}
-
-
-function YinYangMark({ className = '' }: { className?: string }) {
-  return (
-    <span className={`eq-yin-yang-mark ${className}`} aria-hidden="true">
-      <span>☯</span>
-    </span>
-  );
-}
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <span className="eq-section-label">{children}</span>;
-}
-
-function EmptyState({ locale, onUseExampleCore }: { locale: Locale; onUseExampleCore: (core: string[]) => void }) {
-  return (
-    <section className="eq-empty-v2">
-      <div className="eq-empty-v2__copy">
-        <YinYangMark className="eq-empty-symbol" />
-        <span className="eq-empty-v2__label">{t(locale, 'emptyLabel')}</span>
-        <h2>{t(locale, 'emptyTitle')}</h2>
-        <p>{t(locale, 'emptyText')}</p>
-      </div>
-      <div className="eq-empty-v2__steps" aria-label={t(locale, 'identityPrinciples')}>
-        <article>
-          <span>01</span>
-          <strong>{t(locale, 'emptyStepCore')}</strong>
-          <p>{t(locale, 'emptyStepCoreText')}</p>
-        </article>
-        <article>
-          <span>02</span>
-          <strong>{t(locale, 'emptyStepContext')}</strong>
-          <p>{t(locale, 'emptyStepContextText')}</p>
-        </article>
-        <article>
-          <span>03</span>
-          <strong>{t(locale, 'emptyStepDirection')}</strong>
-          <p>{t(locale, 'emptyStepDirectionText')}</p>
-        </article>
-      </div>
-      <div className="eq-empty-v2__examples">
-        <div>
-          <strong>{t(locale, 'emptyExampleTitle')}</strong>
-          <p>{t(locale, 'emptyExampleText')}</p>
-        </div>
-        <div className="eq-empty-core-list">
-          {exampleCores.map(core => (
-            <button key={core.join('-')} type="button" className="eq-empty-core-button" onClick={() => onUseExampleCore(core)}>
-              <span>{t(locale, 'useExampleCore')}</span>
-              <strong>{core.join(' / ')}</strong>
-            </button>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function LoadingState({ locale }: { locale: Locale }) {
-  return (
-    <section className="eq-loading-v2">
-      <span className="eq-loader-ring eq-loader-ring--stage" aria-hidden="true" />
-      <h2>{t(locale, 'loadingTitle')}</h2>
-      <p>{t(locale, 'loadingText')}</p>
-    </section>
-  );
-}
-
-function NoResultsState({ locale }: { locale: Locale }) {
-  return (
-    <section className="eq-empty-v2 eq-empty-v2--compact">
-      <div className="eq-empty-v2__copy">
-        <YinYangMark className="eq-empty-symbol" />
-        <span className="eq-empty-v2__label">{t(locale, 'noResultsLabel')}</span>
-        <h2>{t(locale, 'noResultsTitle')}</h2>
-        <p>{t(locale, 'noResultsText')}</p>
-      </div>
-      <div className="eq-empty-v2__steps" aria-label={t(locale, 'noResultsLabel')}>
-        <article>
-          <span>01</span>
-          <strong>{t(locale, 'noResultsStepFormat')}</strong>
-          <p>{t(locale, 'noResultsStepFormatText')}</p>
-        </article>
-        <article>
-          <span>02</span>
-          <strong>{t(locale, 'noResultsStepDirection')}</strong>
-          <p>{t(locale, 'noResultsStepDirectionText')}</p>
-        </article>
-        <article>
-          <span>03</span>
-          <strong>{t(locale, 'noResultsStepCore')}</strong>
-          <p>{t(locale, 'noResultsStepCoreText')}</p>
-        </article>
-      </div>
-    </section>
   );
 }

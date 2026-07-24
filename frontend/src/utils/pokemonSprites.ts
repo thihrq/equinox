@@ -108,10 +108,6 @@ export function toPokemonShowdownId(name: string): string {
   return normalizeInputName(name).replace(/[^a-z0-9]/g, '');
 }
 
-function toSpriteUrl(spriteId: string): string {
-  return `${SHOWDOWN_GEN5_BASE_URL}/${spriteId}.png`;
-}
-
 function unique(values: string[]): string[] {
   return [...new Set(values.filter(Boolean))];
 }
@@ -171,7 +167,16 @@ function getCandidateSpriteIds(name: string): string[] {
 export function getPokemonSpriteCandidates(name: string): string[] {
   if (!name?.trim()) return [];
 
-  return getCandidateSpriteIds(name).map(toSpriteUrl);
+  const candidateIds = getCandidateSpriteIds(name);
+  const urls: string[] = [];
+
+  candidateIds.forEach(id => {
+    urls.push(`${SHOWDOWN_GEN5_BASE_URL}/${id}.png`);
+    urls.push(`https://play.pokemonshowdown.com/sprites/dex/${id}.png`);
+    urls.push(`https://img.pokemondb.net/sprites/home/normal/${id}.png`);
+  });
+
+  return unique(urls);
 }
 
 export function getPokemonSpriteUrl(name: string): string | null {

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Clipboard } from 'lucide-react';
+import { Clipboard, Check } from 'lucide-react';
 import type { Locale } from '../../i18n/equinoxI18n';
-import type { CompetitiveStatSpread, PokemonData } from '../../types/lead';
+import type { PokemonData } from '../../types/lead';
 import { getPokemonSpriteUrl } from '../../utils/pokemonSprites';
 import { toShowdown } from '../../utils/competitiveTeamExport';
+import { getMoveTypeColor } from './PokemonCardV2';
 
 interface CompetitiveTeamGridProps {
   team: PokemonData[];
@@ -11,97 +12,115 @@ interface CompetitiveTeamGridProps {
   locale: Locale;
 }
 
-const formatSpread = (spread?: CompetitiveStatSpread): string => {
-  if (!spread) return '';
-  const entries: Array<[keyof CompetitiveStatSpread, string]> = [
-    ['hp', 'HP'],
-    ['atk', 'Atk'],
-    ['def', 'Def'],
-    ['spa', 'SpA'],
-    ['spd', 'SpD'],
-    ['spe', 'Spe'],
-  ];
-  return entries
-    .filter(([stat]) => Number(spread[stat]) > 0)
-    .map(([stat, label]) => `${spread[stat]} ${label}`)
-    .join(' / ');
-};
-
 export const CompetitiveTeamGrid: React.FC<CompetitiveTeamGridProps> = ({ team, leadNames, locale }) => {
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const allExpanded = team.every(member => expanded.has(member.name));
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
-  const toggle = (name: string) => {
-    setExpanded(current => {
-      const next = new Set(current);
-      if (next.has(name)) next.delete(name);
-      else next.add(name);
-      return next;
-    });
-  };
-
-  const toggleAll = () => {
-    setExpanded(allExpanded ? new Set() : new Set(team.map(member => member.name)));
+  const handleCopySingle = (member: PokemonData, index: number) => {
+    const text = toShowdown([member]);
+    navigator.clipboard.writeText(text);
+    setCopiedIndex(index);
+    setTimeout(() => setCopiedIndex(null), 1500);
   };
 
   return (
-    <section className="eq-competitive-team">
-      <div className="eq-competitive-team__toolbar">
-        <button type="button" className="eq-inline-action" onClick={toggleAll}>
-          {allExpanded
-            ? (locale === 'pt-BR' ? 'Recolher todos' : 'Collapse all')
-            : (locale === 'pt-BR' ? 'Expandir todos' : 'Expand all')}
-        </button>
-      </div>
-
-      <div className="eq-competitive-team__grid">
-        {team.map(member => {
+    <section className="w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        {team.map((member, idx) => {
           const set = member.competitiveSet;
           const isLead = leadNames?.some(name => name === member.name) ?? false;
-          const isExpanded = expanded.has(member.name);
+          const moves = (set?.moves ?? member.moves ?? ['—', '—', '—', '—']).slice(0, 4);
+          const abilityName = set?.ability ?? member.ability ?? '—';
+          const itemName = set?.item ?? member.item ?? '—';
+          const natureName = set?.nature ?? member.nature ?? '—';
+          const roleName = isLead
+            ? (locale === 'pt-BR' ? 'Lead / Opener' : 'Lead / Opener')
+            : (set?.role ?? member.role ?? (locale === 'pt-BR' ? 'Sweeper / Support' : 'Sweeper / Support'));
+
+          const spriteUrl = getPokemonSpriteUrl(member.name);
 
           return (
-            <article key={member.name} className={`eq-pokemon-card-v3 eq-competitive-set-card ${isLead ? 'eq-pokemon-card-v3--lead' : ''}`}>
-              <button
-                type="button"
-                className="eq-competitive-set-card__summary"
-                onClick={() => toggle(member.name)}
-                aria-expanded={isExpanded}
-              >
-                {isLead && <span className="eq-tag-v3 eq-tag-v3--primary">Lead</span>}
+            <div
+              key={member.name + idx}
+              className="glass-panel hard-shadow p-4 rounded-2xl flex flex-col h-full bg-[#102034]/30 border border-[#27272A] hover:border-white transition-all"
+            >
+              {/* Header: Role & Number */}
+              <div className="flex justify-between items-center mb-2">
+                <span className="bg-white text-[#031427] text-[9px] font-bold px-2 py-0.5 tracking-tighter uppercase rounded-sm">
+                  {roleName}
+                </span>
+                <span className="text-[10px] text-[#8e9192] font-mono">
+                  #{String(idx + 1).padStart(2, '0')}
+                </span>
+              </div>
+
+              {/* Sprite Container */}
+              <div className="flex justify-center py-4 bg-[#0b1c30]/50 mb-3 relative overflow-hidden rounded-xl border border-[#444748]/30">
                 <img
-                  src={getPokemonSpriteUrl(member.name) ?? undefined}
-                  alt=""
-                  className="eq-competitive-set-card__sprite"
-                  onError={event => {
-                    (event.target as HTMLImageElement).src = 'https://play.pokemonshowdown.com/sprites/ani/unown.gif';
+                  alt={member.name}
+                  className="w-20 h-20 pokemon-sprite object-contain"
+                  src={spriteUrl ?? 'https://play.pokemonshowdown.com/sprites/ani/unown.gif'}
+                  onError={e => {
+                    (e.target as HTMLImageElement).src = 'https://play.pokemonshowdown.com/sprites/ani/unown.gif';
                   }}
                 />
-                <span className="eq-competitive-set-card__name">{member.name}</span>
-                <span className="eq-competitive-set-card__meta">{set?.item ?? member.item}</span>
-                <span className="eq-competitive-set-card__meta">{set?.ability ?? member.ability}</span>
-                {isExpanded ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />}
-              </button>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#031427]/40 to-transparent pointer-events-none"></div>
+              </div>
 
-              {isExpanded && (
-                <div className="eq-competitive-set-card__details">
-                  <dl>
-                    <div><dt>{locale === 'pt-BR' ? 'Função' : 'Role'}</dt><dd>{set?.role ?? member.role ?? '-'}</dd></div>
-                    <div><dt>{locale === 'pt-BR' ? 'Natureza' : 'Nature'}</dt><dd>{set?.nature ?? member.nature ?? '-'}</dd></div>
-                    <div><dt>EVs</dt><dd>{formatSpread(set?.evs) || '-'}</dd></div>
-                    <div><dt>IVs</dt><dd>{formatSpread(set?.ivs) || '31 em todos'}</dd></div>
-                    <div><dt>{locale === 'pt-BR' ? 'Origem' : 'Source'}</dt><dd>{set?.setSource ?? '-'}</dd></div>
-                  </dl>
-                  <ul className="eq-competitive-set-card__moves">
-                    {(set?.moves ?? member.moves ?? []).map(move => <li key={move}>{move}</li>)}
-                  </ul>
-                  <button type="button" className="eq-inline-action" onClick={() => navigator.clipboard.writeText(toShowdown([member]))}>
-                    <Clipboard size={14} aria-hidden="true" />
-                    {locale === 'pt-BR' ? 'Copiar set' : 'Copy set'}
-                  </button>
+              {/* Identity & Details */}
+              <div className="mb-3">
+                <h3 className="text-lg font-bold text-white tracking-tight">{member.name}</h3>
+                <div className="grid grid-cols-2 gap-x-2 mt-1">
+                  <span className="text-[11px] text-[#c4c7c8] font-medium truncate" title={`Item: ${itemName}`}>
+                    {itemName}
+                  </span>
+                  <span className="text-[11px] text-[#c4c7c8] text-right font-medium">
+                    {natureName}
+                  </span>
                 </div>
-              )}
-            </article>
+                <div className="text-[10px] text-[#8e9192] mt-0.5">
+                  {locale === 'pt-BR' ? 'Habilidade' : 'Ability'}: <strong className="text-white">{abilityName}</strong>
+                </div>
+              </div>
+
+              {/* Move Pills */}
+              <div className="flex flex-wrap gap-1 mb-4 mt-auto">
+                {moves.map((move, moveIdx) => {
+                  const style = getMoveTypeColor(move);
+                  return (
+                    <span
+                      key={moveIdx}
+                      className="type-pill"
+                      style={{ backgroundColor: style.bg, color: style.text }}
+                    >
+                      {move}
+                    </span>
+                  );
+                })}
+              </div>
+
+              {/* Action Button */}
+              <button
+                type="button"
+                onClick={() => handleCopySingle(member, idx)}
+                className={`mt-auto w-full py-2 border transition-all text-[11px] font-bold uppercase tracking-wider rounded-lg flex items-center justify-center gap-1.5 ${
+                  copiedIndex === idx
+                    ? 'bg-white text-[#031427] border-white'
+                    : 'border-[#8e9192]/30 text-white hover:border-white hover:bg-white hover:text-[#031427]'
+                }`}
+              >
+                {copiedIndex === idx ? (
+                  <>
+                    <Check size={13} />
+                    <span>{locale === 'pt-BR' ? 'COPIADO!' : 'COPIED!'}</span>
+                  </>
+                ) : (
+                  <>
+                    <Clipboard size={13} />
+                    <span>{locale === 'pt-BR' ? 'COPIAR SET (SHOWDOWN)' : 'PASTE SET'}</span>
+                  </>
+                )}
+              </button>
+            </div>
           );
         })}
       </div>
