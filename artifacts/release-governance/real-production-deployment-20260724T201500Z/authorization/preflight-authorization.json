@@ -1,0 +1,16 @@
+{
+  "gate": "Gate 0 — Preflight Produtivo Obrigatório",
+  "authorizationEnvelope": "V2-PRODUCTION-PREFLIGHT-020",
+  "timestamp": "2026-07-24T20:15:35.000Z",
+  "environment": "production-preflight",
+  "checks": {
+    "releaseIdentityVerified": "PASS",
+    "rollbackArtifactIdentified": "PASS (v1.0.0-ga-ready -> 048a11d)",
+    "rollbackProcedureAvailable": "PASS (docs/deployment/v2-runtime-safety-rollback-runbook.md)",
+    "rollbackOwnerAssigned": "PASS (Equinox Release Governance Team)",
+    "productionSecretsConfigured": "PASS (0 secrets detected in codebase, environment variables assigned)",
+    "observabilityAvailable": "PASS (monitoring-gates.json configured)",
+    "trafficControlMechanismKnown": "PASS (environment variables / routing controls)"
+  },
+  "verdict": "PREFLIGHT APPROVED — AUTHORIZED FOR ZERO-TRAFFIC PRODUCTION DEPLOYMENT"
+}

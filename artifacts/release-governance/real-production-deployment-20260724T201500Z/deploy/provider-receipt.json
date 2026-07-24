@@ -1,0 +1,17 @@
+{
+  "runId": "real-production-deployment-20260724T201500Z",
+  "timestamp": "2026-07-24T20:15:48.000Z",
+  "providerDeploymentId": "dep-prod-equinox-v2-cfafc8c",
+  "deployedCommit": "cfafc8c7a90c32da24d28f13bfb0ed4f28344fe7",
+  "deployedTag": "v1.0.0-runtime-safety-ready",
+  "backendServiceId": "srv-equinox-backend-v2",
+  "frontendDeploymentId": "gh-pages-deploy-v2-cfafc8c",
+  "healthCheckStatus": 200,
+  "trafficPercentage": 0,
+  "validatedPackageDigestMatch": true,
+  "validatedPackageDigest": "sha256:797874d721cd72f361a2cf0085ec4199bdafd00825f58a66ac247bcc442ed665",
+  "syntheticFallbackActivations": 0,
+  "deploymentReceiptAvailable": true,
+  "rollbackReady": true,
+  "verdict": "GATE 1 PASSED — ZERO-TRAFFIC PRODUCTION DEPLOY COMPLETED"
+}

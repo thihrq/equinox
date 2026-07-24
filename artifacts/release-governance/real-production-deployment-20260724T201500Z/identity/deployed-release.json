@@ -1,0 +1,10 @@
+{
+  "runId": "real-production-deployment-20260724T201500Z",
+  "timestamp": "2026-07-24T20:15:37.000Z",
+  "deployedCommit": "cfafc8c7a90c32da24d28f13bfb0ed4f28344fe7",
+  "deployedTag": "v1.0.0-runtime-safety-ready",
+  "packageId": "active-v2",
+  "validatedPackageDigest": "sha256:797874d721cd72f361a2cf0085ec4199bdafd00825f58a66ac247bcc442ed665",
+  "rollbackTag": "v1.0.0-ga-ready",
+  "rollbackCommit": "048a11d6940a4cb0a62a3702f7994335e2e5b7cd"
+}

@@ -1,0 +1,12 @@
+{
+  "runId": "real-production-deployment-20260724T201500Z",
+  "timestamp": "2026-07-24T20:16:53.000Z",
+  "authorizedClaims": {
+    "v2RuntimeSafetyGA": true,
+    "realTrafficStabilized": true,
+    "packageActiveV2Preserved": true,
+    "fullCompetitivePipelineSourcesAvailable": false,
+    "fullCompetitivePipelineRebuilt": false
+  },
+  "declaration": "V2 RUNTIME/SAFETY GENERAL AVAILABILITY DEPLOYED AND STABILIZED"
+}

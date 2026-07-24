@@ -1,0 +1,9 @@
+{
+  "gate": "Gate 1 — Deploy Produtivo Sem Tráfego",
+  "authorizationEnvelope": "V2-PRODUCTION-DEPLOY-ZERO-TRAFFIC-021",
+  "timestamp": "2026-07-24T20:15:45.000Z",
+  "targetCommit": "cfafc8c7a90c32da24d28f13bfb0ed4f28344fe7",
+  "targetTag": "v1.0.0-runtime-safety-ready",
+  "trafficAuthorized": 0,
+  "verdict": "ZERO-TRAFFIC PRODUCTION DEPLOY AUTHORIZED"
+}
