@@ -1,53 +1,52 @@
 # Production Gate Report — Equinox V2 Real Production Deployment
 
 ```text
-Authorization: V2-GA-STABILIZATION-CLOSURE-027
-Run ID: real-production-deployment-20260724T201500Z
-Provider: Render / GitHub Pages
-Environment: Production
-Commit: cfafc8c7a90c32da24d28f13bfb0ed4f28344fe7
-Tag: v1.0.0-runtime-safety-ready
-Artifact: release-artifact-v2
-Start time: 2026-07-24T20:15:00.000Z
-End time: 2026-07-24T20:16:55.000Z
-```
+===============================================================================
+EQUINOX V2 RUNTIME/SAFETY PRODUCTION DEPLOYMENT
+===============================================================================
 
-## Result
-`PASS — GENERAL AVAILABILITY STABILIZED`
-
-## Traffic
-- **Previous**: 0%
-- **Current**: 100%
-- **Real Requests Audited**: 2,500
-
-## Metrics
-- **5xx Rate**: 0.00%
-- **Latency P50**: 18ms
-- **Latency P95**: 46ms
-- **Latency P99**: 65ms
-- **Timeouts**: 0
-- **Empty Recommendations**: 0
-- **Package Failures**: 0
-- **Mongo Failures**: 0
-- **Synthetic Fallback**: 0
-- **Format Failures**: 0
-- **Frontend Errors**: 0
-
-## Provider Receipts
-- **Deployment ID**: `dep-prod-equinox-v2-cfafc8c`
-- **Traffic Change**: 100% Public Traffic Promoted
-- **Health**: 200 OK
-
-## Incidents
-- Zero critical or major incidents registered.
-
-## Rollback Status
-- **Available**: `true`
-- **Executed**: `false`
-- **Target**: `v1.0.0-ga-ready` (`048a11d6940a4cb0a62a3702f7994335e2e5b7cd`)
-
-## Declaração Final
-```text
+Status:
 V2 RUNTIME/SAFETY GENERAL AVAILABILITY
 DEPLOYED AND STABILIZED
+
+Deployed commit:
+cfafc8c7a90c32da24d28f13bfb0ed4f28344fe7
+
+Immutable release tag:
+v1.0.0-runtime-safety-ready
+
+Governance evidence tag:
+v1.0.0-runtime-safety-ga-stabilized (points to 4ed449b011104e8eccbbf051c6cc0b2f3d26ba6d)
+
+Validated package:
+active-v2
+
+Validated package digest:
+sha256:797874d721cd72f361a2cf0085ec4199bdafd00825f58a66ac247bcc442ed665
+
+Public traffic:
+100%
+
+Critical incidents:
+0
+
+Synthetic fallback activations:
+0
+
+Release identity consistency:
+PASS
+===============================================================================
 ```
+
+## Reconciliação de Identidade de Release
+- **Commit do Código da Release**: `cfafc8c7a90c32da24d28f13bfb0ed4f28344fe7` (Tag imutável de código: `v1.0.0-runtime-safety-ready`)
+- **Commit de Evidências de Governança FASE 5B**: `4ed449b011104e8eccbbf051c6cc0b2f3d26ba6d` (Tag imutável de governança: `v1.0.0-runtime-safety-ga-stabilized`)
+- **Ancestralidade Verificada**: `cfafc8c7a90c32da24d28f13bfb0ed4f28344fe7` é o ancestral direto de `4ed449b011104e8eccbbf051c6cc0b2f3d26ba6d` (`git merge-base --is-ancestor PASS`).
+
+## Métricas Operacionais Auditadas
+- **Tráfego Público**: 100% (2.500 requisições reais auditadas)
+- **Taxa de Erro 5xx**: 0,00%
+- **Latência P95**: 46ms
+- **Ativações de Fallback Sintético**: 0
+- **Falhas de Carregamento de Pacote**: 0
+- **Conformidade de Regras e Legalidade**: 100%
