@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.0.0",
+  "packageId": "active-v2",
+  "packageDigest": "sha256:797874d721cd72f361a2cf0085ec4199bdafd00825f58a66ac247bcc442ed665",
+  "entryCount": 102,
+  "fileCount": 4,
+  "sourceValidation": {
+    "originalRunId": "20260720T231346Z",
+    "validationStatus": "expert-validated",
+    "importedWithoutContentChanges": true
+  },
+  "capabilities": {
+    "runtimeLoadable": true,
+    "packageBindingVerifiable": true,
+    "rebuildableFromCommittedPipeline": false
+  },
+  "exclusions": {
+    "wave1PipelineSourcesCommitted": false,
+    "wave2PipelineSourcesCommitted": false,
+    "wave3PipelineSourcesCommitted": false,
+    "fullPipelineReplayAvailable": false
+  }
+}

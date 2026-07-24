@@ -15,3 +15,7 @@ export function resolveDataMode(): EquinoxDataMode {
 
   return 'filesystem';
 }
+
+export function requiresMongoConnection(): boolean {
+  return resolveDataMode() !== 'filesystem';
+}

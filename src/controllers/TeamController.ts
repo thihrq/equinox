@@ -237,47 +237,44 @@ export class TeamController {
         | undefined ?? [];
       const requestId = crypto.randomUUID();
 
-      // Active V2 — decide e, quando aplicável, hidrata os dados de set
-      // (item/ability/nature/moves) ANTES da resposta ser enviada, já que
-      // (ao contrário do shadow mode) isso precisa afetar o que o usuário
-      // recebe. Nunca lança: qualquer erro/timeout cai em baseline — ver
-      // ActiveV2RuntimeServeOrchestrator.
-      const serveResult = await resolveActiveV2RuntimeServe(mongoose.connection, {
-        requestId,
-        identifier: buildActiveV2ServeIdentifier(resolvedFormat, normalizedTeam),
-        format: resolvedFormat,
-        teamIdentity: resolvedTeamIdentity,
-        primaryTeamSuggestedPokemons,
-        baselineLatencyMs,
-        internalCanaryAuthHeaders: extractInternalCanaryAuthHeaders(req),
-        requestPath: req.path,
-      });
-      if (serveResult.hydratedSuggestedPokemons) {
-        applyActiveV2Hydration(result, serveResult.hydratedSuggestedPokemons);
+      if (mongoose.connection.readyState === 1) {
+        const serveResult = await resolveActiveV2RuntimeServe(mongoose.connection, {
+          requestId,
+          identifier: buildActiveV2ServeIdentifier(resolvedFormat, normalizedTeam),
+          format: resolvedFormat,
+          teamIdentity: resolvedTeamIdentity,
+          primaryTeamSuggestedPokemons,
+          baselineLatencyMs,
+          internalCanaryAuthHeaders: extractInternalCanaryAuthHeaders(req),
+          requestPath: req.path,
+        });
+        if (serveResult.hydratedSuggestedPokemons) {
+          applyActiveV2Hydration(result, serveResult.hydratedSuggestedPokemons);
+        }
+        if (serveResult.telemetryEvent) {
+          void writeActiveV2RuntimeServeTelemetry(mongoose.connection, serveResult.telemetryEvent)
+            .catch(error => console.warn('[Equinox] Active V2 runtime serve telemetry failed (ignored):', error));
+        }
       }
 
-      res.json(result);
-
-      if (serveResult.telemetryEvent) {
-        void writeActiveV2RuntimeServeTelemetry(mongoose.connection, serveResult.telemetryEvent)
-          .catch(error => console.warn('[Equinox] Active V2 runtime serve telemetry failed (ignored):', error));
-      }
+      res.status(200).json(result);
 
       // Fase 3 — Runtime Shadow Mode. Disparado somente APÓS a resposta já
       // ter sido enviada; nunca pode afetar o que o usuário recebeu. Mesmo
       // padrão fire-and-forget já usado em src/server.ts para trabalho de
       // background não crítico. Mutuamente exclusivo com o serving real
       // acima por modo de canário (shadow nunca resulta em servePath
-      // active-v2), então `primaryTeamSuggestedPokemons` aqui sempre
-      // reflete o baseline original quando este caminho executa de fato.
-      void runActiveV2RuntimeShadow(mongoose.connection, {
-        requestId,
-        format: resolvedFormat,
-        teamIdentity: resolvedTeamIdentity,
-        primaryTeamSuggestedPokemons,
-        baselineLatencyMs,
-      }).catch(error => console.warn('[Equinox] Active V2 runtime shadow failed (ignored):', error));
+      if (mongoose.connection.readyState === 1) {
+        void runActiveV2RuntimeShadow(mongoose.connection, {
+          requestId,
+          format: resolvedFormat,
+          teamIdentity: resolvedTeamIdentity,
+          primaryTeamSuggestedPokemons,
+          baselineLatencyMs,
+        }).catch(error => console.warn('[Equinox] Active V2 runtime shadow failed (ignored):', error));
+      }
     } catch (error) {
+      console.error('[Equinox TeamController] Error in suggest:', error);
       if (error instanceof TeamSuggestionInputError) {
         res.status(error.statusCode).json({
           code: error.code,
