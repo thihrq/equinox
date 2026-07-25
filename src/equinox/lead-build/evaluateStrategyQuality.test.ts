@@ -1,38 +1,71 @@
-import { diagnoseOffensiveScore } from './StrategyQualityDiagnostics';
-import { PokemonData } from '../core/AnalysisContext';
+import { evaluateStrategyQuality } from './evaluateStrategyQuality';
+import { OffensiveScoreBreakdown } from './StrategyQualityDiagnostics';
 
 function assert(condition: boolean, message: string): void {
   if (!condition) throw new Error(`ASSERTION_FAILED: ${message}`);
 }
 
-export function testStrategyQualityDiagnostics() {
-  console.log('[Equinox Test] Testando a paridade e decomposição do score de qualidade ofensiva...');
+export function testEvaluateStrategyQuality() {
+  console.log('[Equinox Test] Testando a avaliação de qualidade ofensiva contextualizada...');
 
-  const mockTeam: PokemonData[] = [
-    { name: 'Aggron-Mega', types: ['Steel'], baseStats: { hp: 70, atk: 140, def: 230, spa: 60, spd: 80, spe: 50 } } as any,
-    { name: 'Sinistcha', types: ['Grass', 'Ghost'], baseStats: { hp: 71, atk: 65, def: 106, spa: 121, spd: 80, spe: 52 } } as any,
-    { name: 'Amoonguss', types: ['Grass', 'Poison'], baseStats: { hp: 114, atk: 85, def: 70, spa: 85, spd: 80, spe: 30 } } as any,
-    { name: 'Porygon2', types: ['Normal'], baseStats: { hp: 85, atk: 80, def: 90, spa: 105, spd: 95, spe: 60 } } as any,
-    { name: 'Torkoal', types: ['Fire'], baseStats: { hp: 70, atk: 85, def: 140, spa: 85, spd: 70, spe: 20 } } as any,
-    { name: 'Ursaluna', types: ['Ground', 'Normal'], baseStats: { hp: 130, atk: 140, def: 105, spa: 45, spd: 80, spe: 50 } } as any,
-  ];
+  // Breakdown do Aggron-Mega + Sinistcha (Trick Room): score genérico = 39
+  const trBreakdown: OffensiveScoreBreakdown = {
+    physicalPressure: 83,
+    specialPressure: 70,
+    spreadDamage: 50,
+    priorityPressure: 50,
+    coverageBreadth: 39,
+    strategyConversion: 50,
+    outsideStrategyPlan: 50,
+    setupDependencyPenalty: 0,
+    finalScore: 39,
+  };
 
-  const diag = diagnoseOffensiveScore(mockTeam, 'champions_reg_m_b_doubles');
+  // 1. Em Trick Room: legal + completo + primaryPressure 83 (>= 60) + coverage 39 (>= 30) -> VALID!
+  const trResult = evaluateStrategyQuality({
+    strategyId: 'trick_room',
+    legal: true,
+    strategyComplete: true,
+    breakdown: trBreakdown,
+  });
 
-  console.log('[Score Diagnostics] Breakdown:', diag.breakdown);
-  console.log('[Score Diagnostics] Reasons:', diag.reasons);
+  assert(trResult.valid === true, 'Deve aceitar o time de Trick Room com breakdown de score 39');
+  assert(trResult.profileId === 'trick_room', 'ProfileId deve ser trick_room');
+  assert(trResult.generalOffensiveScore === 39, 'generalOffensiveScore deve ser preservado como 39');
+  assert(trResult.contextualOffensiveScore > 50, 'contextualOffensiveScore deve ser satisfatório');
 
-  // Paridade matemática com a fórmula original de FullTeamEvaluator:
-  // Tipos ofensivos: Steel, Grass, Ghost, Poison, Normal, Fire, Ground (7 tipos em 18 -> 7/18 = 0.3888 -> 39)
-  // Physical attackers (atk >= 100): Aggron-Mega, Ursaluna (2)
-  // Special attackers (spa >= 100): Sinistcha, Porygon2 (2)
-  // balancePenalty: ratio 2/2 = 1.0 -> penalty 0
-  // rawScore = 38.88 - 0 = 38.88 -> Math.round -> 39!
-  assert(diag.breakdown.finalScore === 39, `scoreAfter deve ser exatamente 39, recebeu ${diag.breakdown.finalScore}`);
-  assert(diag.reasons.includes('LIMITED_STAB_COVERAGE'), 'Deve registrar LIMITED_STAB_COVERAGE');
-  console.log('✅ Teste de paridade de diagnóstico aprovado com sucesso!');
+  // 2. Em Balanced: exige simetria e coverageBreadth >= 45 (coverage 39 < 45) -> REJEITADO
+  const balancedResult = evaluateStrategyQuality({
+    strategyId: 'balanced',
+    legal: true,
+    strategyComplete: true,
+    breakdown: trBreakdown,
+  });
+
+  assert(balancedResult.valid === false, 'Deve rejeitar o mesmo breakdown quando avaliado como Balanced');
+  assert(balancedResult.reasons.includes('INSUFFICIENT_COVERAGE'), 'Deve registrar INSUFFICIENT_COVERAGE para Balanced');
+
+  // 3. Ilegalidade: sempre REJEITADO
+  const illegalResult = evaluateStrategyQuality({
+    strategyId: 'trick_room',
+    legal: false,
+    strategyComplete: true,
+    breakdown: trBreakdown,
+  });
+  assert(illegalResult.valid === false, 'Time ilegal deve ser sempre rejeitado');
+
+  // 4. Incompletude: sempre REJEITADO
+  const incompleteResult = evaluateStrategyQuality({
+    strategyId: 'trick_room',
+    legal: true,
+    strategyComplete: false,
+    breakdown: trBreakdown,
+  });
+  assert(incompleteResult.valid === false, 'Estratégia incompleta deve ser sempre rejeitada');
+
+  console.log('✅ Testes de evaluateStrategyQuality passaram com sucesso!');
 }
 
 if (require.main === module) {
-  testStrategyQualityDiagnostics();
+  testEvaluateStrategyQuality();
 }
