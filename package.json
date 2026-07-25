@@ -18,6 +18,7 @@
     "release:full-pipeline:regression": "ts-node src/scripts/runGAReadyRegression.ts --profile full-competitive-pipeline",
     "check:competitive-pipeline-runtime-boundary": "ts-node src/scripts/checkCompetitivePipelineRuntimeBoundary.ts",
     "release:runtime-comparison:test": "ts-node src/scripts/compareRuntimeReleases.test.ts",
+    "release:shadow-comparison:run": "ts-node src/scripts/runShadowComparisonSuite.ts",
     "prod:check": "npm run preflight && npm --prefix frontend run build",
     "data:check": "ts-node src/scripts/validateDataPacks.ts",
     "data:audit": "ts-node src/scripts/validateCompetitiveSetDataAudit.ts",
