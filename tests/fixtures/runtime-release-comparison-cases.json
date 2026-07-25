@@ -1,0 +1,68 @@
+[
+  {
+    "id": "champions-singles-balanced",
+    "format": "champions_reg_m_b_singles",
+    "teamIdentity": "champions-singles-core-1",
+    "userPokemon": ["Garchomp", "Corviknight", "Rotom-Wash"]
+  },
+  {
+    "id": "champions-singles-offensive",
+    "format": "champions_reg_m_b_singles",
+    "teamIdentity": "champions-singles-hyper-offense",
+    "userPokemon": ["Dragapult", "Volcarona", "Kingambit"]
+  },
+  {
+    "id": "champions-doubles-balanced",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "champions-doubles-good-stuff",
+    "userPokemon": ["Incineroar", "Rillaboom", "Urshifu-Rapid-Strike"]
+  },
+  {
+    "id": "champions-doubles-defensive",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "champions-doubles-stall-balance",
+    "userPokemon": ["Amoonguss", "Garganacl", "Ting-Lu"]
+  },
+  {
+    "id": "champions-doubles-anti-meta",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "champions-doubles-anti-meta-disruption",
+    "userPokemon": ["Farigiraf", "Kingambit", "Ogerpon-Hearthflame"]
+  },
+  {
+    "id": "champions-doubles-creative",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "champions-doubles-gimmick-creative",
+    "userPokemon": ["Sinistcha", "Archaludon", "Pelipper"]
+  },
+  {
+    "id": "trick-room-core",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "trick-room-hard",
+    "userPokemon": ["Indeedee-F", "Armarouge", "Ursaluna-Bloodmoon"]
+  },
+  {
+    "id": "weather-rain-core",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "weather-rain-offense",
+    "userPokemon": ["Pelipper", "Archaludon", "Basculegion-M"]
+  },
+  {
+    "id": "tailwind-hyper-offense",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "tailwind-speed-control",
+    "userPokemon": ["Tornadus", "Urshifu-Single-Strike", "Chi-Yu"]
+  },
+  {
+    "id": "terrain-psychic-core",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "psychic-terrain-expansion",
+    "userPokemon": ["Indeedee-F", "Armarouge", "Gallade"]
+  },
+  {
+    "id": "redirection-support-core",
+    "format": "champions_reg_m_b_doubles",
+    "teamIdentity": "follow-me-redirection",
+    "userPokemon": ["Maushold", "Ogerpon-Wellspring", "Flutter-Mane"]
+  }
+]

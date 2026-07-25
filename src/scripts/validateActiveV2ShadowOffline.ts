@@ -1,6 +1,12 @@
 import { readControlledBaselineSource } from '../equinox/competitive/active-v2-shadow/ActiveV2ShadowBaselineSource';
 import { runActiveV2ShadowComparison } from '../equinox/competitive/active-v2-shadow/ActiveV2ShadowRunner';
-import { ACTIVE_STAGING_SET_ALLOWLIST } from '../equinox/competitive/active-staging/ActiveStagingHomologationAllowlist';
+import {
+  ACTIVE_STAGING_SET_ALLOWLIST,
+  ACTIVE_STAGING_HOMOLOGATION_SCENARIOS,
+} from '../equinox/competitive/active-staging/ActiveStagingHomologationAllowlist';
+
+const expectedRecordCount = ACTIVE_STAGING_SET_ALLOWLIST.length;
+const expectedScenarioCount = ACTIVE_STAGING_HOMOLOGATION_SCENARIOS.length;
 
 const source = readControlledBaselineSource();
 const allowlist = new Set<string>(ACTIVE_STAGING_SET_ALLOWLIST);
@@ -20,15 +26,15 @@ const comparisonInput = {
 };
 const report = runActiveV2ShadowComparison(comparisonInput);
 
-if (report.aggregate.scenarioCount !== 4) throw new Error('must run four scenarios');
-if (report.aggregate.scenariosCompared !== 4) throw new Error('must compare four scenarios');
+if (report.aggregate.scenarioCount !== expectedScenarioCount) throw new Error(`must run ${expectedScenarioCount} scenarios`);
+if (report.aggregate.scenariosCompared !== expectedScenarioCount) throw new Error(`must compare ${expectedScenarioCount} scenarios`);
 if (report.aggregate.baselineFallbackUsed !== false) throw new Error('baseline fallback must be false');
 if (report.aggregate.activeV2FallbackUsed !== false) throw new Error('active V2 fallback must be false');
 if (report.aggregate.productionCollectionReads !== 0) throw new Error('production reads must be zero');
 if (report.aggregate.readyForCompetitiveAcceptanceGate !== true) throw new Error('offline report must be ready for next gate');
 if (!report.aggregate.baselineSourceDigest.startsWith('sha256-')) throw new Error('baseline digest must be present');
 if (report.aggregate.baselineSourceRecordCount < 4) throw new Error('baseline record count must be present');
-if (report.aggregate.activeV2RecordsLoaded !== 4) throw new Error('offline active V2 record count must be 4');
+if (report.aggregate.activeV2RecordsLoaded !== expectedRecordCount) throw new Error(`offline active V2 record count must be ${expectedRecordCount}`);
 if (report.aggregate.activeRunId !== 'offline-active-run') throw new Error('active V2 source run must be reported');
 if (report.aggregate.activeV2SourceRunIds.join(',') !== 'offline-active-run') throw new Error('active V2 source run IDs must be explicit');
 if (report.aggregate.activeV2RecordsMissingRunId !== 0) throw new Error('active V2 source records must all carry activeRunId');

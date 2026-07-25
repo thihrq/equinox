@@ -29,9 +29,10 @@ interface StagingCheckSummary {
 }
 
 function assertCheck(summary: StagingCheckSummary): void {
+  const expectedCount = VERIFIED_STAGING_PROMOTION_ALLOWLIST.length;
   const failures: string[] = [];
-  if (requireVerified && summary.allowlistedVerified !== 4) failures.push(`allowlistedVerified must be 4, received ${summary.allowlistedVerified}`);
-  if (!requireVerified && summary.allowlistedVerified !== 0 && summary.allowlistedVerified !== 4) failures.push(`allowlistedVerified must be 0 or 4 before --require-verified, received ${summary.allowlistedVerified}`);
+  if (requireVerified && summary.allowlistedVerified !== expectedCount) failures.push(`allowlistedVerified must be ${expectedCount}, received ${summary.allowlistedVerified}`);
+  if (!requireVerified && summary.allowlistedVerified !== 0 && summary.allowlistedVerified !== expectedCount) failures.push(`allowlistedVerified must be 0 or ${expectedCount} before --require-verified, received ${summary.allowlistedVerified}`);
   if (summary.allowlistedActive !== 0) failures.push(`allowlistedActive must be 0, received ${summary.allowlistedActive}`);
   if (summary.generatedVerifiedByRun !== 0) failures.push(`generatedVerifiedByRun must be 0, received ${summary.generatedVerifiedByRun}`);
   if (summary.duplicateSetIds !== 0) failures.push(`duplicateSetIds must be 0, received ${summary.duplicateSetIds}`);

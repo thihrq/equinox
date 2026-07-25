@@ -1,0 +1,6716 @@
+{
+  "species": [
+    {
+      "pokemonId": "0003-000",
+      "speciesId": "0003-000",
+      "displayName": "Venusaur",
+      "types": [
+        "Grass",
+        "Poison"
+      ],
+      "baseStats": {
+        "hp": 80,
+        "atk": 82,
+        "def": 83,
+        "spa": 100,
+        "spd": 100,
+        "spe": 80
+      },
+      "abilities": [
+        "chlorophyll",
+        "overgrow"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0006-000",
+      "speciesId": "0006-000",
+      "displayName": "Charizard",
+      "types": [
+        "Fire",
+        "Flying"
+      ],
+      "baseStats": {
+        "hp": 78,
+        "atk": 84,
+        "def": 78,
+        "spa": 109,
+        "spd": 85,
+        "spe": 100
+      },
+      "abilities": [
+        "blaze",
+        "solar-power"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0009-000",
+      "speciesId": "0009-000",
+      "displayName": "Blastoise",
+      "types": [
+        "Water"
+      ],
+      "baseStats": {
+        "hp": 79,
+        "atk": 83,
+        "def": 100,
+        "spa": 85,
+        "spd": 105,
+        "spe": 78
+      },
+      "abilities": [
+        "rain-dish",
+        "torrent"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0015-000",
+      "speciesId": "0015-000",
+      "displayName": "Beedrill",
+      "types": [
+        "Bug",
+        "Poison"
+      ],
+      "baseStats": {
+        "hp": 65,
+        "atk": 90,
+        "def": 40,
+        "spa": 45,
+        "spd": 80,
+        "spe": 75
+      },
+      "abilities": [
+        "sniper",
+        "swarm"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0018-000",
+      "speciesId": "0018-000",
+      "displayName": "Pidgeot",
+      "types": [
+        "Normal",
+        "Flying"
+      ],
+      "baseStats": {
+        "hp": 83,
+        "atk": 80,
+        "def": 75,
+        "spa": 70,
+        "spd": 70,
+        "spe": 101
+      },
+      "abilities": [
+        "big-pecks",
+        "keen-eye",
+        "tangled-feet"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0024-000",
+      "speciesId": "0024-000",
+      "displayName": "Arbok",
+      "types": [
+        "Poison"
+      ],
+      "baseStats": {
+        "hp": 60,
+        "atk": 95,
+        "def": 69,
+        "spa": 65,
+        "spd": 79,
+        "spe": 80
+      },
+      "abilities": [
+        "intimidate",
+        "shed-skin",
+        "unnerve"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0025-000",
+      "speciesId": "0025-000",
+      "displayName": "Pikachu",
+      "types": [
+        "Electric"
+      ],
+      "baseStats": {
+        "hp": 35,
+        "atk": 55,
+        "def": 40,
+        "spa": 50,
+        "spd": 50,
+        "spe": 90
+      },
+      "abilities": [
+        "lightning-rod",
+        "static"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0026-000",
+      "speciesId": "0026-000",
+      "displayName": "Raichu",
+      "types": [
+        "Electric"
+      ],
+      "baseStats": {
+        "hp": 60,
+        "atk": 90,
+        "def": 55,
+        "spa": 90,
+        "spd": 80,
+        "spe": 110
+      },
+      "abilities": [
+        "lightning-rod",
+        "static"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0036-000",
+      "speciesId": "0036-000",
+      "displayName": "Clefable",
+      "types": [
+        "Fairy"
+      ],
+      "baseStats": {
+        "hp": 95,
+        "atk": 70,
+        "def": 73,
+        "spa": 95,
+        "spd": 90,
+        "spe": 60
+      },
+      "abilities": [
+        "cute-charm",
+        "magic-guard",
+        "unaware"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0038-000",
+      "speciesId": "0038-000",
+      "displayName": "Ninetales",
+      "types": [
+        "Fire"
+      ],
+      "baseStats": {
+        "hp": 73,
+        "atk": 76,
+        "def": 75,
+        "spa": 81,
+        "spd": 100,
+        "spe": 100
+      },
+      "abilities": [
+        "drought",
+        "flash-fire"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0045-000",
+      "speciesId": "0045-000",
+      "displayName": "Vileplume",
+      "types": [
+        "Grass",
+        "Poison"
+      ],
+      "baseStats": {
+        "hp": 75,
+        "atk": 80,
+        "def": 85,
+        "spa": 110,
+        "spd": 90,
+        "spe": 50
+      },
+      "abilities": [
+        "chlorophyll",
+        "effect-spore"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0059-000",
+      "speciesId": "0059-000",
+      "displayName": "Arcanine",
+      "types": [
+        "Fire"
+      ],
+      "baseStats": {
+        "hp": 90,
+        "atk": 110,
+        "def": 80,
+        "spa": 100,
+        "spd": 80,
+        "spe": 95
+      },
+      "abilities": [
+        "flash-fire",
+        "intimidate",
+        "justified"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0065-000",
+      "speciesId": "0065-000",
+      "displayName": "Alakazam",
+      "types": [
+        "Psychic"
+      ],
+      "baseStats": {
+        "hp": 55,
+        "atk": 50,
+        "def": 45,
+        "spa": 135,
+        "spd": 95,
+        "spe": 120
+      },
+      "abilities": [
+        "inner-focus",
+        "magic-guard",
+        "synchronize"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0068-000",
+      "speciesId": "0068-000",
+      "displayName": "Machamp",
+      "types": [
+        "Fighting"
+      ],
+      "baseStats": {
+        "hp": 90,
+        "atk": 130,
+        "def": 80,
+        "spa": 65,
+        "spd": 85,
+        "spe": 55
+      },
+      "abilities": [
+        "guts",
+        "no-guard",
+        "steadfast"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0071-000",
+      "speciesId": "0071-000",
+      "displayName": "Victreebel",
+      "types": [
+        "Grass",
+        "Poison"
+      ],
+      "baseStats": {
+        "hp": 80,
+        "atk": 105,
+        "def": 65,
+        "spa": 100,
+        "spd": 70,
+        "spe": 70
+      },
+      "abilities": [
+        "chlorophyll",
+        "gluttony"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0080-000",
+      "speciesId": "0080-000",
+      "displayName": "Slowbro",
+      "types": [
+        "Water",
+        "Psychic"
+      ],
+      "baseStats": {
+        "hp": 95,
+        "atk": 75,
+        "def": 110,
+        "spa": 100,
+        "spd": 80,
+        "spe": 30
+      },
+      "abilities": [
+        "oblivious",
+        "own-tempo",
+        "regenerator"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0094-000",
+      "speciesId": "0094-000",
+      "displayName": "Gengar",
+      "types": [
+        "Ghost",
+        "Poison"
+      ],
+      "baseStats": {
+        "hp": 60,
+        "atk": 65,
+        "def": 60,
+        "spa": 130,
+        "spd": 75,
+        "spe": 110
+      },
+      "abilities": [
+        "cursed-body"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0115-000",
+      "speciesId": "0115-000",
+      "displayName": "Kangaskhan",
+      "types": [
+        "Normal"
+      ],
+      "baseStats": {
+        "hp": 105,
+        "atk": 95,
+        "def": 80,
+        "spa": 40,
+        "spd": 80,
+        "spe": 90
+      },
+      "abilities": [
+        "early-bird",
+        "inner-focus",
+        "scrappy"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0121-000",
+      "speciesId": "0121-000",
+      "displayName": "Starmie",
+      "types": [
+        "Water",
+        "Psychic"
+      ],
+      "baseStats": {
+        "hp": 60,
+        "atk": 75,
+        "def": 85,
+        "spa": 100,
+        "spd": 85,
+        "spe": 115
+      },
+      "abilities": [
+        "analytic",
+        "illuminate",
+        "natural-cure"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0127-000",
+      "speciesId": "0127-000",
+      "displayName": "Pinsir",
+      "types": [
+        "Bug"
+      ],
+      "baseStats": {
+        "hp": 65,
+        "atk": 125,
+        "def": 100,
+        "spa": 55,
+        "spd": 70,
+        "spe": 85
+      },
+      "abilities": [
+        "hyper-cutter",
+        "mold-breaker",
+        "moxie"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0128-000",
+      "speciesId": "0128-000",
+      "displayName": "Tauros",
+      "types": [
+        "Normal"
+      ],
+      "baseStats": {
+        "hp": 75,
+        "atk": 100,
+        "def": 95,
+        "spa": 40,
+        "spd": 70,
+        "spe": 110
+      },
+      "abilities": [
+        "anger-point",
+        "intimidate",
+        "sheer-force"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0130-000",
+      "speciesId": "0130-000",
+      "displayName": "Gyarados",
+      "types": [
+        "Water",
+        "Flying"
+      ],
+      "baseStats": {
+        "hp": 95,
+        "atk": 125,
+        "def": 79,
+        "spa": 60,
+        "spd": 100,
+        "spe": 81
+      },
+      "abilities": [
+        "intimidate",
+        "moxie"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0132-000",
+      "speciesId": "0132-000",
+      "displayName": "Ditto",
+      "types": [
+        "Normal"
+      ],
+      "baseStats": {
+        "hp": 48,
+        "atk": 48,
+        "def": 48,
+        "spa": 48,
+        "spd": 48,
+        "spe": 48
+      },
+      "abilities": [
+        "imposter",
+        "limber"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0134-000",
+      "speciesId": "0134-000",
+      "displayName": "Vaporeon",
+      "types": [
+        "Water"
+      ],
+      "baseStats": {
+        "hp": 130,
+        "atk": 65,
+        "def": 60,
+        "spa": 110,
+        "spd": 95,
+        "spe": 65
+      },
+      "abilities": [
+        "hydration",
+        "water-absorb"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0135-000",
+      "speciesId": "0135-000",
+      "displayName": "Jolteon",
+      "types": [
+        "Electric"
+      ],
+      "baseStats": {
+        "hp": 65,
+        "atk": 65,
+        "def": 60,
+        "spa": 110,
+        "spd": 95,
+        "spe": 130
+      },
+      "abilities": [
+        "quick-feet",
+        "volt-absorb"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0136-000",
+      "speciesId": "0136-000",
+      "displayName": "Flareon",
+      "types": [
+        "Fire"
+      ],
+      "baseStats": {
+        "hp": 65,
+        "atk": 130,
+        "def": 60,
+        "spa": 95,
+        "spd": 110,
+        "spe": 65
+      },
+      "abilities": [
+        "flash-fire",
+        "guts"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0142-000",
+      "speciesId": "0142-000",
+      "displayName": "Aerodactyl",
+      "types": [
+        "Rock",
+        "Flying"
+      ],
+      "baseStats": {
+        "hp": 80,
+        "atk": 105,
+        "def": 65,
+        "spa": 60,
+        "spd": 75,
+        "spe": 130
+      },
+      "abilities": [
+        "pressure",
+        "rock-head",
+        "unnerve"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0143-000",
+      "speciesId": "0143-000",
+      "displayName": "Snorlax",
+      "types": [
+        "Normal"
+      ],
+      "baseStats": {
+        "hp": 160,
+        "atk": 110,
+        "def": 65,
+        "spa": 65,
+        "spd": 110,
+        "spe": 30
+      },
+      "abilities": [
+        "gluttony",
+        "immunity",
+        "thick-fat"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0149-000",
+      "speciesId": "0149-000",
+      "displayName": "Dragonite",
+      "types": [
+        "Dragon",
+        "Flying"
+      ],
+      "baseStats": {
+        "hp": 91,
+        "atk": 134,
+        "def": 95,
+        "spa": 100,
+        "spd": 100,
+        "spe": 80
+      },
+      "abilities": [
+        "inner-focus",
+        "multiscale"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0154-000",
+      "speciesId": "0154-000",
+      "displayName": "Meganium",
+      "types": [
+        "Grass"
+      ],
+      "baseStats": {
+        "hp": 80,
+        "atk": 82,
+        "def": 100,
+        "spa": 83,
+        "spd": 100,
+        "spe": 80
+      },
+      "abilities": [
+        "leaf-guard",
+        "overgrow"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0157-000",
+      "speciesId": "0157-000",
+      "displayName": "Typhlosion",
+      "types": [
+        "Fire"
+      ],
+      "baseStats": {
+        "hp": 78,
+        "atk": 84,
+        "def": 78,
+        "spa": 109,
+        "spd": 85,
+        "spe": 100
+      },
+      "abilities": [
+        "blaze",
+        "flash-fire"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0160-000",
+      "speciesId": "0160-000",
+      "displayName": "Feraligatr",
+      "types": [
+        "Water"
+      ],
+      "baseStats": {
+        "hp": 85,
+        "atk": 105,
+        "def": 100,
+        "spa": 79,
+        "spd": 83,
+        "spe": 78
+      },
+      "abilities": [
+        "sheer-force",
+        "torrent"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0168-000",
+      "speciesId": "0168-000",
+      "displayName": "Ariados",
+      "types": [
+        "Bug",
+        "Poison"
+      ],
+      "baseStats": {
+        "hp": 70,
+        "atk": 90,
+        "def": 70,
+        "spa": 60,
+        "spd": 70,
+        "spe": 40
+      },
+      "abilities": [
+        "insomnia",
+        "sniper",
+        "swarm"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0181-000",
+      "speciesId": "0181-000",
+      "displayName": "Ampharos",
+      "types": [
+        "Electric"
+      ],
+      "baseStats": {
+        "hp": 90,
+        "atk": 75,
+        "def": 85,
+        "spa": 115,
+        "spd": 90,
+        "spe": 55
+      },
+      "abilities": [
+        "plus",
+        "static"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0184-000",
+      "speciesId": "0184-000",
+      "displayName": "Azumarill",
+      "types": [
+        "Water",
+        "Fairy"
+      ],
+      "baseStats": {
+        "hp": 100,
+        "atk": 50,
+        "def": 80,
+        "spa": 60,
+        "spd": 80,
+        "spe": 50
+      },
+      "abilities": [
+        "huge-power",
+        "sap-sipper",
+        "thick-fat"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0186-000",
+      "speciesId": "0186-000",
+      "displayName": "Politoed",
+      "types": [
+        "Water"
+      ],
+      "baseStats": {
+        "hp": 90,
+        "atk": 75,
+        "def": 75,
+        "spa": 90,
+        "spd": 100,
+        "spe": 70
+      },
+      "abilities": [
+        "damp",
+        "drizzle",
+        "water-absorb"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0196-000",
+      "speciesId": "0196-000",
+      "displayName": "Espeon",
+      "types": [
+        "Psychic"
+      ],
+      "baseStats": {
+        "hp": 65,
+        "atk": 65,
+        "def": 60,
+        "spa": 130,
+        "spd": 95,
+        "spe": 110
+      },
+      "abilities": [
+        "magic-bounce",
+        "synchronize"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0197-000",
+      "speciesId": "0197-000",
+      "displayName": "Umbreon",
+      "types": [
+        "Dark"
+      ],
+      "baseStats": {
+        "hp": 95,
+        "atk": 65,
+        "def": 110,
+        "spa": 60,
+        "spd": 130,
+        "spe": 65
+      },
+      "abilities": [
+        "inner-focus",
+        "synchronize"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0199-000",
+      "speciesId": "0199-000",
+      "displayName": "Slowking",
+      "types": [
+        "Water",
+        "Psychic"
+      ],
+      "baseStats": {
+        "hp": 95,
+        "atk": 75,
+        "def": 80,
+        "spa": 100,
+        "spd": 110,
+        "spe": 30
+      },
+      "abilities": [
+        "oblivious",
+        "own-tempo",
+        "regenerator"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0205-000",
+      "speciesId": "0205-000",
+      "displayName": "Forretress",
+      "types": [
+        "Bug",
+        "Steel"
+      ],
+      "baseStats": {
+        "hp": 75,
+        "atk": 90,
+        "def": 140,
+        "spa": 60,
+        "spd": 60,
+        "spe": 40
+      },
+      "abilities": [
+        "overcoat",
+        "sturdy"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0208-000",
+      "speciesId": "0208-000",
+      "displayName": "Steelix",
+      "types": [
+        "Steel",
+        "Ground"
+      ],
+      "baseStats": {
+        "hp": 75,
+        "atk": 85,
+        "def": 200,
+        "spa": 55,
+        "spd": 65,
+        "spe": 30
+      },
+      "abilities": [
+        "rock-head",
+        "sheer-force",
+        "sturdy"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0211-000",
+      "speciesId": "0211-000",
+      "displayName": "Qwilfish",
+      "types": [
+        "Water",
+        "Poison"
+      ],
+      "baseStats": {
+        "hp": 65,
+        "atk": 95,
+        "def": 85,
+        "spa": 55,
+        "spd": 55,
+        "spe": 85
+      },
+      "abilities": [
+        "intimidate",
+        "poison-point",
+        "swift-swim"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0212-000",
+      "speciesId": "0212-000",
+      "displayName": "Scizor",
+      "types": [
+        "Bug",
+        "Steel"
+      ],
+      "baseStats": {
+        "hp": 70,
+        "atk": 130,
+        "def": 100,
+        "spa": 55,
+        "spd": 80,
+        "spe": 65
+      },
+      "abilities": [
+        "light-metal",
+        "swarm",
+        "technician"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0214-000",
+      "speciesId": "0214-000",
+      "displayName": "Heracross",
+      "types": [
+        "Bug",
+        "Fighting"
+      ],
+      "baseStats": {
+        "hp": 80,
+        "atk": 125,
+        "def": 75,
+        "spa": 40,
+        "spd": 95,
+        "spe": 85
+      },
+      "abilities": [
+        "guts",
+        "moxie",
+        "swarm"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0227-000",
+      "speciesId": "0227-000",
+      "displayName": "Skarmory",
+      "types": [
+        "Steel",
+        "Flying"
+      ],
+      "baseStats": {
+        "hp": 65,
+        "atk": 80,
+        "def": 140,
+        "spa": 40,
+        "spd": 70,
+        "spe": 70
+      },
+      "abilities": [
+        "keen-eye",
+        "sturdy",
+        "weak-armor"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0229-000",
+      "speciesId": "0229-000",
+      "displayName": "Houndoom",
+      "types": [
+        "Dark",
+        "Fire"
+      ],
+      "baseStats": {
+        "hp": 75,
+        "atk": 90,
+        "def": 50,
+        "spa": 110,
+        "spd": 80,
+        "spe": 95
+      },
+      "abilities": [
+        "early-bird",
+        "flash-fire",
+        "unnerve"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0248-000",
+      "speciesId": "0248-000",
+      "displayName": "Tyranitar",
+      "types": [
+        "Rock",
+        "Dark"
+      ],
+      "baseStats": {
+        "hp": 100,
+        "atk": 134,
+        "def": 110,
+        "spa": 95,
+        "spd": 100,
+        "spe": 61
+      },
+      "abilities": [
+        "sand-stream",
+        "unnerve"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0254-000",
+      "speciesId": "0254-000",
+      "displayName": "Sceptile",
+      "types": [
+        "Grass"
+      ],
+      "baseStats": {
+        "hp": 70,
+        "atk": 85,
+        "def": 65,
+        "spa": 105,
+        "spd": 85,
+        "spe": 120
+      },
+      "abilities": [
+        "overgrow",
+        "unburden"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0257-000",
+      "speciesId": "0257-000",
+      "displayName": "Blaziken",
+      "types": [
+        "Fire",
+        "Fighting"
+      ],
+      "baseStats": {
+        "hp": 80,
+        "atk": 120,
+        "def": 70,
+        "spa": 110,
+        "spd": 70,
+        "spe": 80
+      },
+      "abilities": [
+        "blaze",
+        "speed-boost"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0260-000",
+      "speciesId": "0260-000",
+      "displayName": "Swampert",
+      "types": [
+        "Water",
+        "Ground"
+      ],
+      "baseStats": {
+        "hp": 100,
+        "atk": 110,
+        "def": 90,
+        "spa": 85,
+        "spd": 90,
+        "spe": 60
+      },
+      "abilities": [
+        "damp",
+        "torrent"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0279-000",
+      "speciesId": "0279-000",
+      "displayName": "Pelipper",
+      "types": [
+        "Water",
+        "Flying"
+      ],
+      "baseStats": {
+        "hp": 60,
+        "atk": 50,
+        "def": 100,
+        "spa": 95,
+        "spd": 70,
+        "spe": 65
+      },
+      "abilities": [
+        "drizzle",
+        "keen-eye",
+        "rain-dish"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0282-000",
+      "speciesId": "0282-000",
+      "displayName": "Gardevoir",
+      "types": [
+        "Psychic",
+        "Fairy"
+      ],
+      "baseStats": {
+        "hp": 68,
+        "atk": 65,
+        "def": 65,
+        "spa": 125,
+        "spd": 115,
+        "spe": 80
+      },
+      "abilities": [
+        "synchronize",
+        "telepathy",
+        "trace"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0302-000",
+      "speciesId": "0302-000",
+      "displayName": "Sableye",
+      "types": [
+        "Dark",
+        "Ghost"
+      ],
+      "baseStats": {
+        "hp": 50,
+        "atk": 75,
+        "def": 75,
+        "spa": 65,
+        "spd": 65,
+        "spe": 50
+      },
+      "abilities": [
+        "keen-eye",
+        "prankster",
+        "stall"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0303-000",
+      "speciesId": "0303-000",
+      "displayName": "Mawile",
+      "types": [
+        "Steel",
+        "Fairy"
+      ],
+      "baseStats": {
+        "hp": 50,
+        "atk": 85,
+        "def": 85,
+        "spa": 55,
+        "spd": 55,
+        "spe": 50
+      },
+      "abilities": [
+        "hyper-cutter",
+        "intimidate",
+        "sheer-force"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0306-000",
+      "speciesId": "0306-000",
+      "displayName": "Aggron",
+      "types": [
+        "Steel",
+        "Rock"
+      ],
+      "baseStats": {
+        "hp": 70,
+        "atk": 110,
+        "def": 180,
+        "spa": 60,
+        "spd": 60,
+        "spe": 50
+      },
+      "abilities": [
+        "heavy-metal",
+        "rock-head",
+        "sturdy"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0308-000",
+      "speciesId": "0308-000",
+      "displayName": "Medicham",
+      "types": [
+        "Fighting",
+        "Psychic"
+      ],
+      "baseStats": {
+        "hp": 60,
+        "atk": 60,
+        "def": 75,
+        "spa": 60,
+        "spd": 75,
+        "spe": 80
+      },
+      "abilities": [
+        "pure-power",
+        "telepathy"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0310-000",
+      "speciesId": "0310-000",
+      "displayName": "Manectric",
+      "types": [
+        "Electric"
+      ],
+      "baseStats": {
+        "hp": 70,
+        "atk": 75,
+        "def": 60,
+        "spa": 105,
+        "spd": 60,
+        "spe": 105
+      },
+      "abilities": [
+        "lightning-rod",
+        "minus",
+        "static"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0319-000",
+      "speciesId": "0319-000",
+      "displayName": "Sharpedo",
+      "types": [
+        "Water",
+        "Dark"
+      ],
+      "baseStats": {
+        "hp": 70,
+        "atk": 120,
+        "def": 40,
+        "spa": 95,
+        "spd": 40,
+        "spe": 95
+      },
+      "abilities": [
+        "rough-skin",
+        "speed-boost"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0323-000",
+      "speciesId": "0323-000",
+      "displayName": "Camerupt",
+      "types": [
+        "Fire",
+        "Ground"
+      ],
+      "baseStats": {
+        "hp": 70,
+        "atk": 100,
+        "def": 70,
+        "spa": 105,
+        "spd": 75,
+        "spe": 40
+      },
+      "abilities": [
+        "anger-point",
+        "magma-armor",
+        "solid-rock"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0324-000",
+      "speciesId": "0324-000",
+      "displayName": "Torkoal",
+      "types": [
+        "Fire"
+      ],
+      "baseStats": {
+        "hp": 70,
+        "atk": 85,
+        "def": 140,
+        "spa": 85,
+        "spd": 70,
+        "spe": 20
+      },
+      "abilities": [
+        "drought",
+        "shell-armor",
+        "white-smoke"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0334-000",
+      "speciesId": "0334-000",
+      "displayName": "Altaria",
+      "types": [
+        "Dragon",
+        "Flying"
+      ],
+      "baseStats": {
+        "hp": 75,
+        "atk": 70,
+        "def": 90,
+        "spa": 70,
+        "spd": 105,
+        "spe": 80
+      },
+      "abilities": [
+        "cloud-nine",
+        "natural-cure"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0350-000",
+      "speciesId": "0350-000",
+      "displayName": "Milotic",
+      "types": [
+        "Water"
+      ],
+      "baseStats": {
+        "hp": 95,
+        "atk": 60,
+        "def": 79,
+        "spa": 100,
+        "spd": 125,
+        "spe": 81
+      },
+      "abilities": [
+        "competitive",
+        "cute-charm",
+        "marvel-scale"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0351-000",
+      "speciesId": "0351-000",
+      "displayName": "Castform",
+      "types": [
+        "Normal"
+      ],
+      "baseStats": {
+        "hp": 70,
+        "atk": 70,
+        "def": 70,
+        "spa": 70,
+        "spd": 70,
+        "spe": 70
+      },
+      "abilities": [
+        "forecast"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0354-000",
+      "speciesId": "0354-000",
+      "displayName": "Banette",
+      "types": [
+        "Ghost"
+      ],
+      "baseStats": {
+        "hp": 64,
+        "atk": 115,
+        "def": 65,
+        "spa": 83,
+        "spd": 63,
+        "spe": 65
+      },
+      "abilities": [
+        "cursed-body",
+        "frisk",
+        "insomnia"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0358-000",
+      "speciesId": "0358-000",
+      "displayName": "Chimecho",
+      "types": [
+        "Psychic"
+      ],
+      "baseStats": {
+        "hp": 75,
+        "atk": 50,
+        "def": 80,
+        "spa": 95,
+        "spd": 90,
+        "spe": 65
+      },
+      "abilities": [
+        "levitate"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0359-000",
+      "speciesId": "0359-000",
+      "displayName": "Absol",
+      "types": [
+        "Dark"
+      ],
+      "baseStats": {
+        "hp": 65,
+        "atk": 130,
+        "def": 60,
+        "spa": 75,
+        "spd": 60,
+        "spe": 75
+      },
+      "abilities": [
+        "justified",
+        "pressure",
+        "super-luck"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0362-000",
+      "speciesId": "0362-000",
+      "displayName": "Glalie",
+      "types": [
+        "Ice"
+      ],
+      "baseStats": {
+        "hp": 80,
+        "atk": 80,
+        "def": 80,
+        "spa": 80,
+        "spd": 80,
+        "spe": 80
+      },
+      "abilities": [
+        "ice-body",
+        "inner-focus",
+        "moody"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0376-000",
+      "speciesId": "0376-000",
+      "displayName": "Metagross",
+      "types": [
+        "Steel",
+        "Psychic"
+      ],
+      "baseStats": {
+        "hp": 80,
+        "atk": 135,
+        "def": 130,
+        "spa": 95,
+        "spd": 90,
+        "spe": 70
+      },
+      "abilities": [
+        "clear-body",
+        "light-metal"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0389-000",
+      "speciesId": "0389-000",
+      "displayName": "Torterra",
+      "types": [
+        "Grass",
+        "Ground"
+      ],
+      "baseStats": {
+        "hp": 95,
+        "atk": 109,
+        "def": 105,
+        "spa": 75,
+        "spd": 85,
+        "spe": 56
+      },
+      "abilities": [
+        "overgrow",
+        "shell-armor"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0392-000",
+      "speciesId": "0392-000",
+      "displayName": "Infernape",
+      "types": [
+        "Fire",
+        "Fighting"
+      ],
+      "baseStats": {
+        "hp": 76,
+        "atk": 104,
+        "def": 71,
+        "spa": 104,
+        "spd": 71,
+        "spe": 108
+      },
+      "abilities": [
+        "blaze",
+        "iron-fist"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0395-000",
+      "speciesId": "0395-000",
+      "displayName": "Empoleon",
+      "types": [
+        "Water",
+        "Steel"
+      ],
+      "baseStats": {
+        "hp": 84,
+        "atk": 86,
+        "def": 88,
+        "spa": 111,
+        "spd": 101,
+        "spe": 60
+      },
+      "abilities": [
+        "competitive",
+        "torrent"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0398-000",
+      "speciesId": "0398-000",
+      "displayName": "Staraptor",
+      "types": [
+        "Normal",
+        "Flying"
+      ],
+      "baseStats": {
+        "hp": 85,
+        "atk": 120,
+        "def": 70,
+        "spa": 50,
+        "spd": 60,
+        "spe": 100
+      },
+      "abilities": [
+        "intimidate",
+        "reckless"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0405-000",
+      "speciesId": "0405-000",
+      "displayName": "Luxray",
+      "types": [
+        "Electric"
+      ],
+      "baseStats": {
+        "hp": 80,
+        "atk": 120,
+        "def": 79,
+        "spa": 95,
+        "spd": 79,
+        "spe": 70
+      },
+      "abilities": [
+        "guts",
+        "intimidate",
+        "rivalry"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0407-000",
+      "speciesId": "0407-000",
+      "displayName": "Roserade",
+      "types": [
+        "Grass",
+        "Poison"
+      ],
+      "baseStats": {
+        "hp": 60,
+        "atk": 70,
+        "def": 65,
+        "spa": 125,
+        "spd": 105,
+        "spe": 90
+      },
+      "abilities": [
+        "natural-cure",
+        "poison-point",
+        "technician"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0409-000",
+      "speciesId": "0409-000",
+      "displayName": "Rampardos",
+      "types": [
+        "Rock"
+      ],
+      "baseStats": {
+        "hp": 97,
+        "atk": 165,
+        "def": 60,
+        "spa": 65,
+        "spd": 50,
+        "spe": 58
+      },
+      "abilities": [
+        "mold-breaker",
+        "sheer-force"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0411-000",
+      "speciesId": "0411-000",
+      "displayName": "Bastiodon",
+      "types": [
+        "Rock",
+        "Steel"
+      ],
+      "baseStats": {
+        "hp": 60,
+        "atk": 52,
+        "def": 168,
+        "spa": 47,
+        "spd": 138,
+        "spe": 30
+      },
+      "abilities": [
+        "soundproof",
+        "sturdy"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0428-000",
+      "speciesId": "0428-000",
+      "displayName": "Lopunny",
+      "types": [
+        "Normal"
+      ],
+      "baseStats": {
+        "hp": 65,
+        "atk": 76,
+        "def": 84,
+        "spa": 54,
+        "spd": 96,
+        "spe": 105
+      },
+      "abilities": [
+        "cute-charm",
+        "klutz",
+        "limber"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0442-000",
+      "speciesId": "0442-000",
+      "displayName": "Spiritomb",
+      "types": [
+        "Ghost",
+        "Dark"
+      ],
+      "baseStats": {
+        "hp": 50,
+        "atk": 92,
+        "def": 108,
+        "spa": 92,
+        "spd": 108,
+        "spe": 35
+      },
+      "abilities": [
+        "infiltrator",
+        "pressure"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0445-000",
+      "speciesId": "0445-000",
+      "displayName": "Garchomp",
+      "types": [
+        "Dragon",
+        "Ground"
+      ],
+      "baseStats": {
+        "hp": 108,
+        "atk": 130,
+        "def": 95,
+        "spa": 80,
+        "spd": 85,
+        "spe": 102
+      },
+      "abilities": [
+        "rough-skin",
+        "sand-veil"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0448-000",
+      "speciesId": "0448-000",
+      "displayName": "Lucario",
+      "types": [
+        "Fighting",
+        "Steel"
+      ],
+      "baseStats": {
+        "hp": 70,
+        "atk": 110,
+        "def": 70,
+        "spa": 115,
+        "spd": 70,
+        "spe": 90
+      },
+      "abilities": [
+        "inner-focus",
+        "justified",
+        "steadfast"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0450-000",
+      "speciesId": "0450-000",
+      "displayName": "Hippowdon",
+      "types": [
+        "Ground"
+      ],
+      "baseStats": {
+        "hp": 108,
+        "atk": 112,
+        "def": 118,
+        "spa": 68,
+        "spd": 72,
+        "spe": 47
+      },
+      "abilities": [
+        "sand-force",
+        "sand-stream"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0454-000",
+      "speciesId": "0454-000",
+      "displayName": "Toxicroak",
+      "types": [
+        "Poison",
+        "Fighting"
+      ],
+      "baseStats": {
+        "hp": 83,
+        "atk": 106,
+        "def": 65,
+        "spa": 86,
+        "spd": 65,
+        "spe": 85
+      },
+      "abilities": [
+        "anticipation",
+        "dry-skin",
+        "poison-touch"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0460-000",
+      "speciesId": "0460-000",
+      "displayName": "Abomasnow",
+      "types": [
+        "Grass",
+        "Ice"
+      ],
+      "baseStats": {
+        "hp": 90,
+        "atk": 92,
+        "def": 75,
+        "spa": 92,
+        "spd": 85,
+        "spe": 60
+      },
+      "abilities": [
+        "snow-warning",
+        "soundproof"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0461-000",
+      "speciesId": "0461-000",
+      "displayName": "Weavile",
+      "types": [
+        "Dark",
+        "Ice"
+      ],
+      "baseStats": {
+        "hp": 70,
+        "atk": 120,
+        "def": 65,
+        "spa": 45,
+        "spd": 85,
+        "spe": 125
+      },
+      "abilities": [
+        "pickpocket",
+        "pressure"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0464-000",
+      "speciesId": "0464-000",
+      "displayName": "Rhyperior",
+      "types": [
+        "Ground",
+        "Rock"
+      ],
+      "baseStats": {
+        "hp": 115,
+        "atk": 140,
+        "def": 130,
+        "spa": 55,
+        "spd": 55,
+        "spe": 40
+      },
+      "abilities": [
+        "lightning-rod",
+        "reckless",
+        "solid-rock"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0470-000",
+      "speciesId": "0470-000",
+      "displayName": "Leafeon",
+      "types": [
+        "Grass"
+      ],
+      "baseStats": {
+        "hp": 65,
+        "atk": 110,
+        "def": 130,
+        "spa": 60,
+        "spd": 65,
+        "spe": 95
+      },
+      "abilities": [
+        "chlorophyll",
+        "leaf-guard"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0471-000",
+      "speciesId": "0471-000",
+      "displayName": "Glaceon",
+      "types": [
+        "Ice"
+      ],
+      "baseStats": {
+        "hp": 65,
+        "atk": 60,
+        "def": 110,
+        "spa": 130,
+        "spd": 95,
+        "spe": 65
+      },
+      "abilities": [
+        "ice-body",
+        "snow-cloak"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0472-000",
+      "speciesId": "0472-000",
+      "displayName": "Gliscor",
+      "types": [
+        "Ground",
+        "Flying"
+      ],
+      "baseStats": {
+        "hp": 75,
+        "atk": 95,
+        "def": 125,
+        "spa": 45,
+        "spd": 75,
+        "spe": 95
+      },
+      "abilities": [
+        "hyper-cutter",
+        "poison-heal",
+        "sand-veil"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0473-000",
+      "speciesId": "0473-000",
+      "displayName": "Mamoswine",
+      "types": [
+        "Ice",
+        "Ground"
+      ],
+      "baseStats": {
+        "hp": 110,
+        "atk": 130,
+        "def": 80,
+        "spa": 70,
+        "spd": 60,
+        "spe": 80
+      },
+      "abilities": [
+        "oblivious",
+        "snow-cloak",
+        "thick-fat"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0475-000",
+      "speciesId": "0475-000",
+      "displayName": "Gallade",
+      "types": [
+        "Psychic",
+        "Fighting"
+      ],
+      "baseStats": {
+        "hp": 68,
+        "atk": 125,
+        "def": 65,
+        "spa": 65,
+        "spd": 115,
+        "spe": 80
+      },
+      "abilities": [
+        "justified",
+        "sharpness",
+        "steadfast"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0478-000",
+      "speciesId": "0478-000",
+      "displayName": "Froslass",
+      "types": [
+        "Ice",
+        "Ghost"
+      ],
+      "baseStats": {
+        "hp": 70,
+        "atk": 80,
+        "def": 70,
+        "spa": 80,
+        "spd": 70,
+        "spe": 110
+      },
+      "abilities": [
+        "cursed-body",
+        "snow-cloak"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0497-000",
+      "speciesId": "0497-000",
+      "displayName": "Serperior",
+      "types": [
+        "Grass"
+      ],
+      "baseStats": {
+        "hp": 75,
+        "atk": 75,
+        "def": 95,
+        "spa": 75,
+        "spd": 95,
+        "spe": 113
+      },
+      "abilities": [
+        "contrary",
+        "overgrow"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0500-000",
+      "speciesId": "0500-000",
+      "displayName": "Emboar",
+      "types": [
+        "Fire",
+        "Fighting"
+      ],
+      "baseStats": {
+        "hp": 110,
+        "atk": 123,
+        "def": 65,
+        "spa": 100,
+        "spd": 65,
+        "spe": 65
+      },
+      "abilities": [
+        "blaze",
+        "reckless"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0503-000",
+      "speciesId": "0503-000",
+      "displayName": "Samurott",
+      "types": [
+        "Water"
+      ],
+      "baseStats": {
+        "hp": 95,
+        "atk": 100,
+        "def": 85,
+        "spa": 108,
+        "spd": 70,
+        "spe": 70
+      },
+      "abilities": [
+        "shell-armor",
+        "torrent"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0505-000",
+      "speciesId": "0505-000",
+      "displayName": "Watchog",
+      "types": [
+        "Normal"
+      ],
+      "baseStats": {
+        "hp": 60,
+        "atk": 85,
+        "def": 69,
+        "spa": 60,
+        "spd": 69,
+        "spe": 77
+      },
+      "abilities": [
+        "analytic",
+        "illuminate",
+        "keen-eye"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0510-000",
+      "speciesId": "0510-000",
+      "displayName": "Liepard",
+      "types": [
+        "Dark"
+      ],
+      "baseStats": {
+        "hp": 64,
+        "atk": 88,
+        "def": 50,
+        "spa": 88,
+        "spd": 50,
+        "spe": 106
+      },
+      "abilities": [
+        "limber",
+        "prankster",
+        "unburden"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0512-000",
+      "speciesId": "0512-000",
+      "displayName": "Simisage",
+      "types": [
+        "Grass"
+      ],
+      "baseStats": {
+        "hp": 75,
+        "atk": 98,
+        "def": 63,
+        "spa": 98,
+        "spd": 63,
+        "spe": 101
+      },
+      "abilities": [
+        "gluttony",
+        "overgrow"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0514-000",
+      "speciesId": "0514-000",
+      "displayName": "Simisear",
+      "types": [
+        "Fire"
+      ],
+      "baseStats": {
+        "hp": 75,
+        "atk": 98,
+        "def": 63,
+        "spa": 98,
+        "spd": 63,
+        "spe": 101
+      },
+      "abilities": [
+        "blaze",
+        "gluttony"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0516-000",
+      "speciesId": "0516-000",
+      "displayName": "Simipour",
+      "types": [
+        "Water"
+      ],
+      "baseStats": {
+        "hp": 75,
+        "atk": 98,
+        "def": 63,
+        "spa": 98,
+        "spd": 63,
+        "spe": 101
+      },
+      "abilities": [
+        "gluttony",
+        "torrent"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0518-000",
+      "speciesId": "0518-000",
+      "displayName": "Musharna",
+      "types": [
+        "Psychic"
+      ],
+      "baseStats": {
+        "hp": 116,
+        "atk": 55,
+        "def": 85,
+        "spa": 107,
+        "spd": 95,
+        "spe": 29
+      },
+      "abilities": [
+        "forewarn",
+        "synchronize",
+        "telepathy"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0530-000",
+      "speciesId": "0530-000",
+      "displayName": "Excadrill",
+      "types": [
+        "Ground",
+        "Steel"
+      ],
+      "baseStats": {
+        "hp": 110,
+        "atk": 135,
+        "def": 60,
+        "spa": 50,
+        "spd": 65,
+        "spe": 88
+      },
+      "abilities": [
+        "mold-breaker",
+        "sand-force",
+        "sand-rush"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0531-000",
+      "speciesId": "0531-000",
+      "displayName": "Audino",
+      "types": [
+        "Normal"
+      ],
+      "baseStats": {
+        "hp": 103,
+        "atk": 60,
+        "def": 86,
+        "spa": 60,
+        "spd": 86,
+        "spe": 50
+      },
+      "abilities": [
+        "healer",
+        "klutz",
+        "regenerator"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0534-000",
+      "speciesId": "0534-000",
+      "displayName": "Conkeldurr",
+      "types": [
+        "Fighting"
+      ],
+      "baseStats": {
+        "hp": 105,
+        "atk": 140,
+        "def": 95,
+        "spa": 55,
+        "spd": 65,
+        "spe": 45
+      },
+      "abilities": [
+        "guts",
+        "iron-fist",
+        "sheer-force"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0545-000",
+      "speciesId": "0545-000",
+      "displayName": "Scolipede",
+      "types": [
+        "Bug",
+        "Poison"
+      ],
+      "baseStats": {
+        "hp": 60,
+        "atk": 100,
+        "def": 89,
+        "spa": 55,
+        "spd": 69,
+        "spe": 112
+      },
+      "abilities": [
+        "poison-point",
+        "speed-boost",
+        "swarm"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0547-000",
+      "speciesId": "0547-000",
+      "displayName": "Whimsicott",
+      "types": [
+        "Grass",
+        "Fairy"
+      ],
+      "baseStats": {
+        "hp": 60,
+        "atk": 67,
+        "def": 85,
+        "spa": 77,
+        "spd": 75,
+        "spe": 116
+      },
+      "abilities": [
+        "chlorophyll",
+        "infiltrator",
+        "prankster"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0553-000",
+      "speciesId": "0553-000",
+      "displayName": "Krookodile",
+      "types": [
+        "Ground",
+        "Dark"
+      ],
+      "baseStats": {
+        "hp": 95,
+        "atk": 117,
+        "def": 80,
+        "spa": 65,
+        "spd": 70,
+        "spe": 92
+      },
+      "abilities": [
+        "anger-point",
+        "intimidate",
+        "moxie"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0560-000",
+      "speciesId": "0560-000",
+      "displayName": "Scrafty",
+      "types": [
+        "Dark",
+        "Fighting"
+      ],
+      "baseStats": {
+        "hp": 65,
+        "atk": 90,
+        "def": 115,
+        "spa": 45,
+        "spd": 115,
+        "spe": 58
+      },
+      "abilities": [
+        "intimidate",
+        "moxie",
+        "shed-skin"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0563-000",
+      "speciesId": "0563-000",
+      "displayName": "Cofagrigus",
+      "types": [
+        "Ghost"
+      ],
+      "baseStats": {
+        "hp": 58,
+        "atk": 50,
+        "def": 145,
+        "spa": 95,
+        "spd": 105,
+        "spe": 30
+      },
+      "abilities": [
+        "mummy"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0569-000",
+      "speciesId": "0569-000",
+      "displayName": "Garbodor",
+      "types": [
+        "Poison"
+      ],
+      "baseStats": {
+        "hp": 80,
+        "atk": 95,
+        "def": 82,
+        "spa": 60,
+        "spd": 82,
+        "spe": 75
+      },
+      "abilities": [
+        "aftermath",
+        "stench",
+        "weak-armor"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0571-000",
+      "speciesId": "0571-000",
+      "displayName": "Zoroark",
+      "types": [
+        "Dark"
+      ],
+      "baseStats": {
+        "hp": 60,
+        "atk": 105,
+        "def": 60,
+        "spa": 120,
+        "spd": 60,
+        "spe": 105
+      },
+      "abilities": [
+        "illusion"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0579-000",
+      "speciesId": "0579-000",
+      "displayName": "Reuniclus",
+      "types": [
+        "Psychic"
+      ],
+      "baseStats": {
+        "hp": 110,
+        "atk": 65,
+        "def": 75,
+        "spa": 125,
+        "spd": 85,
+        "spe": 30
+      },
+      "abilities": [
+        "magic-guard",
+        "overcoat",
+        "regenerator"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0584-000",
+      "speciesId": "0584-000",
+      "displayName": "Vanilluxe",
+      "types": [
+        "Ice"
+      ],
+      "baseStats": {
+        "hp": 71,
+        "atk": 95,
+        "def": 85,
+        "spa": 110,
+        "spd": 95,
+        "spe": 79
+      },
+      "abilities": [
+        "ice-body",
+        "snow-warning",
+        "weak-armor"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0587-000",
+      "speciesId": "0587-000",
+      "displayName": "Emolga",
+      "types": [
+        "Electric",
+        "Flying"
+      ],
+      "baseStats": {
+        "hp": 55,
+        "atk": 75,
+        "def": 60,
+        "spa": 75,
+        "spd": 60,
+        "spe": 103
+      },
+      "abilities": [
+        "motor-drive",
+        "static"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0604-000",
+      "speciesId": "0604-000",
+      "displayName": "Eelektross",
+      "types": [
+        "Electric"
+      ],
+      "baseStats": {
+        "hp": 85,
+        "atk": 115,
+        "def": 80,
+        "spa": 105,
+        "spd": 80,
+        "spe": 50
+      },
+      "abilities": [
+        "levitate"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0609-000",
+      "speciesId": "0609-000",
+      "displayName": "Chandelure",
+      "types": [
+        "Ghost",
+        "Fire"
+      ],
+      "baseStats": {
+        "hp": 60,
+        "atk": 55,
+        "def": 90,
+        "spa": 145,
+        "spd": 90,
+        "spe": 80
+      },
+      "abilities": [
+        "flame-body",
+        "flash-fire",
+        "infiltrator"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0614-000",
+      "speciesId": "0614-000",
+      "displayName": "Beartic",
+      "types": [
+        "Ice"
+      ],
+      "baseStats": {
+        "hp": 95,
+        "atk": 130,
+        "def": 80,
+        "spa": 70,
+        "spd": 80,
+        "spe": 50
+      },
+      "abilities": [
+        "slush-rush",
+        "snow-cloak",
+        "swift-swim"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0618-000",
+      "speciesId": "0618-000",
+      "displayName": "Stunfisk",
+      "types": [
+        "Ground",
+        "Electric"
+      ],
+      "baseStats": {
+        "hp": 109,
+        "atk": 66,
+        "def": 84,
+        "spa": 81,
+        "spd": 99,
+        "spe": 32
+      },
+      "abilities": [
+        "limber",
+        "sand-veil",
+        "static"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0623-000",
+      "speciesId": "0623-000",
+      "displayName": "Golurk",
+      "types": [
+        "Ground",
+        "Ghost"
+      ],
+      "baseStats": {
+        "hp": 89,
+        "atk": 124,
+        "def": 80,
+        "spa": 55,
+        "spd": 80,
+        "spe": 55
+      },
+      "abilities": [
+        "iron-fist",
+        "klutz",
+        "no-guard"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0635-000",
+      "speciesId": "0635-000",
+      "displayName": "Hydreigon",
+      "types": [
+        "Dark",
+        "Dragon"
+      ],
+      "baseStats": {
+        "hp": 92,
+        "atk": 105,
+        "def": 90,
+        "spa": 125,
+        "spd": 90,
+        "spe": 98
+      },
+      "abilities": [
+        "levitate"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0637-000",
+      "speciesId": "0637-000",
+      "displayName": "Volcarona",
+      "types": [
+        "Bug",
+        "Fire"
+      ],
+      "baseStats": {
+        "hp": 85,
+        "atk": 60,
+        "def": 65,
+        "spa": 135,
+        "spd": 105,
+        "spe": 100
+      },
+      "abilities": [
+        "flame-body",
+        "swarm"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0652-000",
+      "speciesId": "0652-000",
+      "displayName": "Chesnaught",
+      "types": [
+        "Grass",
+        "Fighting"
+      ],
+      "baseStats": {
+        "hp": 88,
+        "atk": 107,
+        "def": 122,
+        "spa": 74,
+        "spd": 75,
+        "spe": 64
+      },
+      "abilities": [
+        "bulletproof",
+        "overgrow"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0655-000",
+      "speciesId": "0655-000",
+      "displayName": "Delphox",
+      "types": [
+        "Fire",
+        "Psychic"
+      ],
+      "baseStats": {
+        "hp": 75,
+        "atk": 69,
+        "def": 72,
+        "spa": 114,
+        "spd": 100,
+        "spe": 104
+      },
+      "abilities": [
+        "blaze",
+        "magician"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0658-000",
+      "speciesId": "0658-000",
+      "displayName": "Greninja",
+      "types": [
+        "Water",
+        "Dark"
+      ],
+      "baseStats": {
+        "hp": 72,
+        "atk": 95,
+        "def": 67,
+        "spa": 103,
+        "spd": 71,
+        "spe": 122
+      },
+      "abilities": [
+        "battle-bond",
+        "protean",
+        "torrent"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0660-000",
+      "speciesId": "0660-000",
+      "displayName": "Diggersby",
+      "types": [
+        "Normal",
+        "Ground"
+      ],
+      "baseStats": {
+        "hp": 85,
+        "atk": 56,
+        "def": 77,
+        "spa": 50,
+        "spd": 77,
+        "spe": 78
+      },
+      "abilities": [
+        "cheek-pouch",
+        "huge-power",
+        "pickup"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0663-000",
+      "speciesId": "0663-000",
+      "displayName": "Talonflame",
+      "types": [
+        "Fire",
+        "Flying"
+      ],
+      "baseStats": {
+        "hp": 78,
+        "atk": 81,
+        "def": 71,
+        "spa": 74,
+        "spd": 69,
+        "spe": 126
+      },
+      "abilities": [
+        "flame-body",
+        "gale-wings"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0666-018",
+      "speciesId": "0666-018",
+      "displayName": "Vivillon",
+      "types": [
+        "Bug",
+        "Flying"
+      ],
+      "baseStats": {
+        "hp": 80,
+        "atk": 52,
+        "def": 50,
+        "spa": 90,
+        "spd": 50,
+        "spe": 89
+      },
+      "abilities": [
+        "compound-eyes",
+        "friend-guard",
+        "shield-dust"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0668-000",
+      "speciesId": "0668-000",
+      "displayName": "Pyroar",
+      "types": [
+        "Fire",
+        "Normal"
+      ],
+      "baseStats": {
+        "hp": 86,
+        "atk": 68,
+        "def": 72,
+        "spa": 109,
+        "spd": 66,
+        "spe": 106
+      },
+      "abilities": [
+        "moxie",
+        "rivalry",
+        "unnerve"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0670-005",
+      "speciesId": "0670-005",
+      "displayName": "Floette",
+      "types": [
+        "Fairy"
+      ],
+      "baseStats": {
+        "hp": 54,
+        "atk": 45,
+        "def": 47,
+        "spa": 75,
+        "spd": 98,
+        "spe": 52
+      },
+      "abilities": [
+        "flower-veil",
+        "symbiosis"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0671-000",
+      "speciesId": "0671-000",
+      "displayName": "Florges",
+      "types": [
+        "Fairy"
+      ],
+      "baseStats": {
+        "hp": 78,
+        "atk": 65,
+        "def": 68,
+        "spa": 112,
+        "spd": 154,
+        "spe": 75
+      },
+      "abilities": [
+        "flower-veil",
+        "symbiosis"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0675-000",
+      "speciesId": "0675-000",
+      "displayName": "Pangoro",
+      "types": [
+        "Fighting",
+        "Dark"
+      ],
+      "baseStats": {
+        "hp": 95,
+        "atk": 124,
+        "def": 78,
+        "spa": 69,
+        "spd": 71,
+        "spe": 58
+      },
+      "abilities": [
+        "iron-fist",
+        "mold-breaker",
+        "scrappy"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0676-000",
+      "speciesId": "0676-000",
+      "displayName": "Furfrou",
+      "types": [
+        "Normal"
+      ],
+      "baseStats": {
+        "hp": 75,
+        "atk": 80,
+        "def": 60,
+        "spa": 65,
+        "spd": 90,
+        "spe": 102
+      },
+      "abilities": [
+        "fur-coat"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0681-000",
+      "speciesId": "0681-000",
+      "displayName": "Aegislash",
+      "types": [
+        "Steel",
+        "Ghost"
+      ],
+      "baseStats": {
+        "hp": 60,
+        "atk": 50,
+        "def": 140,
+        "spa": 50,
+        "spd": 140,
+        "spe": 60
+      },
+      "abilities": [
+        "stance-change"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0683-000",
+      "speciesId": "0683-000",
+      "displayName": "Aromatisse",
+      "types": [
+        "Fairy"
+      ],
+      "baseStats": {
+        "hp": 101,
+        "atk": 72,
+        "def": 72,
+        "spa": 99,
+        "spd": 89,
+        "spe": 29
+      },
+      "abilities": [
+        "aroma-veil",
+        "healer"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0685-000",
+      "speciesId": "0685-000",
+      "displayName": "Slurpuff",
+      "types": [
+        "Fairy"
+      ],
+      "baseStats": {
+        "hp": 82,
+        "atk": 80,
+        "def": 86,
+        "spa": 85,
+        "spd": 75,
+        "spe": 72
+      },
+      "abilities": [
+        "sweet-veil",
+        "unburden"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0687-000",
+      "speciesId": "0687-000",
+      "displayName": "Malamar",
+      "types": [
+        "Dark",
+        "Psychic"
+      ],
+      "baseStats": {
+        "hp": 86,
+        "atk": 92,
+        "def": 88,
+        "spa": 68,
+        "spd": 75,
+        "spe": 73
+      },
+      "abilities": [
+        "contrary",
+        "infiltrator",
+        "suction-cups"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0689-000",
+      "speciesId": "0689-000",
+      "displayName": "Barbaracle",
+      "types": [
+        "Rock",
+        "Water"
+      ],
+      "baseStats": {
+        "hp": 72,
+        "atk": 105,
+        "def": 115,
+        "spa": 54,
+        "spd": 86,
+        "spe": 68
+      },
+      "abilities": [
+        "pickpocket",
+        "sniper",
+        "tough-claws"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0691-000",
+      "speciesId": "0691-000",
+      "displayName": "Dragalge",
+      "types": [
+        "Poison",
+        "Dragon"
+      ],
+      "baseStats": {
+        "hp": 65,
+        "atk": 75,
+        "def": 90,
+        "spa": 97,
+        "spd": 123,
+        "spe": 44
+      },
+      "abilities": [
+        "adaptability",
+        "poison-point",
+        "poison-touch"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0693-000",
+      "speciesId": "0693-000",
+      "displayName": "Clawitzer",
+      "types": [
+        "Water"
+      ],
+      "baseStats": {
+        "hp": 71,
+        "atk": 73,
+        "def": 88,
+        "spa": 120,
+        "spd": 89,
+        "spe": 59
+      },
+      "abilities": [
+        "mega-launcher"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0695-000",
+      "speciesId": "0695-000",
+      "displayName": "Heliolisk",
+      "types": [
+        "Electric",
+        "Normal"
+      ],
+      "baseStats": {
+        "hp": 62,
+        "atk": 55,
+        "def": 52,
+        "spa": 109,
+        "spd": 94,
+        "spe": 109
+      },
+      "abilities": [
+        "dry-skin",
+        "sand-veil",
+        "solar-power"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0697-000",
+      "speciesId": "0697-000",
+      "displayName": "Tyrantrum",
+      "types": [
+        "Rock",
+        "Dragon"
+      ],
+      "baseStats": {
+        "hp": 82,
+        "atk": 121,
+        "def": 119,
+        "spa": 69,
+        "spd": 59,
+        "spe": 71
+      },
+      "abilities": [
+        "rock-head",
+        "strong-jaw"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0699-000",
+      "speciesId": "0699-000",
+      "displayName": "Aurorus",
+      "types": [
+        "Rock",
+        "Ice"
+      ],
+      "baseStats": {
+        "hp": 123,
+        "atk": 77,
+        "def": 72,
+        "spa": 99,
+        "spd": 92,
+        "spe": 58
+      },
+      "abilities": [
+        "refrigerate",
+        "snow-warning"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0700-000",
+      "speciesId": "0700-000",
+      "displayName": "Sylveon",
+      "types": [
+        "Fairy"
+      ],
+      "baseStats": {
+        "hp": 95,
+        "atk": 65,
+        "def": 65,
+        "spa": 110,
+        "spd": 130,
+        "spe": 60
+      },
+      "abilities": [
+        "cute-charm",
+        "pixilate"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0701-000",
+      "speciesId": "0701-000",
+      "displayName": "Hawlucha",
+      "types": [
+        "Fighting",
+        "Flying"
+      ],
+      "baseStats": {
+        "hp": 78,
+        "atk": 92,
+        "def": 75,
+        "spa": 74,
+        "spd": 63,
+        "spe": 118
+      },
+      "abilities": [
+        "limber",
+        "mold-breaker",
+        "unburden"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0702-000",
+      "speciesId": "0702-000",
+      "displayName": "Dedenne",
+      "types": [
+        "Electric",
+        "Fairy"
+      ],
+      "baseStats": {
+        "hp": 67,
+        "atk": 58,
+        "def": 57,
+        "spa": 81,
+        "spd": 67,
+        "spe": 101
+      },
+      "abilities": [
+        "cheek-pouch",
+        "pickup",
+        "plus"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0706-000",
+      "speciesId": "0706-000",
+      "displayName": "Goodra",
+      "types": [
+        "Dragon"
+      ],
+      "baseStats": {
+        "hp": 90,
+        "atk": 100,
+        "def": 70,
+        "spa": 110,
+        "spd": 150,
+        "spe": 80
+      },
+      "abilities": [
+        "gooey",
+        "hydration",
+        "sap-sipper"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0707-000",
+      "speciesId": "0707-000",
+      "displayName": "Klefki",
+      "types": [
+        "Steel",
+        "Fairy"
+      ],
+      "baseStats": {
+        "hp": 57,
+        "atk": 80,
+        "def": 91,
+        "spa": 80,
+        "spd": 87,
+        "spe": 75
+      },
+      "abilities": [
+        "magician",
+        "prankster"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0709-000",
+      "speciesId": "0709-000",
+      "displayName": "Trevenant",
+      "types": [
+        "Ghost",
+        "Grass"
+      ],
+      "baseStats": {
+        "hp": 85,
+        "atk": 110,
+        "def": 76,
+        "spa": 65,
+        "spd": 82,
+        "spe": 56
+      },
+      "abilities": [
+        "frisk",
+        "harvest",
+        "natural-cure"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0713-000",
+      "speciesId": "0713-000",
+      "displayName": "Avalugg",
+      "types": [
+        "Ice"
+      ],
+      "baseStats": {
+        "hp": 95,
+        "atk": 117,
+        "def": 184,
+        "spa": 44,
+        "spd": 46,
+        "spe": 28
+      },
+      "abilities": [
+        "ice-body",
+        "own-tempo",
+        "sturdy"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0715-000",
+      "speciesId": "0715-000",
+      "displayName": "Noivern",
+      "types": [
+        "Flying",
+        "Dragon"
+      ],
+      "baseStats": {
+        "hp": 85,
+        "atk": 70,
+        "def": 80,
+        "spa": 97,
+        "spd": 80,
+        "spe": 123
+      },
+      "abilities": [
+        "frisk",
+        "infiltrator",
+        "telepathy"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0724-000",
+      "speciesId": "0724-000",
+      "displayName": "Decidueye",
+      "types": [
+        "Grass",
+        "Ghost"
+      ],
+      "baseStats": {
+        "hp": 78,
+        "atk": 107,
+        "def": 75,
+        "spa": 100,
+        "spd": 100,
+        "spe": 70
+      },
+      "abilities": [
+        "long-reach",
+        "overgrow"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0727-000",
+      "speciesId": "0727-000",
+      "displayName": "Incineroar",
+      "types": [
+        "Fire",
+        "Dark"
+      ],
+      "baseStats": {
+        "hp": 95,
+        "atk": 115,
+        "def": 90,
+        "spa": 80,
+        "spd": 90,
+        "spe": 60
+      },
+      "abilities": [
+        "blaze",
+        "intimidate"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0730-000",
+      "speciesId": "0730-000",
+      "displayName": "Primarina",
+      "types": [
+        "Water",
+        "Fairy"
+      ],
+      "baseStats": {
+        "hp": 80,
+        "atk": 74,
+        "def": 74,
+        "spa": 126,
+        "spd": 116,
+        "spe": 60
+      },
+      "abilities": [
+        "liquid-voice",
+        "torrent"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0733-000",
+      "speciesId": "0733-000",
+      "displayName": "Toucannon",
+      "types": [
+        "Normal",
+        "Flying"
+      ],
+      "baseStats": {
+        "hp": 80,
+        "atk": 120,
+        "def": 75,
+        "spa": 75,
+        "spd": 75,
+        "spe": 60
+      },
+      "abilities": [
+        "keen-eye",
+        "sheer-force",
+        "skill-link"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0740-000",
+      "speciesId": "0740-000",
+      "displayName": "Crabominable",
+      "types": [
+        "Fighting",
+        "Ice"
+      ],
+      "baseStats": {
+        "hp": 97,
+        "atk": 132,
+        "def": 77,
+        "spa": 62,
+        "spd": 67,
+        "spe": 43
+      },
+      "abilities": [
+        "anger-point",
+        "hyper-cutter",
+        "iron-fist"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0748-000",
+      "speciesId": "0748-000",
+      "displayName": "Toxapex",
+      "types": [
+        "Poison",
+        "Water"
+      ],
+      "baseStats": {
+        "hp": 50,
+        "atk": 63,
+        "def": 152,
+        "spa": 53,
+        "spd": 142,
+        "spe": 35
+      },
+      "abilities": [
+        "limber",
+        "merciless",
+        "regenerator"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0750-000",
+      "speciesId": "0750-000",
+      "displayName": "Mudsdale",
+      "types": [
+        "Ground"
+      ],
+      "baseStats": {
+        "hp": 100,
+        "atk": 125,
+        "def": 100,
+        "spa": 55,
+        "spd": 85,
+        "spe": 35
+      },
+      "abilities": [
+        "inner-focus",
+        "own-tempo",
+        "stamina"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0752-000",
+      "speciesId": "0752-000",
+      "displayName": "Araquanid",
+      "types": [
+        "Water",
+        "Bug"
+      ],
+      "baseStats": {
+        "hp": 68,
+        "atk": 70,
+        "def": 92,
+        "spa": 50,
+        "spd": 132,
+        "spe": 42
+      },
+      "abilities": [
+        "water-absorb",
+        "water-bubble"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0758-000",
+      "speciesId": "0758-000",
+      "displayName": "Salazzle",
+      "types": [
+        "Poison",
+        "Fire"
+      ],
+      "baseStats": {
+        "hp": 68,
+        "atk": 64,
+        "def": 60,
+        "spa": 111,
+        "spd": 60,
+        "spe": 117
+      },
+      "abilities": [
+        "corrosion",
+        "oblivious"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0763-000",
+      "speciesId": "0763-000",
+      "displayName": "Tsareena",
+      "types": [
+        "Grass"
+      ],
+      "baseStats": {
+        "hp": 72,
+        "atk": 120,
+        "def": 98,
+        "spa": 50,
+        "spd": 98,
+        "spe": 72
+      },
+      "abilities": [
+        "leaf-guard",
+        "queenly-majesty",
+        "sweet-veil"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0765-000",
+      "speciesId": "0765-000",
+      "displayName": "Oranguru",
+      "types": [
+        "Normal",
+        "Psychic"
+      ],
+      "baseStats": {
+        "hp": 90,
+        "atk": 60,
+        "def": 80,
+        "spa": 90,
+        "spd": 110,
+        "spe": 60
+      },
+      "abilities": [
+        "inner-focus",
+        "symbiosis",
+        "telepathy"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0766-000",
+      "speciesId": "0766-000",
+      "displayName": "Passimian",
+      "types": [
+        "Fighting"
+      ],
+      "baseStats": {
+        "hp": 100,
+        "atk": 120,
+        "def": 90,
+        "spa": 40,
+        "spd": 60,
+        "spe": 80
+      },
+      "abilities": [
+        "defiant",
+        "receiver"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0778-000",
+      "speciesId": "0778-000",
+      "displayName": "Mimikyu",
+      "types": [
+        "Ghost",
+        "Fairy"
+      ],
+      "baseStats": {
+        "hp": 55,
+        "atk": 90,
+        "def": 80,
+        "spa": 50,
+        "spd": 105,
+        "spe": 96
+      },
+      "abilities": [
+        "disguise"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0780-000",
+      "speciesId": "0780-000",
+      "displayName": "Drampa",
+      "types": [
+        "Normal",
+        "Dragon"
+      ],
+      "baseStats": {
+        "hp": 78,
+        "atk": 60,
+        "def": 85,
+        "spa": 135,
+        "spd": 91,
+        "spe": 36
+      },
+      "abilities": [
+        "berserk",
+        "cloud-nine",
+        "sap-sipper"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0784-000",
+      "speciesId": "0784-000",
+      "displayName": "Kommo-o",
+      "types": [
+        "Dragon",
+        "Fighting"
+      ],
+      "baseStats": {
+        "hp": 75,
+        "atk": 110,
+        "def": 125,
+        "spa": 100,
+        "spd": 105,
+        "spe": 85
+      },
+      "abilities": [
+        "bulletproof",
+        "overcoat",
+        "soundproof"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0823-000",
+      "speciesId": "0823-000",
+      "displayName": "Corviknight",
+      "types": [
+        "Flying",
+        "Steel"
+      ],
+      "baseStats": {
+        "hp": 98,
+        "atk": 87,
+        "def": 105,
+        "spa": 53,
+        "spd": 85,
+        "spe": 67
+      },
+      "abilities": [
+        "mirror-armor",
+        "pressure",
+        "unnerve"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0841-000",
+      "speciesId": "0841-000",
+      "displayName": "Flapple",
+      "types": [
+        "Grass",
+        "Dragon"
+      ],
+      "baseStats": {
+        "hp": 70,
+        "atk": 110,
+        "def": 80,
+        "spa": 95,
+        "spd": 60,
+        "spe": 70
+      },
+      "abilities": [
+        "gluttony",
+        "hustle",
+        "ripen"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0842-000",
+      "speciesId": "0842-000",
+      "displayName": "Appletun",
+      "types": [
+        "Grass",
+        "Dragon"
+      ],
+      "baseStats": {
+        "hp": 110,
+        "atk": 85,
+        "def": 80,
+        "spa": 100,
+        "spd": 80,
+        "spe": 30
+      },
+      "abilities": [
+        "gluttony",
+        "ripen",
+        "thick-fat"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0844-000",
+      "speciesId": "0844-000",
+      "displayName": "Sandaconda",
+      "types": [
+        "Ground"
+      ],
+      "baseStats": {
+        "hp": 72,
+        "atk": 107,
+        "def": 125,
+        "spa": 65,
+        "spd": 70,
+        "spe": 71
+      },
+      "abilities": [
+        "sand-spit",
+        "sand-veil",
+        "shed-skin"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0855-000",
+      "speciesId": "0855-000",
+      "displayName": "Polteageist",
+      "types": [
+        "Ghost"
+      ],
+      "baseStats": {
+        "hp": 60,
+        "atk": 65,
+        "def": 65,
+        "spa": 134,
+        "spd": 114,
+        "spe": 70
+      },
+      "abilities": [
+        "cursed-body",
+        "weak-armor"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0858-000",
+      "speciesId": "0858-000",
+      "displayName": "Hatterene",
+      "types": [
+        "Psychic",
+        "Fairy"
+      ],
+      "baseStats": {
+        "hp": 57,
+        "atk": 90,
+        "def": 95,
+        "spa": 136,
+        "spd": 103,
+        "spe": 29
+      },
+      "abilities": [
+        "anticipation",
+        "healer",
+        "magic-bounce"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0861-000",
+      "speciesId": "0861-000",
+      "displayName": "Grimmsnarl",
+      "types": [
+        "Dark",
+        "Fairy"
+      ],
+      "baseStats": {
+        "hp": 95,
+        "atk": 120,
+        "def": 65,
+        "spa": 95,
+        "spd": 75,
+        "spe": 60
+      },
+      "abilities": [
+        "frisk",
+        "pickpocket",
+        "prankster"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0866-000",
+      "speciesId": "0866-000",
+      "displayName": "Mr. Rime",
+      "types": [
+        "Ice",
+        "Psychic"
+      ],
+      "baseStats": {
+        "hp": 80,
+        "atk": 85,
+        "def": 75,
+        "spa": 110,
+        "spd": 100,
+        "spe": 70
+      },
+      "abilities": [
+        "ice-body",
+        "screen-cleaner",
+        "tangled-feet"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0867-000",
+      "speciesId": "0867-000",
+      "displayName": "Runerigus",
+      "types": [
+        "Ground",
+        "Ghost"
+      ],
+      "baseStats": {
+        "hp": 58,
+        "atk": 95,
+        "def": 145,
+        "spa": 50,
+        "spd": 105,
+        "spe": 30
+      },
+      "abilities": [
+        "wandering-spirit"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0869-000",
+      "speciesId": "0869-000",
+      "displayName": "Alcremie",
+      "types": [
+        "Fairy"
+      ],
+      "baseStats": {
+        "hp": 65,
+        "atk": 60,
+        "def": 75,
+        "spa": 110,
+        "spd": 121,
+        "spe": 64
+      },
+      "abilities": [
+        "aroma-veil",
+        "sweet-veil"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0870-000",
+      "speciesId": "0870-000",
+      "displayName": "Falinks",
+      "types": [
+        "Fighting"
+      ],
+      "baseStats": {
+        "hp": 65,
+        "atk": 100,
+        "def": 100,
+        "spa": 70,
+        "spd": 60,
+        "spe": 75
+      },
+      "abilities": [
+        "battle-armor",
+        "defiant"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0877-000",
+      "speciesId": "0877-000",
+      "displayName": "Morpeko",
+      "types": [
+        "Electric",
+        "Dark"
+      ],
+      "baseStats": {
+        "hp": 58,
+        "atk": 95,
+        "def": 58,
+        "spa": 70,
+        "spd": 58,
+        "spe": 97
+      },
+      "abilities": [
+        "hunger-switch"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0887-000",
+      "speciesId": "0887-000",
+      "displayName": "Dragapult",
+      "types": [
+        "Dragon",
+        "Ghost"
+      ],
+      "baseStats": {
+        "hp": 88,
+        "atk": 120,
+        "def": 75,
+        "spa": 100,
+        "spd": 75,
+        "spe": 142
+      },
+      "abilities": [
+        "clear-body",
+        "cursed-body",
+        "infiltrator"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0899-000",
+      "speciesId": "0899-000",
+      "displayName": "Wyrdeer",
+      "types": [
+        "Normal",
+        "Psychic"
+      ],
+      "baseStats": {
+        "hp": 103,
+        "atk": 105,
+        "def": 72,
+        "spa": 105,
+        "spd": 75,
+        "spe": 65
+      },
+      "abilities": [
+        "frisk",
+        "intimidate",
+        "sap-sipper"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0900-000",
+      "speciesId": "0900-000",
+      "displayName": "Kleavor",
+      "types": [
+        "Bug",
+        "Rock"
+      ],
+      "baseStats": {
+        "hp": 70,
+        "atk": 135,
+        "def": 95,
+        "spa": 45,
+        "spd": 70,
+        "spe": 85
+      },
+      "abilities": [
+        "sharpness",
+        "sheer-force",
+        "swarm"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0903-000",
+      "speciesId": "0903-000",
+      "displayName": "Sneasler",
+      "types": [
+        "Fighting",
+        "Poison"
+      ],
+      "baseStats": {
+        "hp": 80,
+        "atk": 130,
+        "def": 60,
+        "spa": 40,
+        "spd": 80,
+        "spe": 120
+      },
+      "abilities": [
+        "poison-touch",
+        "pressure",
+        "unburden"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0904-000",
+      "speciesId": "0904-000",
+      "displayName": "Overqwil",
+      "types": [
+        "Dark",
+        "Poison"
+      ],
+      "baseStats": {
+        "hp": 85,
+        "atk": 115,
+        "def": 95,
+        "spa": 65,
+        "spd": 65,
+        "spe": 85
+      },
+      "abilities": [
+        "intimidate",
+        "poison-point",
+        "swift-swim"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0908-000",
+      "speciesId": "0908-000",
+      "displayName": "Meowscarada",
+      "types": [
+        "Grass",
+        "Dark"
+      ],
+      "baseStats": {
+        "hp": 76,
+        "atk": 110,
+        "def": 70,
+        "spa": 81,
+        "spd": 70,
+        "spe": 123
+      },
+      "abilities": [
+        "overgrow",
+        "protean"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0911-000",
+      "speciesId": "0911-000",
+      "displayName": "Skeledirge",
+      "types": [
+        "Fire",
+        "Ghost"
+      ],
+      "baseStats": {
+        "hp": 104,
+        "atk": 75,
+        "def": 100,
+        "spa": 110,
+        "spd": 75,
+        "spe": 66
+      },
+      "abilities": [
+        "blaze",
+        "unaware"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0914-000",
+      "speciesId": "0914-000",
+      "displayName": "Quaquaval",
+      "types": [
+        "Water",
+        "Fighting"
+      ],
+      "baseStats": {
+        "hp": 85,
+        "atk": 120,
+        "def": 80,
+        "spa": 85,
+        "spd": 75,
+        "spe": 85
+      },
+      "abilities": [
+        "moxie",
+        "torrent"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0925-000",
+      "speciesId": "0925-000",
+      "displayName": "Maushold",
+      "types": [
+        "Normal"
+      ],
+      "baseStats": {
+        "hp": 74,
+        "atk": 75,
+        "def": 70,
+        "spa": 65,
+        "spd": 75,
+        "spe": 111
+      },
+      "abilities": [
+        "cheek-pouch",
+        "friend-guard",
+        "technician"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0934-000",
+      "speciesId": "0934-000",
+      "displayName": "Garganacl",
+      "types": [
+        "Rock"
+      ],
+      "baseStats": {
+        "hp": 100,
+        "atk": 100,
+        "def": 130,
+        "spa": 45,
+        "spd": 90,
+        "spe": 35
+      },
+      "abilities": [
+        "clear-body",
+        "purifying-salt",
+        "sturdy"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0936-000",
+      "speciesId": "0936-000",
+      "displayName": "Armarouge",
+      "types": [
+        "Fire",
+        "Psychic"
+      ],
+      "baseStats": {
+        "hp": 85,
+        "atk": 60,
+        "def": 100,
+        "spa": 125,
+        "spd": 80,
+        "spe": 75
+      },
+      "abilities": [
+        "flash-fire",
+        "weak-armor"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0937-000",
+      "speciesId": "0937-000",
+      "displayName": "Ceruledge",
+      "types": [
+        "Fire",
+        "Ghost"
+      ],
+      "baseStats": {
+        "hp": 75,
+        "atk": 125,
+        "def": 80,
+        "spa": 60,
+        "spd": 100,
+        "spe": 85
+      },
+      "abilities": [
+        "flash-fire",
+        "weak-armor"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0939-000",
+      "speciesId": "0939-000",
+      "displayName": "Bellibolt",
+      "types": [
+        "Electric"
+      ],
+      "baseStats": {
+        "hp": 109,
+        "atk": 64,
+        "def": 91,
+        "spa": 103,
+        "spd": 83,
+        "spe": 45
+      },
+      "abilities": [
+        "damp",
+        "electromorphosis",
+        "static"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0952-000",
+      "speciesId": "0952-000",
+      "displayName": "Scovillain",
+      "types": [
+        "Grass",
+        "Fire"
+      ],
+      "baseStats": {
+        "hp": 65,
+        "atk": 108,
+        "def": 65,
+        "spa": 108,
+        "spd": 65,
+        "spe": 75
+      },
+      "abilities": [
+        "chlorophyll",
+        "insomnia",
+        "moody"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0956-000",
+      "speciesId": "0956-000",
+      "displayName": "Espathra",
+      "types": [
+        "Psychic"
+      ],
+      "baseStats": {
+        "hp": 95,
+        "atk": 60,
+        "def": 60,
+        "spa": 101,
+        "spd": 60,
+        "spe": 105
+      },
+      "abilities": [
+        "frisk",
+        "opportunist",
+        "speed-boost"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0959-000",
+      "speciesId": "0959-000",
+      "displayName": "Tinkaton",
+      "types": [
+        "Fairy",
+        "Steel"
+      ],
+      "baseStats": {
+        "hp": 85,
+        "atk": 75,
+        "def": 77,
+        "spa": 70,
+        "spd": 105,
+        "spe": 94
+      },
+      "abilities": [
+        "mold-breaker",
+        "own-tempo",
+        "pickpocket"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0964-000",
+      "speciesId": "0964-000",
+      "displayName": "Palafin",
+      "types": [
+        "Water"
+      ],
+      "baseStats": {
+        "hp": 100,
+        "atk": 70,
+        "def": 72,
+        "spa": 53,
+        "spd": 62,
+        "spe": 100
+      },
+      "abilities": [
+        "zero-to-hero"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0968-000",
+      "speciesId": "0968-000",
+      "displayName": "Orthworm",
+      "types": [
+        "Steel"
+      ],
+      "baseStats": {
+        "hp": 70,
+        "atk": 85,
+        "def": 145,
+        "spa": 60,
+        "spd": 55,
+        "spe": 65
+      },
+      "abilities": [
+        "earth-eater",
+        "sand-veil"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0970-000",
+      "speciesId": "0970-000",
+      "displayName": "Glimmora",
+      "types": [
+        "Rock",
+        "Poison"
+      ],
+      "baseStats": {
+        "hp": 83,
+        "atk": 55,
+        "def": 90,
+        "spa": 130,
+        "spd": 81,
+        "spe": 86
+      },
+      "abilities": [
+        "corrosion",
+        "toxic-debris"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0972-000",
+      "speciesId": "0972-000",
+      "displayName": "Houndstone",
+      "types": [
+        "Ghost"
+      ],
+      "baseStats": {
+        "hp": 72,
+        "atk": 101,
+        "def": 100,
+        "spa": 50,
+        "spd": 97,
+        "spe": 68
+      },
+      "abilities": [
+        "fluffy",
+        "sand-rush"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0979-000",
+      "speciesId": "0979-000",
+      "displayName": "Annihilape",
+      "types": [
+        "Fighting",
+        "Ghost"
+      ],
+      "baseStats": {
+        "hp": 110,
+        "atk": 115,
+        "def": 80,
+        "spa": 50,
+        "spd": 90,
+        "spe": 90
+      },
+      "abilities": [
+        "defiant",
+        "inner-focus",
+        "vital-spirit"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0981-000",
+      "speciesId": "0981-000",
+      "displayName": "Farigiraf",
+      "types": [
+        "Normal",
+        "Psychic"
+      ],
+      "baseStats": {
+        "hp": 120,
+        "atk": 90,
+        "def": 70,
+        "spa": 110,
+        "spd": 70,
+        "spe": 60
+      },
+      "abilities": [
+        "armor-tail",
+        "cud-chew",
+        "sap-sipper"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "0983-000",
+      "speciesId": "0983-000",
+      "displayName": "Kingambit",
+      "types": [
+        "Dark",
+        "Steel"
+      ],
+      "baseStats": {
+        "hp": 100,
+        "atk": 135,
+        "def": 120,
+        "spa": 60,
+        "spd": 85,
+        "spe": 50
+      },
+      "abilities": [
+        "defiant",
+        "pressure",
+        "supreme-overlord"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "1000-000",
+      "speciesId": "1000-000",
+      "displayName": "Gholdengo",
+      "types": [
+        "Steel",
+        "Ghost"
+      ],
+      "baseStats": {
+        "hp": 87,
+        "atk": 60,
+        "def": 95,
+        "spa": 133,
+        "spd": 91,
+        "spe": 84
+      },
+      "abilities": [
+        "good-as-gold"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "1013-000",
+      "speciesId": "1013-000",
+      "displayName": "Sinistcha",
+      "types": [
+        "Grass",
+        "Ghost"
+      ],
+      "baseStats": {
+        "hp": 71,
+        "atk": 60,
+        "def": 106,
+        "spa": 121,
+        "spd": 80,
+        "spe": 70
+      },
+      "abilities": [
+        "heatproof",
+        "hospitality"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "1018-000",
+      "speciesId": "1018-000",
+      "displayName": "Archaludon",
+      "types": [
+        "Steel",
+        "Dragon"
+      ],
+      "baseStats": {
+        "hp": 90,
+        "atk": 105,
+        "def": 130,
+        "spa": 125,
+        "spd": 65,
+        "spe": 85
+      },
+      "abilities": [
+        "stalwart",
+        "stamina",
+        "sturdy"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    },
+    {
+      "pokemonId": "1019-000",
+      "speciesId": "1019-000",
+      "displayName": "Hydrapple",
+      "types": [
+        "Grass",
+        "Dragon"
+      ],
+      "baseStats": {
+        "hp": 106,
+        "atk": 80,
+        "def": 110,
+        "spa": 120,
+        "spd": 80,
+        "spe": 44
+      },
+      "abilities": [
+        "regenerator",
+        "sticky-hold",
+        "supersweet-syrup"
+      ],
+      "isMega": false,
+      "verificationStatus": "primary-source-verified",
+      "sourceEvidence": [
+        {
+          "field": "mechanics",
+          "authority": "canonical-mechanics",
+          "sourceId": "pokemon-showdown",
+          "sourceDigest": "sha256:34851aee6a2b20aa68a9113d7ed25bd439d667a5eb60a311cd0824157b0005fb",
+          "retrievedAt": "2026-07-19T19:10:29.978Z"
+        }
+      ],
+      "schemaVersion": "1"
+    }
+  ]
+}

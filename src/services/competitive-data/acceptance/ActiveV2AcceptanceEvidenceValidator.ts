@@ -1,7 +1,9 @@
 import type { ActiveV2ShadowReport } from '../../../equinox/competitive/active-v2-shadow/ActiveV2ShadowTypes';
+import { ACTIVE_STAGING_HOMOLOGATION_SCENARIOS } from '../../../equinox/competitive/active-staging/ActiveStagingHomologationAllowlist';
 import { CRITICAL_COMPARATORS } from './ActiveV2AcceptancePolicy';
 
 const SHA256_PATTERN = /^sha256-[a-f0-9]{64}$/;
+const EXPECTED_SCENARIO_COUNT = ACTIVE_STAGING_HOMOLOGATION_SCENARIOS.length;
 
 export interface EvidenceValidationResult {
   valid: boolean;
@@ -27,8 +29,8 @@ export function validateActiveV2ShadowEvidence(evidence: unknown): EvidenceValid
       errors.push(`Invalid targetCollection: expected "pokemonsets_v2_staging", got "${aggregate.targetCollection}".`);
     }
     // 2. scenariosCompared
-    if (aggregate.scenariosCompared !== 4) {
-      errors.push(`Invalid scenariosCompared: expected 4, got ${aggregate.scenariosCompared}.`);
+    if (aggregate.scenariosCompared !== EXPECTED_SCENARIO_COUNT) {
+      errors.push(`Invalid scenariosCompared: expected ${EXPECTED_SCENARIO_COUNT}, got ${aggregate.scenariosCompared}.`);
     }
 
     // 4. readyForCompetitiveAcceptanceGate
@@ -92,8 +94,8 @@ export function validateActiveV2ShadowEvidence(evidence: unknown): EvidenceValid
   if (!Array.isArray(scenarios)) {
     errors.push('Missing or invalid scenarios array.');
   } else {
-    if (scenarios.length !== 4) {
-      errors.push(`Invalid scenarios count: expected 4, got ${scenarios.length}.`);
+    if (scenarios.length !== EXPECTED_SCENARIO_COUNT) {
+      errors.push(`Invalid scenarios count: expected ${EXPECTED_SCENARIO_COUNT}, got ${scenarios.length}.`);
     }
 
     const seenIds = new Set<string>();

@@ -1,0 +1,3972 @@
+{
+  "runId": "20260720T231346Z",
+  "excludedCandidateCount": 302,
+  "excludedSpeciesCount": 33,
+  "speciesWithOnlyExcludedCandidatesCount": 100,
+  "excludedCandidates": [
+    {
+      "setId": "0006-000-sentinel-1",
+      "pokemonId": "0006-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0006-000-sentinel-2",
+      "pokemonId": "0006-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0003-000-sentinel-1",
+      "pokemonId": "0003-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0003-000-sentinel-2",
+      "pokemonId": "0003-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0009-000-sentinel-1",
+      "pokemonId": "0009-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0009-000-sentinel-2",
+      "pokemonId": "0009-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0015-000-sentinel-1",
+      "pokemonId": "0015-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0015-000-sentinel-2",
+      "pokemonId": "0015-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0018-000-sentinel-1",
+      "pokemonId": "0018-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0018-000-sentinel-2",
+      "pokemonId": "0018-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0024-000-sentinel-1",
+      "pokemonId": "0024-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0024-000-sentinel-2",
+      "pokemonId": "0024-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0025-000-sentinel-1",
+      "pokemonId": "0025-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0025-000-sentinel-2",
+      "pokemonId": "0025-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0026-000-sentinel-1",
+      "pokemonId": "0026-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0026-000-sentinel-2",
+      "pokemonId": "0026-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0036-000-sentinel-1",
+      "pokemonId": "0036-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0036-000-sentinel-2",
+      "pokemonId": "0036-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0038-000-sentinel-1",
+      "pokemonId": "0038-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0038-000-sentinel-2",
+      "pokemonId": "0038-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_EVIDENCE_DAMAGE_INCOMPLETE",
+        "EXPERT_EVIDENCE_SPEED_INCOMPLETE",
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_EVIDENCE_BENCHMARK_INCOMPLETE",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS"
+      ],
+      "sourceWave": "wave1-sentinel",
+      "retryable": false
+    },
+    {
+      "setId": "0308-000-sentinel-2",
+      "pokemonId": "0308-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0637-000-sentinel-1",
+      "pokemonId": "0637-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0637-000-sentinel-2",
+      "pokemonId": "0637-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0670-005-sentinel-1",
+      "pokemonId": "0670-005",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0670-005-sentinel-2",
+      "pokemonId": "0670-005",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0115-000-sentinel-2",
+      "pokemonId": "0115-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0154-000-sentinel-1",
+      "pokemonId": "0154-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0154-000-sentinel-2",
+      "pokemonId": "0154-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0389-000-sentinel-1",
+      "pokemonId": "0389-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0389-000-sentinel-2",
+      "pokemonId": "0389-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0724-000-sentinel-1",
+      "pokemonId": "0724-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0724-000-sentinel-2",
+      "pokemonId": "0724-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0823-000-sentinel-2",
+      "pokemonId": "0823-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0908-000-sentinel-1",
+      "pokemonId": "0908-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0908-000-sentinel-2",
+      "pokemonId": "0908-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0045-000-sentinel-2",
+      "pokemonId": "0045-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0059-000-sentinel-2",
+      "pokemonId": "0059-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0065-000-sentinel-1",
+      "pokemonId": "0065-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0065-000-sentinel-2",
+      "pokemonId": "0065-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0068-000-sentinel-1",
+      "pokemonId": "0068-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0068-000-sentinel-2",
+      "pokemonId": "0068-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0071-000-sentinel-2",
+      "pokemonId": "0071-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0080-000-sentinel-1",
+      "pokemonId": "0080-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0080-000-sentinel-2",
+      "pokemonId": "0080-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0094-000-sentinel-1",
+      "pokemonId": "0094-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0094-000-sentinel-2",
+      "pokemonId": "0094-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0121-000-sentinel-2",
+      "pokemonId": "0121-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0127-000-sentinel-2",
+      "pokemonId": "0127-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0128-000-sentinel-1",
+      "pokemonId": "0128-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0128-000-sentinel-2",
+      "pokemonId": "0128-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0130-000-sentinel-2",
+      "pokemonId": "0130-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave2-pilot",
+      "retryable": false
+    },
+    {
+      "setId": "0134-000-sentinel-2",
+      "pokemonId": "0134-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0135-000-sentinel-1",
+      "pokemonId": "0135-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0135-000-sentinel-2",
+      "pokemonId": "0135-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0136-000-sentinel-1",
+      "pokemonId": "0136-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0136-000-sentinel-2",
+      "pokemonId": "0136-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0142-000-sentinel-2",
+      "pokemonId": "0142-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0143-000-sentinel-2",
+      "pokemonId": "0143-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0149-000-sentinel-2",
+      "pokemonId": "0149-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0157-000-sentinel-2",
+      "pokemonId": "0157-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0160-000-sentinel-2",
+      "pokemonId": "0160-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0168-000-sentinel-1",
+      "pokemonId": "0168-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0168-000-sentinel-2",
+      "pokemonId": "0168-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0181-000-sentinel-1",
+      "pokemonId": "0181-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0181-000-sentinel-2",
+      "pokemonId": "0181-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0184-000-sentinel-2",
+      "pokemonId": "0184-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0186-000-sentinel-2",
+      "pokemonId": "0186-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0196-000-sentinel-1",
+      "pokemonId": "0196-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0196-000-sentinel-2",
+      "pokemonId": "0196-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0197-000-sentinel-1",
+      "pokemonId": "0197-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0197-000-sentinel-2",
+      "pokemonId": "0197-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0199-000-sentinel-2",
+      "pokemonId": "0199-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0205-000-sentinel-1",
+      "pokemonId": "0205-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0205-000-sentinel-2",
+      "pokemonId": "0205-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0208-000-sentinel-1",
+      "pokemonId": "0208-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0208-000-sentinel-2",
+      "pokemonId": "0208-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0211-000-sentinel-2",
+      "pokemonId": "0211-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0212-000-sentinel-1",
+      "pokemonId": "0212-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0212-000-sentinel-2",
+      "pokemonId": "0212-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-000",
+      "retryable": false
+    },
+    {
+      "setId": "0214-000-sentinel-2",
+      "pokemonId": "0214-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0227-000-sentinel-1",
+      "pokemonId": "0227-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0227-000-sentinel-2",
+      "pokemonId": "0227-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0229-000-sentinel-1",
+      "pokemonId": "0229-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0229-000-sentinel-2",
+      "pokemonId": "0229-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0248-000-sentinel-2",
+      "pokemonId": "0248-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0254-000-sentinel-1",
+      "pokemonId": "0254-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0254-000-sentinel-2",
+      "pokemonId": "0254-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0257-000-sentinel-2",
+      "pokemonId": "0257-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0260-000-sentinel-2",
+      "pokemonId": "0260-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0279-000-sentinel-1",
+      "pokemonId": "0279-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0279-000-sentinel-2",
+      "pokemonId": "0279-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0282-000-sentinel-1",
+      "pokemonId": "0282-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0282-000-sentinel-2",
+      "pokemonId": "0282-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0302-000-sentinel-1",
+      "pokemonId": "0302-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0302-000-sentinel-2",
+      "pokemonId": "0302-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0303-000-sentinel-1",
+      "pokemonId": "0303-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0303-000-sentinel-2",
+      "pokemonId": "0303-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0306-000-sentinel-1",
+      "pokemonId": "0306-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0306-000-sentinel-2",
+      "pokemonId": "0306-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0310-000-sentinel-1",
+      "pokemonId": "0310-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0310-000-sentinel-2",
+      "pokemonId": "0310-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0319-000-sentinel-2",
+      "pokemonId": "0319-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0323-000-sentinel-1",
+      "pokemonId": "0323-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0323-000-sentinel-2",
+      "pokemonId": "0323-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0324-000-sentinel-1",
+      "pokemonId": "0324-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0324-000-sentinel-2",
+      "pokemonId": "0324-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0334-000-sentinel-1",
+      "pokemonId": "0334-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0334-000-sentinel-2",
+      "pokemonId": "0334-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0350-000-sentinel-2",
+      "pokemonId": "0350-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0351-000-sentinel-2",
+      "pokemonId": "0351-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0354-000-sentinel-1",
+      "pokemonId": "0354-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0354-000-sentinel-2",
+      "pokemonId": "0354-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-001",
+      "retryable": false
+    },
+    {
+      "setId": "0358-000-sentinel-1",
+      "pokemonId": "0358-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0358-000-sentinel-2",
+      "pokemonId": "0358-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0359-000-sentinel-1",
+      "pokemonId": "0359-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0359-000-sentinel-2",
+      "pokemonId": "0359-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0362-000-sentinel-2",
+      "pokemonId": "0362-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0376-000-sentinel-2",
+      "pokemonId": "0376-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0392-000-sentinel-2",
+      "pokemonId": "0392-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0395-000-sentinel-2",
+      "pokemonId": "0395-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0398-000-sentinel-1",
+      "pokemonId": "0398-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0398-000-sentinel-2",
+      "pokemonId": "0398-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0405-000-sentinel-1",
+      "pokemonId": "0405-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0405-000-sentinel-2",
+      "pokemonId": "0405-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0407-000-sentinel-1",
+      "pokemonId": "0407-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0407-000-sentinel-2",
+      "pokemonId": "0407-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0409-000-sentinel-2",
+      "pokemonId": "0409-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0411-000-sentinel-1",
+      "pokemonId": "0411-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0411-000-sentinel-2",
+      "pokemonId": "0411-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0428-000-sentinel-2",
+      "pokemonId": "0428-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0442-000-sentinel-2",
+      "pokemonId": "0442-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0445-000-sentinel-2",
+      "pokemonId": "0445-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0448-000-sentinel-2",
+      "pokemonId": "0448-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0450-000-sentinel-1",
+      "pokemonId": "0450-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0450-000-sentinel-2",
+      "pokemonId": "0450-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0454-000-sentinel-2",
+      "pokemonId": "0454-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0460-000-sentinel-2",
+      "pokemonId": "0460-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0461-000-sentinel-2",
+      "pokemonId": "0461-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0464-000-sentinel-2",
+      "pokemonId": "0464-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-002",
+      "retryable": false
+    },
+    {
+      "setId": "0470-000-sentinel-2",
+      "pokemonId": "0470-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0471-000-sentinel-2",
+      "pokemonId": "0471-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0472-000-sentinel-2",
+      "pokemonId": "0472-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0473-000-sentinel-2",
+      "pokemonId": "0473-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0475-000-sentinel-1",
+      "pokemonId": "0475-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0475-000-sentinel-2",
+      "pokemonId": "0475-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0478-000-sentinel-2",
+      "pokemonId": "0478-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0497-000-sentinel-2",
+      "pokemonId": "0497-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0500-000-sentinel-2",
+      "pokemonId": "0500-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0503-000-sentinel-2",
+      "pokemonId": "0503-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0505-000-sentinel-2",
+      "pokemonId": "0505-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0510-000-sentinel-1",
+      "pokemonId": "0510-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0510-000-sentinel-2",
+      "pokemonId": "0510-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0512-000-sentinel-1",
+      "pokemonId": "0512-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0512-000-sentinel-2",
+      "pokemonId": "0512-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0514-000-sentinel-1",
+      "pokemonId": "0514-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0514-000-sentinel-2",
+      "pokemonId": "0514-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0516-000-sentinel-2",
+      "pokemonId": "0516-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0518-000-sentinel-2",
+      "pokemonId": "0518-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0530-000-sentinel-2",
+      "pokemonId": "0530-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0531-000-sentinel-2",
+      "pokemonId": "0531-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0534-000-sentinel-2",
+      "pokemonId": "0534-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0545-000-sentinel-2",
+      "pokemonId": "0545-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0547-000-sentinel-2",
+      "pokemonId": "0547-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-003",
+      "retryable": false
+    },
+    {
+      "setId": "0553-000-sentinel-2",
+      "pokemonId": "0553-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0560-000-sentinel-1",
+      "pokemonId": "0560-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0560-000-sentinel-2",
+      "pokemonId": "0560-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0563-000-sentinel-1",
+      "pokemonId": "0563-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0563-000-sentinel-2",
+      "pokemonId": "0563-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0569-000-sentinel-2",
+      "pokemonId": "0569-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0571-000-sentinel-1",
+      "pokemonId": "0571-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0571-000-sentinel-2",
+      "pokemonId": "0571-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0579-000-sentinel-1",
+      "pokemonId": "0579-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0579-000-sentinel-2",
+      "pokemonId": "0579-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0584-000-sentinel-2",
+      "pokemonId": "0584-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0587-000-sentinel-2",
+      "pokemonId": "0587-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0604-000-sentinel-2",
+      "pokemonId": "0604-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0609-000-sentinel-2",
+      "pokemonId": "0609-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0614-000-sentinel-2",
+      "pokemonId": "0614-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0618-000-sentinel-1",
+      "pokemonId": "0618-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0618-000-sentinel-2",
+      "pokemonId": "0618-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0623-000-sentinel-1",
+      "pokemonId": "0623-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0623-000-sentinel-2",
+      "pokemonId": "0623-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0635-000-sentinel-2",
+      "pokemonId": "0635-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0652-000-sentinel-1",
+      "pokemonId": "0652-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0652-000-sentinel-2",
+      "pokemonId": "0652-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0655-000-sentinel-2",
+      "pokemonId": "0655-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0658-000-sentinel-2",
+      "pokemonId": "0658-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0660-000-sentinel-1",
+      "pokemonId": "0660-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0660-000-sentinel-2",
+      "pokemonId": "0660-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0663-000-sentinel-1",
+      "pokemonId": "0663-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0663-000-sentinel-2",
+      "pokemonId": "0663-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0666-018-sentinel-1",
+      "pokemonId": "0666-018",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0666-018-sentinel-2",
+      "pokemonId": "0666-018",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-004",
+      "retryable": false
+    },
+    {
+      "setId": "0668-000-sentinel-2",
+      "pokemonId": "0668-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0671-000-sentinel-2",
+      "pokemonId": "0671-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0675-000-sentinel-1",
+      "pokemonId": "0675-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0675-000-sentinel-2",
+      "pokemonId": "0675-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0676-000-sentinel-1",
+      "pokemonId": "0676-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0676-000-sentinel-2",
+      "pokemonId": "0676-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0681-000-sentinel-1",
+      "pokemonId": "0681-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0681-000-sentinel-2",
+      "pokemonId": "0681-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0683-000-sentinel-2",
+      "pokemonId": "0683-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0685-000-sentinel-1",
+      "pokemonId": "0685-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0685-000-sentinel-2",
+      "pokemonId": "0685-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0687-000-sentinel-2",
+      "pokemonId": "0687-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0689-000-sentinel-2",
+      "pokemonId": "0689-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0691-000-sentinel-1",
+      "pokemonId": "0691-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0691-000-sentinel-2",
+      "pokemonId": "0691-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0693-000-sentinel-2",
+      "pokemonId": "0693-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0695-000-sentinel-1",
+      "pokemonId": "0695-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0695-000-sentinel-2",
+      "pokemonId": "0695-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0697-000-sentinel-2",
+      "pokemonId": "0697-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0699-000-sentinel-2",
+      "pokemonId": "0699-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0700-000-sentinel-1",
+      "pokemonId": "0700-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0700-000-sentinel-2",
+      "pokemonId": "0700-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0701-000-sentinel-2",
+      "pokemonId": "0701-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0702-000-sentinel-1",
+      "pokemonId": "0702-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0702-000-sentinel-2",
+      "pokemonId": "0702-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0706-000-sentinel-2",
+      "pokemonId": "0706-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0707-000-sentinel-1",
+      "pokemonId": "0707-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0707-000-sentinel-2",
+      "pokemonId": "0707-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0709-000-sentinel-1",
+      "pokemonId": "0709-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0709-000-sentinel-2",
+      "pokemonId": "0709-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-005",
+      "retryable": false
+    },
+    {
+      "setId": "0713-000-sentinel-2",
+      "pokemonId": "0713-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0715-000-sentinel-2",
+      "pokemonId": "0715-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0727-000-sentinel-2",
+      "pokemonId": "0727-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0730-000-sentinel-1",
+      "pokemonId": "0730-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0730-000-sentinel-2",
+      "pokemonId": "0730-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0733-000-sentinel-1",
+      "pokemonId": "0733-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0733-000-sentinel-2",
+      "pokemonId": "0733-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0740-000-sentinel-2",
+      "pokemonId": "0740-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0748-000-sentinel-2",
+      "pokemonId": "0748-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0750-000-sentinel-1",
+      "pokemonId": "0750-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0750-000-sentinel-2",
+      "pokemonId": "0750-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0752-000-sentinel-2",
+      "pokemonId": "0752-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0758-000-sentinel-1",
+      "pokemonId": "0758-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0758-000-sentinel-2",
+      "pokemonId": "0758-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0763-000-sentinel-2",
+      "pokemonId": "0763-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0765-000-sentinel-1",
+      "pokemonId": "0765-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0765-000-sentinel-2",
+      "pokemonId": "0765-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0766-000-sentinel-2",
+      "pokemonId": "0766-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0778-000-sentinel-1",
+      "pokemonId": "0778-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0778-000-sentinel-2",
+      "pokemonId": "0778-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0780-000-sentinel-2",
+      "pokemonId": "0780-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0784-000-sentinel-2",
+      "pokemonId": "0784-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0841-000-sentinel-2",
+      "pokemonId": "0841-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0842-000-sentinel-1",
+      "pokemonId": "0842-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0842-000-sentinel-2",
+      "pokemonId": "0842-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0844-000-sentinel-1",
+      "pokemonId": "0844-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0844-000-sentinel-2",
+      "pokemonId": "0844-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0855-000-sentinel-1",
+      "pokemonId": "0855-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0855-000-sentinel-2",
+      "pokemonId": "0855-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-006",
+      "retryable": false
+    },
+    {
+      "setId": "0858-000-sentinel-2",
+      "pokemonId": "0858-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0861-000-sentinel-1",
+      "pokemonId": "0861-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0861-000-sentinel-2",
+      "pokemonId": "0861-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0866-000-sentinel-2",
+      "pokemonId": "0866-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0867-000-sentinel-1",
+      "pokemonId": "0867-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0867-000-sentinel-2",
+      "pokemonId": "0867-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0869-000-sentinel-1",
+      "pokemonId": "0869-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0869-000-sentinel-2",
+      "pokemonId": "0869-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0870-000-sentinel-1",
+      "pokemonId": "0870-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0870-000-sentinel-2",
+      "pokemonId": "0870-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0877-000-sentinel-2",
+      "pokemonId": "0877-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0887-000-sentinel-2",
+      "pokemonId": "0887-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0899-000-sentinel-2",
+      "pokemonId": "0899-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0900-000-sentinel-1",
+      "pokemonId": "0900-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0900-000-sentinel-2",
+      "pokemonId": "0900-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0903-000-sentinel-2",
+      "pokemonId": "0903-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0904-000-sentinel-2",
+      "pokemonId": "0904-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0911-000-sentinel-2",
+      "pokemonId": "0911-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0914-000-sentinel-1",
+      "pokemonId": "0914-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0914-000-sentinel-2",
+      "pokemonId": "0914-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0925-000-sentinel-1",
+      "pokemonId": "0925-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0925-000-sentinel-2",
+      "pokemonId": "0925-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0934-000-sentinel-1",
+      "pokemonId": "0934-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0934-000-sentinel-2",
+      "pokemonId": "0934-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0936-000-sentinel-2",
+      "pokemonId": "0936-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0937-000-sentinel-2",
+      "pokemonId": "0937-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0939-000-sentinel-2",
+      "pokemonId": "0939-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0952-000-sentinel-1",
+      "pokemonId": "0952-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0952-000-sentinel-2",
+      "pokemonId": "0952-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-007",
+      "retryable": false
+    },
+    {
+      "setId": "0956-000-sentinel-2",
+      "pokemonId": "0956-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "0959-000-sentinel-1",
+      "pokemonId": "0959-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "0959-000-sentinel-2",
+      "pokemonId": "0959-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "0964-000-sentinel-2",
+      "pokemonId": "0964-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "0968-000-sentinel-1",
+      "pokemonId": "0968-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "0968-000-sentinel-2",
+      "pokemonId": "0968-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "0970-000-sentinel-2",
+      "pokemonId": "0970-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "0972-000-sentinel-1",
+      "pokemonId": "0972-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "0972-000-sentinel-2",
+      "pokemonId": "0972-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "0979-000-sentinel-2",
+      "pokemonId": "0979-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "0981-000-sentinel-2",
+      "pokemonId": "0981-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "0983-000-sentinel-1",
+      "pokemonId": "0983-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "0983-000-sentinel-2",
+      "pokemonId": "0983-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "1000-000-sentinel-1",
+      "pokemonId": "1000-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "1000-000-sentinel-2",
+      "pokemonId": "1000-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "1013-000-sentinel-1",
+      "pokemonId": "1013-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "1013-000-sentinel-2",
+      "pokemonId": "1013-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "1018-000-sentinel-1",
+      "pokemonId": "1018-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "1018-000-sentinel-2",
+      "pokemonId": "1018-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "1019-000-sentinel-1",
+      "pokemonId": "1019-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_ADVERSE_SCENARIOS_PRESENT",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    },
+    {
+      "setId": "1019-000-sentinel-2",
+      "pokemonId": "1019-000",
+      "verdict": "expert-review-required",
+      "reasonCodes": [
+        "EXPERT_CRITICAL_CANDIDATE_DOMINATED",
+        "EXPERT_CRITICAL_NO_WIN_CONDITION",
+        "EXPERT_CRITICAL_COVERAGE_INSUFFICIENT"
+      ],
+      "sourceWave": "wave3-batch-008",
+      "retryable": false
+    }
+  ],
+  "excludedSpecies": [
+    {
+      "pokemonId": "0132-000",
+      "reasonCode": "NO_LEGAL_CANDIDATE_GENERATED",
+      "reason": "INSUFFICIENT_LEARNSET_MOVES:0132-000",
+      "retryable": false
+    },
+    {
+      "pokemonId": "0026-001",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0038-001",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0059-001",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0080-002",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0128-001",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0128-002",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0128-003",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0157-001",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0199-001",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0479-000",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0479-001",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0479-002",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0479-003",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0479-004",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0479-005",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0503-001",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0571-001",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0618-001",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0678-000",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0678-001",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0706-001",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0711-000",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0711-001",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0711-002",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0711-003",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0713-001",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0724-001",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0745-000",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0745-001",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0745-002",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0902-000",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    },
+    {
+      "pokemonId": "0902-001",
+      "reasonCode": "SPECIES_PROVISIONAL_EXCLUDED_FROM_EXPANSION",
+      "reason": "ROSTER_RECORD_PROVISIONAL",
+      "retryable": true
+    }
+  ]
+}

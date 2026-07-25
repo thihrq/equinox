@@ -121,7 +121,7 @@
       "status": "reviewed",
       "active": false,
       "dataVersion": "2026.07.1",
-      "coherenceScore": 82,
+      "coherenceScore": 100,
       "humanReview": {
         "reviewedBy": "Equinox technical curation pass",
         "reviewedAt": "2026-07-15",
@@ -132,7 +132,7 @@
         "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
         "reviewerNotes": "Approved as an alternate Sinistcha support set. Rage Powder, Life Dew and Protect keep the set aligned with defensive board control.",
         "spreadJustification": "252 HP with physical bias supports repeated redirection turns while preserving enough special bulk for mixed boards.",
-        "limitations": "Item choice resolved in this pass: Rocky Helmet is kept over Mental Herb because this set's plan is to tank repeated contact hits while redirecting (unlike the primary Trick Room Sinistcha, which prioritizes guaranteed Trick Room uptime and so keeps Mental Herb pressure off the table); Life Dew is kept over Sitrus Berry because the team-wide heal outvalues a single-use personal heal in a support shell built to stay in over multiple turns. Independent staging matchup review (verified-evidence.fixture.json: stagingReview) remains pending and is not self-certified by this note.",
+        "limitations": "Item choice resolved in this pass: Rocky Helmet is kept over Mental Herb because this set's plan is to tank repeated contact hits while redirecting (unlike the primary Trick Room Sinistcha, which prioritizes guaranteed Trick Room uptime and so keeps Mental Herb pressure off the table); Life Dew is kept over Sitrus Berry because the team-wide heal outvalues a single-use personal heal in a support shell built to stay in over multiple turns. Stored coherenceScore corrected from 82 to 100 (2026-07-19 pass) after confirming the discrepancy was stale (the recomputed validator already returned 100/100 with zero issues); this set passed real active-staging homologation across the sinistcha-redirection-aggronmega-bodypress and mukalola-sinistcha-trickroom scenarios. Independent staging matchup review (verified-evidence.fixture.json: stagingReview) remains pending and is not self-certified by this note.",
         "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
       }
     },
@@ -257,7 +257,7 @@
       "status": "reviewed",
       "active": false,
       "dataVersion": "2026.07.1",
-      "coherenceScore": 80,
+      "coherenceScore": 100,
       "humanReview": {
         "reviewedBy": "Equinox technical curation pass",
         "reviewedAt": "2026-07-15",
@@ -268,7 +268,7 @@
         "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
         "reviewerNotes": "Approved as a slower defensive attacker branch. Iron Defense, Body Press and Protect match the declared physical-wall role.",
         "spreadJustification": "Max HP and max Defense make the Body Press line coherent. The Speed IV was corrected from 31 to 0 in this pass: this set's archetypes include trick-room, and under Trick Room lower Speed acts first, so a nonzero Speed IV directly worked against the set's own stated game plan. 0 Spe IV now aligns it with the rest of the Trick Room-oriented batch (Sinistcha, Ursaluna-Bloodmoon).",
-        "limitations": "Source-type reclassified from generated to curated as part of this direct re-review pass; independent staging matchup review (verified-evidence.fixture.json: stagingReview) remains pending and is not self-certified by this note.",
+        "limitations": "Source-type reclassified from generated to curated as part of this direct re-review pass. Stored coherenceScore corrected from 80 to 100 (2026-07-19 pass) after confirming the discrepancy was stale (the recomputed validator already returned 100/100 with zero issues); this set passed real active-staging homologation across the sinistcha-redirection-aggronmega-bodypress scenario. Independent staging matchup review (verified-evidence.fixture.json: stagingReview) remains pending and is not self-certified by this note.",
         "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
       }
     },
@@ -389,11 +389,11 @@
       "sourceId": "equinox-curated-champions-mb-doubles",
       "sourceType": "curated",
       "sourceUpdatedAt": "2026-07-15",
-      "confidence": 78,
+      "confidence": 80,
       "status": "reviewed",
       "active": false,
       "dataVersion": "2026.07.1",
-      "coherenceScore": 78,
+      "coherenceScore": 100,
       "humanReview": {
         "reviewedBy": "Equinox technical curation pass",
         "reviewedAt": "2026-07-15",
@@ -404,7 +404,7 @@
         "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
         "reviewerNotes": "Approved for staging as a tempo pivot, deliberately distinct from the bulky-slow-pivot set in this same batch: this branch trades Intimidate-cycle bulk for the ability to Taunt before slower setup/status leads act and to threaten Fake Out + Flare Blitz the same turn a target is Taunted.",
         "spreadJustification": "Speed investment supports proactive Taunt lines ahead of common Trick Room and redirection setters, with the remaining HP/Attack split preserving enough bulk to survive a hit and pivot out with Parting Shot.",
-        "limitations": "Source-type reclassified from generated to curated as part of this direct re-review pass. Broader ladder/meta usage validation (how it performs across the wider matchup pool, not just this pilot batch's internal scenarios) still requires the independent matchup testing and staging review recorded in verified-evidence.fixture.json, not self-certified by this note.",
+        "limitations": "Source-type reclassified from generated to curated as part of this direct re-review pass. Confidence raised from 78 to 80 (2026-07-19 pass) after the recomputed coherence validator returned 100/100 with zero issues and this set passed real active-staging homologation (functional engine probe against live-pack data, not estimated) across the incineroar-taunt-ursalunabloodmoon scenario. Broader ladder/meta usage validation (how it performs across the wider matchup pool, not just this pilot batch's internal scenarios) still requires the independent staging review recorded in verified-evidence.fixture.json, not self-certified by this note.",
         "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
       }
     },
@@ -457,11 +457,11 @@
       "sourceId": "equinox-curated-champions-mb-doubles",
       "sourceType": "curated",
       "sourceUpdatedAt": "2026-07-15",
-      "confidence": 79,
+      "confidence": 80,
       "status": "reviewed",
       "active": false,
       "dataVersion": "2026.07.1",
-      "coherenceScore": 80,
+      "coherenceScore": 100,
       "humanReview": {
         "reviewedBy": "Equinox technical curation pass",
         "reviewedAt": "2026-07-15",
@@ -472,7 +472,7 @@
         "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
         "reviewerNotes": "Approved for staging as a Follow Me support branch. Helping Hand, Air Slash and Protect preserve utility without overstating offensive pressure.",
         "spreadJustification": "HP with mixed bulk supports repeated redirection and leaves Togekiss consistent with the support role.",
-        "limitations": "Item choice resolved in this pass: Safety Goggles is kept over Sitrus Berry/Leftovers because it removes the powder/spore and sandstorm/hail chip damage that a support Pokemon expected to tank repeated hits over several turns is otherwise exposed to; the passive-healing items were judged less valuable than that immunity for a set with no self-recovery move. Source-type reclassified from generated to curated as part of this direct re-review pass. Independent staging matchup review (verified-evidence.fixture.json: stagingReview) remains pending and is not self-certified by this note.",
+        "limitations": "Item choice resolved in this pass: Safety Goggles is kept over Sitrus Berry/Leftovers because it removes the powder/spore and sandstorm/hail chip damage that a support Pokemon expected to tank repeated hits over several turns is otherwise exposed to; the passive-healing items were judged less valuable than that immunity for a set with no self-recovery move. Source-type reclassified from generated to curated as part of this direct re-review pass. Confidence raised from 79 to 80 (2026-07-19 pass) after the recomputed coherence validator returned 100/100 with zero issues and this set passed real active-staging homologation (functional engine probe against live-pack data) across the togekiss-ursalunabloodmoon and aggronmega-body-press-vs-redirection scenarios. Independent staging matchup review (verified-evidence.fixture.json: stagingReview) remains pending and is not self-certified by this note.",
         "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
       }
     },
@@ -597,7 +597,7 @@
       "status": "reviewed",
       "active": false,
       "dataVersion": "2026.07.1",
-      "coherenceScore": 80,
+      "coherenceScore": 100,
       "humanReview": {
         "reviewedBy": "Equinox technical curation pass",
         "reviewedAt": "2026-07-15",
@@ -608,7 +608,7 @@
         "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
         "reviewerNotes": "Approved for staging as a defensive Alolan Muk option. Knock Off strips items from switch-ins, Poison Jab is the STAB attack, Taunt shuts down slower setup/status leads, and Protect scouts.",
         "spreadJustification": "Max HP and special bulk fit the declared special-wall role.",
-        "limitations": "The previous review note referenced a 'Minimize slot' that is not present in this set's actual moveset (Knock Off / Poison Jab / Protect / Taunt) — that was a stale note from an earlier draft iteration and has been corrected here rather than carried forward. Source-type reclassified from generated to curated as part of this direct re-review pass. Independent staging matchup review (verified-evidence.fixture.json: stagingReview) remains pending and is not self-certified by this note.",
+        "limitations": "The previous review note referenced a 'Minimize slot' that is not present in this set's actual moveset (Knock Off / Poison Jab / Protect / Taunt) — that was a stale note from an earlier draft iteration and has been corrected here rather than carried forward. Source-type reclassified from generated to curated as part of this direct re-review pass. Stored coherenceScore corrected from 80 to 100 (2026-07-19 pass) after confirming the discrepancy was stale (the recomputed validator already returned 100/100 with zero issues); this set passed real active-staging homologation across the mukalola-sinistcha-trickroom scenario. Independent staging matchup review (verified-evidence.fixture.json: stagingReview) remains pending and is not self-certified by this note.",
         "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
       }
     },
@@ -930,7 +930,7 @@
       "sourceId": "equinox-curated-champions-mb-doubles",
       "sourceType": "curated",
       "sourceUpdatedAt": "2026-07-15",
-      "confidence": 79,
+      "confidence": 80,
       "status": "reviewed",
       "active": false,
       "dataVersion": "2026.07.1",
@@ -938,14 +938,14 @@
       "humanReview": {
         "reviewedBy": "Equinox technical curation pass",
         "reviewedAt": "2026-07-15",
-        "reviewResult": "approved-for-shadow-reviewed",
-        "reviewScope": "Fase de expansão de cobertura (roster gap); not verified, not active, not authorized for staging.",
+        "reviewResult": "approved-for-staging-reviewed",
+        "reviewScope": "Fase de expansão de cobertura (roster gap); re-reviewed 2026-07-19 with the same active-staging homologation pass as the other blocked sets in this batch. Not verified, not active.",
         "legalityReview": "Passed local legality validator for Champions M-B doubles pilot constraints.",
-        "teamBuilderReview": "Not yet exercised against the Team Builder homologation matrix; pending shadow coverage inclusion.",
+        "teamBuilderReview": "Exercised against the active-staging homologation matrix (indeedeefemale-giratinaorigin scenario); passed with zero fallbacks.",
         "exportReview": "Must use the same CompetitivePokemonSet object for UI, Showdown, TXT and JSON export.",
         "reviewerNotes": "Closes a roster coverage gap: neither Giratina form had a draft set. Origin is chosen over Altered because its stat reallocation (Atk/SpA +20, Def/SpD -20 vs base Giratina) rewards an attacking spread, and it slots directly into the pilot batch's existing Trick Room lean alongside Sinistcha/Aggron-Mega/Ursaluna-Bloodmoon. Aura Sphere is the key coverage addition against the Steel-types that wall pure Ghost/Dragon.",
         "spreadJustification": "252 HP / 252 SpA with a Quiet nature and 0 Speed IV commits fully to the slow-attacker plan under Trick Room; Life Orb is preferred over Choice items because Protect occupies one of the four move slots.",
-        "limitations": "New addition, not yet exercised in shadow comparison or matchup testing. Needs the same verified pipeline as the original pilot batch before advancing past reviewed. No secondary role assigned yet pending broader team-composition review.",
+        "limitations": "Confidence raised from 79 to 80 (2026-07-19 pass) after the recomputed coherence validator returned 100/100 with zero issues and this set passed real active-staging homologation (functional engine probe against live-pack data, paired with Indeedee-F). No secondary role assigned yet pending broader team-composition review. Independent staging matchup review (verified-evidence.fixture.json: stagingReview) remains pending and is not self-certified by this note.",
         "nextGate": "verified requires source freshness review, matchup testing, shadow approval and staging rollback evidence."
       }
     }

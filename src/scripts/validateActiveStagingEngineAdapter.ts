@@ -61,7 +61,7 @@ assertValidationFailure(
 for (const scenario of ACTIVE_STAGING_HOMOLOGATION_SCENARIOS) {
   const input = buildActiveStagingEngineInput(scenario, records);
   if (input.expectedActiveV2SetsPresentedToEngine.length !== 2) throw new Error(`${scenario.id} must present exactly 2 records`);
-  if (input.expectedActiveV2SetsResolvedFromMongo.length !== 4) throw new Error(`${scenario.id} must keep 4-record resolution trace`);
+  if (input.expectedActiveV2SetsResolvedFromMongo.length !== records.length) throw new Error(`${scenario.id} must keep ${records.length}-record resolution trace`);
   if (input.expectedActiveV2SetsResolvedFromMongo.join(',') !== records.map((record) => record.setId).join(',')) throw new Error(`${scenario.id} must derive resolution trace from records`);
   if (input.localPilotFallbackUsed !== false) throw new Error(`${scenario.id} must not use local fallback`);
 }

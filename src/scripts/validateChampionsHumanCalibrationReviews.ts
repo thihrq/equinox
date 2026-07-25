@@ -1,0 +1,5 @@
+import fs from 'fs';
+import path from 'path';
+import { assertHumanCalibrationFlags } from '../services/competitive-data/curation/human-calibration/ChampionsHumanCalibrationPolicy';
+declare const process: { argv: string[]; env: Record<string, string | undefined>; exitCode?: number };
+try { assertHumanCalibrationFlags(); const batchId = process.argv[process.argv.indexOf('--calibration-batch-id') + 1]; const file = batchId ? path.resolve('artifacts/competitive-curation', batchId, 'human-calibration/human-reviews.json') : ''; if (!file || !fs.existsSync(file)) { console.log(JSON.stringify({ state: 'awaiting-human-review', code: 'HUMAN_CALIBRATION_REVIEWS_PENDING', reviewsPending: 20, completedReviews: 0, mongoReads: 0, mongoWrites: 0, productionWrites: 0 }, null, 2)); process.exitCode = 20; } else { console.log(JSON.stringify({ state: 'reviews-present', message: 'Use the human review validator after importing real responses.', reviewsFile: file, mongoReads: 0, mongoWrites: 0, productionWrites: 0 }, null, 2)); } } catch (error) { console.error(error instanceof Error ? error.message : error); process.exitCode = 2; }

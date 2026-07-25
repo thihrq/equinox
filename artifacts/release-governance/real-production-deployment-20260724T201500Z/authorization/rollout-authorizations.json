@@ -1,0 +1,10 @@
+{
+  "gate": "Gate 3 — Rollout Produtivo Progressivo",
+  "authorizations": [
+    { "stage": "Stage 1", "envelope": "V2-ROLLOUT-STAGE-1-023", "status": "APPROVED" },
+    { "stage": "Stage 2", "envelope": "V2-ROLLOUT-STAGE-2-024", "status": "APPROVED" },
+    { "stage": "Stage 3", "envelope": "V2-ROLLOUT-STAGE-3-025", "status": "APPROVED" }
+  ],
+  "timestamp": "2026-07-24T20:16:15.000Z",
+  "verdict": "PROGRESSIVE ROLLOUT STAGES INDEPENDENTLY AUTHORIZED"
+}

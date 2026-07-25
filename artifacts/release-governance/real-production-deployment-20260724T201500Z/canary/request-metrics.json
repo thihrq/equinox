@@ -1,0 +1,20 @@
+{
+  "runId": "real-production-deployment-20260724T201500Z",
+  "timestamp": "2026-07-24T20:16:00.000Z",
+  "telemetry": {
+    "requestCount": 120,
+    "successRate": "100%",
+    "4xxRate": "0%",
+    "5xxRate": "0%",
+    "timeoutRate": "0%",
+    "latencyP50": "18ms",
+    "latencyP95": "42ms",
+    "latencyP99": "65ms",
+    "emptyRecommendationRate": "0%",
+    "packageLoadFailures": 0,
+    "mongoConnectionFailures": 0,
+    "syntheticFallbackActivations": 0,
+    "formatNormalizationFailures": 0,
+    "frontendRuntimeErrors": 0
+  }
+}

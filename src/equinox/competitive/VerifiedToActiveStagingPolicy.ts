@@ -159,11 +159,12 @@ export function buildActiveStagingSummary(
 }
 
 export function assertReadyForActivation(summary: ActiveStagingSummary): void {
+  const expectedCount = VERIFIED_TO_ACTIVE_STAGING_ALLOWLIST.length;
   const failures: string[] = [];
-  if (summary.recordsFound !== 4) failures.push(`recordsFound must be 4, received ${summary.recordsFound}`);
-  if (summary.recordsEligible !== 4) failures.push(`recordsEligible must be 4, received ${summary.recordsEligible}`);
+  if (summary.recordsFound !== expectedCount) failures.push(`recordsFound must be ${expectedCount}, received ${summary.recordsFound}`);
+  if (summary.recordsEligible !== expectedCount) failures.push(`recordsEligible must be ${expectedCount}, received ${summary.recordsEligible}`);
   if (summary.recordsAlreadyActive !== 0) failures.push(`recordsAlreadyActive must be 0, received ${summary.recordsAlreadyActive}`);
-  if (summary.allowlistedVerified !== 4) failures.push(`allowlistedVerified must be 4, received ${summary.allowlistedVerified}`);
+  if (summary.allowlistedVerified !== expectedCount) failures.push(`allowlistedVerified must be ${expectedCount}, received ${summary.allowlistedVerified}`);
   if (summary.blockedRecordsStillReviewed !== summary.recordsBlocked) {
     failures.push(`blockedRecordsStillReviewed must equal recordsBlocked (${summary.recordsBlocked}), received ${summary.blockedRecordsStillReviewed}`);
   }
@@ -179,9 +180,10 @@ export function assertReadyForActivation(summary: ActiveStagingSummary): void {
 }
 
 export function assertActiveFinalState(summary: ActiveStagingSummary): void {
+  const expectedCount = VERIFIED_TO_ACTIVE_STAGING_ALLOWLIST.length;
   const failures: string[] = [];
-  if (summary.recordsFound !== 4) failures.push(`recordsFound must be 4, received ${summary.recordsFound}`);
-  if (summary.allowlistedActive !== 4) failures.push(`allowlistedActive must be 4, received ${summary.allowlistedActive}`);
+  if (summary.recordsFound !== expectedCount) failures.push(`recordsFound must be ${expectedCount}, received ${summary.recordsFound}`);
+  if (summary.allowlistedActive !== expectedCount) failures.push(`allowlistedActive must be ${expectedCount}, received ${summary.allowlistedActive}`);
   if (summary.allowlistedStillVerified !== 0) failures.push(`allowlistedStillVerified must be 0, received ${summary.allowlistedStillVerified}`);
   if (summary.blockedRecordsStillReviewed !== summary.recordsBlocked) {
     failures.push(`blockedRecordsStillReviewed must equal recordsBlocked (${summary.recordsBlocked}), received ${summary.blockedRecordsStillReviewed}`);

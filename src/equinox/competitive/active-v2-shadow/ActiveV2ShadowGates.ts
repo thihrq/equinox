@@ -1,5 +1,12 @@
 import { recomputeShadowComparisonEvidence } from './ActiveV2ShadowComparators';
 import { ACTIVE_V2_SHADOW_GATE_EXIT_CODE, type ActiveV2ShadowReport } from './ActiveV2ShadowTypes';
+import {
+  ACTIVE_STAGING_HOMOLOGATION_SCENARIOS,
+  ACTIVE_STAGING_SET_ALLOWLIST,
+} from '../active-staging/ActiveStagingHomologationAllowlist';
+
+const EXPECTED_SCENARIO_COUNT = ACTIVE_STAGING_HOMOLOGATION_SCENARIOS.length;
+const EXPECTED_ACTIVE_V2_RECORD_COUNT = ACTIVE_STAGING_SET_ALLOWLIST.length;
 
 export class ActiveV2ShadowGateError extends Error {
   public readonly exitCode = ACTIVE_V2_SHADOW_GATE_EXIT_CODE;
@@ -40,18 +47,18 @@ export function assertActiveV2ShadowGates(report: ActiveV2ShadowReport): void {
     && report.aggregate.activeV2RecordsMissingRunId === 0
     && report.aggregate.activeRunId === sourceRunIds[0];
   const failures = [
-    report.scenarios.length === 4 ? null : 'report must contain 4 scenario results',
+    report.scenarios.length === EXPECTED_SCENARIO_COUNT ? null : `report must contain ${EXPECTED_SCENARIO_COUNT} scenario results`,
     report.aggregate.targetCollection === 'pokemonsets_v2_staging' ? null : 'target collection must be pokemonsets_v2_staging',
     report.aggregate.activeV2SourceCollection === 'pokemonsets_v2_staging' ? null : 'active V2 source collection must be pokemonsets_v2_staging',
-    report.aggregate.scenarioCount === 4 ? null : 'scenarioCount must be 4',
-    report.aggregate.scenariosCompared === 4 ? null : 'scenariosCompared must be 4',
-    report.aggregate.scenariosWithBaselineExecution === 4 ? null : 'baseline must execute all scenarios',
-    report.aggregate.scenariosWithActiveV2Execution === 4 ? null : 'active V2 must execute all scenarios',
-    report.aggregate.scenariosWithSameInput === 4 ? null : 'all scenarios must use same input',
-    report.aggregate.scenariosWithRecordedDifferences === 4 ? null : 'all differences must be recorded',
+    report.aggregate.scenarioCount === EXPECTED_SCENARIO_COUNT ? null : `scenarioCount must be ${EXPECTED_SCENARIO_COUNT}`,
+    report.aggregate.scenariosCompared === EXPECTED_SCENARIO_COUNT ? null : `scenariosCompared must be ${EXPECTED_SCENARIO_COUNT}`,
+    report.aggregate.scenariosWithBaselineExecution === EXPECTED_SCENARIO_COUNT ? null : 'baseline must execute all scenarios',
+    report.aggregate.scenariosWithActiveV2Execution === EXPECTED_SCENARIO_COUNT ? null : 'active V2 must execute all scenarios',
+    report.aggregate.scenariosWithSameInput === EXPECTED_SCENARIO_COUNT ? null : 'all scenarios must use same input',
+    report.aggregate.scenariosWithRecordedDifferences === EXPECTED_SCENARIO_COUNT ? null : 'all differences must be recorded',
     report.aggregate.baselineFallbackUsed === false ? null : 'baseline fallback must be false',
     report.aggregate.activeV2FallbackUsed === false ? null : 'active V2 fallback must be false',
-    report.aggregate.activeV2RecordsLoaded === 4 ? null : 'active V2 must load 4 records',
+    report.aggregate.activeV2RecordsLoaded === EXPECTED_ACTIVE_V2_RECORD_COUNT ? null : `active V2 must load ${EXPECTED_ACTIVE_V2_RECORD_COUNT} records`,
     sourceStateReproducible ? null : 'active V2 records must have one shared non-empty activeRunId',
     report.aggregate.activeV2SourceStateReproducible === sourceStateReproducible
       ? null

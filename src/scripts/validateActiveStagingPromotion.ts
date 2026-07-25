@@ -8,6 +8,9 @@ import {
   buildActiveStagingSummary,
   printActiveStagingSummary,
 } from '../equinox/competitive/VerifiedToActiveStagingPolicy';
+import { VERIFIED_TO_ACTIVE_STAGING_ALLOWLIST } from '../config/verifiedToActiveStagingAllowlist';
+
+const expectedAllowlistedCount = VERIFIED_TO_ACTIVE_STAGING_ALLOWLIST.length;
 
 const requireActive = process.argv.includes('--require-active');
 
@@ -16,7 +19,7 @@ function printOfflineSummary(mode: string): void {
     mode: mode as 'filesystem' | 'shadow',
     mongoRead: false,
     targetCollection: process.env.EQUINOX_TARGET_COLLECTION ?? 'not-configured',
-    recordsAllowlisted: 4,
+    recordsAllowlisted: expectedAllowlistedCount,
     recordsFound: 0,
     recordsEligible: 0,
     recordsAlreadyActive: 0,
@@ -37,7 +40,7 @@ function printOfflineSummary(mode: string): void {
 }
 
 function assertCurrentState(summary: ReturnType<typeof buildActiveStagingSummary>): void {
-  if (requireActive || summary.allowlistedActive === 4) {
+  if (requireActive || summary.allowlistedActive === expectedAllowlistedCount) {
     assertActiveFinalState(summary);
     return;
   }

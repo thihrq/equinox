@@ -1,6 +1,9 @@
+import mongoose from 'mongoose';
 import { PokemonService } from './PokemonService';
 import { Pokemon } from '../models/Pokemon';
 import { PokemonSet } from '../models/PokemonSet';
+import setsDataPack from '../equinox/data-packs/sets-data-pack.json';
+import { isSyntheticFallbackAllowed, resolveSyntheticFallbackContext } from '../config/syntheticFallbackPolicy';
 import { generateBasicKit, getMegaBaseName, getMegaStone, getSpeciesClauseKey } from '../equinox/utils/PokemonUtils';
 import { CompetitiveKitGenerator } from '../equinox/utils/CompetitiveKitGenerator';
 
@@ -271,15 +274,18 @@ export class TeamService {
     for (const pokemon of rawCurrentTeam) {
       // Normaliza nome Mega para busca de sets (ex: "Charizard-Mega-Y" → "Charizard")
       const baseName = getMegaBaseName(pokemon.name);
-      let set = await PokemonSet.findOne({ pokemonName: pokemon.name, formatId: format }).lean();
-      if (!set && baseName !== pokemon.name) {
-        set = await PokemonSet.findOne({ pokemonName: baseName, formatId: format }).lean();
-      }
-      if (!set) {
-        set = await PokemonSet.findOne({ pokemonName: pokemon.name }).lean();
-      }
-      if (!set && baseName !== pokemon.name) {
-        set = await PokemonSet.findOne({ pokemonName: baseName }).lean();
+      let set: any = null;
+      if (mongoose.connection.readyState === 1) {
+        set = await PokemonSet.findOne({ pokemonName: pokemon.name, formatId: format }).lean();
+        if (!set && baseName !== pokemon.name) {
+          set = await PokemonSet.findOne({ pokemonName: baseName, formatId: format }).lean();
+        }
+        if (!set) {
+          set = await PokemonSet.findOne({ pokemonName: pokemon.name }).lean();
+        }
+        if (!set && baseName !== pokemon.name) {
+          set = await PokemonSet.findOne({ pokemonName: baseName }).lean();
+        }
       }
       const defaultKit = set || !formatSolver.usesDoublesMechanicContracts ? null : CompetitiveKitGenerator.generate(pokemon, format);
       const basicKit = generateBasicKit(pokemon, format);
@@ -368,7 +374,31 @@ export class TeamService {
     }
 
     console.time('MongoCandidates');
-    const allCandidates = (await Pokemon.find({}).lean()) as unknown as PokemonData[];
+    const mongoConnectedForCandidates = mongoose.connection.readyState === 1;
+    let allCandidates: PokemonData[] = [];
+    if (mongoConnectedForCandidates) {
+      allCandidates = (await Pokemon.find({}).lean()) as unknown as PokemonData[];
+    }
+    // Fallback sintetico so pode ser alcancado quando o Mongo esta indisponivel E a politica
+    // centralizada permite (local-dev explicito ou teste) -- nunca em producao/validated/shadow/
+    // canary/serve, mesmo que a colecao esteja vazia com o Mongo conectado. Ver
+    // src/config/syntheticFallbackPolicy.ts.
+    if (allCandidates.length === 0 && !mongoConnectedForCandidates && isSyntheticFallbackAllowed(resolveSyntheticFallbackContext())) {
+      const localSets = (setsDataPack as any).sets || [];
+      const uniqueNames: string[] = Array.from(new Set(localSets.map((s: any) => s.pokemonName)));
+      allCandidates = uniqueNames.map((name, idx) => ({
+        name,
+        species: name,
+        dexNumber: idx + 1,
+        types: ['Normal'],
+        baseStats: { hp: 80, atk: 80, def: 80, spa: 80, spd: 80, spe: 80 },
+        abilities: ['Pressure'],
+        moves: ['Tackle', 'Protect'],
+        sourceMode: 'synthetic-local-dev',
+        productionEligible: false,
+        validatedPackageBacked: false,
+      })) as unknown as PokemonData[];
+    }
     console.timeEnd('MongoCandidates');
 
     const performanceProfile = new FormatPerformanceProfileRegistry().getProfile(format);
@@ -491,9 +521,12 @@ export class TeamService {
       ...candidateNames,
       ...candidateNames.map(name => getMegaBaseName(name)),
     ])];
-    const candidateSets = await PokemonSet.find({
-      pokemonName: { $in: candidateSetNames },
-    }).lean();
+    let candidateSets: any[] = [];
+    if (mongoose.connection.readyState === 1) {
+      candidateSets = await PokemonSet.find({
+        pokemonName: { $in: candidateSetNames },
+      }).lean();
+    }
 
     const finalCandidates: PokemonData[] = [];
     for (const candidate of diversifiedCandidates) {

@@ -9,6 +9,7 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { runDatabaseSeed } from './workers/runWorker';
 import { DataSyncService } from './services/DataSyncService';
 import { PokemonSet } from './models/PokemonSet';
+import { requiresMongoConnection } from './config/dataMode';
 
 function normalizeRequestOrigin(origin: string | undefined): string | undefined {
   if (!origin) return undefined;
@@ -120,7 +121,10 @@ const runStartupSeedIfNeeded = async (): Promise<void> => {
 
 const startServer = async () => {
   try {
-    await connectDatabase();
+    const mongoEnabled = requiresMongoConnection();
+    if (mongoEnabled) await connectDatabase();
+    else console.log('[Equinox] Modo filesystem ativo: MongoDB, seed e sincronizacao remota desabilitados.');
+
     void DataSyncService.syncRemote().catch(err => console.warn('[Equinox] Erro na sincronização remota inicial:', err));
 
     const server = app.listen(appConfig.port, () => {
@@ -130,13 +134,13 @@ const startServer = async () => {
       console.log(`🌐 CORS origins: ${appConfig.corsOrigins.length > 0 ? appConfig.corsOrigins.join(', ') : 'none'}`);
     });
 
-    void runStartupSeedIfNeeded();
+    if (mongoEnabled) void runStartupSeedIfNeeded();
 
     const shutdown = async (signal: NodeJS.Signals) => {
       console.log(`\n[Equinox] Recebido ${signal}. Encerrando servidor com segurança...`);
 
       server.close(async () => {
-        await mongoose.disconnect();
+        if (mongoEnabled && mongoose.connection.readyState !== 0) await mongoose.disconnect();
         console.log('[Equinox] Servidor encerrado.');
         process.exit(0);
       });

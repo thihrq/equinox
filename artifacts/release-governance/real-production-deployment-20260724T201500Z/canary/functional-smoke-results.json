@@ -1,0 +1,19 @@
+{
+  "runId": "real-production-deployment-20260724T201500Z",
+  "timestamp": "2026-07-24T20:16:03.000Z",
+  "scenariosTested": [
+    { "scenario": "Champions singles", "teamSize": 6, "userPokemonPreserved": 3, "status": "PASS" },
+    { "scenario": "Champions doubles", "teamSize": 6, "userPokemonPreserved": 3, "status": "PASS" },
+    { "scenario": "balanced", "teamSize": 6, "userPokemonPreserved": 3, "status": "PASS" },
+    { "scenario": "offensive", "teamSize": 6, "userPokemonPreserved": 3, "status": "PASS" },
+    { "scenario": "defensive", "teamSize": 6, "userPokemonPreserved": 3, "status": "PASS" },
+    { "scenario": "Trick Room", "teamSize": 6, "userPokemonPreserved": 3, "status": "PASS" },
+    { "scenario": "weather", "teamSize": 6, "userPokemonPreserved": 3, "status": "PASS" },
+    { "scenario": "Tailwind", "teamSize": 6, "userPokemonPreserved": 3, "status": "PASS" },
+    { "scenario": "terrain", "teamSize": 6, "userPokemonPreserved": 3, "status": "PASS" },
+    { "scenario": "redirection", "teamSize": 6, "userPokemonPreserved": 3, "status": "PASS" }
+  ],
+  "activePackageUsed": "active-v2",
+  "syntheticFallbackActivations": 0,
+  "http5xxErrors": 0
+}
