@@ -16,6 +16,9 @@ import { evaluateFormatTeamObjective } from '../format-solvers/FormatObjectiveGu
 import { FormatSolverRegistry } from '../format-solvers/FormatSolverRegistry';
 import { hasDuplicateItem } from '../competitive/CompetitiveTeamLegalityValidator';
 
+import { createCandidateSearchContext } from '../lead-build/CandidateSearchContext';
+import { replenishCandidatePool } from '../lead-build/replenishCandidatePool';
+
 // ─── Constantes ──────────────────────────────────────────────────────────────
 
 /** Largura do feixe — quantos times parciais sobrevivem entre estágios */
@@ -118,26 +121,14 @@ function calculateStrategyCoverage(
       } else {
         fulfilledOptional.push(role.role);
       }
-    } else if (role.priority === 'preferred') {
+    } else {
       unresolved.push(role.role);
     }
   }
 
-  // Calcular score de cobertura (0–100)
   const totalRoles = strategy.requiredRoles.length + strategy.optionalRoles.length;
-  const totalFulfilled = fulfilledRequired.length + fulfilledPreferred.length + fulfilledOptional.length;
-
-  // Peso maior para roles requeridas
-  const requiredWeight = strategy.requiredRoles.length > 0
-    ? (fulfilledRequired.length / strategy.requiredRoles.length) * 70
-    : 70;
-  const optionalWeight = strategy.optionalRoles.length > 0
-    ? (fulfilledPreferred.length + fulfilledOptional.length) / strategy.optionalRoles.length * 30
-    : 30;
-
-  const coverageScore = Math.min(100, Math.round(
-    totalRoles > 0 ? requiredWeight + optionalWeight : 50,
-  ));
+  const fulfilledTotal = fulfilledRequired.length + fulfilledPreferred.length + fulfilledOptional.length;
+  const coverageScore = totalRoles > 0 ? Math.round((fulfilledTotal / totalRoles) * 100) : 50;
 
   return {
     fulfilledRequired,
@@ -174,12 +165,6 @@ function expandBeam(
   beamWidth: number,
 ): BeamEntry[] {
   const expanded: BeamEntry[] = [];
-  // Instrumentação temporária (achado real 2026-07-18): auditoria geral
-  // encontrou suggestFromLead retornando 0 estratégias completas para
-  // leads sem sinal de clima (ex.: Incineroar+Amoonguss) -- searchLeadCompletions
-  // some com o beam em algum dos 4 estágios sem indicar qual checagem é
-  // responsável. Loga contagem de rejeição por motivo pra diagnosticar
-  // com dado real em vez de suposição.
   let rejectedSpecies = 0;
   let rejectedMega = 0;
   let rejectedItem = 0;
@@ -245,7 +230,17 @@ export function searchLeadCompletions(
 ): LeadCompletionResult[] {
   const { lead, strategy, candidates, maxCandidatesPerStage, format } = input;
 
-  // Determinar o formato a partir do nome do solver
+  // Criar contexto de busca a partir da lead
+  const searchContext = createCandidateSearchContext(lead, format, strategy.id);
+
+  // Reabastecer e filtrar pool de candidatos utilizáveis antecipadamente
+  const replenished = replenishCandidatePool(candidates, searchContext, {
+    targetUsableCandidates: maxCandidatesPerStage > 0 ? maxCandidatesPerStage : 40,
+    maximumRawCandidates: 150,
+    batchSize: 30,
+  });
+
+  const candidatePool = replenished.usableCandidates as PokemonData[];
 
   // Inicializar beam com a dupla de lead
   const initialTeam: PokemonData[] = [lead[0], lead[1]];
@@ -253,11 +248,6 @@ export function searchLeadCompletions(
     team: initialTeam,
     cumulativeScore: 0,
   }];
-
-  // Limitar candidatos se necessário
-  const candidatePool = maxCandidatesPerStage > 0
-    ? candidates.slice(0, maxCandidatesPerStage)
-    : candidates;
 
   // Estágio 1: 2 → 3 (trios)
   beam = expandBeam(beam, candidatePool, strategy, format, BEAM_WIDTH);

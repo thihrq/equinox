@@ -65,7 +65,10 @@ export function filterCandidatePool(
     }
 
     // 3. Mega Limit
-    const isMega = isMegaOption(candidate) || (candidate.item && candidate.item.toLowerCase().endsWith('ite'));
+    const isMega = isMegaOption(candidate) ||
+      candidate.name.includes('-Mega') ||
+      (candidate.item && candidate.item.toLowerCase().endsWith('ite'));
+
     if (context.megaAlreadyUsed && isMega) {
       stats.rejectedMega++;
       rejected.push({ candidateId, reason: 'MEGA_LIMIT' });
