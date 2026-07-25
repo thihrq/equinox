@@ -7,6 +7,7 @@ import { findPokemonNameSuggestions, isKnownPokemonName } from './utils/pokemonN
 import { getNextPokemonSpriteUrl, getPokemonSpriteUrl, getSmogonPokemonSlug } from './utils/pokemonSprites';
 import { apiPost, type ApiErrorShape } from './services/api';
 import { BattlePlanHero, SectionHeader } from './components/coach';
+import { TeamTypeChart } from './components/analysis/TeamTypeChart';
 import { ExportTeam, PokemonGrid } from './components/pokemon';
 import { OptionTabs, StrategySummary } from './components/strategy';
 import { LeadStrategyPanel } from './components/lead/LeadStrategyPanel';
@@ -617,6 +618,7 @@ export default function App() {
               locale={locale}
               formatScore={formatScore}
               formatPercent={formatPercent}
+              normalizeScore={normalizeScore}
             />
 
             <OptionTabs
@@ -636,6 +638,18 @@ export default function App() {
                 getSmogonUrl={getSmogonUrl}
               />
             </div>
+
+            <TeamTypeChart
+              members={(selectedOption.fullTeam && selectedOption.fullTeam.length > 0
+                ? selectedOption.fullTeam
+                : selectedOption.suggestedPokemons
+              ).map(pokemon => ({
+                name: pokemon.name,
+                types: pokemon.types ?? [],
+                ability: pokemon.ability ?? pokemon.kit.ability,
+              }))}
+              locale={locale}
+            />
 
             <SectionHeader title={t(locale, 'playbookTitle')} eyebrow={t(locale, 'playbookEyebrow')} />
             <StrategySummary option={selectedOption} locale={locale} />

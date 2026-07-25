@@ -3,6 +3,7 @@ import type { Locale } from '../../i18n/equinoxI18n';
 import type { LeadSuggestionResult, LeadStrategyResult } from '../../types/lead';
 import { LeadPlaybookPanel } from './LeadPlaybookPanel';
 import { CompetitiveTeamGrid } from '../pokemon/CompetitiveTeamGrid';
+import { TeamTypeChart } from '../analysis/TeamTypeChart';
 import { CompetitiveTeamExport } from '../pokemon/CompetitiveTeamExport';
 
 interface LeadStrategyPanelProps {
@@ -219,6 +220,15 @@ export const LeadStrategyPanel: React.FC<LeadStrategyPanelProps> = ({
             <CompetitiveTeamGrid
               team={activeFullTeam}
               leadNames={activeStrategyResult.strategy.lead}
+              locale={locale}
+            />
+
+            <TeamTypeChart
+              members={activeFullTeam.map(member => ({
+                name: member.name,
+                types: member.competitiveSet?.types ?? member.types ?? [],
+                ability: member.competitiveSet?.ability ?? member.ability,
+              }))}
               locale={locale}
             />
 

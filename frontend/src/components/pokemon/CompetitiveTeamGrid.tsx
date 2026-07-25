@@ -1,19 +1,11 @@
-import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Clipboard } from 'lucide-react';
+import React from 'react';
+import { Clipboard } from 'lucide-react';
 import type { Locale } from '../../i18n/equinoxI18n';
-import type { CSSProperties } from 'react';
 import type { CompetitiveStatSpread, PokemonData } from '../../types/lead';
-import { getPokemonSpriteUrl } from '../../utils/pokemonSprites';
+import { getNextPokemonSpriteUrl, getPokemonSpriteUrl } from '../../utils/pokemonSprites';
 import { toShowdown } from '../../utils/competitiveTeamExport';
-import { getPokemonTypeColor } from '../../utils/pokemonTypeColors';
-
-const hexToRgba = (hex: string, alpha: number): string => {
-  const value = hex.replace('#', '');
-  const r = parseInt(value.slice(0, 2), 16);
-  const g = parseInt(value.slice(2, 4), 16);
-  const b = parseInt(value.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-};
+import { getPokemonTypeColor, getPokemonTypeLabel, getReadableTextOnType } from '../../utils/pokemonTypeColors';
+import { getNatureEffect } from '../../utils/natures';
 
 interface CompetitiveTeamGridProps {
   team: PokemonData[];
@@ -21,113 +13,152 @@ interface CompetitiveTeamGridProps {
   locale: Locale;
 }
 
-const formatSpread = (spread?: CompetitiveStatSpread): string => {
+const STAT_LABELS: Array<[keyof CompetitiveStatSpread, string]> = [
+  ['hp', 'HP'],
+  ['atk', 'Atk'],
+  ['def', 'Def'],
+  ['spa', 'SpA'],
+  ['spd', 'SpD'],
+  ['spe', 'Spe'],
+];
+
+/** EVs: só os investidos importam. */
+const formatEvs = (spread?: CompetitiveStatSpread): string => {
   if (!spread) return '';
-  const entries: Array<[keyof CompetitiveStatSpread, string]> = [
-    ['hp', 'HP'],
-    ['atk', 'Atk'],
-    ['def', 'Def'],
-    ['spa', 'SpA'],
-    ['spd', 'SpD'],
-    ['spe', 'Spe'],
-  ];
-  return entries
-    .filter(([stat]) => Number(spread[stat]) > 0)
+  return STAT_LABELS.filter(([stat]) => Number(spread[stat]) > 0)
+    .map(([stat, label]) => `${spread[stat]} ${label}`)
+    .join(' / ');
+};
+
+/**
+ * IVs: só os que DESVIAM de 31 importam.
+ *
+ * Filtrar por `> 0` (como o formatador de EVs faz) esconde justamente os IVs
+ * que existem para alguma coisa — 0 Spe em Trick Room, 0 Atk em atacante
+ * especial. É a mesma regra que o exportador para Showdown já usa.
+ */
+const formatIvs = (spread?: CompetitiveStatSpread): string => {
+  if (!spread) return '';
+  return STAT_LABELS.filter(([stat]) => Number(spread[stat]) !== 31)
     .map(([stat, label]) => `${spread[stat]} ${label}`)
     .join(' / ');
 };
 
 export const CompetitiveTeamGrid: React.FC<CompetitiveTeamGridProps> = ({ team, leadNames, locale }) => {
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const allExpanded = team.every(member => expanded.has(member.name));
-
-  const toggle = (name: string) => {
-    setExpanded(current => {
-      const next = new Set(current);
-      if (next.has(name)) next.delete(name);
-      else next.add(name);
-      return next;
-    });
-  };
-
-  const toggleAll = () => {
-    setExpanded(allExpanded ? new Set() : new Set(team.map(member => member.name)));
-  };
-
   return (
     <section className="eq-competitive-team">
-      <div className="eq-competitive-team__toolbar">
-        <button type="button" className="eq-inline-action" onClick={toggleAll}>
-          {allExpanded
-            ? (locale === 'pt-BR' ? 'Recolher todos' : 'Collapse all')
-            : (locale === 'pt-BR' ? 'Expandir todos' : 'Expand all')}
-        </button>
-      </div>
-
       <div className="eq-competitive-team__grid">
         {team.map(member => {
           const set = member.competitiveSet;
           const isLead = leadNames?.some(name => name === member.name) ?? false;
-          const isExpanded = expanded.has(member.name);
-          const typeColors = (member.types ?? [])
+
+          const typeEntries = ((set?.types ?? member.types) ?? [])
             .map(type => ({ type, color: getPokemonTypeColor(type) }))
             .filter((entry): entry is { type: string; color: string } => entry.color !== null);
-          const accentColor = typeColors[0]?.color;
+
+          const nature = set?.nature ?? member.nature;
+          const natureEffect = getNatureEffect(nature);
+          const moves = set?.moves ?? member.moves ?? [];
+          const evs = formatEvs(set?.evs);
+          const ivs = formatIvs(set?.ivs);
+          const sprite = getPokemonSpriteUrl(member.name);
+
+          const rail = typeEntries.length
+            ? `linear-gradient(90deg, ${typeEntries[0].color}, ${(typeEntries[1] ?? typeEntries[0]).color})`
+            : 'var(--eq-border-strong)';
 
           return (
-            <article
-              key={member.name}
-              className={`eq-pokemon-card-v3 eq-competitive-set-card ${isLead ? 'eq-pokemon-card-v3--lead' : ''}`}
-              style={accentColor ? ({ '--eq-type-accent': accentColor } as CSSProperties) : undefined}
-            >
-              <button
-                type="button"
-                className="eq-competitive-set-card__summary"
-                onClick={() => toggle(member.name)}
-                aria-expanded={isExpanded}
-              >
-                {isLead && <span className="eq-tag-v3 eq-tag-v3--primary">Lead</span>}
-                <img
-                  src={getPokemonSpriteUrl(member.name) ?? undefined}
-                  alt=""
-                  className="eq-competitive-set-card__sprite"
-                  onError={event => {
-                    (event.target as HTMLImageElement).src = 'https://play.pokemonshowdown.com/sprites/ani/unown.gif';
-                  }}
-                />
-                <span className="eq-competitive-set-card__name">{member.name}</span>
-                {typeColors.length > 0 && (
-                  <span className="eq-type-pills">
-                    {typeColors.map(({ type, color }) => (
-                      <span key={type} className="eq-type-pill" style={{ background: hexToRgba(color, 0.18), color }}>
-                        {type}
-                      </span>
-                    ))}
-                  </span>
-                )}
-                <span className="eq-competitive-set-card__meta">{set?.item ?? member.item}</span>
-                <span className="eq-competitive-set-card__meta">{set?.ability ?? member.ability}</span>
-                {isExpanded ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />}
-              </button>
+            <article key={member.name} className={`eq-set-card ${isLead ? 'is-lead' : ''}`}>
+              <span className="eq-set-card-rail" style={{ background: rail }} aria-hidden="true" />
 
-              {isExpanded && (
-                <div className="eq-competitive-set-card__details">
-                  <dl>
-                    <div><dt>{locale === 'pt-BR' ? 'Função' : 'Role'}</dt><dd>{set?.role ?? member.role ?? '-'}</dd></div>
-                    <div><dt>{locale === 'pt-BR' ? 'Natureza' : 'Nature'}</dt><dd>{set?.nature ?? member.nature ?? '-'}</dd></div>
-                    <div><dt>EVs</dt><dd>{formatSpread(set?.evs) || '-'}</dd></div>
-                    <div><dt>IVs</dt><dd>{formatSpread(set?.ivs) || '31 em todos'}</dd></div>
-                    <div><dt>{locale === 'pt-BR' ? 'Origem' : 'Source'}</dt><dd>{set?.setSource ?? '-'}</dd></div>
-                  </dl>
-                  <ul className="eq-competitive-set-card__moves">
-                    {(set?.moves ?? member.moves ?? []).map(move => <li key={move}>{move}</li>)}
-                  </ul>
-                  <button type="button" className="eq-inline-action" onClick={() => navigator.clipboard.writeText(toShowdown([member]))}>
-                    <Clipboard size={14} aria-hidden="true" />
-                    {locale === 'pt-BR' ? 'Copiar set' : 'Copy set'}
-                  </button>
+              <div className="eq-set-card-body">
+                <div className="eq-set-card-top">
+                  <span className="eq-set-card-art">
+                    {sprite && (
+                      <img
+                        src={sprite}
+                        alt={member.name}
+                        loading="lazy"
+                        onError={event => {
+                          event.currentTarget.src = getNextPokemonSpriteUrl(member.name, event.currentTarget.src);
+                        }}
+                      />
+                    )}
+                  </span>
+                  <span>
+                    <span className="eq-set-card-name">
+                      {member.name}
+                      {isLead && <span className="eq-set-card-lead">Lead</span>}
+                    </span>
+                    <span className="eq-set-card-role">{set?.role ?? member.role ?? ''}</span>
+                    {typeEntries.length > 0 && (
+                      <span className="eq-set-card-types">
+                        {typeEntries.map(({ type, color }) => (
+                          <span
+                            key={type}
+                            className="eq-set-type-pill"
+                            style={{ background: color, color: getReadableTextOnType(color) }}
+                          >
+                            {getPokemonTypeLabel(type, locale)}
+                          </span>
+                        ))}
+                      </span>
+                    )}
+                  </span>
                 </div>
-              )}
+
+                <span className="eq-set-card-divider" aria-hidden="true" />
+
+                <dl className="eq-set-card-spec">
+                  <div>
+                    <dt>{locale === 'pt-BR' ? 'Hab.' : 'Ability'}</dt>
+                    <dd>{set?.ability ?? member.ability ?? '—'}</dd>
+                  </div>
+                  <div>
+                    <dt>{locale === 'pt-BR' ? 'Item' : 'Item'}</dt>
+                    <dd>{set?.item ?? member.item ?? '—'}</dd>
+                  </div>
+                  <div>
+                    <dt>{locale === 'pt-BR' ? 'Nat.' : 'Nature'}</dt>
+                    <dd>
+                      {nature ?? '—'}
+                      {natureEffect && <span className="eq-dim"> {natureEffect}</span>}
+                    </dd>
+                  </div>
+                  {set?.teraType && (
+                    <div>
+                      <dt>Tera</dt>
+                      <dd>{getPokemonTypeLabel(set.teraType, locale)}</dd>
+                    </div>
+                  )}
+                </dl>
+
+                {moves.length > 0 && (
+                  <ul className="eq-set-card-moves">
+                    {moves.slice(0, 4).map(move => (
+                      <li key={move}>{move}</li>
+                    ))}
+                  </ul>
+                )}
+
+                <div className="eq-set-card-stats">
+                  <span>EVs <b>{evs || '—'}</b></span>
+                  <span>
+                    IVs <b>{ivs || (locale === 'pt-BR' ? '31 em tudo' : 'all 31')}</b>
+                  </span>
+                </div>
+              </div>
+
+              <footer className="eq-set-card-footer">
+                <button
+                  type="button"
+                  className="eq-inline-action"
+                  onClick={() => navigator.clipboard.writeText(toShowdown([member]))}
+                >
+                  <Clipboard size={13} aria-hidden="true" />
+                  {locale === 'pt-BR' ? 'Copiar set' : 'Copy set'}
+                </button>
+              </footer>
             </article>
           );
         })}

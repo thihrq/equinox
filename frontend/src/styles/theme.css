@@ -1,35 +1,54 @@
+/* O acento deixa de ser branco/preto (ou seja, ausência de acento) e passa a
+   ser o dourado da marca. O par dawn/dusk é reexposto sem prefixo de marca
+   para que os componentes usem --eq-accent / --eq-opponent e continuem
+   corretos nos dois temas. */
+
 .eq-theme-dark,
 .eq-app:not(.eq-theme-light) {
-  --eq-bg: #020405;
-  --eq-bg-soft: #06090c;
-  --eq-surface: rgba(10, 14, 18, 0.84);
-  --eq-surface-strong: rgba(13, 18, 23, 0.96);
+  --eq-bg: #0b0e14;
+  --eq-bg-soft: #121724;
+  --eq-surface: rgba(18, 23, 36, 0.84);
+  --eq-surface-strong: rgba(23, 29, 44, 0.96);
   --eq-surface-soft: rgba(255, 255, 255, 0.045);
-  --eq-border: rgba(255, 255, 255, 0.105);
-  --eq-border-strong: rgba(255, 255, 255, 0.18);
-  --eq-text-primary: #f5f5f4;
-  --eq-text-secondary: #a1a1aa;
-  --eq-text-muted: #71717a;
-  --eq-accent: #ffffff;
-  --eq-inverse: #050505;
+  --eq-border: rgba(255, 255, 255, 0.09);
+  --eq-border-strong: rgba(255, 255, 255, 0.16);
+  --eq-text-primary: #eceae4;
+  --eq-text-secondary: #8b93a7;
+  --eq-text-muted: #646c80;
+
+  --eq-accent: var(--eq-dawn);
+  --eq-accent-contrast: #0b0e14;
+  --eq-accent-soft: var(--eq-dawn-soft);
+  --eq-opponent: var(--eq-dusk);
+  --eq-opponent-soft: var(--eq-dusk-soft);
+
+  --eq-inverse: #0b0e14;
   --eq-shadow-color: rgba(0, 0, 0, 0.48);
   color-scheme: dark;
 }
 
 .eq-theme-light,
 .eq-app.eq-theme-light {
-  --eq-bg: #f3f3f0;
+  --eq-bg: #f4f2ec;
   --eq-bg-soft: #ffffff;
   --eq-surface: rgba(255, 255, 255, 0.78);
   --eq-surface-strong: rgba(255, 255, 255, 0.94);
   --eq-surface-soft: rgba(0, 0, 0, 0.04);
   --eq-border: rgba(0, 0, 0, 0.12);
   --eq-border-strong: rgba(0, 0, 0, 0.22);
-  --eq-text-primary: #111111;
-  --eq-text-secondary: #555555;
-  --eq-text-muted: #777777;
-  --eq-accent: #111111;
+  --eq-text-primary: #171310;
+  --eq-text-secondary: #56514a;
+  --eq-text-muted: #7b756c;
+
+  /* No claro o dourado puro não tem contraste suficiente sobre branco:
+     o acento escurece para âmbar queimado, mantendo a mesma família. */
+  --eq-accent: #a86a12;
+  --eq-accent-contrast: #ffffff;
+  --eq-accent-soft: rgba(168, 106, 18, 0.10);
+  --eq-opponent: #4c3d9e;
+  --eq-opponent-soft: rgba(76, 61, 158, 0.10);
+
   --eq-inverse: #ffffff;
-  --eq-shadow-color: rgba(0, 0, 0, 0.10);
+  --eq-shadow-color: rgba(0, 0, 0, 0.1);
   color-scheme: light;
 }

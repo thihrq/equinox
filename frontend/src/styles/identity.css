@@ -1,0 +1,462 @@
+/* ============================================================
+   Identidade dawn/dusk — medidor do equinócio, gráfico de tipos
+   e o card de set completo.
+
+   Fica em arquivo próprio de propósito: o index.css acumulou anos
+   de sobrescritas (classes redefinidas dezenas de vezes) e nada
+   novo deveria entrar lá.
+   ============================================================ */
+
+/* ---------- linha do equinócio ---------- */
+.eq-equinox-line {
+  height: 1px;
+  border: 0;
+  margin: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--eq-opponent) 20%,
+    var(--eq-text-primary) 50%,
+    var(--eq-accent) 80%,
+    transparent
+  );
+  opacity: 0.55;
+}
+
+/* ---------- medidor do equinócio ---------- */
+.eq-meter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px 34px;
+  margin: 26px 0 8px;
+}
+
+.eq-meter-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 13.5px;
+  margin-bottom: 10px;
+}
+
+.eq-meter-label { color: var(--eq-text-secondary); }
+
+.eq-meter-verdict {
+  font-family: var(--eq-font-mono);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+.eq-meter-verdict.is-favourable { color: var(--eq-accent); }
+.eq-meter-verdict.is-adverse { color: var(--eq-opponent); }
+.eq-meter-verdict.is-balanced { color: var(--eq-text-muted); }
+
+.eq-meter-scale { position: relative; height: 22px; display: block; }
+
+.eq-meter-track {
+  position: absolute;
+  top: 9px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--eq-opponent) 30%, transparent),
+    var(--eq-surface-soft) 50%,
+    color-mix(in srgb, var(--eq-accent) 30%, transparent)
+  );
+}
+
+.eq-meter-center {
+  position: absolute;
+  top: 3px;
+  left: 50%;
+  width: 1px;
+  height: 16px;
+  background: var(--eq-border-strong);
+}
+
+.eq-meter-fill {
+  position: absolute;
+  top: 9px;
+  height: 4px;
+  border-radius: 2px;
+}
+.eq-meter-fill.is-player { background: linear-gradient(90deg, var(--eq-accent), var(--eq-dawn-warm)); }
+.eq-meter-fill.is-opponent { background: linear-gradient(270deg, var(--eq-opponent), var(--eq-dusk-deep)); }
+
+.eq-meter-pin {
+  position: absolute;
+  top: 4px;
+  width: 3px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--eq-text-primary);
+}
+
+.eq-meter-legend {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--eq-font-mono);
+  font-size: 10.5px;
+  color: var(--eq-text-muted);
+  margin-top: 2px;
+}
+
+/* ---------- gráfico de tipos ---------- */
+.eq-type-chart {
+  border: 1px solid var(--eq-border);
+  border-radius: var(--eq-radius-lg);
+  background: var(--eq-surface);
+  padding: clamp(18px, 3vw, 28px);
+  margin-bottom: 14px;
+}
+
+.eq-type-chart-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.eq-type-chart-head h3 {
+  font-family: var(--eq-font-display);
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+.eq-type-chart-head p {
+  font-size: 13px;
+  color: var(--eq-text-muted);
+  margin: 0;
+  max-width: 58ch;
+  line-height: 1.5;
+}
+
+.eq-type-chart-legend {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-family: var(--eq-font-mono);
+  font-size: 10.5px;
+  color: var(--eq-text-muted);
+}
+.eq-type-chart-legend span { display: flex; align-items: center; gap: 6px; }
+.eq-type-chart-legend i { width: 9px; height: 9px; border-radius: 2px; display: block; }
+.eq-type-chart-legend i.is-weak { background: var(--eq-dawn-warm); }
+.eq-type-chart-legend i.is-resist { background: var(--eq-opponent); }
+.eq-type-chart-legend i.is-immune { background: var(--eq-success); }
+
+.eq-type-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(106px, 1fr));
+  gap: 7px;
+  margin-top: 20px;
+}
+
+.eq-type-cell {
+  position: relative;
+  border: 1px solid var(--eq-border);
+  border-radius: var(--eq-radius-xs);
+  background: var(--eq-bg-soft);
+  padding: 9px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  cursor: default;
+  transition: border-color var(--eq-transition-fast), transform var(--eq-transition-fast);
+}
+.eq-type-cell:hover,
+.eq-type-cell:focus-visible {
+  border-color: var(--eq-border-strong);
+  transform: translateY(-2px);
+  z-index: 5;
+}
+.eq-type-cell[data-severity='high'] {
+  border-color: color-mix(in srgb, var(--eq-dawn-warm) 42%, transparent);
+  background: color-mix(in srgb, var(--eq-dawn-warm) 9%, var(--eq-bg-soft));
+}
+.eq-type-cell[data-severity='mid'] {
+  border-color: color-mix(in srgb, var(--eq-accent) 28%, transparent);
+  background: color-mix(in srgb, var(--eq-accent) 6%, var(--eq-bg-soft));
+}
+
+.eq-type-cell-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 500;
+}
+.eq-type-cell-name i { width: 8px; height: 8px; border-radius: 2px; flex: none; display: block; }
+
+.eq-type-cell-bar { display: flex; gap: 2px; height: 5px; }
+.eq-type-cell-bar i { flex: 1; border-radius: 1px; background: var(--eq-surface-soft); display: block; }
+.eq-type-cell-bar i.is-weak { background: var(--eq-dawn-warm); }
+.eq-type-cell-bar i.is-resist { background: var(--eq-opponent); }
+.eq-type-cell-bar i.is-immune { background: var(--eq-success); }
+
+.eq-type-cell-count {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--eq-font-mono);
+  font-size: 10.5px;
+  color: var(--eq-text-muted);
+}
+.eq-type-cell-count b { color: var(--eq-dawn-warm); font-weight: 600; }
+.eq-type-cell-count b.is-none { color: var(--eq-text-muted); font-weight: 400; }
+
+.eq-type-cell-popover {
+  position: absolute;
+  bottom: calc(100% + 9px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 248px;
+  background: var(--eq-surface-strong);
+  border: 1px solid var(--eq-border-strong);
+  border-radius: var(--eq-radius-sm);
+  padding: 0 0 10px;
+  box-shadow: 0 18px 44px var(--eq-shadow-color);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--eq-transition-fast);
+  z-index: var(--eq-z-popover);
+  pointer-events: none;
+  overflow: hidden;
+}
+.eq-type-cell:hover .eq-type-cell-popover,
+.eq-type-cell:focus-visible .eq-type-cell-popover { opacity: 1; visibility: visible; }
+
+/* As seis primeiras células abrem para baixo: acima delas não há espaço. */
+.eq-type-cell:nth-child(-n + 6) .eq-type-cell-popover { bottom: auto; top: calc(100% + 9px); }
+
+.eq-type-cell-popover h5 {
+  font-family: var(--eq-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+  padding: 7px 13px;
+  font-weight: 600;
+  background: var(--eq-surface-soft);
+  color: var(--eq-text-primary);
+}
+
+.eq-type-cell-group { padding: 0 13px; }
+.eq-type-cell-group + .eq-type-cell-group { margin-top: 10px; padding-top: 10px; }
+.eq-type-cell-group + .eq-type-cell-group::before {
+  content: '';
+  display: block;
+  height: 1px;
+  background: var(--eq-border);
+  margin: 0 0 10px;
+}
+.eq-type-cell-group h6 {
+  font-family: var(--eq-font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--eq-text-muted);
+  margin: 0 0 7px;
+  font-weight: 400;
+}
+.eq-type-cell-group ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.eq-type-cell-group li { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.eq-type-cell-group li img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex: none;
+}
+.eq-type-cell-group li span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.eq-type-cell-group li b { font-family: var(--eq-font-mono); font-size: 11px; font-weight: 600; }
+.eq-type-cell-group li b.is-critical { color: var(--eq-danger); }
+.eq-type-cell-group li b.is-weak { color: var(--eq-dawn-warm); }
+.eq-type-cell-group li b.is-resist { color: var(--eq-opponent); }
+.eq-type-cell-group li b.is-immune { color: var(--eq-success); }
+
+.eq-type-cell-empty { font-size: 12px; color: var(--eq-text-muted); margin: 0; padding: 0 13px; }
+
+/* ---------- card de set completo ---------- */
+.eq-set-card {
+  border: 1px solid var(--eq-border);
+  border-radius: var(--eq-radius-md);
+  background: var(--eq-surface);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.eq-set-card-rail { height: 3px; display: block; }
+.eq-set-card-body { padding: 15px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+
+.eq-set-card-top { display: flex; align-items: center; gap: 12px; }
+.eq-set-card-art {
+  width: 62px;
+  height: 62px;
+  flex: none;
+  border-radius: var(--eq-radius-sm);
+  background: var(--eq-bg-soft);
+  border: 1px solid var(--eq-border);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.eq-set-card-art img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+
+.eq-set-card-name {
+  font-family: var(--eq-font-display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  display: block;
+}
+.eq-set-card-role { font-size: 11.5px; color: var(--eq-text-muted); }
+
+.eq-set-card-types { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+.eq-set-type-pill {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: var(--eq-radius-full);
+}
+
+.eq-set-card-divider { height: 1px; background: var(--eq-border); }
+
+.eq-set-card-spec { display: flex; flex-direction: column; gap: 5px; margin: 0; font-size: 12.5px; }
+.eq-set-card-spec > div { display: grid; grid-template-columns: 56px 1fr; gap: 9px; align-items: baseline; }
+.eq-set-card-spec dt {
+  font-family: var(--eq-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--eq-text-muted);
+}
+.eq-set-card-spec dd { margin: 0; color: var(--eq-text-primary); }
+.eq-set-card-spec dd .eq-dim { color: var(--eq-text-muted); }
+
+.eq-set-card-moves {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+.eq-set-card-moves li {
+  font-size: 12px;
+  padding: 5px 8px;
+  background: var(--eq-bg-soft);
+  border: 1px solid var(--eq-border);
+  border-radius: 6px;
+  line-height: 1.3;
+}
+
+.eq-set-card-stats {
+  font-family: var(--eq-font-mono);
+  font-size: 11px;
+  color: var(--eq-text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: auto;
+}
+.eq-set-card-stats b { color: var(--eq-text-primary); font-weight: 500; }
+
+.eq-set-card-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 15px 13px;
+}
+.eq-set-card-footer a {
+  font-size: 11.5px;
+  color: var(--eq-text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+}
+.eq-set-card-footer a:hover { color: var(--eq-accent); }
+
+@media (max-width: 560px) {
+  .eq-set-card-moves { grid-template-columns: 1fr; }
+  .eq-type-chart-grid { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
+}
+
+/* ============================================================
+   Tipografia global
+
+   Os títulos herdavam a fonte de corpo: o token de display existia
+   mas nada o consumia. Nenhuma outra regra define font-family em
+   heading, então isto não disputa especificidade com o legado.
+   ============================================================ */
+h1, h2, h3, h4,
+.eq-section-title-v3,
+.eq-battle-hero-header h2 {
+  font-family: var(--eq-font-display);
+  letter-spacing: -0.02em;
+}
+
+h1 { font-weight: 800; letter-spacing: -0.035em; }
+h2, h3 { font-weight: 600; }
+
+/* Número é dado: fonte mono e largura tabular, para alinhar em coluna
+   e permitir comparação de relance. */
+.eq-battle-hero-metric strong,
+.eq-option-tabs-v3 strong,
+.eq-metric-card-v2 strong,
+.eq-meter-legend,
+.eq-set-card-stats {
+  font-family: var(--eq-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Piso de acessibilidade: foco visível em qualquer controle, e nenhum
+   deles dependia disso antes. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--eq-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.eq-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- integração com o hero legado ----------
+   .eq-battle-plan-hero-compact é um flex com space-between; sem isto o grid
+   de medidores vira um terceiro item e colapsa numa coluna estreita.
+   Seletores com dois níveis para vencer as regras do index.css. */
+.eq-battle-plan-hero-compact .eq-meter-grid {
+  flex: 1 0 100%;
+  padding-top: 4px;
+  border-top: 1px solid var(--eq-border);
+}
+
+.eq-battle-hero-header .eq-battle-hero-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  opacity: 1;
+}
