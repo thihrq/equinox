@@ -182,6 +182,10 @@ export interface FullTeamEvaluation {
   speedControlScore: number;          // 0–100
   matchupFlexibilityScore: number;    // 0–100
 
+  offensiveScoreBreakdown?: Record<string, number>;
+  offensiveScoreContributions?: Record<string, any>;
+  reasons?: string[];
+
   overallScore: number;               // Média ponderada
 
   weaknesses: TeamWeakness[];
