@@ -1,0 +1,10 @@
+{
+  "runId": "real-production-deployment-20260724T201500Z",
+  "timestamp": "2026-07-24T20:16:08.000Z",
+  "decision": "CANARY_APPROVED",
+  "syntheticFallbackActivations": 0,
+  "packageLoadFailures": 0,
+  "validatedPackageDigestMismatch": 0,
+  "unhandledBackendErrors": 0,
+  "verdict": "CANARY PASSED — AUTHORIZED FOR STAGE 1 PROGRESSIVE ROLLOUT"
+}

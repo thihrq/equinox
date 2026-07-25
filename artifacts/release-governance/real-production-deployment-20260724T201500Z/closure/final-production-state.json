@@ -1,0 +1,22 @@
+{
+  "runId": "real-production-deployment-20260724T201500Z",
+  "timestamp": "2026-07-24T20:22:05.000Z",
+  "declaration": "V2 RUNTIME/SAFETY GENERAL AVAILABILITY DEPLOYED AND STABILIZED",
+  "closureAuthorization": "V2-GA-STABILIZATION-CLOSURE-027",
+  "reconciliation": {
+    "deployedCodeCommit": "cfafc8c7a90c32da24d28f13bfb0ed4f28344fe7",
+    "deployedCodeTag": "v1.0.0-runtime-safety-ready",
+    "evidenceGovernanceCommit": "4ed449b011104e8eccbbf051c6cc0b2f3d26ba6d",
+    "evidenceGovernanceTag": "v1.0.0-runtime-safety-ga-stabilized",
+    "identityConsistency": "PASS"
+  },
+  "productionState": {
+    "trafficPercentage": 100,
+    "packageId": "active-v2",
+    "packageDigest": "sha256:797874d721cd72f361a2cf0085ec4199bdafd00825f58a66ac247bcc442ed665",
+    "syntheticFallbackActivations": 0,
+    "criticalIncidents": 0,
+    "rollbackAvailable": true,
+    "rollbackTargetTag": "v1.0.0-ga-ready"
+  }
+}

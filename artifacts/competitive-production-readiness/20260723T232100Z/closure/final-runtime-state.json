@@ -1,0 +1,15 @@
+{
+  "runtimeMode": "serve",
+  "appliedFinalDesiredState": "general-availability",
+  "packageId": "champions-wave3-validated-package",
+  "packageDigest": "sha256:797874d721cd72f361a2cf0085ec4199bdafd00825f58a66ac247bcc442ed665",
+  "releaseId": "release-wave8-e9abeb5",
+  "health": "healthy",
+  "cacheState": "HEALTHY_ACTIVE",
+  "windowClosed": true,
+  "closedAt": "2026-07-24T02:22:14.772Z",
+  "executionMode": "isolated-production-simulation",
+  "evidenceClass": "simulated",
+  "realPublicTrafficChanged": false,
+  "classification": "WAVE 8 DRY-RUN APPROVED — GENERAL AVAILABILITY READINESS AND POST-LAUNCH STABILIZATION SIMULATION PASSED"
+}

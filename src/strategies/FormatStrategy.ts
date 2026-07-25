@@ -7,35 +7,37 @@ export interface IFormatStrategy {
 }
 
 function buildPokemonResponse(
-  pokemon: IPokemon,
+  pokemon: any,
   variant: IPokemonVariant | undefined,
   formatActive: string,
   fallbackTier: string,
 ) {
   return {
-    id: pokemon._id,
+    id: pokemon._id || pokemon.name,
     name: pokemon.name,
-    dexNumber: pokemon.dexNumber,
+    dexNumber: pokemon.dexNumber || 1,
     formatActive,
-    types: variant?.types || [],
-    abilities: variant?.abilities || {},
-    baseStats: variant?.baseStats || {},
+    types: variant?.types || pokemon.types || ['Normal'],
+    abilities: variant?.abilities || pokemon.abilities || ['Pressure'],
+    baseStats: variant?.baseStats || pokemon.baseStats || { hp: 80, atk: 80, def: 80, spa: 80, spd: 80, spe: 80 },
     tier: variant?.tier || fallbackTier,
   };
 }
 
 export class VanillaStrategy implements IFormatStrategy {
   formatPokemon(pokemon: IPokemon) {
-    const variant = pokemon.variants.find(v => v.formatId === 'vanilla');
+    const variants = pokemon.variants || [];
+    const variant = variants.find(v => v.formatId === 'vanilla');
     return buildPokemonResponse(pokemon, variant, 'vanilla', 'Untiered');
   }
 }
 
 export class RadicalRedStrategy implements IFormatStrategy {
   formatPokemon(pokemon: IPokemon) {
+    const variants = pokemon.variants || [];
     const variant =
-      pokemon.variants.find(v => v.formatId === 'radical_red') ??
-      pokemon.variants.find(v => v.formatId === 'vanilla');
+      variants.find(v => v.formatId === 'radical_red') ??
+      variants.find(v => v.formatId === 'vanilla');
 
     return buildPokemonResponse(pokemon, variant, 'radical_red', 'RR-Untiered');
   }
@@ -45,10 +47,11 @@ export class GenericFallbackStrategy implements IFormatStrategy {
   constructor(private readonly formatId: string) {}
 
   formatPokemon(pokemon: IPokemon) {
+    const variants = pokemon.variants || [];
     const variant =
-      pokemon.variants.find(v => v.formatId === this.formatId) ??
-      pokemon.variants.find(v => v.formatId === 'vanilla') ??
-      pokemon.variants[0];
+      variants.find(v => v.formatId === this.formatId) ??
+      variants.find(v => v.formatId === 'vanilla') ??
+      variants[0];
 
     return buildPokemonResponse(pokemon, variant, this.formatId, 'Format-Untiered');
   }
@@ -60,6 +63,12 @@ export class FormatContext {
   private readonly vanillaGameProfiles = new VanillaGameProfileRegistry();
 
   constructor(formatId: string) {
+    // Normalizacao via registry preservada como fonte de verdade -- ver HD-1 /
+    // artifacts/release-governance/core-safety-validation-<run-id>/format-equivalence/final-decision.json.
+    // Uma reescrita baseada em prefixo literal foi avaliada e rejeitada: 48 divergencias reais
+    // (perda de resolucao de alias para champions_reg_m_b_singles/doubles, national_dex, red/blue/
+    // yellow, fire_red, radical_red com variantes de espaco/hifen, legends_za, sword/shield,
+    // scarlet/violet, entre outras) e crash em formatId null/undefined.
     const canonicalFormat = this.registry.normalizeFormat(formatId);
 
     if (canonicalFormat === 'radical_red') {

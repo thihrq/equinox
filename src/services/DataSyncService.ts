@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
 import { PokemonSet } from '../models/PokemonSet';
+import { resolveDataMode } from '../config/dataMode';
 
 export class DataSyncService {
   private static readonly LOCAL_PACK_PATH = path.join(__dirname, '../equinox/data-packs/sets-data-pack.json');
@@ -32,6 +33,11 @@ export class DataSyncService {
   }
 
   public static async syncRemote(): Promise<void> {
+    if (process.env.EQUINOX_DATA_SYNC_REMOTE !== 'true' || resolveDataMode() === 'filesystem') {
+      console.log('[Equinox DataSync] Sincronizacao remota ignorada (desabilitada ou modo filesystem).');
+      return;
+    }
+
     try {
       let remoteData: any;
       try {

@@ -1,0 +1,8 @@
+{
+  "gate": "Gate 4 — 100% de Tráfego",
+  "authorizationEnvelope": "V2-GENERAL-AVAILABILITY-026",
+  "timestamp": "2026-07-24T20:16:40.000Z",
+  "trafficAuthorizedPercentage": 100,
+  "preconditionsVerified": true,
+  "verdict": "100% PUBLIC TRAFFIC GENERAL AVAILABILITY AUTHORIZED"
+}

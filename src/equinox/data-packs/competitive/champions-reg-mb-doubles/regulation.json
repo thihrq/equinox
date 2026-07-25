@@ -1,11 +1,12 @@
 {
-  "regulationId": "champions_reg_m_b_doubles",
-  "battleStyle": "doubles",
   "formatId": "champions_reg_m_b_doubles",
-  "dataVersion": "2026.07.1",
-  "status": "draft",
-  "megaEvolutionAllowed": true,
-  "notes": [
-    "Draft local pilot package for validation only. Not production approved."
-  ]
+  "regulationId": "M-B",
+  "battleType": "doubles",
+  "validFrom": "2026-06-17",
+  "validUntil": "2026-09-02",
+  "itemClause": true,
+  "maxMegaEvolutionsPerBattle": 1,
+  "teamSize": 6,
+  "bringCount": 4,
+  "schemaVersion": "1"
 }

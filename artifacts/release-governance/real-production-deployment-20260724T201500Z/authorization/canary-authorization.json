@@ -1,0 +1,8 @@
+{
+  "gate": "Gate 2 — Canary Produtivo Real",
+  "authorizationEnvelope": "V2-PRODUCTION-CANARY-022",
+  "timestamp": "2026-07-24T20:15:56.000Z",
+  "audience": "internal-team-and-authenticated-preview-users",
+  "observationWindowMinutes": 30,
+  "verdict": "CANARY EXECUTION AUTHORIZED"
+}

@@ -1,0 +1,4 @@
+import { assertAdversarialFlags, runAdversarialAudit } from '../services/competitive-data/curation/adversarial/ChampionsAdversarialAuditRunner';
+declare const process: { argv: string[]; env: Record<string, string | undefined>; exitCode?: number };
+function argument(name: string, fallback: string): string { const index = process.argv.indexOf(name); return index >= 0 && process.argv[index + 1] ? process.argv[index + 1] : fallback; }
+try { assertAdversarialFlags(); const result = runAdversarialAudit(argument('--curation-run-id', 'champions-mb-sentinel-champions-mb-sentinel-v1'), `champions-mb-adversarial-${argument('--seed', 'v1')}`); console.log(JSON.stringify(result, null, 2)); if (result.errors.length > 0) process.exitCode = 4; } catch (error) { console.error(error instanceof Error ? error.message : error); process.exitCode = 2; }

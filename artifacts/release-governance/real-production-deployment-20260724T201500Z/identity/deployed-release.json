@@ -1,0 +1,15 @@
+{
+  "runId": "real-production-deployment-20260724T201500Z",
+  "timestamp": "2026-07-24T20:22:00.000Z",
+  "reconciliation": {
+    "deployedCodeCommit": "cfafc8c7a90c32da24d28f13bfb0ed4f28344fe7",
+    "deployedCodeTag": "v1.0.0-runtime-safety-ready",
+    "evidenceGovernanceCommit": "4ed449b011104e8eccbbf051c6cc0b2f3d26ba6d",
+    "evidenceGovernanceTag": "v1.0.0-runtime-safety-ga-stabilized",
+    "ancestryVerified": "PASS (cfafc8c7a90c32da24d28f13bfb0ed4f28344fe7 is direct ancestor of 4ed449b011104e8eccbbf051c6cc0b2f3d26ba6d)"
+  },
+  "packageId": "active-v2",
+  "validatedPackageDigest": "sha256:797874d721cd72f361a2cf0085ec4199bdafd00825f58a66ac247bcc442ed665",
+  "rollbackTag": "v1.0.0-ga-ready",
+  "rollbackCommit": "048a11d6940a4cb0a62a3702f7994335e2e5b7cd"
+}
