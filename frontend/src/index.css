@@ -3536,10 +3536,12 @@ img { display: block; }
   backdrop-filter: none;
 }
 
+/* Sem régua cinza aqui: a linha do equinócio logo abaixo já é o divisor.
+   Duas linhas paralelas com 20px de distância competiam entre si e diluíam
+   justamente o elemento que carrega a marca. */
 .eq-sidebar-brand {
   min-height: auto;
   padding-bottom: 18px;
-  border-bottom: 1px solid var(--eq-border-subtle);
 }
 
 .eq-sidebar-brand .eq-brand-orb {
@@ -4233,11 +4235,11 @@ img { display: block; }
   color: var(--eq-text-muted);
 }
 
+/* Mesma razão: a linha do equinócio já separa a marca do formulário. */
 .eq-builder-disclosure {
   grid-column: 1 / -1;
   display: grid;
   gap: 0;
-  border-top: 1px solid var(--eq-border-subtle);
 }
 
 .eq-builder-disclosure summary {
