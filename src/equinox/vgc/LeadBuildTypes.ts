@@ -166,6 +166,8 @@ export interface TeamWeakness {
   mitigatedBy?: string;      // Pokémon ou mecânica que mitiga
 }
 
+import type { StrategyQualityResult } from '../lead-build/evaluateStrategyQuality';
+
 export interface FullTeamEvaluation {
   legal: boolean;
   strategyComplete: boolean;
@@ -181,6 +183,11 @@ export interface FullTeamEvaluation {
   defensiveCoverageScore: number;     // 0–100
   speedControlScore: number;          // 0–100
   matchupFlexibilityScore: number;    // 0–100
+
+  offensiveScoreBreakdown?: Record<string, number>;
+  offensiveScoreContributions?: Record<string, any>;
+  reasons?: string[];
+  qualityResult?: StrategyQualityResult;
 
   overallScore: number;               // Média ponderada
 

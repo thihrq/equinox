@@ -229,7 +229,7 @@ export class LeadStrategyRecommendationService {
         result.evaluation.strategyComplete &&
         result.evaluation.overallScore >= 60 &&
         result.evaluation.roleCoverageScore >= 55 &&
-        result.evaluation.offensiveBalanceScore >= 45,
+        (result.evaluation.qualityResult?.valid ?? result.evaluation.offensiveBalanceScore >= 45),
       )
       .sort((a, b) => b.completion.fullTeamScore - a.completion.fullTeamScore);
 

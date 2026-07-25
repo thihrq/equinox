@@ -14,6 +14,8 @@ import { getDamageMultiplier } from '../utils/DamageMultiplier';
 import { isMegaOption } from '../utils/VgcSetOptimizer';
 import { FormatSolverRegistry } from '../format-solvers/FormatSolverRegistry';
 import { validateCompetitiveTeam } from '../competitive/CompetitiveTeamLegalityValidator';
+import { diagnoseOffensiveScore } from '../lead-build/StrategyQualityDiagnostics';
+import { evaluateStrategyQuality } from '../lead-build/evaluateStrategyQuality';
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
 
@@ -643,6 +645,14 @@ export function evaluateFullTeam(
     matchupFlexibility: matchupFlexibilityScore,
   });
 
+  const diagnostics = diagnoseOffensiveScore(team, format);
+  const qualityResult = evaluateStrategyQuality({
+    strategyId: strategy.id,
+    legal: legality.legal,
+    strategyComplete,
+    breakdown: diagnostics.breakdown,
+  });
+
   return {
     legal: legality.legal,
     strategyComplete,
@@ -653,6 +663,10 @@ export function evaluateFullTeam(
     defensiveCoverageScore,
     speedControlScore,
     matchupFlexibilityScore,
+    offensiveScoreBreakdown: diagnostics.breakdown as any,
+    offensiveScoreContributions: diagnostics.contributions as any,
+    reasons: diagnostics.reasons,
+    qualityResult,
     overallScore,
     weaknesses,
     warnings,
