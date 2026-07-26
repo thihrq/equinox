@@ -2,6 +2,7 @@ import { PokemonData } from '../core/AnalysisContext';
 import { getSpeciesClauseKey } from '../utils/PokemonUtils';
 import { CandidateSearchContext } from './CandidateSearchContext';
 import { filterCandidatePool, CandidateFilterStats } from './filterCandidatePool';
+import { stratifyCandidatePool } from './CandidatePoolStratifier';
 
 export interface CandidatePoolOptions {
   targetUsableCandidates: number;
@@ -112,7 +113,8 @@ export function replenishCandidatePool(
     }
   }
 
-  const usableCandidates = Array.from(usableMap.values());
+  const rawUsable = Array.from(usableMap.values());
+  const usableCandidates = stratifyCandidatePool(rawUsable, context);
 
   console.log(
     `[CandidateFetch] rawFetched=${rawFetched} batchesFetched=${batchesFetched} duplicates=${duplicateCount} ` +
