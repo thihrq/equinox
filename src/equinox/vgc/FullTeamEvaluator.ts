@@ -16,6 +16,7 @@ import { FormatSolverRegistry } from '../format-solvers/FormatSolverRegistry';
 import { validateCompetitiveTeam } from '../competitive/CompetitiveTeamLegalityValidator';
 import { diagnoseOffensiveScore } from '../lead-build/StrategyQualityDiagnostics';
 import { evaluateStrategyQuality } from '../lead-build/evaluateStrategyQuality';
+import { calculateTeamDefensiveProfile } from '../lead-build/TeamDefensiveProfile';
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
 
@@ -652,6 +653,7 @@ export function evaluateFullTeam(
     strategyComplete,
     breakdown: diagnostics.breakdown,
   });
+  const defensiveProfile = calculateTeamDefensiveProfile(team as any);
 
   return {
     legal: legality.legal,
@@ -667,6 +669,7 @@ export function evaluateFullTeam(
     offensiveScoreContributions: diagnostics.contributions as any,
     reasons: diagnostics.reasons,
     qualityResult,
+    defensiveProfile,
     overallScore,
     weaknesses,
     warnings,

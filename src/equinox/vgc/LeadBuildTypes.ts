@@ -167,6 +167,7 @@ export interface TeamWeakness {
 }
 
 import type { StrategyQualityResult } from '../lead-build/evaluateStrategyQuality';
+import type { TeamDefensiveProfile } from '../lead-build/TeamDefensiveProfile';
 
 export interface FullTeamEvaluation {
   legal: boolean;
@@ -188,6 +189,7 @@ export interface FullTeamEvaluation {
   offensiveScoreContributions?: Record<string, any>;
   reasons?: string[];
   qualityResult?: StrategyQualityResult;
+  defensiveProfile?: TeamDefensiveProfile;
 
   overallScore: number;               // Média ponderada
 
