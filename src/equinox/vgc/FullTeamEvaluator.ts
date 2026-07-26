@@ -17,6 +17,8 @@ import { validateCompetitiveTeam } from '../competitive/CompetitiveTeamLegalityV
 import { diagnoseOffensiveScore } from '../lead-build/StrategyQualityDiagnostics';
 import { evaluateStrategyQuality } from '../lead-build/evaluateStrategyQuality';
 import { calculateTeamDefensiveProfile } from '../lead-build/TeamDefensiveProfile';
+import { evaluateDefensiveQuality } from '../lead-build/evaluateDefensiveQuality';
+import { evaluateSpreadMoveExposure } from '../lead-build/SpreadMoveExposureEvaluator';
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
 
@@ -647,13 +649,29 @@ export function evaluateFullTeam(
   });
 
   const diagnostics = diagnoseOffensiveScore(team, format);
-  const qualityResult = evaluateStrategyQuality({
+  const rawQualityResult = evaluateStrategyQuality({
     strategyId: strategy.id,
     legal: legality.legal,
     strategyComplete,
     breakdown: diagnostics.breakdown,
   });
   const defensiveProfile = calculateTeamDefensiveProfile(team as any);
+  const defensiveQuality = evaluateDefensiveQuality(defensiveProfile);
+  const spreadMoveExposure = evaluateSpreadMoveExposure(team as any, defensiveProfile);
+
+  const qualityResult = {
+    ...rawQualityResult,
+    valid: rawQualityResult.valid && defensiveQuality.valid,
+    reasons: [...rawQualityResult.reasons, ...(defensiveQuality.reasons as any[])],
+  };
+
+  console.log(`[DefensiveQuality] strategyId=${strategy.id} profileId=${qualityResult.profileId} valid=${defensiveQuality.valid} score=${defensiveQuality.score} criticalExposureCount=${defensiveQuality.criticalExposureCount} highestExposureType=${defensiveQuality.highestExposureType || 'none'} reasons=[${defensiveQuality.reasons.join(', ')}]`);
+
+  for (const spread of spreadMoveExposure) {
+    if (spread.critical) {
+      console.log(`[SpreadExposure] strategyId=${strategy.id} type=${spread.attackType} moves=${spread.relevantMoves.join(',')} vulnerableTargets=${spread.vulnerableTargets} wideGuard=${spread.wideGuardAvailable} score=${spread.exposureScore} critical=${spread.critical}`);
+    }
+  }
 
   return {
     legal: legality.legal,
@@ -670,6 +688,8 @@ export function evaluateFullTeam(
     reasons: diagnostics.reasons,
     qualityResult,
     defensiveProfile,
+    defensiveQuality,
+    spreadMoveExposure,
     overallScore,
     weaknesses,
     warnings,
