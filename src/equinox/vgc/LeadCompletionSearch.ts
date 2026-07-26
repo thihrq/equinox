@@ -18,6 +18,7 @@ import { hasDuplicateItem } from '../competitive/CompetitiveTeamLegalityValidato
 
 import { createCandidateSearchContext } from '../lead-build/CandidateSearchContext';
 import { replenishCandidatePool } from '../lead-build/replenishCandidatePool';
+import { evaluatePartialTeamDefensiveQuality } from '../lead-build/PartialTeamDefensiveEvaluator';
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
 
@@ -169,6 +170,7 @@ function expandBeam(
   let rejectedMega = 0;
   let rejectedItem = 0;
   let rejectedValidity = 0;
+  let rejectedDefensive = 0;
 
   for (const entry of beam) {
     for (const candidate of candidates) {
@@ -193,16 +195,24 @@ function expandBeam(
       // Validar time parcial com FormatObjectiveGuards
       if (!isPartialTeamValid(newTeam, format)) { rejectedValidity++; continue; }
 
+      const remainingSlots = 6 - newTeam.length;
+      const partialDefensive = evaluatePartialTeamDefensiveQuality(newTeam, remainingSlots, candidates);
+
+      if (partialDefensive.pruned) {
+        rejectedDefensive++;
+        continue;
+      }
+
       expanded.push({
         team: newTeam,
-        cumulativeScore: entry.cumulativeScore + candidateScore,
+        cumulativeScore: entry.cumulativeScore + candidateScore - partialDefensive.totalPenalty,
       });
     }
   }
 
   console.log(
     `[LeadBuild] expandBeam(${strategy.id}): beamIn=${beam.length} candidates=${candidates.length} -> expanded=${expanded.length} ` +
-    `(rejectedSpecies=${rejectedSpecies}, rejectedMega=${rejectedMega}, rejectedItem=${rejectedItem}, rejectedValidity=${rejectedValidity})`,
+    `(rejectedSpecies=${rejectedSpecies}, rejectedMega=${rejectedMega}, rejectedItem=${rejectedItem}, rejectedValidity=${rejectedValidity}, rejectedDefensive=${rejectedDefensive})`,
   );
 
   // Ordenar por score cumulativo e manter apenas os top N
