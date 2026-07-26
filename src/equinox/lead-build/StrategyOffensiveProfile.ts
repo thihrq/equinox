@@ -95,6 +95,8 @@ const PROFILES: Record<StrategyOffensiveProfileId, StrategyOffensiveProfile> = {
   },
 };
 
+import { resolveStrategyProfile } from './StrategyProfileRegistry';
+
 /**
  * Retorna o perfil de qualidade ofensiva contextualizado para a estratégia solicitada.
  * Se a estratégia for desconhecida, faz fallback fail-closed controlado para 'balanced'.
@@ -102,15 +104,15 @@ const PROFILES: Record<StrategyOffensiveProfileId, StrategyOffensiveProfile> = {
 export function getStrategyOffensiveProfile(
   strategyId: string,
 ): StrategyOffensiveProfile {
-  const normalized = (strategyId || '').toLowerCase().trim() as StrategyOffensiveProfileId;
+  const resolved = resolveStrategyProfile(strategyId);
+  const baseProfile = PROFILES[resolved.profileId] || PROFILES.balanced;
 
-  if (normalized in PROFILES) {
-    return PROFILES[normalized];
+  if (resolved.fallbackUsed) {
+    return {
+      ...baseProfile,
+      fallbackUsed: true,
+    };
   }
 
-  console.warn(`[StrategyOffensiveProfile] Estratégia desconhecida '${strategyId}'. Aplicando UNKNOWN_STRATEGY_PROFILE_FALLBACK ('balanced').`);
-  return {
-    ...PROFILES.balanced,
-    fallbackUsed: true,
-  };
+  return baseProfile;
 }
