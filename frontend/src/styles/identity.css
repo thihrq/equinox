@@ -279,171 +279,192 @@
 
 .eq-type-cell-empty { font-size: 12px; color: var(--eq-text-muted); margin: 0; padding: 0 13px; }
 
-/* ---------- card de set completo ---------- */
+/* ---------- card de set, formato carta ----------
+   Retrato estreito em vez de faixa horizontal: a arte sobe para o topo e vira
+   o ponto de entrada da leitura, como numa carta física. O ganho não é só
+   estético — em 1100px cabiam 1 card por linha, agora cabem 5, então o time
+   inteiro é lido de uma vez em vez de exigir rolagem. */
+.eq-set-card-grid,
+.eq-competitive-team__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+  gap: 12px;
+}
+
 .eq-set-card {
+  --eq-card-accent: var(--eq-border-strong);
+  position: relative;
   border: 1px solid var(--eq-border);
-  border-radius: var(--eq-radius-md);
-  background: var(--eq-surface);
+  border-radius: var(--eq-radius-sm);
+  background:
+    radial-gradient(120% 60% at 50% 0%, color-mix(in srgb, var(--eq-card-accent) 14%, transparent), transparent 70%),
+    var(--eq-surface);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  transition: border-color var(--eq-transition-fast), transform var(--eq-transition-fast);
 }
-.eq-set-card-rail { height: 3px; display: block; }
-.eq-set-card-body { padding: 15px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+.eq-set-card:hover { border-color: var(--eq-card-accent); transform: translateY(-2px); }
+.eq-set-card.is-lead { border-color: color-mix(in srgb, var(--eq-accent) 45%, transparent); }
 
-.eq-set-card-top { display: flex; align-items: center; gap: 12px; }
-.eq-set-card-art {
-  width: 62px;
-  height: 62px;
-  flex: none;
-  border-radius: var(--eq-radius-sm);
-  background: var(--eq-bg-soft);
-  border: 1px solid var(--eq-border);
-  display: grid;
-  place-items: center;
-  overflow: hidden;
+.eq-set-card-rail { height: 3px; display: block; flex: none; }
+
+/* --- topo: tipos à direita, selo de lead à esquerda --- */
+.eq-set-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  min-height: 22px;
+  padding: 7px 8px 0;
 }
-.eq-set-card-art img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
-
-.eq-set-card-name {
-  font-family: var(--eq-font-display);
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
-  display: block;
-}
-.eq-set-card-role { font-size: 11.5px; color: var(--eq-text-muted); }
-
-.eq-set-card-types { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
-.eq-set-type-pill {
-  font-size: 9.5px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  padding: 3px 7px;
-  border-radius: var(--eq-radius-full);
-}
-
-.eq-set-card-divider { height: 1px; background: var(--eq-border); }
-
-.eq-set-card-spec { display: flex; flex-direction: column; gap: 5px; margin: 0; font-size: 12.5px; }
-.eq-set-card-spec > div { display: grid; grid-template-columns: 56px 1fr; gap: 9px; align-items: baseline; }
-.eq-set-card-spec dt {
+.eq-set-card-lead {
+  margin-right: auto;
   font-family: var(--eq-font-mono);
-  font-size: 10px;
+  font-size: 8.5px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--eq-text-muted);
+  color: var(--eq-accent);
+  border: 1px solid color-mix(in srgb, var(--eq-accent) 45%, transparent);
+  border-radius: var(--eq-radius-full);
+  padding: 2px 6px;
 }
-.eq-set-card-spec dd { margin: 0; color: var(--eq-text-primary); }
-.eq-set-card-spec dd .eq-dim { color: var(--eq-text-muted); }
+.eq-set-type-pill {
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: var(--eq-radius-full);
+  white-space: nowrap;
+}
 
-.eq-set-card-moves {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+/* --- arte: maior que na versão anterior (62 -> 96), não menor --- */
+.eq-set-card-art {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 5px;
+  place-items: center;
+  height: 96px;
+  margin: 2px 0 4px;
 }
-.eq-set-card-moves li {
-  font-size: 12px;
-  padding: 5px 8px;
-  background: var(--eq-bg-soft);
-  border: 1px solid var(--eq-border);
-  border-radius: 6px;
-  line-height: 1.3;
+.eq-set-card-art img {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.45));
 }
 
-.eq-set-card-stats {
-  font-family: var(--eq-font-mono);
-  font-size: 11px;
-  color: var(--eq-text-secondary);
+/* --- identidade --- */
+.eq-set-card-id { padding: 0 10px 8px; text-align: center; }
+.eq-set-card-name {
+  font-family: var(--eq-font-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  display: block;
+  overflow-wrap: anywhere;
+}
+.eq-set-card-role {
+  display: block;
+  font-size: 10px;
+  line-height: 1.35;
+  color: var(--eq-text-muted);
+  margin-top: 3px;
+}
+
+/* --- ficha: rótulo curto em mono + valor, tudo em 11px --- */
+.eq-set-card-spec {
+  margin: 0;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
   gap: 3px;
+  border-top: 1px solid var(--eq-border);
+  font-size: 11px;
+}
+.eq-set-card-spec > div { display: grid; grid-template-columns: 30px 1fr; gap: 6px; align-items: baseline; }
+.eq-set-card-spec dt {
+  font-family: var(--eq-font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--eq-text-muted);
+}
+.eq-set-card-spec dd { margin: 0; color: var(--eq-text-primary); line-height: 1.3; overflow-wrap: anywhere; }
+.eq-set-card-spec dd .eq-dim { color: var(--eq-text-muted); font-size: 10px; }
+
+/* --- golpes: uma coluna, linhas finas, sem caixa por item --- */
+.eq-set-card-moves {
+  list-style: none;
+  margin: 0;
+  padding: 7px 10px;
+  border-top: 1px solid var(--eq-border);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.eq-set-card-moves li {
+  font-size: 10.5px;
+  line-height: 1.45;
+  padding-left: 9px;
+  position: relative;
+  color: var(--eq-text-secondary);
+  overflow-wrap: anywhere;
+}
+.eq-set-card-moves li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--eq-card-accent);
+}
+
+/* --- spread --- */
+.eq-set-card-stats {
+  font-family: var(--eq-font-mono);
+  font-size: 9.5px;
+  line-height: 1.5;
+  color: var(--eq-text-muted);
+  padding: 7px 10px;
+  border-top: 1px solid var(--eq-border);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
   margin-top: auto;
 }
-.eq-set-card-stats b { color: var(--eq-text-primary); font-weight: 500; }
+.eq-set-card-stats b { color: var(--eq-text-secondary); font-weight: 500; }
 
 .eq-set-card-footer {
   display: flex;
-  justify-content: flex-end;
-  padding: 0 15px 13px;
+  justify-content: center;
+  padding: 6px 10px 8px;
+  border-top: 1px solid var(--eq-border);
 }
-.eq-set-card-footer a {
-  font-size: 11.5px;
+.eq-set-card-footer a,
+.eq-set-card-footer .eq-inline-action {
+  font-size: 10px;
   color: var(--eq-text-muted);
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   text-decoration: none;
-}
-.eq-set-card-footer a:hover { color: var(--eq-accent); }
-
-@media (max-width: 560px) {
-  .eq-set-card-moves { grid-template-columns: 1fr; }
-  .eq-type-chart-grid { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
-}
-
-/* ============================================================
-   Tipografia global
-
-   Os títulos herdavam a fonte de corpo: o token de display existia
-   mas nada o consumia. Nenhuma outra regra define font-family em
-   heading, então isto não disputa especificidade com o legado.
-   ============================================================ */
-h1, h2, h3, h4,
-.eq-section-title-v3,
-.eq-battle-hero-header h2 {
-  font-family: var(--eq-font-display);
-  letter-spacing: -0.02em;
-}
-
-h1 { font-weight: 800; letter-spacing: -0.035em; }
-h2, h3 { font-weight: 600; }
-
-/* Número é dado: fonte mono e largura tabular, para alinhar em coluna
-   e permitir comparação de relance. */
-.eq-battle-hero-metric strong,
-.eq-option-tabs-v3 strong,
-.eq-metric-card-v2 strong,
-.eq-meter-legend,
-.eq-set-card-stats {
-  font-family: var(--eq-font-mono);
-  font-variant-numeric: tabular-nums;
-}
-
-/* Piso de acessibilidade: foco visível em qualquer controle, e nenhum
-   deles dependia disso antes. */
-:where(a, button, input, select, textarea, [tabindex]):focus-visible {
-  outline: 2px solid var(--eq-accent);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-.eq-sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
+  background: none;
   border: 0;
+  cursor: pointer;
 }
+.eq-set-card-footer a:hover,
+.eq-set-card-footer .eq-inline-action:hover { color: var(--eq-accent); }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+/* Telas estreitas: duas colunas ainda cabem sem espremer a arte. */
+@media (max-width: 560px) {
+  .eq-set-card-grid,
+  .eq-competitive-team__grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .eq-set-card-art, .eq-set-card-art img { height: 80px; width: 80px; }
 }
-
 /* ---------- integração com o hero legado ----------
    .eq-battle-plan-hero-compact é um flex com space-between; sem isto o grid
    de medidores vira um terceiro item e colapsa numa coluna estreita.
@@ -459,4 +480,19 @@ h2, h3 { font-weight: 600; }
   align-items: center;
   gap: 3px;
   opacity: 1;
+}
+
+/* O grid do fluxo clássico era fixo em 3 colunas, largura pensada para o card
+   horizontal antigo. Com o card em retrato, o mesmo espaço comporta o time
+   inteiro numa linha. Dois níveis de seletor para vencer o index.css. */
+.eq-results-v3 .eq-pokemon-grid-v3 {
+  grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 560px) {
+  .eq-results-v3 .eq-pokemon-grid-v3 {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+  }
 }

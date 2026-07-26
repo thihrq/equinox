@@ -1,4 +1,5 @@
 import React from 'react';
+import type { CSSProperties } from 'react';
 import { Clipboard } from 'lucide-react';
 import type { Locale } from '../../i18n/equinoxI18n';
 import type { CompetitiveStatSpread, PokemonData } from '../../types/lead';
@@ -63,90 +64,87 @@ export const CompetitiveTeamGrid: React.FC<CompetitiveTeamGridProps> = ({ team, 
           const ivs = formatIvs(set?.ivs);
           const sprite = getPokemonSpriteUrl(member.name);
 
+          const accent = typeEntries[0]?.color;
           const rail = typeEntries.length
             ? `linear-gradient(90deg, ${typeEntries[0].color}, ${(typeEntries[1] ?? typeEntries[0]).color})`
             : 'var(--eq-border-strong)';
 
           return (
-            <article key={member.name} className={`eq-set-card ${isLead ? 'is-lead' : ''}`}>
+            <article
+              key={member.name}
+              className={`eq-set-card ${isLead ? 'is-lead' : ''}`}
+              style={accent ? ({ '--eq-card-accent': accent } as CSSProperties) : undefined}
+            >
               <span className="eq-set-card-rail" style={{ background: rail }} aria-hidden="true" />
 
-              <div className="eq-set-card-body">
-                <div className="eq-set-card-top">
-                  <span className="eq-set-card-art">
-                    {sprite && (
-                      <img
-                        src={sprite}
-                        alt={member.name}
-                        loading="lazy"
-                        onError={event => {
-                          event.currentTarget.src = getNextPokemonSpriteUrl(member.name, event.currentTarget.src);
-                        }}
-                      />
-                    )}
+              <div className="eq-set-card-head">
+                {isLead && <span className="eq-set-card-lead">Lead</span>}
+                {typeEntries.map(({ type, color }) => (
+                  <span
+                    key={type}
+                    className="eq-set-type-pill"
+                    style={{ background: color, color: getReadableTextOnType(color) }}
+                  >
+                    {getPokemonTypeLabel(type, locale)}
                   </span>
-                  <span>
-                    <span className="eq-set-card-name">
-                      {member.name}
-                      {isLead && <span className="eq-set-card-lead">Lead</span>}
-                    </span>
-                    <span className="eq-set-card-role">{set?.role ?? member.role ?? ''}</span>
-                    {typeEntries.length > 0 && (
-                      <span className="eq-set-card-types">
-                        {typeEntries.map(({ type, color }) => (
-                          <span
-                            key={type}
-                            className="eq-set-type-pill"
-                            style={{ background: color, color: getReadableTextOnType(color) }}
-                          >
-                            {getPokemonTypeLabel(type, locale)}
-                          </span>
-                        ))}
-                      </span>
-                    )}
-                  </span>
-                </div>
+                ))}
+              </div>
 
-                <span className="eq-set-card-divider" aria-hidden="true" />
-
-                <dl className="eq-set-card-spec">
-                  <div>
-                    <dt>{locale === 'pt-BR' ? 'Hab.' : 'Ability'}</dt>
-                    <dd>{set?.ability ?? member.ability ?? '—'}</dd>
-                  </div>
-                  <div>
-                    <dt>{locale === 'pt-BR' ? 'Item' : 'Item'}</dt>
-                    <dd>{set?.item ?? member.item ?? '—'}</dd>
-                  </div>
-                  <div>
-                    <dt>{locale === 'pt-BR' ? 'Nat.' : 'Nature'}</dt>
-                    <dd>
-                      {nature ?? '—'}
-                      {natureEffect && <span className="eq-dim"> {natureEffect}</span>}
-                    </dd>
-                  </div>
-                  {set?.teraType && (
-                    <div>
-                      <dt>Tera</dt>
-                      <dd>{getPokemonTypeLabel(set.teraType, locale)}</dd>
-                    </div>
-                  )}
-                </dl>
-
-                {moves.length > 0 && (
-                  <ul className="eq-set-card-moves">
-                    {moves.slice(0, 4).map(move => (
-                      <li key={move}>{move}</li>
-                    ))}
-                  </ul>
+              <div className="eq-set-card-art">
+                {sprite && (
+                  <img
+                    src={sprite}
+                    alt={member.name}
+                    loading="lazy"
+                    onError={event => {
+                      event.currentTarget.src = getNextPokemonSpriteUrl(member.name, event.currentTarget.src);
+                    }}
+                  />
                 )}
+              </div>
 
-                <div className="eq-set-card-stats">
-                  <span>EVs <b>{evs || '—'}</b></span>
-                  <span>
-                    IVs <b>{ivs || (locale === 'pt-BR' ? '31 em tudo' : 'all 31')}</b>
-                  </span>
+              <div className="eq-set-card-id">
+                <span className="eq-set-card-name">{member.name}</span>
+                {(set?.role ?? member.role) && (
+                  <span className="eq-set-card-role">{set?.role ?? member.role}</span>
+                )}
+              </div>
+
+              <dl className="eq-set-card-spec">
+                <div>
+                  <dt>{locale === 'pt-BR' ? 'Hab' : 'Abil'}</dt>
+                  <dd>{set?.ability ?? member.ability ?? '—'}</dd>
                 </div>
+                <div>
+                  <dt>Item</dt>
+                  <dd>{set?.item ?? member.item ?? '—'}</dd>
+                </div>
+                <div>
+                  <dt>Nat</dt>
+                  <dd>
+                    {nature ?? '—'}
+                    {natureEffect && <span className="eq-dim"> {natureEffect}</span>}
+                  </dd>
+                </div>
+                {set?.teraType && (
+                  <div>
+                    <dt>Tera</dt>
+                    <dd>{getPokemonTypeLabel(set.teraType, locale)}</dd>
+                  </div>
+                )}
+              </dl>
+
+              {moves.length > 0 && (
+                <ul className="eq-set-card-moves">
+                  {moves.slice(0, 4).map(move => (
+                    <li key={move}>{move}</li>
+                  ))}
+                </ul>
+              )}
+
+              <div className="eq-set-card-stats">
+                <span>EVs <b>{evs || '—'}</b></span>
+                <span>IVs <b>{ivs || (locale === 'pt-BR' ? '31 em tudo' : 'all 31')}</b></span>
               </div>
 
               <footer className="eq-set-card-footer">
@@ -155,7 +153,7 @@ export const CompetitiveTeamGrid: React.FC<CompetitiveTeamGridProps> = ({ team, 
                   className="eq-inline-action"
                   onClick={() => navigator.clipboard.writeText(toShowdown([member]))}
                 >
-                  <Clipboard size={13} aria-hidden="true" />
+                  <Clipboard size={11} aria-hidden="true" />
                   {locale === 'pt-BR' ? 'Copiar set' : 'Copy set'}
                 </button>
               </footer>
