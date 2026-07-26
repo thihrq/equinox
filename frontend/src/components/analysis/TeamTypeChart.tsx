@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { Locale } from '../../i18n/equinoxI18n';
 import { getPokemonTypeColor, getPokemonTypeLabel, getReadableTextOnType } from '../../utils/pokemonTypeColors';
 import { getNextPokemonSpriteUrl, getPokemonSpriteUrl } from '../../utils/pokemonSprites';
@@ -51,8 +51,7 @@ export function TeamTypeChart({ members, locale }: TeamTypeChartProps) {
    * grid é auto-fit não há como saber em CSS qual célula inicia a linha. Medir e
    * deslocar é a única forma correta.
    */
-  const placePopover = useCallback((event: { currentTarget: HTMLElement }) => {
-    const cell = event.currentTarget;
+  const placeCell = useCallback((cell: HTMLElement) => {
     const popover = cell.querySelector<HTMLElement>('.eq-type-cell-popover');
     const grid = gridRef.current;
     if (!popover || !grid) return;
@@ -68,6 +67,32 @@ export function TeamTypeChart({ members, locale }: TeamTypeChartProps) {
 
     if (shift) popover.style.transform = `translateX(calc(-50% + ${Math.round(shift)}px))`;
   }, []);
+
+  const placePopover = useCallback(
+    (event: { currentTarget: HTMLElement }) => placeCell(event.currentTarget),
+    [placeCell],
+  );
+
+  /**
+   * Posiciona todos os balões já na montagem e a cada redimensionamento.
+   *
+   * Fazer isso só no hover deixava os das colunas da ponta fora dos limites até
+   * o primeiro apontamento — e, como um elemento `visibility: hidden` ainda
+   * ocupa layout, isso gerava barra de rolagem horizontal na página inteira.
+   */
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) return;
+
+    const placeAll = () => {
+      grid.querySelectorAll<HTMLElement>('.eq-type-cell').forEach(placeCell);
+    };
+
+    placeAll();
+    const observer = new ResizeObserver(placeAll);
+    observer.observe(grid);
+    return () => observer.disconnect();
+  }, [placeCell, rows]);
 
   if (rows.length === 0 || members.length === 0) return null;
 
