@@ -19,6 +19,7 @@ import { evaluateStrategyQuality } from '../lead-build/evaluateStrategyQuality';
 import { calculateTeamDefensiveProfile } from '../lead-build/TeamDefensiveProfile';
 import { evaluateDefensiveQuality } from '../lead-build/evaluateDefensiveQuality';
 import { evaluateSpreadMoveExposure } from '../lead-build/SpreadMoveExposureEvaluator';
+import { evaluateSetCoherence } from '../lead-build/SetCoherenceEvaluator';
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
 
@@ -658,11 +659,17 @@ export function evaluateFullTeam(
   const defensiveProfile = calculateTeamDefensiveProfile(team as any);
   const defensiveQuality = evaluateDefensiveQuality(defensiveProfile);
   const spreadMoveExposure = evaluateSpreadMoveExposure(team as any, defensiveProfile);
+  const setCoherenceResults = team.map(member => evaluateSetCoherence(member));
+  const allSetCoherenceValid = setCoherenceResults.every(r => r.valid);
 
   const qualityResult = {
     ...rawQualityResult,
-    valid: rawQualityResult.valid && defensiveQuality.valid,
-    reasons: [...rawQualityResult.reasons, ...(defensiveQuality.reasons as any[])],
+    valid: rawQualityResult.valid && defensiveQuality.valid && allSetCoherenceValid,
+    reasons: [
+      ...rawQualityResult.reasons,
+      ...(defensiveQuality.reasons as any[]),
+      ...(allSetCoherenceValid ? [] : ['SET_COHERENCE_FAILURE']),
+    ],
   };
 
   console.log(`[DefensiveQuality] strategyId=${strategy.id} profileId=${qualityResult.profileId} valid=${defensiveQuality.valid} score=${defensiveQuality.score} criticalExposureCount=${defensiveQuality.criticalExposureCount} highestExposureType=${defensiveQuality.highestExposureType || 'none'} reasons=[${defensiveQuality.reasons.join(', ')}]`);
