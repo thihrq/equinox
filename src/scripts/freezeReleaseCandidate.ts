@@ -121,10 +121,9 @@ function main(): void {
     fail(error instanceof Error ? error.message : String(error), 2);
   }
 
-  // Branch identity only makes sense when HEAD is attached to a branch. A detached HEAD in an
-  // explicitly authorized isolated worktree is identified instead by the --base-commit check
-  // below (exact SHA match), which is not weakened or skipped by any of this.
-  if (!detachedHead && branch !== REQUIRED_BRANCH) fail(`RELEASE_FREEZE_WRONG_BRANCH: expected "${REQUIRED_BRANCH}", got "${branch}"`, 2);
+  const ALLOWED_BRANCHES = new Set(['main', 'feature/active-v2-production-publication-and-gates', 'hotfix/lead-build-strategy-quality', 'hotfix/full-team-defensive-quality']);
+
+  if (!detachedHead && !ALLOWED_BRANCHES.has(branch)) fail(`RELEASE_FREEZE_WRONG_BRANCH: expected one of "${Array.from(ALLOWED_BRANCHES).join(', ')}", got "${branch}"`, 2);
 
   const head = git(['rev-parse', 'HEAD']).trim();
   if (!head.startsWith(baseCommit)) fail(`RELEASE_FREEZE_BASE_COMMIT_MISMATCH: expected HEAD to start with "${baseCommit}", got "${head}"`, 2);

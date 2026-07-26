@@ -3,12 +3,15 @@ import { getSpeciesClauseKey } from '../utils/PokemonUtils';
 import { isMegaOption } from '../utils/VgcSetOptimizer';
 import { CandidateSearchContext } from './CandidateSearchContext';
 
+import { evaluateSetCoherence } from './SetCoherenceEvaluator';
+
 export type CandidateRejectionReason =
   | 'INVALID'
   | 'FORMAT_MISMATCH'
   | 'SPECIES_CLAUSE'
   | 'MEGA_LIMIT'
-  | 'ITEM_CLAUSE';
+  | 'ITEM_CLAUSE'
+  | 'SET_COHERENCE';
 
 export interface CandidateFilterStats {
   rejectedInvalid: number;
@@ -16,6 +19,7 @@ export interface CandidateFilterStats {
   rejectedSpecies: number;
   rejectedMega: number;
   rejectedItem: number;
+  rejectedSetCoherence: number;
 }
 
 export interface CandidateFilterResult {
@@ -44,6 +48,7 @@ export function filterCandidatePool(
     rejectedSpecies: 0,
     rejectedMega: 0,
     rejectedItem: 0,
+    rejectedSetCoherence: 0,
   };
 
   for (const candidate of candidates) {
@@ -82,6 +87,14 @@ export function filterCandidatePool(
       continue;
     }
 
+    // 5. Coerência interna do Set
+    const setCoherence = evaluateSetCoherence(candidate);
+    if (!setCoherence.valid) {
+      stats.rejectedSetCoherence++;
+      rejected.push({ candidateId, reason: 'SET_COHERENCE' });
+      continue;
+    }
+
     accepted.push(candidate);
   }
 
@@ -89,7 +102,7 @@ export function filterCandidatePool(
     `[CandidateFilter] input=${candidates.length} accepted=${accepted.length} ` +
     `rejectedInvalid=${stats.rejectedInvalid} rejectedFormat=${stats.rejectedFormat} ` +
     `rejectedSpecies=${stats.rejectedSpecies} rejectedMega=${stats.rejectedMega} ` +
-    `rejectedItem=${stats.rejectedItem}`,
+    `rejectedItem=${stats.rejectedItem} rejectedSetCoherence=${stats.rejectedSetCoherence}`,
   );
 
   return {

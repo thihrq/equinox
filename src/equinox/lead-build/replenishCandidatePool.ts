@@ -2,6 +2,7 @@ import { PokemonData } from '../core/AnalysisContext';
 import { getSpeciesClauseKey } from '../utils/PokemonUtils';
 import { CandidateSearchContext } from './CandidateSearchContext';
 import { filterCandidatePool, CandidateFilterStats } from './filterCandidatePool';
+import { stratifyCandidatePool } from './CandidatePoolStratifier';
 
 export interface CandidatePoolOptions {
   targetUsableCandidates: number;
@@ -56,6 +57,7 @@ export function replenishCandidatePool(
     rejectedSpecies: 0,
     rejectedMega: 0,
     rejectedItem: 0,
+    rejectedSetCoherence: 0,
   };
 
   const totalRawAvailable = rawCandidates.length;
@@ -96,6 +98,7 @@ export function replenishCandidatePool(
     accumulatedStats.rejectedSpecies += filterResult.stats.rejectedSpecies;
     accumulatedStats.rejectedMega += filterResult.stats.rejectedMega;
     accumulatedStats.rejectedItem += filterResult.stats.rejectedItem;
+    accumulatedStats.rejectedSetCoherence += filterResult.stats.rejectedSetCoherence;
 
     for (const acceptedCandidate of filterResult.accepted) {
       const key = getCandidateDeduplicationKey(acceptedCandidate);
@@ -112,7 +115,8 @@ export function replenishCandidatePool(
     }
   }
 
-  const usableCandidates = Array.from(usableMap.values());
+  const rawUsable = Array.from(usableMap.values());
+  const usableCandidates = stratifyCandidatePool(rawUsable, context);
 
   console.log(
     `[CandidateFetch] rawFetched=${rawFetched} batchesFetched=${batchesFetched} duplicates=${duplicateCount} ` +

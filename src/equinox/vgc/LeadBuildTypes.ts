@@ -111,6 +111,8 @@ export interface StrategyRoleRequirement {
   description: string;       // Explicação do porquê a role é necessária
 }
 
+import type { ResolvedStrategyProfile } from '../lead-build/StrategyProfileRegistry';
+
 export interface LeadStrategyCandidate {
   id: string;
   name: string;
@@ -128,6 +130,7 @@ export interface LeadStrategyCandidate {
   validationErrors: string[];
 
   feasibilityScore: number;  // 0–100
+  resolvedProfile?: ResolvedStrategyProfile;
 }
 
 // ─── Busca de Complementos ────────────────────────────────────────────────────
@@ -167,6 +170,9 @@ export interface TeamWeakness {
 }
 
 import type { StrategyQualityResult } from '../lead-build/evaluateStrategyQuality';
+import type { TeamDefensiveProfile } from '../lead-build/TeamDefensiveProfile';
+import type { DefensiveQualityResult } from '../lead-build/evaluateDefensiveQuality';
+import type { SpreadMoveExposure } from '../lead-build/SpreadMoveExposureEvaluator';
 
 export interface FullTeamEvaluation {
   legal: boolean;
@@ -188,6 +194,9 @@ export interface FullTeamEvaluation {
   offensiveScoreContributions?: Record<string, any>;
   reasons?: string[];
   qualityResult?: StrategyQualityResult;
+  defensiveProfile?: TeamDefensiveProfile;
+  defensiveQuality?: DefensiveQualityResult;
+  spreadMoveExposure?: readonly SpreadMoveExposure[];
 
   overallScore: number;               // Média ponderada
 

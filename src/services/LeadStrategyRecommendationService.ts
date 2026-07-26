@@ -173,6 +173,14 @@ export class LeadStrategyRecommendationService {
       warnings: [...new Set(warnings)].slice(0, 12),
     };
 
+    (response as any).generatedStrategies = strategies;
+    (response as any).metrics = {
+      strategyCount: strategies.length,
+      profileResolutionCount: strategies.length,
+      knownProfileFallbackCount: strategies.filter(s => s.resolvedProfile?.fallbackUsed && s.resolvedProfile?.reason !== 'UNKNOWN_STRATEGY_PROFILE_FALLBACK').length,
+      unknownProfileFallbackCount: strategies.filter(s => s.resolvedProfile?.fallbackUsed && s.resolvedProfile?.reason === 'UNKNOWN_STRATEGY_PROFILE_FALLBACK').length,
+    };
+
     console.log(`[LeadBuild] Resultados: ${response.strategies.length} estratégias nativas processadas com sucesso`);
     console.timeEnd('LeadBuildTotal');
 
