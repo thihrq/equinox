@@ -111,6 +111,8 @@ export interface StrategyRoleRequirement {
   description: string;       // Explicação do porquê a role é necessária
 }
 
+import type { ResolvedStrategyProfile } from '../lead-build/StrategyProfileRegistry';
+
 export interface LeadStrategyCandidate {
   id: string;
   name: string;
@@ -128,6 +130,7 @@ export interface LeadStrategyCandidate {
   validationErrors: string[];
 
   feasibilityScore: number;  // 0–100
+  resolvedProfile?: ResolvedStrategyProfile;
 }
 
 // ─── Busca de Complementos ────────────────────────────────────────────────────

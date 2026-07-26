@@ -10,6 +10,7 @@ import type {
   StrategyRoleRequirement,
 } from './LeadBuildTypes';
 import type { PokemonData } from '../core/AnalysisContext';
+import { resolveStrategyProfile } from '../lead-build/StrategyProfileRegistry';
 
 // ─── Helpers internos ─────────────────────────────────────────────────────────
 
@@ -810,6 +811,12 @@ export function generateLeadStrategies(
   // Fallback se nenhuma estratégia específica foi gerada
   if (strategies.length === 0) {
     strategies.push(generateBalancedFallback(lead, profile));
+  }
+
+  // Resolver perfil estratégico uma única vez por estratégia
+  for (const s of strategies) {
+    s.resolvedProfile = resolveStrategyProfile(s.id);
+    console.log(`[StrategyProfile] strategyId=${s.id} profileId=${s.resolvedProfile.profileId}${s.resolvedProfile.weather ? ` weather=${s.resolvedProfile.weather}` : ''} fallback=${s.resolvedProfile.fallbackUsed}`);
   }
 
   // Ordena por feasibilityScore decrescente
