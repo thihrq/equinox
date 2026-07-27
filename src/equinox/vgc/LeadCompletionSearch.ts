@@ -19,6 +19,7 @@ import { hasDuplicateItem } from '../competitive/CompetitiveTeamLegalityValidato
 import { createCandidateSearchContext } from '../lead-build/CandidateSearchContext';
 import { replenishCandidatePool } from '../lead-build/replenishCandidatePool';
 import { evaluatePartialTeamDefensiveQuality } from '../lead-build/PartialTeamDefensiveEvaluator';
+import { LeadCompletionSearchControl } from '../lead-build/PrimarySearchGuard';
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
 
@@ -34,27 +35,16 @@ const solverRegistry = new FormatSolverRegistry();
 
 // ─── Funções Auxiliares ──────────────────────────────────────────────────────
 
-/**
- * Verifica se adicionar um candidato viola a Species Clause.
- * Dois Pokémon da mesma espécie base não podem estar no mesmo time.
- */
 function violatesSpeciesClause(team: PokemonData[], candidate: PokemonData): boolean {
   const candidateKey = getSpeciesClauseKey(candidate.name);
   return team.some(p => getSpeciesClauseKey(p.name) === candidateKey);
 }
 
-/**
- * Verifica se adicionar um candidato excede o limite de 1 Mega Evolution por time.
- */
 function violatesMegaLimit(team: PokemonData[], candidate: PokemonData): boolean {
   if (!isMegaOption(candidate)) return false;
   return team.some(p => isMegaOption(p));
 }
 
-/**
- * Valida um time parcial usando o FormatObjectiveGuards para bloquear combinações ilegais cedo.
- * Retorna true se o time parcial é válido (sem hard failures).
- */
 function isPartialTeamValid(
   partialTeam: PokemonData[],
   format: string,
@@ -69,10 +59,6 @@ function isPartialTeamValid(
   return result.hardFailures.length === 0;
 }
 
-/**
- * Calcula a cobertura de estratégia para um time completo.
- * Verifica quais roles requeridas, preferidas e opcionais estão preenchidas.
- */
 function calculateStrategyCoverage(
   team: PokemonData[],
   strategy: LeadStrategyCandidate,
@@ -83,7 +69,6 @@ function calculateStrategyCoverage(
   const fulfilledOptional: string[] = [];
   const unresolved: string[] = [];
 
-  // Verificar roles requeridas
   for (const role of strategy.requiredRoles) {
     const isFulfilled = team.some(p => {
       const roleScore = scoreCandidateForStrategy(p, {
@@ -105,7 +90,6 @@ function calculateStrategyCoverage(
     }
   }
 
-  // Verificar roles opcionais
   for (const role of strategy.optionalRoles) {
     const isFulfilled = team.some(p => {
       const roleScore = scoreCandidateForStrategy(p, {
@@ -117,13 +101,7 @@ function calculateStrategyCoverage(
     });
 
     if (isFulfilled) {
-      if (role.priority === 'preferred') {
-        fulfilledPreferred.push(role.role);
-      } else {
-        fulfilledOptional.push(role.role);
-      }
-    } else {
-      unresolved.push(role.role);
+      fulfilledOptional.push(role.role);
     }
   }
 
@@ -147,23 +125,14 @@ interface BeamEntry {
   cumulativeScore: number;
 }
 
-/**
- * Executa um estágio da busca em feixe.
- * Para cada time parcial no beam, avalia todos os candidatos e retorna os top N novos times.
- *
- * @param beam - Array de times parciais atuais
- * @param candidates - Pool de candidatos disponíveis
- * @param strategy - Estratégia de lead ativa
- * @param format - Formato do jogo
- * @param beamWidth - Largura do feixe (quantos sobrevivem)
- * @returns Novo beam com times expandidos
- */
 function expandBeam(
   beam: BeamEntry[],
   candidates: PokemonData[],
   strategy: LeadStrategyCandidate,
   format: string,
   beamWidth: number,
+  stage: number,
+  control?: LeadCompletionSearchControl,
 ): BeamEntry[] {
   const expanded: BeamEntry[] = [];
   let rejectedSpecies = 0;
@@ -173,16 +142,21 @@ function expandBeam(
   let rejectedDefensive = 0;
 
   for (const entry of beam) {
+    if (control && !control.shouldContinue()) {
+      control.onInterrupted?.({ stage, beamSize: beam.length, evaluatedCombinations: expanded.length });
+      break;
+    }
+
     for (const candidate of candidates) {
-      // Verificar Species Clause
+      if (control && !control.shouldContinue()) {
+        control.onInterrupted?.({ stage, beamSize: beam.length, evaluatedCombinations: expanded.length });
+        break;
+      }
+
       if (violatesSpeciesClause(entry.team, candidate)) { rejectedSpecies++; continue; }
-
-      // Verificar limite de Mega Evolution
       if (violatesMegaLimit(entry.team, candidate)) { rejectedMega++; continue; }
-
       if (hasDuplicateItem(entry.team, candidate)) { rejectedItem++; continue; }
 
-      // Calcular score do candidato no contexto do time parcial
       const candidateScore = scoreCandidateForStrategy(
         candidate,
         strategy,
@@ -192,7 +166,6 @@ function expandBeam(
 
       const newTeam = [...entry.team, candidate];
 
-      // Validar time parcial com FormatObjectiveGuards
       if (!isPartialTeamValid(newTeam, format)) { rejectedValidity++; continue; }
 
       const remainingSlots = 6 - newTeam.length;
@@ -215,35 +188,20 @@ function expandBeam(
     `(rejectedSpecies=${rejectedSpecies}, rejectedMega=${rejectedMega}, rejectedItem=${rejectedItem}, rejectedValidity=${rejectedValidity}, rejectedDefensive=${rejectedDefensive})`,
   );
 
-  // Ordenar por score cumulativo e manter apenas os top N
   expanded.sort((a, b) => b.cumulativeScore - a.cumulativeScore);
   return expanded.slice(0, beamWidth);
 }
 
 // ─── Busca Principal ─────────────────────────────────────────────────────────
 
-/**
- * Executa a busca em feixe progressiva para encontrar os melhores times
- * que complementam uma lead fixa seguindo uma estratégia específica.
- *
- * Estágios:
- * 1. 2 lead fixos → avaliar cada candidato → top 40 trios
- * 2. Cada trio → avaliar cada candidato restante → top 40 quartetos
- * 3. Cada quarteto → avaliar cada candidato restante → top 40 quintetos
- * 4. Cada quinteto → avaliar cada candidato restante → top 10 times de 6
- *
- * @param input - Dados de entrada contendo lead, estratégia, candidatos e configuração
- * @returns Array de resultados ordenados por score
- */
 export function searchLeadCompletions(
   input: LeadCompletionSearchInput,
+  control?: LeadCompletionSearchControl,
 ): LeadCompletionResult[] {
   const { lead, strategy, candidates, maxCandidatesPerStage, format } = input;
 
-  // Criar contexto de busca a partir da lead
   const searchContext = createCandidateSearchContext(lead, format, strategy.id);
 
-  // Reabastecer e filtrar pool de candidatos utilizáveis antecipadamente
   const replenished = replenishCandidatePool(candidates, searchContext, {
     targetUsableCandidates: maxCandidatesPerStage > 0 ? maxCandidatesPerStage : 40,
     maximumRawCandidates: 150,
@@ -252,30 +210,31 @@ export function searchLeadCompletions(
 
   const candidatePool = replenished.usableCandidates as PokemonData[];
 
-  // Inicializar beam com a dupla de lead
   const initialTeam: PokemonData[] = [lead[0], lead[1]];
   let beam: BeamEntry[] = [{
     team: initialTeam,
     cumulativeScore: 0,
   }];
 
+  const effectiveBeamWidth = control?.maximumFinalists ? Math.min(BEAM_WIDTH, 24) : BEAM_WIDTH;
+
   // Estágio 1: 2 → 3 (trios)
-  beam = expandBeam(beam, candidatePool, strategy, format, BEAM_WIDTH);
+  beam = expandBeam(beam, candidatePool, strategy, format, effectiveBeamWidth, 1, control);
   if (beam.length === 0) return [];
 
   // Estágio 2: 3 → 4 (quartetos)
-  beam = expandBeam(beam, candidatePool, strategy, format, BEAM_WIDTH);
+  beam = expandBeam(beam, candidatePool, strategy, format, effectiveBeamWidth, 2, control);
   if (beam.length === 0) return [];
 
   // Estágio 3: 4 → 5 (quintetos)
-  beam = expandBeam(beam, candidatePool, strategy, format, BEAM_WIDTH);
+  beam = expandBeam(beam, candidatePool, strategy, format, effectiveBeamWidth, 3, control);
   if (beam.length === 0) return [];
 
   // Estágio 4: 5 → 6 (times completos)
-  beam = expandBeam(beam, candidatePool, strategy, format, FINAL_RESULTS);
+  const finalLimit = control?.maximumFinalists ? Math.min(FINAL_RESULTS, control.maximumFinalists) : FINAL_RESULTS;
+  beam = expandBeam(beam, candidatePool, strategy, format, finalLimit, 4, control);
   if (beam.length === 0) return [];
 
-  // Montar resultados finais com cobertura de estratégia
   const results: LeadCompletionResult[] = beam.map(entry => {
     const strategyCoverage = calculateStrategyCoverage(
       entry.team,
@@ -292,7 +251,6 @@ export function searchLeadCompletions(
     };
   });
 
-  // Ordenar por score final
   results.sort((a, b) => b.fullTeamScore - a.fullTeamScore);
 
   return results;
