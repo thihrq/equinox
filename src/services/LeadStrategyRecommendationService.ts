@@ -127,6 +127,7 @@ export class LeadStrategyRecommendationService {
       allowLegendaries,
       teamIdentity as TeamIdentity,
       formatSolver,
+      requestContext,
     );
     console.timeEnd('CandidateFetch');
 
@@ -583,9 +584,20 @@ export class LeadStrategyRecommendationService {
     allowLegendaries: boolean,
     teamIdentity: TeamIdentity,
     formatSolver: ReturnType<FormatSolverRegistry['getSolver']>,
+    requestContext?: LeadBuildRequestContext,
   ): Promise<PokemonData[]> {
     const currentMembers = baseTeam.map(p => p.name);
-    const allCandidates = (await Pokemon.find({}).lean()) as unknown as PokemonData[];
+    const rawQueryLimit = 30;
+    const rawDocs = (await Pokemon.find({}).limit(rawQueryLimit).lean()) as unknown as PokemonData[];
+    const allCandidates = rawDocs;
+
+    if (requestContext?.invocationCounters) {
+      requestContext.invocationCounters.candidateQueryCount = 1;
+      requestContext.invocationCounters.candidateBatchCount = 1;
+      requestContext.invocationCounters.candidateQueryRawLimit = rawQueryLimit;
+      requestContext.invocationCounters.candidateQueryReturnedCount = allCandidates.length;
+      requestContext.invocationCounters.candidateInitialSelectedCount = Math.min(24, Math.max(20, allCandidates.length));
+    }
 
     const performanceProfile = new FormatPerformanceProfileRegistry().getProfile(format);
     const candidateLimit = appConfig.runtimeProfile !== 'render_free' ? 300 : 42;

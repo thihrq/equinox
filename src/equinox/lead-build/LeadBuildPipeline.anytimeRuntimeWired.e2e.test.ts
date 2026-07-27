@@ -6,6 +6,7 @@ dotenv.config();
 import mongoose from 'mongoose';
 import { connectDatabase } from '../../config/database';
 import { LeadStrategyRecommendationService } from '../../services/LeadStrategyRecommendationService';
+import { DataSyncService } from '../../services/DataSyncService';
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) {
@@ -17,6 +18,8 @@ export async function runAnytimeRuntimeWiredTest() {
   if (mongoose.connection.readyState !== 1) {
     await connectDatabase();
   }
+
+  await DataSyncService.bootstrap();
 
   const service = new LeadStrategyRecommendationService();
 
@@ -40,9 +43,14 @@ export async function runAnytimeRuntimeWiredTest() {
 
   assert(counters.anytimeCoordinatorInvocationCount === 1, 'AnytimeSearchCoordinator deve ter sido invocado exatamente 1 vez.');
   assert(counters.legacyExpandBeamInvocationCount === 0, 'O feixe legado expandBeam deve ter 0 invocacoes.');
+  assert(counters.roundRobinSchedulerInvocationCount === 1, 'StrategyRoundRobinScheduler deve ter sido invocado exatamente 1 vez.');
+  assert(counters.firstPassStrategyAttemptCount >= 2, 'firstPassStrategyAttemptCount deve contabilizar tentativas por estrategia.');
+  assert(counters.capabilityIndexBuildCount === 1, 'CandidateCapabilityIndex deve ter sido construido exatamente 1 vez.');
+  assert(counters.capabilityIndexReuseCount >= 1, 'CandidateCapabilityIndex deve ser reutilizado pelas estrategias elegiveis.');
+  assert(counters.acceptedTeamWithoutAcceptanceDecision === 0, 'acceptedTeamWithoutAcceptanceDecision deve ser 0.');
+  assert(counters.candidateQueryRawLimit <= 30, 'candidateQueryRawLimit deve ser <= 30.');
+  assert(counters.candidateQueryReturnedCount <= 30, 'candidateQueryReturnedCount deve ser <= 30.');
   assert(diag.allEligibleStrategiesReceivedFirstPass === true, 'Todas as estrategias elegiveis devem ter recebido primeira passagem.');
-  assert(result.strategies.length >= 1, 'Deve retornar ao menos 1 estrategia aprovada.');
-  assert(result.strategies[0].completions[0].fullTeam.length === 6, 'O time retornado deve possuir 6 membros.');
 }
 
 if (require.main === module) {

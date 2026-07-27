@@ -53,9 +53,6 @@ export function deriveRecoveryCapabilityPlan(
   if (aggregate.acceptedFinalists > 0) {
     ineligibilityReasons.push('PRIMARY_SEARCH_SUCCEEDED');
   }
-  if (aggregate.legalCompleteFinalists === 0) {
-    ineligibilityReasons.push('NO_COMPLETE_FINALISTS');
-  }
 
   const eligible = ineligibilityReasons.length === 0;
 
