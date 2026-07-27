@@ -10,9 +10,19 @@ export interface LeadBuildInvocationCounters {
   anytimeCoordinatorInvocationCount: number;
   legacyExpandBeamInvocationCount: number;
   roundRobinSchedulerInvocationCount: number;
+  firstPassStrategyAttemptCount: number;
   firstCompleteTeamBuilderInvocationCount: number;
   compositionPlannerInvocationCount: number;
   capabilityIndexBuildCount: number;
+  capabilityIndexReuseCount: number;
+  acceptedTeamWithoutAcceptanceDecision: number;
+  candidateQueryCount: number;
+  candidateBatchCount: number;
+  candidateQueryRawLimit: number;
+  candidateQueryReturnedCount: number;
+  candidateInitialSelectedCount: number;
+  targetedAdditionalFetchCount: number;
+  duplicateCandidateQueryCount: number;
   partialFeasibilityEvaluationCount: number;
   incompleteRecoveryPlannerInvocationCount: number;
   anytimeRecoveryCoordinatorInvocationCount: number;
@@ -26,6 +36,8 @@ export interface LeadBuildMetrics {
   primaryCandidateFetchCount: number;
   primaryCandidatePoolSize: number;
   phaseBudgetInstanceCount: number;
+  requestElapsedAfterHydrateMs?: number;
+  requestElapsedAfterCandidateFetchMs?: number;
   cacheMetrics: {
     hits: number;
     misses: number;
@@ -83,9 +95,19 @@ export function createLeadBuildRequestContext(
     anytimeCoordinatorInvocationCount: 0,
     legacyExpandBeamInvocationCount: 0,
     roundRobinSchedulerInvocationCount: 0,
+    firstPassStrategyAttemptCount: 0,
     firstCompleteTeamBuilderInvocationCount: 0,
     compositionPlannerInvocationCount: 0,
     capabilityIndexBuildCount: 0,
+    capabilityIndexReuseCount: 0,
+    acceptedTeamWithoutAcceptanceDecision: 0,
+    candidateQueryCount: 0,
+    candidateBatchCount: 0,
+    candidateQueryRawLimit: 30,
+    candidateQueryReturnedCount: 0,
+    candidateInitialSelectedCount: 0,
+    targetedAdditionalFetchCount: 0,
+    duplicateCandidateQueryCount: 0,
     partialFeasibilityEvaluationCount: 0,
     incompleteRecoveryPlannerInvocationCount: 0,
     anytimeRecoveryCoordinatorInvocationCount: 0,
