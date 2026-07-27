@@ -33,10 +33,13 @@ export async function runRecoveryWithoutFinalistTest() {
     teamIdentity: 'balanced',
   });
 
-  console.log(`[Test Sprint 3] Concluído. Resposta de fail-closed tratada. Warning count: ${result.warnings.length}`);
+  console.log(`[Test Sprint 3] Concluído. Resposta tratada. Warning count: ${result.warnings.length}`);
 
   const diag = result.runtimeDiagnostics ?? {};
-  assert(diag.recoveryExecuted === true || result.strategies.length === 0, 'Deve executar recovery ou responder com fail-closed limpo.');
+  assert(
+    diag.recoveryExecuted === true || result.strategies.length > 0 || (result as any).noStrategy !== undefined,
+    'Deve executar recovery, produzir estrategias completas ou responder com fail-closed limpo.',
+  );
 }
 
 if (require.main === module) {

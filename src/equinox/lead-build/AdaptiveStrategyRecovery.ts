@@ -209,7 +209,7 @@ export class AdaptiveStrategyRecovery {
         format,
       };
 
-      const searchResult = executePrimaryStrategySearch({
+      const searchResult = await executePrimaryStrategySearch({
         input,
         strategy,
         context,

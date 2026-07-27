@@ -6,6 +6,19 @@ import { LeadBuildPhaseBudget, RENDER_FREE_PHASE_BUDGET_CONFIG } from './LeadBui
 import { resolvePrimaryFinalistPolicy } from './PrimaryFinalistPolicy';
 import { systemMonotonicClock } from './MonotonicClock';
 
+export interface LeadBuildInvocationCounters {
+  anytimeCoordinatorInvocationCount: number;
+  legacyExpandBeamInvocationCount: number;
+  roundRobinSchedulerInvocationCount: number;
+  firstCompleteTeamBuilderInvocationCount: number;
+  compositionPlannerInvocationCount: number;
+  capabilityIndexBuildCount: number;
+  partialFeasibilityEvaluationCount: number;
+  incompleteRecoveryPlannerInvocationCount: number;
+  anytimeRecoveryCoordinatorInvocationCount: number;
+  fullTeamAcceptanceDecisionInvocationCount: number;
+}
+
 export interface LeadBuildMetrics {
   totalDurationMs: number;
   primarySearchMs: number;
@@ -45,6 +58,10 @@ export interface LeadBuildRequestContext {
   phaseBudget: LeadBuildPhaseBudget;
   primaryFinalistBudgetRemaining: number;
 
+  invocationCounters: LeadBuildInvocationCounters;
+  phaseBudgetInstanceIds: Set<string>;
+  registerPhaseBudgetInstance: (instanceId: string) => void;
+
   metrics: LeadBuildMetrics;
 }
 
@@ -59,7 +76,23 @@ export function createLeadBuildRequestContext(
   const startedAtMonotonicMs = initialStartedAtMonotonicMs ?? systemMonotonicClock.now();
   const policy = resolvePrimaryFinalistPolicy(runtimeProfile);
 
-  return {
+  const phaseBudget = new LeadBuildPhaseBudget(startedAtMonotonicMs, RENDER_FREE_PHASE_BUDGET_CONFIG, systemMonotonicClock);
+  const phaseBudgetInstanceIds = new Set<string>([requestId]);
+
+  const invocationCounters: LeadBuildInvocationCounters = {
+    anytimeCoordinatorInvocationCount: 0,
+    legacyExpandBeamInvocationCount: 0,
+    roundRobinSchedulerInvocationCount: 0,
+    firstCompleteTeamBuilderInvocationCount: 0,
+    compositionPlannerInvocationCount: 0,
+    capabilityIndexBuildCount: 0,
+    partialFeasibilityEvaluationCount: 0,
+    incompleteRecoveryPlannerInvocationCount: 0,
+    anytimeRecoveryCoordinatorInvocationCount: 0,
+    fullTeamAcceptanceDecisionInvocationCount: 0,
+  };
+
+  const context: LeadBuildRequestContext = {
     requestId,
     startedAtMs,
     startedAtMonotonicMs,
@@ -72,8 +105,14 @@ export function createLeadBuildRequestContext(
       rawCandidatesRemaining: 60,
       usableCandidatesRemaining: 16,
     },
-    phaseBudget: new LeadBuildPhaseBudget(startedAtMonotonicMs, RENDER_FREE_PHASE_BUDGET_CONFIG, systemMonotonicClock),
+    phaseBudget,
     primaryFinalistBudgetRemaining: policy.maximumFinalistsPerRequest,
+    invocationCounters,
+    phaseBudgetInstanceIds,
+    registerPhaseBudgetInstance: (id: string) => {
+      phaseBudgetInstanceIds.add(id);
+      context.metrics.phaseBudgetInstanceCount = phaseBudgetInstanceIds.size;
+    },
     metrics: {
       totalDurationMs: 0,
       primarySearchMs: 0,
@@ -89,4 +128,6 @@ export function createLeadBuildRequestContext(
       },
     },
   };
+
+  return context;
 }
