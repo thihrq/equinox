@@ -4,6 +4,8 @@ import { searchLeadCompletions } from '../vgc/LeadCompletionSearch';
 import { createFinalistDecisionTrace } from './FinalistDecisionTrace';
 import { CachedTeamEvaluation, evaluateFullTeamCached } from './LeadBuildCachedEvaluator';
 import { LeadBuildRequestContext } from './LeadBuildRequestContext';
+import { PrimarySearchGuard } from './PrimarySearchGuard';
+import { resolvePrimaryFinalistPolicy } from './PrimaryFinalistPolicy';
 
 export interface EvaluatedCompletion {
   completion: LeadCompletionResult;
@@ -27,13 +29,38 @@ export function executePrimaryStrategySearch(params: {
 }): PrimaryStrategySearchResult {
   const { input, strategy, context, resolveCompetitiveTeam } = params;
 
-  const completions = searchLeadCompletions(input);
+  if (context.phaseBudget && !context.phaseBudget.canContinuePrimary()) {
+    return {
+      strategyId: strategy.id,
+      completionsGenerated: 0,
+      evaluated: [],
+      accepted: [],
+      traces: [],
+    };
+  }
+
+  const policy = resolvePrimaryFinalistPolicy(context.runtimeProfile);
+  const guard = context.phaseBudget ? new PrimarySearchGuard(context.phaseBudget, policy.maximumFinalistsPerStrategy) : undefined;
+
+  const completions = searchLeadCompletions(input, guard);
 
   const evaluated: EvaluatedCompletion[] = [];
   const accepted: EvaluatedCompletion[] = [];
   const traces: ReturnType<typeof createFinalistDecisionTrace>[] = [];
 
-  for (const completion of completions) {
+  const maxToEvaluate = Math.min(
+    completions.length,
+    policy.maximumFinalistsPerStrategy,
+    context.primaryFinalistBudgetRemaining ?? policy.maximumFinalistsPerRequest,
+  );
+
+  for (let i = 0; i < maxToEvaluate; i += 1) {
+    if (context.phaseBudget && !context.phaseBudget.canContinuePrimary()) {
+      context.phaseBudget.setStopReason('PRIMARY_TIME_BUDGET_REACHED');
+      break;
+    }
+
+    const completion = completions[i];
     const resolvedTeam = resolveCompetitiveTeam(completion.fullTeam, input.format);
 
     const lookup = evaluateFullTeamCached({
@@ -42,6 +69,10 @@ export function executePrimaryStrategySearch(params: {
       format: input.format,
       cache: context.evaluationCache,
     });
+
+    if (context.primaryFinalistBudgetRemaining !== undefined) {
+      context.primaryFinalistBudgetRemaining = Math.max(0, context.primaryFinalistBudgetRemaining - 1);
+    }
 
     const cachedEvaluation = lookup.value;
     const trace = createFinalistDecisionTrace(
@@ -61,6 +92,7 @@ export function executePrimaryStrategySearch(params: {
 
     if (cachedEvaluation.decision.accepted) {
       accepted.push(entry);
+      break; // Exit early once accepted strategy is found
     }
   }
 
