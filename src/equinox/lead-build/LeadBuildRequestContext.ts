@@ -12,6 +12,7 @@ export interface LeadBuildMetrics {
   recoverySearchMs: number;
   primaryCandidateFetchCount: number;
   primaryCandidatePoolSize: number;
+  phaseBudgetInstanceCount: number;
   cacheMetrics: {
     hits: number;
     misses: number;
@@ -51,9 +52,11 @@ export function createLeadBuildRequestContext(
   requestId: string,
   format = 'gen9vgc2024',
   runtimeProfile = 'production',
+  initialStartedAtMs?: number,
+  initialStartedAtMonotonicMs?: number,
 ): LeadBuildRequestContext {
-  const startedAtMs = Date.now();
-  const startedAtMonotonicMs = systemMonotonicClock.now();
+  const startedAtMs = initialStartedAtMs ?? Date.now();
+  const startedAtMonotonicMs = initialStartedAtMonotonicMs ?? systemMonotonicClock.now();
   const policy = resolvePrimaryFinalistPolicy(runtimeProfile);
 
   return {
@@ -77,6 +80,7 @@ export function createLeadBuildRequestContext(
       recoverySearchMs: 0,
       primaryCandidateFetchCount: 0,
       primaryCandidatePoolSize: 0,
+      phaseBudgetInstanceCount: 1,
       cacheMetrics: {
         hits: 0,
         misses: 0,

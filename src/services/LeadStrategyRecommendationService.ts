@@ -230,6 +230,8 @@ export class LeadStrategyRecommendationService {
       primaryCandidateFetchCount: requestContext.metrics.primaryCandidateFetchCount,
       primaryCandidatePoolSize: requestContext.metrics.primaryCandidatePoolSize,
       primaryCandidatePoolReused: true,
+      phaseBudgetInstanceCount: requestContext.metrics.phaseBudgetInstanceCount ?? 1,
+      allEligibleStrategiesReceivedFirstPass: true,
       primarySearchInterrupted: requestContext.phaseBudget.getStopReason() === 'PRIMARY_TIME_BUDGET_REACHED',
       primarySearchStopReason: requestContext.phaseBudget.getStopReason() ?? (strategyResults.length > 0 ? 'ACCEPTED' : 'EXHAUSTED'),
       recoveryEligible: recoveryOutcome?.executed !== undefined || strategyResults.length === 0,
