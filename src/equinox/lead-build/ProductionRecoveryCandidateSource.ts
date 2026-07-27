@@ -109,12 +109,12 @@ export class ProductionRecoveryCandidateSource implements RecoveryCandidateSourc
             item: set.item,
             ability: set.ability,
             nature: set.nature,
-            moves: set.moves,
+            moves: set.moves as any,
             evs: set.evs as any,
             ivs: set.ivs as any,
             role: set.role,
-            types: variant?.types ?? (set as any).types ?? [],
-            validation: { valid: true, errors: [] },
+            types: (variant?.types ?? (set as any).types ?? []) as any,
+            validation: { valid: true, errors: [] } as any,
           },
         });
       }
