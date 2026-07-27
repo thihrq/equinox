@@ -121,7 +121,7 @@ function main(): void {
     fail(error instanceof Error ? error.message : String(error), 2);
   }
 
-  const ALLOWED_BRANCHES = new Set(['main', 'feature/active-v2-production-publication-and-gates', 'hotfix/lead-build-strategy-quality', 'hotfix/full-team-defensive-quality', 'hotfix/lead-build-adaptive-recovery', 'hotfix/adaptive-pipeline-runtime-integration', 'hotfix/primary-budget-recovery-reachability', 'hotfix/anytime-composition-search']);
+  const ALLOWED_BRANCHES = new Set(['main', 'feature/active-v2-production-publication-and-gates', 'hotfix/lead-build-strategy-quality', 'hotfix/full-team-defensive-quality', 'hotfix/lead-build-adaptive-recovery', 'hotfix/adaptive-pipeline-runtime-integration', 'hotfix/primary-budget-recovery-reachability', 'hotfix/anytime-composition-search', 'hotfix/anytime-runtime-integration']);
 
   if (!detachedHead && !ALLOWED_BRANCHES.has(branch)) fail(`RELEASE_FREEZE_WRONG_BRANCH: expected one of "${Array.from(ALLOWED_BRANCHES).join(', ')}", got "${branch}"`, 2);
 
