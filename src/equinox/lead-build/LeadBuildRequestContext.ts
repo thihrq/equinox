@@ -2,11 +2,16 @@ import { RequestScopedEvaluationCache } from './RequestScopedEvaluationCache';
 import { LeadBuildTimeBudget, DEFAULT_LEAD_BUILD_TIME_BUDGET } from './RecoverySearchBudget';
 import { CandidateSourceParityManifest } from './CandidateSourceParityManifest';
 import { CandidateSourceParityResult } from './CandidateSourceParityVerifier';
+import { LeadBuildPhaseBudget, RENDER_FREE_PHASE_BUDGET_CONFIG } from './LeadBuildPhaseBudget';
+import { resolvePrimaryFinalistPolicy } from './PrimaryFinalistPolicy';
+import { systemMonotonicClock } from './MonotonicClock';
 
 export interface LeadBuildMetrics {
   totalDurationMs: number;
   primarySearchMs: number;
   recoverySearchMs: number;
+  primaryCandidateFetchCount: number;
+  primaryCandidatePoolSize: number;
   cacheMetrics: {
     hits: number;
     misses: number;
@@ -24,6 +29,7 @@ export interface RecoveryBudgetState {
 export interface LeadBuildRequestContext {
   requestId: string;
   startedAtMs: number;
+  startedAtMonotonicMs: number;
 
   format: string;
   runtimeProfile: string;
@@ -35,6 +41,8 @@ export interface LeadBuildRequestContext {
 
   timeBudget: LeadBuildTimeBudget;
   recoveryBudget: RecoveryBudgetState;
+  phaseBudget: LeadBuildPhaseBudget;
+  primaryFinalistBudgetRemaining: number;
 
   metrics: LeadBuildMetrics;
 }
@@ -44,9 +52,14 @@ export function createLeadBuildRequestContext(
   format = 'gen9vgc2024',
   runtimeProfile = 'production',
 ): LeadBuildRequestContext {
+  const startedAtMs = Date.now();
+  const startedAtMonotonicMs = systemMonotonicClock.now();
+  const policy = resolvePrimaryFinalistPolicy(runtimeProfile);
+
   return {
     requestId,
-    startedAtMs: Date.now(),
+    startedAtMs,
+    startedAtMonotonicMs,
     format,
     runtimeProfile,
     evaluationCache: new RequestScopedEvaluationCache<any>(500),
@@ -56,10 +69,14 @@ export function createLeadBuildRequestContext(
       rawCandidatesRemaining: 60,
       usableCandidatesRemaining: 16,
     },
+    phaseBudget: new LeadBuildPhaseBudget(startedAtMonotonicMs, RENDER_FREE_PHASE_BUDGET_CONFIG, systemMonotonicClock),
+    primaryFinalistBudgetRemaining: policy.maximumFinalistsPerRequest,
     metrics: {
       totalDurationMs: 0,
       primarySearchMs: 0,
       recoverySearchMs: 0,
+      primaryCandidateFetchCount: 0,
+      primaryCandidatePoolSize: 0,
       cacheMetrics: {
         hits: 0,
         misses: 0,

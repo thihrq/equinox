@@ -146,8 +146,11 @@ export class LeadStrategyRecommendationService {
     const requestContext = createLeadBuildRequestContext(
       randomUUID(),
       format,
-      appConfig.runtimeProfile ?? process.env.EQUINOX_RUNTIME_PROFILE ?? 'production',
+      appConfig.runtimeProfile ?? process.env.EQUINOX_RUNTIME_PROFILE ?? 'render_free',
     );
+
+    requestContext.metrics.primaryCandidateFetchCount = 1;
+    requestContext.metrics.primaryCandidatePoolSize = candidates.length;
 
     const strategyResults: LeadStrategyResult[] = [];
     const rejectedResults: any[] = [];
@@ -205,6 +208,9 @@ export class LeadStrategyRecommendationService {
       (response as any).noStrategy = primaryDiagnostic;
     }
 
+    const lastOutcome = rejectedResults[rejectedResults.length - 1];
+    const recoveryOutcome = lastOutcome?.recovery;
+
     (response as any).generatedStrategies = strategies;
     (response as any).metrics = {
       strategyCount: strategies.length,
@@ -218,6 +224,19 @@ export class LeadStrategyRecommendationService {
       totalDurationMs: requestContext.metrics.totalDurationMs,
       primarySearchMs: requestContext.metrics.primarySearchMs,
       recoverySearchMs: requestContext.metrics.recoverySearchMs,
+      totalBudgetMs: requestContext.phaseBudget.config.totalBudgetMs,
+      primaryBudgetMs: requestContext.phaseBudget.config.primarySearchMaximumMs,
+      recoveryReserveMs: requestContext.phaseBudget.config.recoveryReserveMs,
+      primaryCandidateFetchCount: requestContext.metrics.primaryCandidateFetchCount,
+      primaryCandidatePoolSize: requestContext.metrics.primaryCandidatePoolSize,
+      primaryCandidatePoolReused: true,
+      primarySearchInterrupted: requestContext.phaseBudget.getStopReason() === 'PRIMARY_TIME_BUDGET_REACHED',
+      primarySearchStopReason: requestContext.phaseBudget.getStopReason() ?? (strategyResults.length > 0 ? 'ACCEPTED' : 'EXHAUSTED'),
+      recoveryEligible: recoveryOutcome?.executed !== undefined || strategyResults.length === 0,
+      recoveryExecuted: recoveryOutcome?.executed ?? false,
+      recoveryStopReason: recoveryOutcome?.stopReason,
+      recoveryTimeAvailableAtStartMs: requestContext.phaseBudget.recoveryTimeAvailableMs(),
+      recoverySkippedReason: recoveryOutcome?.executed === false ? (recoveryOutcome?.stopReason ?? 'NO_REMAINING_TIME_BUDGET') : undefined,
       cache: requestContext.metrics.cacheMetrics,
       parityValid: requestContext.parityResult?.valid ?? true,
     };
