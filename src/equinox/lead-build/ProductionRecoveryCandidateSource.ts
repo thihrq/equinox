@@ -3,12 +3,20 @@ import { PokemonSet } from '../../models/PokemonSet';
 import { PokemonData } from '../core/AnalysisContext';
 import { RecoveryCapabilityRequest } from './RecoveryCapabilityPlanner';
 
+export interface CandidateFetchRuntimeControl {
+  readonly deadlineAtMs?: number;
+  readonly maximumCandidates?: number;
+  shouldContinue?(): boolean;
+  remainingMs?(): number;
+}
+
 export interface RecoveryCandidateSourceQuery {
   format: string;
   requestedCapabilities: readonly RecoveryCapabilityRequest[];
   excludedSpecies: readonly string[];
   excludedSetIds: readonly string[];
   maximumRawCandidates: number;
+  runtimeControl?: CandidateFetchRuntimeControl;
 }
 
 export interface RecoveryCandidateSourceResult {
@@ -23,15 +31,14 @@ export interface RecoveryCandidateSource {
 
 export class ProductionRecoveryCandidateSource implements RecoveryCandidateSource {
   public async fetch(query: RecoveryCandidateSourceQuery): Promise<RecoveryCandidateSourceResult> {
-    const requestedTypes = [
-      ...new Set(
-        query.requestedCapabilities
-          .map(request => request.attackType)
-          .filter((type): type is any => Boolean(type)),
-      ),
-    ];
+    if (query.runtimeControl?.shouldContinue && !query.runtimeControl.shouldContinue()) {
+      return { candidates: [], rawCount: 0, sourceExhausted: false };
+    }
 
-    const pokemonDocuments = await Pokemon.find({
+    const remaining = query.runtimeControl?.remainingMs ? query.runtimeControl.remainingMs() : 3500;
+    const maxTime = Math.max(50, Math.min(3500, remaining));
+
+    const pokemonQuery = Pokemon.find({
       name: { $nin: query.excludedSpecies },
       variants: {
         $elemMatch: {
@@ -40,12 +47,19 @@ export class ProductionRecoveryCandidateSource implements RecoveryCandidateSourc
         },
       },
     })
+      .maxTimeMS(maxTime)
       .limit(query.maximumRawCandidates)
       .lean();
 
+    const pokemonDocuments = await pokemonQuery;
+
+    if (query.runtimeControl?.shouldContinue && !query.runtimeControl.shouldContinue()) {
+      return { candidates: [], rawCount: 0, sourceExhausted: false };
+    }
+
     const names = pokemonDocuments.map(doc => doc.name);
 
-    const sets = await PokemonSet.find({
+    const setsQuery = PokemonSet.find({
       pokemonName: { $in: names },
       formatId: query.format,
       legal: true,
@@ -53,6 +67,7 @@ export class ProductionRecoveryCandidateSource implements RecoveryCandidateSourc
       status: 'active',
       setId: { $nin: query.excludedSetIds },
     })
+      .maxTimeMS(maxTime)
       .sort({
         confidence: -1,
         coherenceScore: -1,
@@ -61,6 +76,8 @@ export class ProductionRecoveryCandidateSource implements RecoveryCandidateSourc
       })
       .limit(query.maximumRawCandidates)
       .lean();
+
+    const sets = await setsQuery;
 
     const setsByPokemon = new Map<string, typeof sets>();
 
@@ -99,13 +116,13 @@ export class ProductionRecoveryCandidateSource implements RecoveryCandidateSourc
             types: variant?.types ?? (set as any).types ?? [],
             validation: { valid: true, errors: [] },
           },
-        } as unknown as PokemonData);
+        });
       }
     }
 
     return {
-      candidates: candidates.slice(0, query.maximumRawCandidates),
-      rawCount: pokemonDocuments.length,
+      candidates,
+      rawCount: candidates.length,
       sourceExhausted: pokemonDocuments.length < query.maximumRawCandidates,
     };
   }
