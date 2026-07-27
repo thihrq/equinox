@@ -4,7 +4,7 @@ function assert(condition: boolean, message: string): void {
   if (!condition) throw new Error(`ASSERTION_FAILED: ${message}`);
 }
 
-export function testRecoveryCandidateFetcher() {
+export async function testRecoveryCandidateFetcher() {
   console.log('[Equinox Test] Testando o fetcher de candidatos para busca por recuperação...');
 
   const fetcher = new RecoveryCandidateFetcher();
@@ -36,13 +36,16 @@ export function testRecoveryCandidateFetcher() {
     maximumUsableCandidates: 16,
   };
 
-  fetcher.fetchTargetedRecoveryCandidates(query, universe).then(result => {
-    assert(result.usableCandidates.length === 1, 'Deve retornar apenas 1 candidato utilizável (Heatran resiste a Gelo)');
-    assert(result.usableCandidates[0].species === 'Heatran', 'O candidato retornado deve ser Heatran');
-    console.log('✅ RecoveryCandidateFetcher testado com sucesso!');
-  });
+  const result = await fetcher.fetchTargetedRecoveryCandidates(query, universe);
+
+  assert(result.usableCandidates.length === 1, 'Deve retornar apenas 1 candidato utilizável (Heatran resiste a Gelo)');
+  assert(result.usableCandidates[0].species === 'Heatran', 'O candidato retornado deve ser Heatran');
+  console.log('✅ RecoveryCandidateFetcher testado com sucesso!');
 }
 
 if (require.main === module) {
-  testRecoveryCandidateFetcher();
+  testRecoveryCandidateFetcher().catch(err => {
+    console.error(err);
+    process.exit(1);
+  });
 }

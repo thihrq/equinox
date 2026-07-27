@@ -5,7 +5,7 @@ function assert(condition: boolean, message: string): void {
   if (!condition) throw new Error(`ASSERTION_FAILED: ${message}`);
 }
 
-export function testLeadBuildRecoverySearch() {
+export async function testLeadBuildRecoverySearch() {
   console.log('[Equinox Test] Testando a busca adaptativa por recuperação...');
 
   const recoverySearch = new LeadBuildRecoverySearch();
@@ -38,14 +38,17 @@ export function testLeadBuildRecoverySearch() {
 
   const now = Date.now();
 
-  recoverySearch.executeRecoverySearch(plan, universe, now).then(result => {
-    assert(result.executed === true, 'A recuperação deve ser executada quando elegível');
-    assert(result.recoveredCandidatesCount === 1, 'Deve recuperar 1 candidato');
-    assert(result.stopReason === 'VALID_RECOVERY_CANDIDATES_FOUND', 'stopReason deve ser VALID_RECOVERY_CANDIDATES_FOUND');
-    console.log('✅ LeadBuildRecoverySearch testado com sucesso!');
-  });
+  const result = await recoverySearch.executeRecoverySearch(plan, universe, now);
+
+  assert(result.executed === true, 'A recuperação deve ser executada quando elegível');
+  assert(result.recoveredCandidatesCount === 1, 'Deve recuperar 1 candidato');
+  assert(result.stopReason === 'VALID_RECOVERY_CANDIDATES_FOUND', 'stopReason deve ser VALID_RECOVERY_CANDIDATES_FOUND');
+  console.log('✅ LeadBuildRecoverySearch testado com sucesso!');
 }
 
 if (require.main === module) {
-  testLeadBuildRecoverySearch();
+  testLeadBuildRecoverySearch().catch(err => {
+    console.error(err);
+    process.exit(1);
+  });
 }
