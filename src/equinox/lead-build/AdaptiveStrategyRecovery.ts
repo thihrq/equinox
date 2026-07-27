@@ -75,7 +75,11 @@ export class AdaptiveStrategyRecovery {
   }): Promise<AdaptiveRecoveryResult> {
     const { plan, strategy, lead, primaryCandidates, format, context, resolveCompetitiveTeam } = params;
 
-    if (!plan.eligible) {
+    if (
+      !plan.eligible ||
+      context.recoveryBudget.passesRemaining <= 0 ||
+      context.recoveryBudget.rawCandidatesRemaining <= 0
+    ) {
       return {
         executed: false,
         passesExecuted: 0,
@@ -96,7 +100,14 @@ export class AdaptiveStrategyRecovery {
       accumulated.set(`${candidate.name}:${setId}`, candidate);
     }
 
-    for (let pass = 1; pass <= Math.min(plan.maximumPasses, 2); pass += 1) {
+    const maxPassesAllowed = Math.min(plan.maximumPasses, context.recoveryBudget.passesRemaining, 2);
+
+    for (let pass = 1; pass <= maxPassesAllowed; pass += 1) {
+      if (context.recoveryBudget.passesRemaining <= 0) {
+        break;
+      }
+      context.recoveryBudget.passesRemaining -= 1;
+
       const elapsed = Date.now() - context.startedAtMs;
       const remaining = context.timeBudget.totalBudgetMs - elapsed;
 
@@ -122,15 +133,24 @@ export class AdaptiveStrategyRecovery {
         .map(candidate => candidate.competitiveSet?.setId)
         .filter((value): value is string => Boolean(value));
 
+      const rawLimit = Math.min(
+        plan.maximumAdditionalRawCandidates,
+        context.recoveryBudget.rawCandidatesRemaining,
+      );
+
       const sourceResult = await this.source.fetch({
         format,
         requestedCapabilities: plan.requests,
         excludedSpecies,
         excludedSetIds,
-        maximumRawCandidates: plan.maximumAdditionalRawCandidates,
+        maximumRawCandidates: rawLimit,
       });
 
       rawCandidatesFetched += sourceResult.rawCount;
+      context.recoveryBudget.rawCandidatesRemaining = Math.max(
+        0,
+        context.recoveryBudget.rawCandidatesRemaining - sourceResult.rawCount,
+      );
 
       const capabilityMatches = sourceResult.candidates.filter(candidate =>
         candidateMatchesPlan(candidate, plan, this.classifier),
@@ -152,10 +172,14 @@ export class AdaptiveStrategyRecovery {
       }
 
       const searchContext = createCandidateSearchContext(lead, format, strategy.id);
-
       const filtered = filterCandidatePool(capabilityMatches, searchContext);
 
-      const usable = filtered.accepted.slice(0, plan.maximumAdditionalUsableCandidates);
+      const usableLimit = Math.min(
+        plan.maximumAdditionalUsableCandidates,
+        context.recoveryBudget.usableCandidatesRemaining,
+      );
+
+      const usable = filtered.accepted.slice(0, usableLimit);
 
       for (const candidate of usable) {
         const setId = candidate.competitiveSet?.setId ?? candidate.name;
@@ -164,6 +188,10 @@ export class AdaptiveStrategyRecovery {
         if (!accumulated.has(key)) {
           accumulated.set(key, candidate);
           usableCandidatesAdded += 1;
+          context.recoveryBudget.usableCandidatesRemaining = Math.max(
+            0,
+            context.recoveryBudget.usableCandidatesRemaining - 1,
+          );
         }
       }
 
@@ -185,7 +213,7 @@ export class AdaptiveStrategyRecovery {
         input,
         strategy,
         context,
-        resolveCompetitiveTeam,
+        resolveCompetitiveTeam: resolveCompetitiveTeam,
       });
 
       if (searchResult.accepted.length > 0) {
@@ -203,7 +231,7 @@ export class AdaptiveStrategyRecovery {
 
     return {
       executed: true,
-      passesExecuted: Math.min(plan.maximumPasses, 2),
+      passesExecuted: maxPassesAllowed,
       rawCandidatesFetched,
       usableCandidatesAdded,
       accepted: [],

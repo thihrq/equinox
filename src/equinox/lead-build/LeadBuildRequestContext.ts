@@ -15,6 +15,12 @@ export interface LeadBuildMetrics {
   };
 }
 
+export interface RecoveryBudgetState {
+  passesRemaining: number;
+  rawCandidatesRemaining: number;
+  usableCandidatesRemaining: number;
+}
+
 export interface LeadBuildRequestContext {
   requestId: string;
   startedAtMs: number;
@@ -28,6 +34,7 @@ export interface LeadBuildRequestContext {
   evaluationCache: RequestScopedEvaluationCache<any>;
 
   timeBudget: LeadBuildTimeBudget;
+  recoveryBudget: RecoveryBudgetState;
 
   metrics: LeadBuildMetrics;
 }
@@ -44,6 +51,11 @@ export function createLeadBuildRequestContext(
     runtimeProfile,
     evaluationCache: new RequestScopedEvaluationCache<any>(500),
     timeBudget: DEFAULT_LEAD_BUILD_TIME_BUDGET,
+    recoveryBudget: {
+      passesRemaining: 2,
+      rawCandidatesRemaining: 60,
+      usableCandidatesRemaining: 16,
+    },
     metrics: {
       totalDurationMs: 0,
       primarySearchMs: 0,
