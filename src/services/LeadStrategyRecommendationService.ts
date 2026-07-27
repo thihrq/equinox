@@ -40,12 +40,25 @@ import { compareLegacyAndV2Sets } from '../equinox/competitive/CompetitiveSetSha
 import pilotCompetitiveSets from '../equinox/data-packs/competitive/champions-reg-mb-doubles/sets.json';
 import { enforceUniqueVgcHeldItems, isMegaOption } from '../equinox/utils/VgcSetOptimizer';
 import { CompetitiveSetValidationInput } from '../equinox/data-validation/CompetitiveValidationTypes';
+import { randomUUID } from 'crypto';
+import { createLeadBuildRequestContext, LeadBuildRequestContext } from '../equinox/lead-build/LeadBuildRequestContext';
+import { executePrimaryStrategySearch } from '../equinox/lead-build/PrimaryStrategySearch';
+import { aggregateFinalistRejections } from '../equinox/lead-build/FinalistRejectionAggregator';
+import { deriveRecoveryCapabilityPlan } from '../equinox/lead-build/RecoveryCapabilityPlanner';
+import { AdaptiveStrategyRecovery } from '../equinox/lead-build/AdaptiveStrategyRecovery';
+import { ProductionRecoveryCandidateSource } from '../equinox/lead-build/ProductionRecoveryCandidateSource';
+import { projectPublicFailClosedMetadata } from '../equinox/lead-build/PublicFailClosedDiagnostic';
+
 
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 export class LeadStrategyRecommendationService {
   private readonly formatSolverRegistry = new FormatSolverRegistry();
   private readonly formatLegalityRules = new FormatLegalityRules();
+  private readonly adaptiveRecovery = new AdaptiveStrategyRecovery(
+    new ProductionRecoveryCandidateSource(),
+  );
+
 
   public async execute(input: SuggestFromLeadRequest): Promise<any> {
     console.time('LeadBuildTotal');
@@ -130,24 +143,38 @@ export class LeadStrategyRecommendationService {
 
     // 7. Para cada estratégia, completar time, avaliar e gerar playbook
     console.time('StrategyPipeline');
+    const requestContext = createLeadBuildRequestContext(
+      randomUUID(),
+      format,
+      appConfig.runtimeProfile ?? process.env.EQUINOX_RUNTIME_PROFILE ?? 'production',
+    );
+
     const strategyResults: LeadStrategyResult[] = [];
+    const rejectedResults: any[] = [];
 
     for (const strategy of strategies.slice(0, 5)) { // Máximo de 5 estratégias
       try {
-        const result = await this.processStrategy(
+        const outcome = await this.processStrategy(
           strategy,
           hydratedLead as [PokemonData, PokemonData],
           candidates,
           format,
+          requestContext,
         );
-        if (result) {
-          strategyResults.push(result);
+
+        if (outcome.status === 'ACCEPTED') {
+          strategyResults.push(outcome.result);
+        } else {
+          rejectedResults.push(outcome);
         }
       } catch (error) {
         console.warn(`[LeadBuild] Falha ao processar estratégia ${strategy.id}:`, error);
       }
     }
     console.timeEnd('StrategyPipeline');
+
+    requestContext.metrics.totalDurationMs = Date.now() - requestContext.startedAtMs;
+    requestContext.metrics.cacheMetrics = requestContext.evaluationCache.getMetrics();
 
     strategyResults.sort((a, b) => b.teamEvaluation.overallScore - a.teamEvaluation.overallScore);
 
@@ -173,6 +200,11 @@ export class LeadStrategyRecommendationService {
       warnings: [...new Set(warnings)].slice(0, 12),
     };
 
+    if (strategyResults.length === 0 && rejectedResults.length > 0) {
+      const primaryDiagnostic = rejectedResults[0].diagnostic;
+      (response as any).noStrategy = primaryDiagnostic;
+    }
+
     (response as any).generatedStrategies = strategies;
     (response as any).metrics = {
       strategyCount: strategies.length,
@@ -180,6 +212,26 @@ export class LeadStrategyRecommendationService {
       knownProfileFallbackCount: strategies.filter(s => s.resolvedProfile?.fallbackUsed && s.resolvedProfile?.reason !== 'UNKNOWN_STRATEGY_PROFILE_FALLBACK').length,
       unknownProfileFallbackCount: strategies.filter(s => s.resolvedProfile?.fallbackUsed && s.resolvedProfile?.reason === 'UNKNOWN_STRATEGY_PROFILE_FALLBACK').length,
     };
+
+    (response as any).runtimeDiagnostics = {
+      requestId: requestContext.requestId,
+      totalDurationMs: requestContext.metrics.totalDurationMs,
+      primarySearchMs: requestContext.metrics.primarySearchMs,
+      recoverySearchMs: requestContext.metrics.recoverySearchMs,
+      cache: requestContext.metrics.cacheMetrics,
+      parityValid: requestContext.parityResult?.valid ?? true,
+    };
+
+    console.log(
+      `[LeadBuildRuntime] ` +
+        `requestId=${requestContext.requestId} ` +
+        `totalMs=${requestContext.metrics.totalDurationMs} ` +
+        `primaryMs=${requestContext.metrics.primarySearchMs} ` +
+        `recoveryMs=${requestContext.metrics.recoverySearchMs} ` +
+        `cacheHits=${requestContext.metrics.cacheMetrics.hits} ` +
+        `cacheMisses=${requestContext.metrics.cacheMetrics.misses} ` +
+        `duplicateEvaluationsAvoided=${requestContext.metrics.cacheMetrics.duplicateEvaluationsAvoided}`,
+    );
 
     console.log(`[LeadBuild] Resultados: ${response.strategies.length} estratégias nativas processadas com sucesso`);
     console.timeEnd('LeadBuildTotal');
@@ -194,8 +246,11 @@ export class LeadStrategyRecommendationService {
     lead: [PokemonData, PokemonData],
     candidates: PokemonData[],
     format: string,
-  ): Promise<LeadStrategyResult | null> {
-    // Busca em feixe para completar o time
+    requestContext: LeadBuildRequestContext,
+  ): Promise<
+    | { status: 'ACCEPTED'; result: LeadStrategyResult; recovery?: any }
+    | { status: 'REJECTED'; strategyId: string; traces: any[]; diagnostic: any; recovery?: any }
+  > {
     const completionInput: LeadCompletionSearchInput = {
       lead,
       strategy,
@@ -204,93 +259,114 @@ export class LeadStrategyRecommendationService {
       format,
     };
 
-    const completions = searchLeadCompletions(completionInput);
+    const primaryStartedAt = Date.now();
 
-    if (completions.length === 0) {
-      console.warn(`[LeadBuild] Estratégia ${strategy.id}: nenhum time completo encontrado`);
-      return null;
+    const primary = executePrimaryStrategySearch({
+      input: completionInput,
+      strategy,
+      context: requestContext,
+      resolveCompetitiveTeam: this.resolveCompetitiveTeam.bind(this),
+    });
+
+    requestContext.metrics.primarySearchMs += Date.now() - primaryStartedAt;
+
+    let accepted = primary.accepted;
+    let recoveryResult: any = undefined;
+
+    if (accepted.length === 0) {
+      const rejectionAggregate = aggregateFinalistRejections(
+        strategy.id,
+        primary.traces,
+      );
+
+      const plan = deriveRecoveryCapabilityPlan(
+        rejectionAggregate,
+        {
+          parityValid: requestContext.parityResult?.valid ?? true,
+          hasIllegalLead: false,
+          hasInvalidFormat: false,
+        },
+      );
+
+      const recoveryStartedAt = Date.now();
+
+      recoveryResult = await this.adaptiveRecovery.execute({
+        plan,
+        strategy,
+        lead,
+        primaryCandidates: candidates,
+        format,
+        context: requestContext,
+        resolveCompetitiveTeam: this.resolveCompetitiveTeam.bind(this),
+      });
+
+      requestContext.metrics.recoverySearchMs += Date.now() - recoveryStartedAt;
+
+      accepted = recoveryResult.accepted;
     }
 
-    const evaluatedCompletions = completions
-      .map(completion => {
-        const fullTeam = this.resolveCompetitiveTeam(completion.fullTeam, format);
-        const legality = validateCompetitiveTeam(fullTeam, format);
-        const evaluation = evaluateFullTeam(fullTeam, strategy, format);
-        const dataCoverage = calculateTeamDataCoverage(fullTeam);
-        return {
-          completion: {
-            ...completion,
-            fullTeam,
-            dataCoverage,
-            fullTeamScore: Math.min(
-              this.calculateFinalCompletionScore(completion.fullTeamScore, evaluation, legality.legal),
-              dataCoverage.competitiveIndexCap,
-            ),
-          },
-          legality,
-          evaluation,
-          dataCoverage,
-        };
-      })
-      .filter(result =>
-        result.legality.legal &&
-        result.evaluation.strategyComplete &&
-        result.evaluation.overallScore >= 60 &&
-        result.evaluation.roleCoverageScore >= 55 &&
-        (result.evaluation.qualityResult?.valid ?? result.evaluation.offensiveBalanceScore >= 45),
-      )
-      .sort((a, b) => b.completion.fullTeamScore - a.completion.fullTeamScore);
+    if (accepted.length === 0) {
+      const aggregate = aggregateFinalistRejections(
+        strategy.id,
+        [
+          ...primary.traces,
+          ...(recoveryResult?.searchResult?.traces ?? []),
+        ],
+      );
 
-    if (evaluatedCompletions.length === 0) {
-      const diagnostic = completions
-        .map(completion => {
-          const fullTeam = this.resolveCompetitiveTeam(completion.fullTeam, format);
-          const legality = validateCompetitiveTeam(fullTeam, format);
-          const evaluation = evaluateFullTeam(fullTeam, strategy, format);
-          return {
-            legal: legality.legal,
-            strategyComplete: evaluation.strategyComplete,
-            overallScore: evaluation.overallScore,
-            roleCoverageScore: evaluation.roleCoverageScore,
-            offensiveBalanceScore: evaluation.offensiveBalanceScore,
-            firstIssue: legality.issues[0]?.message,
-          };
-        })
-        .sort((a, b) => b.overallScore - a.overallScore)[0];
-      console.warn(`[LeadBuild] EstratÃ©gia ${strategy.id}: nenhuma composiÃ§Ã£o competitivamente consistente`, diagnostic);
-      return null;
+      const publicDiagnostic = projectPublicFailClosedMetadata(
+        aggregate.failuresByReason,
+        recoveryResult?.executed ?? false,
+        recoveryResult?.stopReason !== 'RECOVERY_SUCCEEDED',
+        recoveryResult?.stopReason === 'SOURCE_EXHAUSTED',
+      );
+
+      return {
+        status: 'REJECTED',
+        strategyId: strategy.id,
+        traces: [...primary.traces, ...(recoveryResult?.searchResult?.traces ?? [])],
+        diagnostic: publicDiagnostic,
+        recovery: recoveryResult,
+      };
     }
 
-    const bestCompletion = evaluatedCompletions[0].completion;
-    const teamEvaluation = evaluatedCompletions[0].evaluation;
-    const dataCoverage = evaluatedCompletions[0].dataCoverage;
+    const best = accepted[0];
+    const teamEvaluation = best.cachedEvaluation.evaluation;
+    const dataCoverage = calculateTeamDataCoverage(best.resolvedTeam);
 
-    // Avaliar quartetos com lead travada
     const quartets = evaluateLeadLockedQuartets({
-      fullTeam: bestCompletion.fullTeam,
+      fullTeam: best.resolvedTeam,
       lead,
       strategy,
       format,
     });
 
-    // Gerar playbooks para cada quarteto válido
     const playbooks = quartets
       .filter(q => q.contractValid)
-      .slice(0, 6) // Máximo de 6 playbooks (todas as backlines)
+      .slice(0, 6)
       .map(quartet => generateLeadPlaybook({
         quartet,
         strategy,
-        fullTeam: bestCompletion.fullTeam,
+        fullTeam: best.resolvedTeam,
         format,
       }));
 
     return {
-      strategy,
-      completions: evaluatedCompletions.map(result => result.completion).slice(0, 3), // Top 3 completions
-      quartets,
-      playbooks,
-      teamEvaluation,
-      dataCoverage,
+      status: 'ACCEPTED',
+      result: {
+        strategy,
+        completions: accepted.slice(0, 3).map(entry => ({
+          ...entry.completion,
+          fullTeam: entry.resolvedTeam,
+          dataCoverage: calculateTeamDataCoverage(entry.resolvedTeam),
+        })),
+        quartets,
+        playbooks,
+        teamEvaluation,
+        dataCoverage,
+        recoveryState: recoveryResult,
+      } as LeadStrategyResult,
+      recovery: recoveryResult,
     };
   }
 
