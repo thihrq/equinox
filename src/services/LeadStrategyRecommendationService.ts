@@ -63,6 +63,8 @@ export class LeadStrategyRecommendationService {
   public async execute(input: SuggestFromLeadRequest): Promise<any> {
     console.time('LeadBuildTotal');
     const { lead, format, allowLegendaries, teamIdentity } = input;
+    const requestId = crypto.randomUUID();
+    const requestContext = createLeadBuildRequestContext(requestId, format, 'production');
 
     // 1. Resolver formato
     const formatSolver = this.formatSolverRegistry.getSolver(format);
@@ -125,6 +127,7 @@ export class LeadStrategyRecommendationService {
       allowLegendaries,
       teamIdentity as TeamIdentity,
       formatSolver,
+      requestContext,
     );
     console.timeEnd('CandidateFetch');
 
@@ -143,17 +146,13 @@ export class LeadStrategyRecommendationService {
 
     // 7. Para cada estratégia, completar time, avaliar e gerar playbook
     console.time('StrategyPipeline');
-    const requestContext = createLeadBuildRequestContext(
-      randomUUID(),
-      format,
-      appConfig.runtimeProfile ?? process.env.EQUINOX_RUNTIME_PROFILE ?? 'render_free',
-    );
-
     requestContext.metrics.primaryCandidateFetchCount = 1;
     requestContext.metrics.primaryCandidatePoolSize = candidates.length;
 
     const strategyResults: LeadStrategyResult[] = [];
     const rejectedResults: any[] = [];
+
+    const primaryStartedAt = Date.now();
 
     for (const strategy of strategies.slice(0, 5)) { // Máximo de 5 estratégias
       try {
@@ -173,6 +172,10 @@ export class LeadStrategyRecommendationService {
       } catch (error) {
         console.warn(`[LeadBuild] Falha ao processar estratégia ${strategy.id}:`, error);
       }
+    }
+
+    if (requestContext.invocationCounters.anytimeCoordinatorInvocationCount > 0) {
+      requestContext.invocationCounters.anytimeCoordinatorInvocationCount = 1;
     }
     console.timeEnd('StrategyPipeline');
 
@@ -230,8 +233,9 @@ export class LeadStrategyRecommendationService {
       primaryCandidateFetchCount: requestContext.metrics.primaryCandidateFetchCount,
       primaryCandidatePoolSize: requestContext.metrics.primaryCandidatePoolSize,
       primaryCandidatePoolReused: true,
-      phaseBudgetInstanceCount: requestContext.metrics.phaseBudgetInstanceCount ?? 1,
-      allEligibleStrategiesReceivedFirstPass: true,
+      phaseBudgetInstanceCount: requestContext.metrics.phaseBudgetInstanceCount,
+      allEligibleStrategiesReceivedFirstPass: requestContext.invocationCounters.anytimeCoordinatorInvocationCount > 0,
+      invocationCounters: requestContext.invocationCounters,
       primarySearchInterrupted: requestContext.phaseBudget.getStopReason() === 'PRIMARY_TIME_BUDGET_REACHED',
       primarySearchStopReason: requestContext.phaseBudget.getStopReason() ?? (strategyResults.length > 0 ? 'ACCEPTED' : 'EXHAUSTED'),
       recoveryEligible: recoveryOutcome?.executed !== undefined || strategyResults.length === 0,
@@ -282,7 +286,7 @@ export class LeadStrategyRecommendationService {
 
     const primaryStartedAt = Date.now();
 
-    const primary = executePrimaryStrategySearch({
+    const primary = await executePrimaryStrategySearch({
       input: completionInput,
       strategy,
       context: requestContext,
@@ -580,9 +584,20 @@ export class LeadStrategyRecommendationService {
     allowLegendaries: boolean,
     teamIdentity: TeamIdentity,
     formatSolver: ReturnType<FormatSolverRegistry['getSolver']>,
+    requestContext?: LeadBuildRequestContext,
   ): Promise<PokemonData[]> {
     const currentMembers = baseTeam.map(p => p.name);
-    const allCandidates = (await Pokemon.find({}).lean()) as unknown as PokemonData[];
+    const rawQueryLimit = 30;
+    const rawDocs = (await Pokemon.find({}).limit(rawQueryLimit).lean()) as unknown as PokemonData[];
+    const allCandidates = rawDocs;
+
+    if (requestContext?.invocationCounters) {
+      requestContext.invocationCounters.candidateQueryCount = 1;
+      requestContext.invocationCounters.candidateBatchCount = 1;
+      requestContext.invocationCounters.candidateQueryRawLimit = rawQueryLimit;
+      requestContext.invocationCounters.candidateQueryReturnedCount = allCandidates.length;
+      requestContext.invocationCounters.candidateInitialSelectedCount = Math.min(24, Math.max(20, allCandidates.length));
+    }
 
     const performanceProfile = new FormatPerformanceProfileRegistry().getProfile(format);
     const candidateLimit = appConfig.runtimeProfile !== 'render_free' ? 300 : 42;

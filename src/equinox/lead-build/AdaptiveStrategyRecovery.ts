@@ -1,4 +1,5 @@
 import { PokemonData } from '../core/AnalysisContext';
+import { systemMonotonicClock } from './MonotonicClock';
 import { LeadCompletionSearchInput, LeadStrategyCandidate } from '../vgc/LeadBuildTypes';
 import { filterCandidatePool } from './filterCandidatePool';
 import { createCandidateSearchContext } from './CandidateSearchContext';
@@ -90,6 +91,11 @@ export class AdaptiveStrategyRecovery {
       };
     }
 
+    if (context.invocationCounters) {
+      context.invocationCounters.incompleteRecoveryPlannerInvocationCount = 1;
+      context.invocationCounters.anytimeRecoveryCoordinatorInvocationCount = 1;
+    }
+
     let rawCandidatesFetched = 0;
     let usableCandidatesAdded = 0;
 
@@ -108,8 +114,9 @@ export class AdaptiveStrategyRecovery {
       }
       context.recoveryBudget.passesRemaining -= 1;
 
-      const elapsed = Date.now() - context.startedAtMs;
-      const remaining = context.timeBudget.totalBudgetMs - elapsed;
+      const remaining = context.phaseBudget
+        ? Math.max(0, context.phaseBudget.requestDeadlineAtMs - systemMonotonicClock.now())
+        : context.timeBudget.totalBudgetMs - (Date.now() - context.startedAtMs);
 
       if (remaining <= context.timeBudget.finalizationReserveMs) {
         return {
@@ -209,7 +216,7 @@ export class AdaptiveStrategyRecovery {
         format,
       };
 
-      const searchResult = executePrimaryStrategySearch({
+      const searchResult = await executePrimaryStrategySearch({
         input,
         strategy,
         context,

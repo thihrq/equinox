@@ -134,6 +134,9 @@ function expandBeam(
   stage: number,
   control?: LeadCompletionSearchControl,
 ): BeamEntry[] {
+  if (control && (control as any).requestContext?.invocationCounters) {
+    (control as any).requestContext.invocationCounters.legacyExpandBeamInvocationCount += 1;
+  }
   const expanded: BeamEntry[] = [];
   let rejectedSpecies = 0;
   let rejectedMega = 0;

@@ -5,7 +5,7 @@ function assert(condition: boolean, message: string): void {
   if (!condition) throw new Error(`ASSERTION_FAILED: ${message}`);
 }
 
-export function testPrimaryStrategySearch() {
+export async function testPrimaryStrategySearch() {
   console.log('[Equinox Test] Testando a busca primária estruturada em passagem única...');
 
   const ctx = createLeadBuildRequestContext('req-primary-01');
@@ -22,7 +22,7 @@ export function testPrimaryStrategySearch() {
     format: 'gen9vgc2024',
   } as any;
 
-  const result = executePrimaryStrategySearch({
+  const result = await executePrimaryStrategySearch({
     input: mockInput,
     strategy: mockStrategy,
     context: ctx,
@@ -36,5 +36,10 @@ export function testPrimaryStrategySearch() {
 }
 
 if (require.main === module) {
-  testPrimaryStrategySearch();
+  testPrimaryStrategySearch()
+    .then(() => console.log('Done'))
+    .catch(err => {
+      console.error(err);
+      process.exit(1);
+    });
 }

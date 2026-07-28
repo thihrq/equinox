@@ -6,6 +6,9 @@ import { CachedTeamEvaluation, evaluateFullTeamCached } from './LeadBuildCachedE
 import { LeadBuildRequestContext } from './LeadBuildRequestContext';
 import { PrimarySearchGuard } from './PrimarySearchGuard';
 import { resolvePrimaryFinalistPolicy } from './PrimaryFinalistPolicy';
+import { AnytimeSearchCoordinator } from './AnytimeSearchCoordinator';
+import { getLeadBuildRuntimeFlags } from './LeadBuildRuntimeFlags';
+import { systemMonotonicClock } from './MonotonicClock';
 
 export interface EvaluatedCompletion {
   completion: LeadCompletionResult;
@@ -21,13 +24,16 @@ export interface PrimaryStrategySearchResult {
   traces: ReturnType<typeof createFinalistDecisionTrace>[];
 }
 
-export function executePrimaryStrategySearch(params: {
+const anytimeCoordinator = new AnytimeSearchCoordinator();
+
+export async function executePrimaryStrategySearch(params: {
   input: LeadCompletionSearchInput;
   strategy: LeadStrategyCandidate;
   context: LeadBuildRequestContext;
   resolveCompetitiveTeam: (team: PokemonData[], format: string) => PokemonData[];
-}): PrimaryStrategySearchResult {
+}): Promise<PrimaryStrategySearchResult> {
   const { input, strategy, context, resolveCompetitiveTeam } = params;
+  const flags = getLeadBuildRuntimeFlags();
 
   if (context.phaseBudget && !context.phaseBudget.canContinuePrimary()) {
     return {
@@ -39,8 +45,84 @@ export function executePrimaryStrategySearch(params: {
     };
   }
 
+  if (flags.anytimeCompositionSearchEnabled) {
+    const searchResult = await anytimeCoordinator.executeSearch({
+      lead: input.lead,
+      strategies: [strategy],
+      candidates: input.candidates,
+      format: input.format,
+      requestContext: context,
+      resolveCompetitiveTeam,
+      startedAtMs: context.startedAtMs,
+      globalDeadlineMs: context.phaseBudget ? context.phaseBudget.recoveryMustStartByMs : Date.now() + 6000,
+      nowMs: () => systemMonotonicClock.now(),
+    });
+
+    const evaluated: EvaluatedCompletion[] = [];
+    const accepted: EvaluatedCompletion[] = [];
+    const traces: ReturnType<typeof createFinalistDecisionTrace>[] = [];
+
+    for (const cand of searchResult.result.acceptedTeams) {
+      const resolvedTeam = resolveCompetitiveTeam([...cand.members], input.format);
+      const evalResult = evaluateFullTeamCached({
+        team: resolvedTeam,
+        strategy,
+        format: input.format,
+        cache: context.evaluationCache,
+      });
+
+      const trace = createFinalistDecisionTrace(
+        strategy.id,
+        evalResult.value.key,
+        evalResult.value.decision.gates as any,
+      );
+
+      const completion: LeadCompletionResult = {
+        fullTeam: [...cand.members],
+        strategy,
+        fullTeamScore: (evalResult.value.decision as any).overallScore ?? 80,
+        strategyCoverage: {
+          fulfilledRequired: [],
+          fulfilledPreferred: [],
+          fulfilledOptional: [],
+          unresolved: [],
+          coverageScore: 100,
+        },
+        unresolvedRequirements: [],
+      };
+
+      const entry: EvaluatedCompletion = {
+        completion,
+        resolvedTeam,
+        cachedEvaluation: evalResult.value,
+      };
+
+      evaluated.push(entry);
+      traces.push(trace);
+      if (evalResult.value.decision.accepted) {
+        accepted.push(entry);
+      }
+    }
+
+    return {
+      strategyId: strategy.id,
+      completionsGenerated: searchResult.result.acceptedTeams.length,
+      evaluated,
+      accepted,
+      traces,
+    };
+  }
+
+  if (!flags.legacySearchFallbackEnabled) {
+    throw new Error('NO_PRIMARY_SEARCH_PIPELINE_ENABLED');
+  }
+
+  // Pipeline legado fallback
   const policy = resolvePrimaryFinalistPolicy(context.runtimeProfile);
   const guard = context.phaseBudget ? new PrimarySearchGuard(context.phaseBudget, policy.maximumFinalistsPerStrategy) : undefined;
+  if (guard) {
+    (guard as any).requestContext = context;
+  }
 
   const completions = searchLeadCompletions(input, guard);
 
@@ -92,7 +174,7 @@ export function executePrimaryStrategySearch(params: {
 
     if (cachedEvaluation.decision.accepted) {
       accepted.push(entry);
-      break; // Exit early once accepted strategy is found
+      break;
     }
   }
 
