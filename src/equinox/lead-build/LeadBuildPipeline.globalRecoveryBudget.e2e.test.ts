@@ -16,6 +16,7 @@ export async function testGlobalRecoveryBudgetE2E() {
         candidates: [],
         rawCount: 30,
         sourceExhausted: false,
+        endCursor: null,
       };
     },
   };
@@ -78,7 +79,10 @@ export async function testGlobalRecoveryBudgetE2E() {
   });
 
   assert(resB.executed === false, 'Estratégia B não deve executar recovery após o orçamento global ser esgotado.');
-  assert(resB.stopReason === 'NOT_ELIGIBLE', 'Stop reason deve ser NOT_ELIGIBLE devido ao orçamento esgotado.');
+  // Antes da 087-F, orçamento esgotado e plano inelegível compartilhavam o
+  // mesmo rótulo (`NOT_ELIGIBLE`), o que escondeu a causa raiz real da
+  // starvation confirmada na investigação 087-D/087-E. Agora são distintos.
+  assert(resB.stopReason === 'PASS_BUDGET_EXHAUSTED', 'Stop reason deve ser PASS_BUDGET_EXHAUSTED devido ao orçamento esgotado (não PLAN_NOT_ELIGIBLE).');
   console.log('✅ Global recovery budget E2E passou com sucesso.');
 }
 

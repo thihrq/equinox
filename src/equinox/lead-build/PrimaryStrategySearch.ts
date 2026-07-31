@@ -26,6 +26,15 @@ export interface PrimaryStrategySearchResult {
 
 const anytimeCoordinator = new AnytimeSearchCoordinator();
 
+/**
+ * Teto de times COMPLETOS rejeitados transportados como evidência por
+ * estratégia. `AnytimeSearchCoordinator` já limita tentativas a 5 por
+ * estratégia (`for (let attempt = 0; attempt < 5...)`), então este valor
+ * raramente é atingido na prática — ele é uma salvaguarda de memória caso
+ * essa premissa mude, não um limite calibrado por medição de carga.
+ */
+const MAX_REJECTION_EVIDENCE_PER_STRATEGY = 12;
+
 export async function executePrimaryStrategySearch(params: {
   input: LeadCompletionSearchInput;
   strategy: LeadStrategyCandidate;
@@ -104,9 +113,58 @@ export async function executePrimaryStrategySearch(params: {
       }
     }
 
+    // Transporta a decisão de times COMPLETOS rejeitados (088-G) — corrige o
+    // incidente PRE-FINALIST-REJECTION-EVIDENCE-LOSS (088-F): antes, só
+    // `acceptedTeams` alimentava `traces`, e qualquer rejeição, mesmo de um
+    // time completo já avaliado por `evaluateFullTeamCached` dentro do
+    // coordinator, era descartada aqui, nunca chegando ao agregador de
+    // rejeições nem ao planner de recovery. `rejection.cachedEvaluation` é o
+    // objeto que o coordinator já produziu — nenhuma decisão é recalculada.
+    //
+    // Amostragem, não descarte: o corpo do loop do coordinator já limita
+    // tentativas a 5 por estratégia (AnytimeSearchCoordinator.ts), então o
+    // teto abaixo raramente é atingido em produção — ele existe para não
+    // deixar a lista crescer sem limite caso essa premissa mude, sem
+    // silenciar a contagem real (`totalRejectedCompleteTeams` abaixo
+    // preserva o total mesmo quando a amostra é truncada).
+    const rejectionSample = searchResult.result.rejectedTeams.slice(0, MAX_REJECTION_EVIDENCE_PER_STRATEGY);
+
+    for (const rejection of rejectionSample) {
+      const resolvedTeam = resolveCompetitiveTeam([...rejection.candidate.members], input.format);
+
+      const trace = createFinalistDecisionTrace(
+        strategy.id,
+        rejection.cachedEvaluation.key,
+        rejection.cachedEvaluation.decision.gates as any,
+      );
+
+      const completion: LeadCompletionResult = {
+        fullTeam: [...rejection.candidate.members],
+        strategy,
+        fullTeamScore: 0,
+        strategyCoverage: {
+          fulfilledRequired: [],
+          fulfilledPreferred: [],
+          fulfilledOptional: [],
+          unresolved: [],
+          coverageScore: 0,
+        },
+        unresolvedRequirements: [],
+      };
+
+      evaluated.push({
+        completion,
+        resolvedTeam,
+        cachedEvaluation: rejection.cachedEvaluation,
+      });
+      traces.push(trace);
+      // Nunca entra em `accepted` — por construção, todo item de
+      // `rejectedTeams` já tem `decision.accepted === false`.
+    }
+
     return {
       strategyId: strategy.id,
-      completionsGenerated: searchResult.result.acceptedTeams.length,
+      completionsGenerated: searchResult.result.acceptedTeams.length + searchResult.result.rejectedTeams.length,
       evaluated,
       accepted,
       traces,

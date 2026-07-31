@@ -8,6 +8,7 @@ import { generateBasicKit, getMegaBaseName, getMegaStone, getSpeciesClauseKey, g
 import { CompetitiveKitGenerator } from '../equinox/utils/CompetitiveKitGenerator';
 import { PokemonData } from '../equinox/core/AnalysisContext';
 import { CandidateSelector } from '../equinox/recommendation/CandidateSelector';
+import { ProgressiveCandidateFetcher, PrimaryCandidateFetcher } from '../equinox/recommendation/ProgressiveCandidateFetcher';
 import { CandidateScoreEngine, type TeamIdentity, type CandidateScoreResult } from '../equinox/recommendation/CandidateScoreEngine';
 import { DiversityCandidateSelector } from '../equinox/recommendation/DiversityCandidateSelector';
 import { FormatSolverRegistry } from '../equinox/format-solvers/FormatSolverRegistry';
@@ -44,10 +45,29 @@ import { randomUUID } from 'crypto';
 import { createLeadBuildRequestContext, LeadBuildRequestContext } from '../equinox/lead-build/LeadBuildRequestContext';
 import { executePrimaryStrategySearch } from '../equinox/lead-build/PrimaryStrategySearch';
 import { aggregateFinalistRejections } from '../equinox/lead-build/FinalistRejectionAggregator';
-import { deriveRecoveryCapabilityPlan } from '../equinox/lead-build/RecoveryCapabilityPlanner';
-import { AdaptiveStrategyRecovery } from '../equinox/lead-build/AdaptiveStrategyRecovery';
+import { deriveRecoveryCapabilityPlan, RecoveryCapabilityPlan } from '../equinox/lead-build/RecoveryCapabilityPlanner';
+import { AdaptiveStrategyRecovery, AdaptiveRecoveryResult, RecoverySessionState } from '../equinox/lead-build/AdaptiveStrategyRecovery';
 import { ProductionRecoveryCandidateSource } from '../equinox/lead-build/ProductionRecoveryCandidateSource';
 import { projectPublicFailClosedMetadata } from '../equinox/lead-build/PublicFailClosedDiagnostic';
+import { RENDER_FREE_PHASE_BUDGET_CONFIG } from '../equinox/lead-build/LeadBuildPhaseBudget';
+import { systemMonotonicClock } from '../equinox/lead-build/MonotonicClock';
+import { buildAggregateRecoveryDiagnostic, RecoveryStrategyDiagnostic } from '../equinox/lead-build/RecoveryDiagnostics';
+
+/**
+ * Estado de UMA estratégia atravessando a rodada justa de recovery
+ * (`runFairRecoveryRounds`). `state`/`result` começam indefinidos e são
+ * preenchidos incrementalmente, uma chamada de `AdaptiveStrategyRecovery.execute()`
+ * por rodada.
+ */
+interface RecoveryTask {
+  strategy: LeadStrategyCandidate;
+  lead: [PokemonData, PokemonData];
+  primaryCandidates: PokemonData[];
+  format: string;
+  plan: RecoveryCapabilityPlan;
+  state: RecoverySessionState | undefined;
+  result: AdaptiveRecoveryResult;
+}
 
 
 // ─── Service ──────────────────────────────────────────────────────────────────
@@ -58,6 +78,12 @@ export class LeadStrategyRecommendationService {
   private readonly adaptiveRecovery = new AdaptiveStrategyRecovery(
     new ProductionRecoveryCandidateSource(),
   );
+  // Wiring de produção por padrão. Testes de integração (088-B) substituem
+  // esta instância por uma fonte determinística via
+  // `(service as any).primaryCandidateFetcher = ...`, o mesmo padrão já usado
+  // para `adaptiveRecovery` acima — nenhum condicional de ambiente na lógica
+  // de domínio, nenhuma ativação de mock por variável global.
+  private readonly primaryCandidateFetcher: PrimaryCandidateFetcher = new ProgressiveCandidateFetcher();
 
 
   public async execute(input: SuggestFromLeadRequest): Promise<any> {
@@ -141,6 +167,11 @@ export class LeadStrategyRecommendationService {
         strategies: [],
         bestOverallTeam: hydratedLead,
         warnings: ['Candidatos insuficientes para completar o time (mínimo 4 necessários).'],
+        runtimeDiagnostics: {
+          requestId: requestContext.requestId,
+          invocationCounters: requestContext.invocationCounters,
+          metrics: requestContext.metrics,
+        },
       };
     }
 
@@ -151,17 +182,61 @@ export class LeadStrategyRecommendationService {
 
     const strategyResults: LeadStrategyResult[] = [];
     const rejectedResults: any[] = [];
+    const recoveryDiagnosticsByStrategy: RecoveryStrategyDiagnostic[] = [];
 
     const primaryStartedAt = Date.now();
 
+    // Fase 1: busca primária para TODAS as estratégias antes de qualquer
+    // recovery. Isolar isso é o que torna a fase 2 (recovery) capaz de
+    // distribuir o orçamento de passes de forma justa entre estratégias, em
+    // vez de a primeira estratégia processada esgotar sozinha o orçamento
+    // global antes das demais serem sequer avaliadas — a starvation
+    // confirmada na investigação 087-D.
+    const primaryOutcomes: Array<{
+      strategy: LeadStrategyCandidate;
+      primary: Awaited<ReturnType<typeof executePrimaryStrategySearch>>;
+    }> = [];
+
     for (const strategy of strategies.slice(0, 5)) { // Máximo de 5 estratégias
       try {
-        const outcome = await this.processStrategy(
+        const primary = await this.runPrimarySearchOnly(
           strategy,
           hydratedLead as [PokemonData, PokemonData],
           candidates,
           format,
           requestContext,
+        );
+        primaryOutcomes.push({ strategy, primary });
+      } catch (error) {
+        console.warn(`[LeadBuild] Falha na busca primária da estratégia ${strategy.id}:`, error);
+      }
+    }
+
+    // Fase 2: recovery justo, só para quem a fase 1 não resolveu.
+    const recoveryTasks = this.buildRecoveryTasks(
+      primaryOutcomes,
+      hydratedLead as [PokemonData, PokemonData],
+      candidates,
+      format,
+      requestContext,
+    );
+
+    await this.runFairRecoveryRounds(recoveryTasks, format, requestContext);
+
+    for (const task of recoveryTasks) {
+      recoveryDiagnosticsByStrategy.push(task.result.diagnostic);
+    }
+
+    // Fase 3: finalizar cada estratégia com o que a fase 1 ou 2 produziu.
+    for (const { strategy, primary } of primaryOutcomes) {
+      try {
+        const task = recoveryTasks.find(t => t.strategy.id === strategy.id);
+        const outcome = this.finalizeStrategyOutcome(
+          strategy,
+          hydratedLead as [PokemonData, PokemonData],
+          format,
+          primary,
+          task?.result,
         );
 
         if (outcome.status === 'ACCEPTED') {
@@ -170,7 +245,7 @@ export class LeadStrategyRecommendationService {
           rejectedResults.push(outcome);
         }
       } catch (error) {
-        console.warn(`[LeadBuild] Falha ao processar estratégia ${strategy.id}:`, error);
+        console.warn(`[LeadBuild] Falha ao finalizar estratégia ${strategy.id}:`, error);
       }
     }
 
@@ -178,6 +253,8 @@ export class LeadStrategyRecommendationService {
       requestContext.invocationCounters.anytimeCoordinatorInvocationCount = 1;
     }
     console.timeEnd('StrategyPipeline');
+
+    const recoveryDiagnostics = buildAggregateRecoveryDiagnostic(recoveryDiagnosticsByStrategy);
 
     requestContext.metrics.totalDurationMs = Date.now() - requestContext.startedAtMs;
     requestContext.metrics.cacheMetrics = requestContext.evaluationCache.getMetrics();
@@ -211,6 +288,12 @@ export class LeadStrategyRecommendationService {
       (response as any).noStrategy = primaryDiagnostic;
     }
 
+    // Só para compatibilidade retroativa de campos legados (stopReason de UMA
+    // estratégia). A fonte de verdade é `recoveryDiagnostics`, calculada
+    // acima a partir de TODAS as estratégias que precisaram de recovery — o
+    // agregado anterior refletia só a última estratégia processada, o que
+    // escondeu, na investigação 087-D, que a primeira estratégia já havia
+    // executado e consumido o orçamento inteiro.
     const lastOutcome = rejectedResults[rejectedResults.length - 1];
     const recoveryOutcome = lastOutcome?.recovery;
 
@@ -238,11 +321,14 @@ export class LeadStrategyRecommendationService {
       invocationCounters: requestContext.invocationCounters,
       primarySearchInterrupted: requestContext.phaseBudget.getStopReason() === 'PRIMARY_TIME_BUDGET_REACHED',
       primarySearchStopReason: requestContext.phaseBudget.getStopReason() ?? (strategyResults.length > 0 ? 'ACCEPTED' : 'EXHAUSTED'),
-      recoveryEligible: recoveryOutcome?.executed !== undefined || strategyResults.length === 0,
-      recoveryExecuted: recoveryOutcome?.executed ?? false,
+      recoveryEligible: recoveryDiagnostics.recoveryEligibleAny || strategyResults.length === 0,
+      // `recoveryExecutedAny`/`recoveryExecutedCount`: derivados de TODAS as
+      // estratégias, nunca sobrescritos pela última processada.
+      recoveryExecuted: recoveryDiagnostics.recoveryExecutedAny,
       recoveryStopReason: recoveryOutcome?.stopReason,
       recoveryTimeAvailableAtStartMs: requestContext.phaseBudget.recoveryTimeAvailableMs(),
-      recoverySkippedReason: recoveryOutcome?.executed === false ? (recoveryOutcome?.stopReason ?? 'NO_REMAINING_TIME_BUDGET') : undefined,
+      recoverySkippedReason: recoveryOutcome?.executed === false ? (recoveryOutcome?.stopReason ?? 'DEADLINE_REACHED') : undefined,
+      recoveryDiagnostics,
       cache: requestContext.metrics.cacheMetrics,
       parityValid: requestContext.parityResult?.valid ?? true,
     };
@@ -266,16 +352,13 @@ export class LeadStrategyRecommendationService {
 
   // ─── Pipeline de Processamento por Estratégia ──────────────────────────────
 
-  private async processStrategy(
+  private async runPrimarySearchOnly(
     strategy: LeadStrategyCandidate,
     lead: [PokemonData, PokemonData],
     candidates: PokemonData[],
     format: string,
     requestContext: LeadBuildRequestContext,
-  ): Promise<
-    | { status: 'ACCEPTED'; result: LeadStrategyResult; recovery?: any }
-    | { status: 'REJECTED'; strategyId: string; traces: any[]; diagnostic: any; recovery?: any }
-  > {
+  ) {
     const completionInput: LeadCompletionSearchInput = {
       lead,
       strategy,
@@ -295,55 +378,150 @@ export class LeadStrategyRecommendationService {
 
     requestContext.metrics.primarySearchMs += Date.now() - primaryStartedAt;
 
-    let accepted = primary.accepted;
-    let recoveryResult: any = undefined;
+    return primary;
+  }
 
-    if (accepted.length === 0) {
-      const rejectionAggregate = aggregateFinalistRejections(
-        strategy.id,
-        primary.traces,
-      );
+  /**
+   * Deriva um plano de recovery para cada estratégia cuja busca primária não
+   * aceitou nenhum time, preservando a ordem original das estratégias — essa
+   * ordem é a ordem de prioridade usada pela rodada justa em
+   * `runFairRecoveryRounds`.
+   */
+  private buildRecoveryTasks(
+    primaryOutcomes: Array<{
+      strategy: LeadStrategyCandidate;
+      primary: Awaited<ReturnType<typeof executePrimaryStrategySearch>>;
+    }>,
+    lead: [PokemonData, PokemonData],
+    candidates: PokemonData[],
+    format: string,
+    requestContext: LeadBuildRequestContext,
+  ): RecoveryTask[] {
+    const tasks: RecoveryTask[] = [];
 
-      const plan = deriveRecoveryCapabilityPlan(
-        rejectionAggregate,
-        {
-          parityValid: requestContext.parityResult?.valid ?? true,
-          hasIllegalLead: false,
-          hasInvalidFormat: false,
-        },
-      );
+    for (const { strategy, primary } of primaryOutcomes) {
+      if (primary.accepted.length > 0) continue;
 
-      const recoveryStartedAt = Date.now();
-
-      recoveryResult = await this.adaptiveRecovery.execute({
-        plan,
-        strategy,
-        lead,
-        primaryCandidates: candidates,
-        format,
-        context: requestContext,
-        resolveCompetitiveTeam: this.resolveCompetitiveTeam.bind(this),
+      const rejectionAggregate = aggregateFinalistRejections(strategy.id, primary.traces);
+      const plan = deriveRecoveryCapabilityPlan(rejectionAggregate, {
+        parityValid: requestContext.parityResult?.valid ?? true,
+        hasIllegalLead: false,
+        hasInvalidFormat: false,
       });
 
-      requestContext.metrics.recoverySearchMs += Date.now() - recoveryStartedAt;
-
-      accepted = recoveryResult.accepted;
+      tasks.push({ strategy, lead, primaryCandidates: candidates, format, plan, state: undefined, result: undefined as any });
     }
 
+    return tasks;
+  }
+
+  /**
+   * Rodada 1: até 1 passe para cada estratégia elegível, na ordem de
+   * prioridade. Rodada 2+: redistribui o orçamento restante, 1 passe por vez,
+   * só para quem ainda não terminou (aceitou, esgotou a fonte, bateu o
+   * prazo ou já consumiu o teto de passes do próprio plano).
+   *
+   * Sem isso, a primeira estratégia elegível processada por
+   * `AdaptiveStrategyRecovery.execute()` consumia sozinha o orçamento inteiro
+   * antes de as demais serem sequer tentadas — a starvation confirmada na
+   * investigação 087-D.
+   */
+  private async runFairRecoveryRounds(
+    tasks: RecoveryTask[],
+    format: string,
+    requestContext: LeadBuildRequestContext,
+  ): Promise<void> {
+    if (tasks.length === 0) return;
+
+    const recoveryStartedAt = Date.now();
+    const resolveCompetitiveTeam = this.resolveCompetitiveTeam.bind(this);
+
+    const isTaskDone = (task: RecoveryTask): boolean =>
+      task.state !== undefined && task.state.done;
+
+    let round = 0;
+    // Teto de segurança: nenhuma estratégia pode consumir mais que
+    // `plan.maximumPasses` passes (hoje 2), então nenhum cenário legítimo
+    // precisa de mais rodadas que isso.
+    const maxRounds = Math.max(...tasks.map(t => t.plan.maximumPasses), 1);
+
+    while (round < maxRounds) {
+      round += 1;
+      let madeProgressThisRound = false;
+
+      for (const task of tasks) {
+        if (isTaskDone(task)) continue;
+        if (requestContext.recoveryBudget.passesRemaining <= 0) break;
+
+        const result = await this.adaptiveRecovery.execute({
+          plan: task.plan,
+          strategy: task.strategy,
+          lead: task.lead,
+          primaryCandidates: task.primaryCandidates,
+          format,
+          context: requestContext,
+          resolveCompetitiveTeam,
+          maxPassesThisCall: 1,
+          priorState: task.state,
+        });
+
+        task.result = result;
+        task.state = result.state;
+
+        if (result.passesExecuted > 0) {
+          madeProgressThisRound = true;
+        }
+      }
+
+      if (!madeProgressThisRound) break;
+      if (requestContext.recoveryBudget.passesRemaining <= 0) break;
+    }
+
+    // Estratégias que nunca chegaram a rodar (plano inelegível, ou orçamento
+    // já esgotado antes de sua vez) precisam de um resultado terminal para
+    // que o diagnóstico agregado as contabilize corretamente.
+    for (const task of tasks) {
+      if (!task.result) {
+        task.result = await this.adaptiveRecovery.execute({
+          plan: task.plan,
+          strategy: task.strategy,
+          lead: task.lead,
+          primaryCandidates: task.primaryCandidates,
+          format,
+          context: requestContext,
+          resolveCompetitiveTeam,
+          maxPassesThisCall: 1,
+          priorState: task.state,
+        });
+        task.state = task.result.state;
+      }
+    }
+
+    requestContext.metrics.recoverySearchMs += Date.now() - recoveryStartedAt;
+  }
+
+  private finalizeStrategyOutcome(
+    strategy: LeadStrategyCandidate,
+    lead: [PokemonData, PokemonData],
+    format: string,
+    primary: Awaited<ReturnType<typeof executePrimaryStrategySearch>>,
+    recoveryResult: AdaptiveRecoveryResult | undefined,
+  ):
+    | { status: 'ACCEPTED'; result: LeadStrategyResult; recovery?: any }
+    | { status: 'REJECTED'; strategyId: string; traces: any[]; diagnostic: any; recovery?: any } {
+    const accepted = primary.accepted.length > 0 ? primary.accepted : (recoveryResult?.accepted ?? []);
+
     if (accepted.length === 0) {
-      const aggregate = aggregateFinalistRejections(
-        strategy.id,
-        [
-          ...primary.traces,
-          ...(recoveryResult?.searchResult?.traces ?? []),
-        ],
-      );
+      const aggregate = aggregateFinalistRejections(strategy.id, [
+        ...primary.traces,
+        ...(recoveryResult?.searchResult?.traces ?? []),
+      ]);
 
       const publicDiagnostic = projectPublicFailClosedMetadata(
         aggregate.failuresByReason,
         recoveryResult?.executed ?? false,
-        recoveryResult?.stopReason !== 'RECOVERY_SUCCEEDED',
-        recoveryResult?.stopReason === 'SOURCE_EXHAUSTED',
+        recoveryResult?.stopReason !== 'TEAM_ACCEPTED',
+        recoveryResult?.stopReason === 'CANDIDATE_SOURCE_EXHAUSTED',
       );
 
       return {
@@ -587,30 +765,28 @@ export class LeadStrategyRecommendationService {
     requestContext?: LeadBuildRequestContext,
   ): Promise<PokemonData[]> {
     const currentMembers = baseTeam.map(p => p.name);
-    const rawQueryLimit = 30;
-    const rawDocs = (await Pokemon.find({}).limit(rawQueryLimit).lean()) as unknown as PokemonData[];
-    const allCandidates = rawDocs;
+    const fetcher = this.primaryCandidateFetcher;
+    // Prazo da FASE de candidate fetch, não o da busca primária.
+    // `recoveryMustStartByMs` é o limite do primary; usá-lo aqui deixaria o
+    // fetch consumir todo o orçamento da busca combinatória.
+    // O fallback usa o mesmo relógio monotônico do fetcher — `Date.now()`
+    // pertence a outra base temporal e a comparação seria sem sentido.
+    const candidateFetchDeadlineAtMs = requestContext?.phaseBudget?.candidateFetchDeadlineAtMs
+      ?? (systemMonotonicClock.now() + RENDER_FREE_PHASE_BUDGET_CONFIG.candidateFetchMaximumMs);
 
-    if (requestContext?.invocationCounters) {
-      requestContext.invocationCounters.candidateQueryCount = 1;
-      requestContext.invocationCounters.candidateBatchCount = 1;
-      requestContext.invocationCounters.candidateQueryRawLimit = rawQueryLimit;
-      requestContext.invocationCounters.candidateQueryReturnedCount = allCandidates.length;
-      requestContext.invocationCounters.candidateInitialSelectedCount = Math.min(24, Math.max(20, allCandidates.length));
-    }
-
-    const performanceProfile = new FormatPerformanceProfileRegistry().getProfile(format);
-    const candidateLimit = appConfig.runtimeProfile !== 'render_free' ? 300 : 42;
-
-    const validCandidates = new CandidateSelector().select({
-      allPokemon: allCandidates,
-      currentMembers,
+    const progressiveResult = await fetcher.fetchProgressiveCandidates({
+      leadNames: currentMembers,
+      baseTeam,
       format,
       allowLegendaries,
-      limit: candidateLimit,
-      baseTeam,
-      formatSolverMode: formatSolver.mode,
+      targetUsableCount: 24,
+      rawPageSize: 30,
+      maxDocumentsExamined: 300,
+      candidateFetchDeadlineAtMs,
+      requestContext,
     });
+
+    const validCandidates = progressiveResult.usableCandidates;
 
     const scoredCandidates = new CandidateScoreEngine().scoreCandidates({
       baseTeam,

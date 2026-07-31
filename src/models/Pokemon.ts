@@ -1,4 +1,4 @@
-﻿import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IPokemonVariant {
   formatId: string;
@@ -35,7 +35,8 @@ export interface IPokemon extends Document {
   dexNumber: number;
   name: string;
   baseForme?: string;
-  isLegendary: boolean; // <-- INJETAMOS APENAS ISTO AQUI
+  isLegendary: boolean;
+  usageScore?: number;
   variants: IPokemonVariant[];
 }
 
@@ -74,7 +75,8 @@ const PokemonSchema = new Schema<IPokemon>({
   dexNumber: { type: Number, required: true, index: true },
   name: { type: String, required: true, index: true },
   baseForme: { type: String },
-  isLegendary: { type: Boolean, default: false }, // <-- E ISTO AQUI
+  isLegendary: { type: Boolean, default: false },
+  usageScore: { type: Number, default: 0 },
   variants: [VariantSchema]
 }, { 
   timestamps: true 
@@ -82,5 +84,6 @@ const PokemonSchema = new Schema<IPokemon>({
 
 PokemonSchema.index({ name: 1, 'variants.formatId': 1 });
 PokemonSchema.index({ name: 1, 'variants.formId': 1, 'variants.regulationId': 1 });
+PokemonSchema.index({ usageScore: -1, dexNumber: 1, _id: 1 });
 
 export const Pokemon = mongoose.model<IPokemon>('Pokemon', PokemonSchema);

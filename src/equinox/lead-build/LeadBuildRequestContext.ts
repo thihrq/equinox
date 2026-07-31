@@ -20,6 +20,15 @@ export interface LeadBuildInvocationCounters {
   candidateBatchCount: number;
   candidateQueryRawLimit: number;
   candidateQueryReturnedCount: number;
+  candidateRejectedLeadMember: number;
+  candidateRejectedSpeciesClause: number;
+  candidateRejectedFormat: number;
+  candidateRejectedMissingCompetitiveSet: number;
+  candidateRejectedIllegal: number;
+  candidateRejectedMissingTypes: number;
+  candidateRejectedItemConflict: number;
+  candidateRejectedOther: number;
+  candidateUsableBeforeSelection: number;
   candidateInitialSelectedCount: number;
   targetedAdditionalFetchCount: number;
   duplicateCandidateQueryCount: number;
@@ -105,6 +114,15 @@ export function createLeadBuildRequestContext(
     candidateBatchCount: 0,
     candidateQueryRawLimit: 30,
     candidateQueryReturnedCount: 0,
+    candidateRejectedLeadMember: 0,
+    candidateRejectedSpeciesClause: 0,
+    candidateRejectedFormat: 0,
+    candidateRejectedMissingCompetitiveSet: 0,
+    candidateRejectedIllegal: 0,
+    candidateRejectedMissingTypes: 0,
+    candidateRejectedItemConflict: 0,
+    candidateRejectedOther: 0,
+    candidateUsableBeforeSelection: 0,
     candidateInitialSelectedCount: 0,
     targetedAdditionalFetchCount: 0,
     duplicateCandidateQueryCount: 0,

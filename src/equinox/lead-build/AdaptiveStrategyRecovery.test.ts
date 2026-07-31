@@ -14,6 +14,7 @@ export async function testAdaptiveStrategyRecovery() {
         candidates: [],
         rawCount: 0,
         sourceExhausted: true,
+        endCursor: null,
       };
     },
   };
@@ -50,7 +51,8 @@ export async function testAdaptiveStrategyRecovery() {
   });
 
   assert(result.executed === false, 'Não deve executar quando o plano não for elegível');
-  assert(result.stopReason === 'NOT_ELIGIBLE', 'stopReason deve ser NOT_ELIGIBLE');
+  assert(result.stopReason === 'PLAN_NOT_ELIGIBLE', 'stopReason deve ser PLAN_NOT_ELIGIBLE');
+  assert(result.diagnostic.passesConsumed === 0, 'Plano inelegível não pode consumir passes.');
 
   console.log('✅ AdaptiveStrategyRecovery testado com sucesso!');
 }

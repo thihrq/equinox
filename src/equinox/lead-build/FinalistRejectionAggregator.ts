@@ -42,7 +42,7 @@ export function aggregateFinalistRejections(
   let setCoherentFinalists = 0;
 
   const failuresByGateMap: Record<string, number> = {};
-  const failuresByReasonMap = new Map<string, { count: number; attackType?: PokemonType; gate?: string; keys: Set<string> }>();
+  const failuresByReasonMap = new Map<string, { reasonCode: string; count: number; attackType?: PokemonType; gate?: string; keys: Set<string> }>();
   const failuresByAttackTypeMap: Partial<Record<PokemonType, number>> = {};
 
   for (const trace of traces) {
@@ -98,7 +98,7 @@ export function aggregateFinalistRejections(
           const mapKey = `${reasonCode}_${attackType || ''}_${gTrace.gate}`;
           let entry = failuresByReasonMap.get(mapKey);
           if (!entry) {
-            entry = { count: 0, attackType, gate: gTrace.gate, keys: new Set() };
+            entry = { reasonCode, count: 0, attackType, gate: gTrace.gate, keys: new Set() };
             failuresByReasonMap.set(mapKey, entry);
           }
           entry.count++;
@@ -121,17 +121,24 @@ export function aggregateFinalistRejections(
     if (isSetCoherent) setCoherentFinalists++;
   }
 
-  const failuresByReason: RejectionReasonAggregate[] = Array.from(failuresByReasonMap.entries()).map(
-    ([key, value]) => {
-      const reasonCode = key.split('_')[0];
-      return {
-        reasonCode,
-        count: value.count,
-        attackType: value.attackType,
-        gate: value.gate,
-        finalistKeys: Array.from(value.keys),
-      };
-    },
+  // `reasonCode` vem do próprio valor guardado na entrada — reconstruí-lo a
+  // partir da chave composta (`key.split('_')[0]`) cortava tudo após o
+  // primeiro `_`, corrompendo qualquer reason code que contenha `_`, que é o
+  // caso de todos os reason codes reais do planner
+  // (`UNANSWERED_REPEATED_WEAKNESS`, `NO_DEFENSIVE_SWITCH_IN`,
+  // `CRITICAL_SPREAD_EXPOSURE`, `INSUFFICIENT_ROLE_COVERAGE`). O resultado era
+  // um `reasonCode` truncado (`UNANSWERED`) que nunca casava com nenhum branch
+  // de `deriveRecoveryCapabilityPlan`, produzindo planos "elegíveis" sem
+  // nenhuma capability request — a causa raiz confirmada nas investigações
+  // 087-D/087-E, agora coberta por um teste que a detecta.
+  const failuresByReason: RejectionReasonAggregate[] = Array.from(failuresByReasonMap.values()).map(
+    value => ({
+      reasonCode: value.reasonCode,
+      count: value.count,
+      attackType: value.attackType,
+      gate: value.gate,
+      finalistKeys: Array.from(value.keys),
+    }),
   );
 
   // Ordenar deterministicamente
