@@ -46,7 +46,7 @@ export function testRecoveryCapabilityPrioritizerUnit() {
 
   assert(plan.eligible === true, 'Plano de recuperação deve ser elegível.');
   assert(plan.requests.length >= 2, 'Deve mapear ao menos 2 solicitações de recuperação.');
-  assert(plan.requests.some(r => r.attackType === 'Ice'), 'Solicitações devem priorizar a fraqueza Ice.');
+  assert(plan.requests.some(r => 'attackType' in r && r.attackType === 'Ice'), 'Solicitações devem priorizar a fraqueza Ice.');
 
   console.log('✅ RecoveryCapabilityPrioritizer unit test passou.');
 }

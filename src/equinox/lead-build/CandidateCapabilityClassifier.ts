@@ -1,4 +1,4 @@
-import { PokemonType } from './TeamDefensiveProfile';
+import { ALL_POKEMON_TYPES, PokemonType } from './TeamDefensiveProfile';
 
 export type DefensiveCapability =
   | 'TYPE_RESISTANCE'
@@ -229,4 +229,52 @@ export class CandidateCapabilityClassifier {
       diversityKeys: Array.from(new Set(diversityKeys)),
     };
   }
+}
+
+// ─── Capability ofensiva de cobertura (106) ────────────────────────────────
+//
+// Função independente do método `classify()` acima, deliberadamente — não
+// depende de moves/item/ability, só dos tipos do candidato contra os tipos
+// já presentes no time. Nunca retorna confidence DIRECT: um match aqui prova
+// só que o candidato introduziria diversidade de tipo local, nunca que o
+// FirstCompleteTeamBuilder vai realmente escolhê-lo (achado 105 — o builder
+// reconstrói os 4 slots não-lead do zero por score guloso, não faz swap 1:1).
+
+export interface CoverageBreadthCapabilityMatch {
+  matched: boolean;
+  confidence: 'CONTEXTUAL';
+  evidence: readonly string[];
+  newTypesAdded: readonly PokemonType[];
+  projectedTypeCount: number;
+  projectedCoverageBreadth: number;
+}
+
+export function classifyCoverageBreadth(
+  candidateTypes: readonly string[],
+  offensiveTypesPresent: readonly PokemonType[],
+  minimumAdditionalTypes: number,
+  minimumCoverageBreadth: number,
+): CoverageBreadthCapabilityMatch {
+  const presentSet = new Set<string>(offensiveTypesPresent);
+  const canonicalCandidateTypes = new Set(
+    candidateTypes.filter(type => (ALL_POKEMON_TYPES as readonly string[]).includes(type)),
+  );
+  const newTypesAdded = [...canonicalCandidateTypes].filter(type => !presentSet.has(type)) as PokemonType[];
+
+  const projectedTypeCount = presentSet.size + newTypesAdded.length;
+  const projectedCoverageBreadth = Math.round((projectedTypeCount / ALL_POKEMON_TYPES.length) * 100);
+  const matched = minimumAdditionalTypes > 0 && newTypesAdded.length >= minimumAdditionalTypes;
+
+  return {
+    matched,
+    confidence: 'CONTEXTUAL',
+    evidence: [
+      `candidate adds ${newTypesAdded.length} previously absent types: ${newTypesAdded.length > 0 ? newTypesAdded.join(', ') : 'none'}`,
+      `projected coverage breadth: ${projectedCoverageBreadth}`,
+      `required coverage breadth: ${minimumCoverageBreadth}`,
+    ],
+    newTypesAdded,
+    projectedTypeCount,
+    projectedCoverageBreadth,
+  };
 }

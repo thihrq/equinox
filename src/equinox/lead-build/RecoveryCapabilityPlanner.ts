@@ -1,6 +1,7 @@
 import { PokemonType } from './TeamDefensiveProfile';
 import { DefensiveCapability, StrategicCapability } from './CandidateCapabilityClassifier';
 import { FinalistRejectionAggregate } from './FinalistRejectionAggregator';
+import { OffensiveCoverageMetadata, calculateMinimumAdditionalTypes } from './StrategyQualityDiagnostics';
 
 export interface RecoveryCapabilityRequest {
   capability: DefensiveCapability | StrategicCapability;
@@ -12,6 +13,23 @@ export interface RecoveryCapabilityRequest {
   evidenceReasonCodes: readonly string[];
 }
 
+/**
+ * Capability ofensiva de cobertura (106) — forma deliberadamente distinta
+ * de `RecoveryCapabilityRequest` (campo `kind`, não `capability`): não
+ * corresponde a uma `DefensiveCapability`/`StrategicCapability` do
+ * classificador por moves/ability/item, e sim a uma propriedade de conjunto
+ * de tipos, calculada e comprovada localmente por `classifyCoverageBreadth`.
+ */
+export interface CoverageBreadthCapabilityRequest {
+  kind: 'COVERAGE_BREADTH';
+  minimumAdditionalTypes: number;
+  offensiveTypesPresent: PokemonType[];
+  minimumCoverageBreadth: number;
+  currentCoverageBreadth: number;
+}
+
+export type AnyRecoveryCapabilityRequest = RecoveryCapabilityRequest | CoverageBreadthCapabilityRequest;
+
 export interface RecoveryCapabilityPlan {
   strategyId: string;
 
@@ -19,13 +37,24 @@ export interface RecoveryCapabilityPlan {
   eligibilityReasons: readonly string[];
   ineligibilityReasons: readonly string[];
 
-  requests: readonly RecoveryCapabilityRequest[];
+  requests: readonly AnyRecoveryCapabilityRequest[];
 
   maximumPasses: number;
   maximumAdditionalRawCandidates: number;
   maximumAdditionalUsableCandidates: number;
 
   sourceLimitations: readonly string[];
+}
+
+function isCoverageMetadata(metadata: unknown): metadata is OffensiveCoverageMetadata {
+  return (
+    !!metadata &&
+    typeof metadata === 'object' &&
+    'offensiveTypesPresent' in metadata &&
+    'minimumCoverageBreadth' in metadata &&
+    'coverageBreadth' in metadata &&
+    Array.isArray((metadata as OffensiveCoverageMetadata).offensiveTypesPresent)
+  );
 }
 
 export function deriveRecoveryCapabilityPlan(
@@ -39,6 +68,7 @@ export function deriveRecoveryCapabilityPlan(
   const eligibilityReasons: string[] = [];
   const ineligibilityReasons: string[] = [];
   const requests: RecoveryCapabilityRequest[] = [];
+  const coverageRequests: CoverageBreadthCapabilityRequest[] = [];
 
   // 1. Checar inelegibilidades fatais
   if (context.hasIllegalLead) {
@@ -109,11 +139,34 @@ export function deriveRecoveryCapabilityPlan(
           appliesTo: 'BOTH',
           evidenceReasonCodes: ['INSUFFICIENT_ROLE_COVERAGE'],
         });
+      } else if (reasonAgg.reasonCode === 'INSUFFICIENT_COVERAGE') {
+        // Fail-closed: sem metadata válida (ausente ou malformada), nenhuma
+        // request é criada — nunca reconstruir offensiveTypesPresent aqui,
+        // a fonte soberana é a avaliação já feita em evaluateStrategyQuality.
+        if (!isCoverageMetadata(reasonAgg.metadata)) {
+          continue;
+        }
+
+        const metadata = reasonAgg.metadata;
+        const minimumAdditionalTypes = calculateMinimumAdditionalTypes(
+          metadata.offensiveTypesPresent.length,
+          metadata.minimumCoverageBreadth,
+        );
+
+        if (minimumAdditionalTypes > 0) {
+          coverageRequests.push({
+            kind: 'COVERAGE_BREADTH',
+            minimumAdditionalTypes,
+            offensiveTypesPresent: [...metadata.offensiveTypesPresent],
+            minimumCoverageBreadth: metadata.minimumCoverageBreadth,
+            currentCoverageBreadth: metadata.coverageBreadth,
+          });
+        }
       }
     }
   }
 
-  // Deduplicação e priorização de requisições
+  // Deduplicação e priorização de requisições defensivas/estratégicas
   const deduplicatedRequests: RecoveryCapabilityRequest[] = [];
   const seenMap = new Set<string>();
 
@@ -125,8 +178,31 @@ export function deriveRecoveryCapabilityPlan(
     }
   }
 
-  // Limite máximo de 6 solicitações por estratégia
-  const truncatedRequests = deduplicatedRequests.slice(0, 6);
+  // Deduplicação de requisições de cobertura — chave própria, não inclui
+  // `capability`/`attackType`/`appliesTo` (campos que COVERAGE_BREADTH não tem).
+  const deduplicatedCoverageRequests: CoverageBreadthCapabilityRequest[] = [];
+  const seenCoverageMap = new Set<string>();
+
+  for (const req of coverageRequests) {
+    const key = [
+      req.kind,
+      [...req.offensiveTypesPresent].sort().join(','),
+      req.minimumAdditionalTypes,
+      req.minimumCoverageBreadth,
+    ].join('|');
+    if (!seenCoverageMap.has(key)) {
+      seenCoverageMap.add(key);
+      deduplicatedCoverageRequests.push(req);
+    }
+  }
+
+  // Limite máximo de 6 solicitações por estratégia, combinando os dois tipos
+  // — defensivas/estratégicas priorizadas primeiro (ordem já existente),
+  // cobertura ofensiva depois.
+  const truncatedRequests: AnyRecoveryCapabilityRequest[] = [
+    ...deduplicatedRequests,
+    ...deduplicatedCoverageRequests,
+  ].slice(0, 6);
 
   // Invariante: `eligible` nunca pode ser `true` com `requests` vazio.
   //

@@ -3,7 +3,7 @@ import { systemMonotonicClock } from './MonotonicClock';
 import { LeadCompletionSearchInput, LeadStrategyCandidate } from '../vgc/LeadBuildTypes';
 import { filterCandidatePool } from './filterCandidatePool';
 import { createCandidateSearchContext } from './CandidateSearchContext';
-import { CandidateCapabilityClassifier } from './CandidateCapabilityClassifier';
+import { CandidateCapabilityClassifier, classifyCoverageBreadth } from './CandidateCapabilityClassifier';
 import { LeadBuildRequestContext } from './LeadBuildRequestContext';
 import { RecoveryCapabilityPlan } from './RecoveryCapabilityPlanner';
 import { RecoveryCandidateSource } from './ProductionRecoveryCandidateSource';
@@ -82,13 +82,14 @@ function candidateMatchesPlan(
   classifier: CandidateCapabilityClassifier,
 ): boolean {
   const set = candidate.competitiveSet;
+  const candidateTypes = (set?.types ?? candidate.types ?? []) as string[];
 
   const profile = classifier.classify({
     candidateId: set?.setId ?? `${candidate.name}:${candidate.item}`,
     species: candidate.name,
     canonicalSpecies: candidate.name,
     setId: set?.setId ?? set?.setSource ?? `${candidate.name}-recovery`,
-    types: (set?.types ?? candidate.types ?? []) as never,
+    types: candidateTypes as never,
     item: set?.item ?? candidate.item,
     ability: set?.ability ?? candidate.ability,
     moves: set?.moves ?? candidate.moves,
@@ -96,8 +97,17 @@ function candidateMatchesPlan(
 
   const capabilities = [...profile.defensiveCapabilities, ...profile.strategicCapabilities];
 
-  return plan.requests.some(request =>
-    capabilities.some(capability => {
+  return plan.requests.some(request => {
+    if ('kind' in request) {
+      return classifyCoverageBreadth(
+        candidateTypes,
+        request.offensiveTypesPresent,
+        request.minimumAdditionalTypes,
+        request.minimumCoverageBreadth,
+      ).matched;
+    }
+
+    return capabilities.some(capability => {
       if (capability.capability !== request.capability) {
         return false;
       }
@@ -107,11 +117,14 @@ function candidateMatchesPlan(
       }
 
       return true;
-    }),
-  );
+    });
+  });
 }
 
 function formatCapabilityRequest(request: RecoveryCapabilityPlan['requests'][number]): string {
+  if ('kind' in request) {
+    return 'COVERAGE_BREADTH';
+  }
   return request.attackType ? `${request.capability}:${request.attackType}` : request.capability;
 }
 
