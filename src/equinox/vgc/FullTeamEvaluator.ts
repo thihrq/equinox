@@ -14,9 +14,9 @@ import { getDamageMultiplier } from '../utils/DamageMultiplier';
 import { isMegaOption } from '../utils/VgcSetOptimizer';
 import { FormatSolverRegistry } from '../format-solvers/FormatSolverRegistry';
 import { validateCompetitiveTeam } from '../competitive/CompetitiveTeamLegalityValidator';
-import { diagnoseOffensiveScore, toStructuredGateReason } from '../lead-build/StrategyQualityDiagnostics';
+import { diagnoseOffensiveScore, toStructuredGateReason, OverallScoreDeficitMetadata } from '../lead-build/StrategyQualityDiagnostics';
 import { evaluateStrategyQuality } from '../lead-build/evaluateStrategyQuality';
-import { calculateTeamDefensiveProfile } from '../lead-build/TeamDefensiveProfile';
+import { calculateTeamDefensiveProfile, PokemonType } from '../lead-build/TeamDefensiveProfile';
 import { evaluateDefensiveQuality } from '../lead-build/evaluateDefensiveQuality';
 import { evaluateSpreadMoveExposure } from '../lead-build/SpreadMoveExposureEvaluator';
 import { evaluateSetCoherence } from '../lead-build/SetCoherenceEvaluator';
@@ -279,10 +279,16 @@ function calculateRoleCoverageDetails(
   };
 }
 
-function calculateOffensiveBalanceScore(
+interface OffensiveBalanceDetails {
+  score: number;
+  offensiveTypesPresent: string[];
+  balancePenalty: number;
+}
+
+function calculateOffensiveBalanceDetails(
   team: PokemonData[],
   format: string,
-): number {
+): OffensiveBalanceDetails {
   // Cobertura de tipos ofensivos
   const offensiveTypes = new Set<string>();
   for (const pokemon of team) {
@@ -326,7 +332,11 @@ function calculateOffensiveBalanceScore(
   }
 
   const rawScore = coverageRatio * 100 - balancePenalty;
-  return Math.max(0, Math.min(100, Math.round(rawScore)));
+  return {
+    score: Math.max(0, Math.min(100, Math.round(rawScore))),
+    offensiveTypesPresent: [...offensiveTypes],
+    balancePenalty,
+  };
 }
 
 // ─── Defensive Coverage Score ────────────────────────────────────────────────
@@ -620,7 +630,8 @@ export function evaluateFullTeam(
   // Calcular scores individuais
   const roleCoverageScore = calculateRoleCoverageScore(team, strategy, format);
   const roleCoverage = calculateRoleCoverageDetails(team, strategy, format);
-  const offensiveBalanceScore = calculateOffensiveBalanceScore(team, format);
+  const offensiveBalanceDetails = calculateOffensiveBalanceDetails(team, format);
+  const offensiveBalanceScore = offensiveBalanceDetails.score;
   const { score: defensiveCoverageScore, weaknesses } = calculateDefensiveCoverageScore(team, format);
   const speedControlScore = calculateSpeedControlScore(team, format);
   const matchupFlexibilityScore = calculateMatchupFlexibilityScore(team, strategy, format);
@@ -633,6 +644,46 @@ export function evaluateFullTeam(
     speedControlScore * WEIGHTS.speedControl +
     matchupFlexibilityScore * WEIGHTS.matchupFlexibility,
   );
+
+  // Evidência estruturada para recovery quando NENHUM gate granular falha
+  // isoladamente mas a média ponderada ainda fica abaixo do corte (achado
+  // de produção: lead Charizard-Mega-Y+Whimsicott, todas as 15 tentativas
+  // com DefensiveQuality/RoleCoverage válidos e mesmo assim 0 aceitos).
+  // Computado sempre (barato); só é anexado ao reason quando o gate
+  // OverallScore realmente falha, em FullTeamAcceptanceDecision.
+  const dimensionScores = {
+    roleCoverage: roleCoverageScore,
+    offensiveBalance: offensiveBalanceScore,
+    defensiveCoverage: defensiveCoverageScore,
+    speedControl: speedControlScore,
+    matchupFlexibility: matchupFlexibilityScore,
+  };
+  const weakestDimension = (Object.keys(dimensionScores) as Array<keyof typeof dimensionScores>).reduce(
+    (worst, key) => (dimensionScores[key] < dimensionScores[worst] ? key : worst),
+    'roleCoverage' as keyof typeof dimensionScores,
+  );
+  const overallScoreDeficitMetadata: OverallScoreDeficitMetadata = {
+    weakestDimension,
+    roleCoverageScore,
+    offensiveBalanceScore,
+    defensiveCoverageScore,
+    speedControlScore,
+    matchupFlexibilityScore,
+    overallScore,
+  };
+  if (weakestDimension === 'offensiveBalance') {
+    // Quanto offensiveBalanceScore precisaria subir para, sozinho (mantendo
+    // as outras 4 dimensões fixas), levar overallScore a 60 — não um
+    // threshold arbitrário, derivado da própria fórmula ponderada real.
+    const neededOffensiveBalanceScore = Math.ceil(
+      (60 - (overallScore - offensiveBalanceScore * WEIGHTS.offensiveBalance)) / WEIGHTS.offensiveBalance,
+    );
+    overallScoreDeficitMetadata.offensiveTypesPresent = offensiveBalanceDetails.offensiveTypesPresent as PokemonType[];
+    overallScoreDeficitMetadata.targetOffensiveCoverageBreadth = Math.min(
+      100,
+      Math.max(0, neededOffensiveBalanceScore + offensiveBalanceDetails.balancePenalty),
+    );
+  }
 
   // Verificar se a estratégia está completa (todas as roles requeridas preenchidas)
   const strategyComplete = strategy.requiredRoles.every(role =>
@@ -698,6 +749,7 @@ export function evaluateFullTeam(
     defensiveQuality,
     spreadMoveExposure,
     overallScore,
+    overallScoreDeficitMetadata,
     weaknesses,
     warnings,
     strengths,

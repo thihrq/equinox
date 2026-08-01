@@ -72,14 +72,46 @@ export interface OffensiveCoverageMetadata {
   uncoveredTypes: PokemonType[];
 }
 
+/**
+ * As 5 dimensões ponderadas de `FullTeamEvaluator.overallScore` — anexada
+ * ao reasonCode `OVERALL_SCORE_BELOW_THRESHOLD` para permitir recovery
+ * mesmo quando NENHUM gate granular (RoleCoverage, OffensiveQuality,
+ * DefensiveQuality) falhou isoladamente, mas a média ponderada ainda assim
+ * fica abaixo de 60 — achado real de produção (lead Charizard-Mega-Y +
+ * Whimsicott, champions_reg_m_b_doubles): todas as 15 tentativas tinham
+ * DefensiveQuality/RoleCoverage válidos, e mesmo assim o time nunca era
+ * aceito, sem nenhuma capability request derivável.
+ *
+ * `weakestDimension` é sempre o menor score bruto entre as 5 (não
+ * ponderado) — a dimensão mais fraca em termos absolutos, não a que mais
+ * "pesa" na queda do overallScore. `offensiveTypesPresent`/
+ * `targetOffensiveCoverageBreadth` só são preenchidos quando
+ * `weakestDimension === 'offensiveBalance'`, reaproveitando exatamente o
+ * mesmo par (tipos presentes + breadth-alvo) que `COVERAGE_BREADTH` já
+ * consome — nenhuma capability nova é criada aqui, só uma nova origem de
+ * evidência para as duas já existentes e validadas (`POSITIONING` e
+ * `COVERAGE_BREADTH`).
+ */
+export interface OverallScoreDeficitMetadata {
+  weakestDimension: 'roleCoverage' | 'offensiveBalance' | 'defensiveCoverage' | 'speedControl' | 'matchupFlexibility';
+  roleCoverageScore: number;
+  offensiveBalanceScore: number;
+  defensiveCoverageScore: number;
+  speedControlScore: number;
+  matchupFlexibilityScore: number;
+  overallScore: number;
+  offensiveTypesPresent?: PokemonType[];
+  targetOffensiveCoverageBreadth?: number;
+}
+
 export type ExistingGateReasonCode = string;
 export type ExistingGateReasonMetadata = undefined;
 
 /**
  * União discriminada e fechada — impede que uma string arbitrária seja
- * combinada com metadata incompatível. Os dois reasonCodes ofensivos
- * exigem seu metadata específico; qualquer outro reasonCode cai no membro
- * genérico, sem metadata (`toStructuredGateReason` produz esse membro).
+ * combinada com metadata incompatível. Os reasonCodes ofensivos exigem seu
+ * metadata específico; qualquer outro reasonCode cai no membro genérico,
+ * sem metadata (`toStructuredGateReason` produz esse membro).
  */
 export type StructuredGateReason =
   | {
@@ -89,6 +121,10 @@ export type StructuredGateReason =
   | {
       reasonCode: 'INSUFFICIENT_COVERAGE';
       metadata: OffensiveCoverageMetadata;
+    }
+  | {
+      reasonCode: 'OVERALL_SCORE_BELOW_THRESHOLD';
+      metadata: OverallScoreDeficitMetadata;
     }
   | {
       reasonCode: ExistingGateReasonCode;
