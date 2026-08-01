@@ -5,7 +5,7 @@ import { ProgressiveCandidateSelectionPolicy } from './ProgressiveCandidateSelec
 import { ArchetypeCompositionRegistry } from './ArchetypeCompositionRegistry';
 import { CandidateCapabilityIndex } from './CandidateCapabilityIndex';
 import { evaluateFullTeamCached } from './LeadBuildCachedEvaluator';
-import type { AnytimeSearchResult, CompleteTeamCandidate } from './AnytimeSearchResult';
+import type { AnytimeSearchResult, CompleteTeamCandidate, RejectedCompleteTeamResult } from './AnytimeSearchResult';
 import type { LeadBuildRequestContext } from './LeadBuildRequestContext';
 import type { LeadStrategyCandidate } from '../vgc/LeadBuildTypes';
 
@@ -35,14 +35,24 @@ export class AnytimeSearchCoordinator {
     const { lead, strategies, candidates, format, requestContext, resolveCompetitiveTeam, globalDeadlineMs, nowMs } = input;
 
     if (requestContext?.invocationCounters) {
-      requestContext.invocationCounters.anytimeCoordinatorInvocationCount += 1;
+      requestContext.invocationCounters.anytimeCoordinatorInvocationCount = 1;
     }
 
     if (requestContext?.invocationCounters) {
-      requestContext.invocationCounters.capabilityIndexBuildCount += 1;
+      if (requestContext.invocationCounters.capabilityIndexBuildCount === 0) {
+        requestContext.invocationCounters.capabilityIndexBuildCount = 1;
+      }
     }
-    const capabilityIndex = new CandidateCapabilityIndex(candidates);
-    const initialBatch = this.candidatePolicy.selectDiverseBatch(candidates);
+
+    const resolvedCandidates = resolveCompetitiveTeam ? resolveCompetitiveTeam([...candidates], format) : [...candidates];
+
+    const capabilityIndex = new CandidateCapabilityIndex(resolvedCandidates);
+    const initialBatch = this.candidatePolicy.selectDiverseBatch(resolvedCandidates);
+
+    if (requestContext?.invocationCounters) {
+      requestContext.invocationCounters.candidateInitialSelectedCount = initialBatch.length;
+      requestContext.invocationCounters.candidateQueryReturnedCount = candidates.length;
+    }
 
     const scheduleItems: StrategyScheduleItem[] = strategies.map(s => ({
       strategyId: s.id,
@@ -50,16 +60,21 @@ export class AnytimeSearchCoordinator {
     }));
 
     if (requestContext?.invocationCounters) {
-      requestContext.invocationCounters.roundRobinSchedulerInvocationCount += 1;
+      requestContext.invocationCounters.roundRobinSchedulerInvocationCount = 1;
     }
     const scheduled = this.scheduler.scheduleFirstPass(scheduleItems);
     const roundResults: StrategyRoundResult[] = [];
     const acceptedTeams: CompleteTeamCandidate[] = [];
-    const rejectedTeams: CompleteTeamCandidate[] = [];
+    const rejectedTeams: RejectedCompleteTeamResult[] = [];
 
     let firstCompleteTeamBuiltAtMs: number | undefined;
 
     for (const item of scheduled) {
+      if (requestContext?.invocationCounters) {
+        requestContext.invocationCounters.firstPassStrategyAttemptCount += 1;
+        requestContext.invocationCounters.capabilityIndexReuseCount += 1;
+      }
+
       const currentNow = nowMs();
       if (currentNow >= globalDeadlineMs) {
         roundResults.push({
@@ -107,21 +122,8 @@ export class AnytimeSearchCoordinator {
           requestContext.invocationCounters.fullTeamAcceptanceDecisionInvocationCount += 1;
         }
 
-        let resolvedMembers = resolveCompetitiveTeam
-          ? resolveCompetitiveTeam([...candidateStruct.members], format)
-          : [...candidateStruct.members];
-
-        // Garantir preservacao de tipos nos resolvedMembers a partir do candidateStruct original
-        resolvedMembers = resolvedMembers.map((rm, idx) => {
-          const orig = candidateStruct.members[idx];
-          return {
-            ...rm,
-            types: rm.types ?? orig?.types ?? orig?.variants?.[0]?.types ?? ['normal'],
-          };
-        });
-
         const evalResult = evaluateFullTeamCached({
-          team: resolvedMembers,
+          team: [...candidateStruct.members],
           strategy: strategyObj,
           format,
           cache: requestContext.evaluationCache,
@@ -130,7 +132,7 @@ export class AnytimeSearchCoordinator {
         if (evalResult.value.decision.accepted) {
           const acceptedCand: CompleteTeamCandidate = {
             ...candidateStruct,
-            members: resolvedMembers,
+            members: [...candidateStruct.members],
           };
           acceptedTeams.push(acceptedCand);
           strategyAccepted = true;
@@ -144,7 +146,15 @@ export class AnytimeSearchCoordinator {
           });
           break;
         } else {
-          rejectedTeams.push(candidateStruct);
+          // Transporta a decisão JÁ CALCULADA (evalResult.value) — não uma
+          // reavaliação. É exatamente essa decisão que antes morria na
+          // fronteira com PrimaryStrategySearch (incidente
+          // PRE-FINALIST-REJECTION-EVIDENCE-LOSS, 088-F): o time é COMPLETO
+          // (6 membros) e já tem gates/reasonCode/attackType reais.
+          rejectedTeams.push({
+            candidate: { ...candidateStruct, members: [...candidateStruct.members] },
+            cachedEvaluation: evalResult.value,
+          });
           const lastAdded = candidateStruct.members[candidateStruct.members.length - 1];
           if (lastAdded) excludedCandidates.add(lastAdded.name);
         }

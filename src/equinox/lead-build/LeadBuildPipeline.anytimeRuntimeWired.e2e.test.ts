@@ -3,10 +3,13 @@ process.env.EQUINOX_DATA_MODE = 'mongo';
 import dotenv from 'dotenv';
 dotenv.config();
 
+import fs from 'fs';
+import path from 'path';
 import mongoose from 'mongoose';
 import { connectDatabase } from '../../config/database';
 import { LeadStrategyRecommendationService } from '../../services/LeadStrategyRecommendationService';
 import { DataSyncService } from '../../services/DataSyncService';
+import { Pokemon } from '../../models/Pokemon';
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) {
@@ -20,6 +23,60 @@ export async function runAnytimeRuntimeWiredTest() {
   }
 
   await DataSyncService.bootstrap();
+  await Pokemon.deleteMany({});
+
+  const packPath = path.join(__dirname, '../../equinox/data-packs/sets-data-pack.json');
+  const rawPack = JSON.parse(fs.readFileSync(packPath, 'utf-8'));
+  const setsList = Array.isArray(rawPack) ? rawPack : (rawPack.sets ?? []);
+
+  const leads = [
+    { name: 'Charizard-Mega-Y', formatId: 'champions_reg_m_b_doubles', types: ['fire', 'flying'], item: 'Charizardite Y', ability: 'Drought' },
+    { name: 'Whimsicott', formatId: 'champions_reg_m_b_doubles', types: ['grass', 'fairy'], item: 'Focus Sash', ability: 'Prankster' },
+  ];
+
+  const leadDocs = leads.map((l, i) => ({
+    dexNumber: 10 + i,
+    name: l.name,
+    formatId: l.formatId,
+    types: l.types,
+    variants: [{ formatId: 'champions_reg_m_b_doubles', baseStats: { hp: 100, atk: 100, def: 100, spa: 100, spd: 100, spe: 100 }, types: l.types, abilities: { 0: l.ability } }],
+    stats: { hp: 100, atk: 100, def: 100, spa: 100, spd: 100, spe: 100 },
+    abilities: { 0: l.ability },
+    usageScore: 95,
+    formatLegality: { champions_reg_m_b_doubles: true },
+    competitiveSet: {
+      setId: `${l.name}-set`,
+      pokemon: l.name,
+      format: 'champions_reg_m_b_doubles',
+      item: l.item,
+      ability: l.ability,
+      nature: 'Timid',
+      moves: ['Protect', 'Heat Wave', 'Solar Beam', 'Tailwind'],
+    },
+  }));
+
+  const packDocs = setsList.slice(0, 35).map((s: any, i: number) => ({
+    dexNumber: 1000 + i,
+    name: s.pokemonName ?? s.pokemon,
+    formatId: 'champions_reg_m_b_doubles',
+    types: s.types ?? ['normal'],
+    variants: [{ formatId: 'champions_reg_m_b_doubles', baseStats: s.stats ?? { hp: 80, atk: 80, def: 80, spa: 80, spd: 80, spe: 80 }, types: s.types ?? ['normal'], abilities: { 0: s.ability ?? 'Inner Focus' } }],
+    stats: s.stats ?? { hp: 80, atk: 80, def: 80, spa: 80, spd: 80, spe: 80 },
+    abilities: { 0: s.ability ?? 'Inner Focus' },
+    usageScore: 90,
+    formatLegality: { champions_reg_m_b_doubles: true },
+    competitiveSet: {
+      setId: `${s.pokemonName ?? s.pokemon}-set-${i}`,
+      pokemon: s.pokemonName ?? s.pokemon,
+      format: 'champions_reg_m_b_doubles',
+      item: s.item ?? `Item-${i}`,
+      ability: s.ability ?? 'Inner Focus',
+      nature: s.nature ?? 'Modest',
+      moves: s.moves ?? ['Protect', 'Heat Wave', 'Flash Cannon', 'Earth Power'],
+    },
+  }));
+
+  await Pokemon.create([...leadDocs, ...packDocs]);
 
   const service = new LeadStrategyRecommendationService();
 

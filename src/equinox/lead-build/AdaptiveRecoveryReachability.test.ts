@@ -43,6 +43,7 @@ export async function testAdaptiveRecoveryReachabilityUnit() {
         ],
         rawCount: 1,
         sourceExhausted: false,
+        endCursor: null,
       };
     },
   };
@@ -67,6 +68,13 @@ export async function testAdaptiveRecoveryReachabilityUnit() {
   const strategy: any = {
     id: 'weather_sun',
     name: 'Sun Offense',
+    // `lead` é lido por `calculateDefensiveCoverageBonus`
+    // (LeadStrategyCandidateScore.ts) durante a busca real disparada pelo
+    // recovery. Sem ele o mock não reproduzia um `LeadStrategyCandidate`
+    // válido — um defeito que ficou invisível enquanto o bug de parsing do
+    // reasonCode (FinalistRejectionAggregator) impedia o plano de recovery de
+    // ter requests e o fluxo nunca alcançava esse código.
+    lead: ['Charizard-Mega-Y', 'Whimsicott'],
     requiredRoles: [],
     optionalRoles: [],
   };
@@ -95,8 +103,9 @@ export async function testAdaptiveRecoveryReachabilityUnit() {
 
   assert(result.executed, 'Recovery deve ser executado quando elegível.');
   assert(recoverySourceFetched, 'Recovery Candidate Source deve ser consultado durante o recovery.');
-  assert(result.stopReason !== 'NO_REMAINING_TIME_BUDGET', 'Stop reason não pode ser estouro de tempo.');
-  assert(result.stopReason !== 'NOT_ELIGIBLE', 'Stop reason não pode ser ineligível.');
+  assert(result.stopReason !== 'DEADLINE_REACHED', 'Stop reason não pode ser estouro de tempo.');
+  assert(result.stopReason !== 'PLAN_NOT_ELIGIBLE', 'Stop reason não pode ser ineligível.');
+  assert(result.stopReason !== 'NO_CAPABILITY_REQUESTS_DERIVED', 'Stop reason não pode ser plano sem requests.');
   assert(context.phaseBudget.recoveryTimeAvailableMs() >= 2500, 'Tempo reservado para recovery no início deve ser >= 2.500ms.');
 
   console.log('✅ AdaptiveRecoveryReachability unit test passou.');

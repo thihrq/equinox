@@ -47,6 +47,74 @@ export function testRecoveryCapabilityPlanner() {
   assert(plan3.eligible === false, 'Lead ilegal deve tornar recovery elegível = false');
   assert(plan3.ineligibilityReasons.includes('ILLEGAL_LEAD'), 'Deve conter razão ILLEGAL_LEAD');
 
+  // 4. Caso 1 da autorização 087-F — invariante do plano vazio.
+  //
+  // Nenhuma inelegibilidade fatal (parityValid ok, lead legal, formato válido,
+  // nenhum finalista aceito na busca primária) mas a única razão de rejeição
+  // agregada é um `reasonCode` que `deriveRecoveryCapabilityPlan` não mapeia
+  // para nenhuma capability request. Reproduz exatamente o achado real da
+  // investigação 087-E (estratégia `sun_offense`): um plano que seria
+  // "provisoriamente elegível" mas fica sem nenhuma request derivada.
+  const agg4: FinalistRejectionAggregate = {
+    ...agg1,
+    failuresByReason: [
+      { reasonCode: 'UNMAPPED_REASON_CODE_WITHOUT_CAPABILITY', count: 20, finalistKeys: [] },
+    ],
+    failuresByAttackType: {},
+    dominantFailureReasons: ['UNMAPPED_REASON_CODE_WITHOUT_CAPABILITY'],
+  };
+  const plan4 = deriveRecoveryCapabilityPlan(agg4, { parityValid: true });
+
+  assert(plan4.requests.length === 0, 'Caso 1: nenhuma capability request deveria ter sido derivada.');
+  assert(plan4.eligible === false, 'Caso 1: eligible deve ser false quando requests está vazio — eligible => requests.length > 0.');
+  assert(
+    plan4.ineligibilityReasons.includes('NO_CAPABILITY_REQUESTS_DERIVED'),
+    'Caso 1: ineligibilityReasons deve conter NO_CAPABILITY_REQUESTS_DERIVED.',
+  );
+
+  // 5. 088-D Fase 3 — INSUFFICIENT_ROLE_COVERAGE não carrega qual role faltou.
+  //
+  // A hipótese da 088-D era que o planner devolveria uma request identificável
+  // pelo role ausente (`request.role === targetRole`). `RecoveryCapabilityRequest`
+  // não tem NENHUM campo `role`/`kind` — o único branch para esse reasonCode
+  // mapeia sempre para `capability: 'POSITIONING'`, satisfeita por qualquer
+  // candidato com golpe de pivô (Parting Shot/U-turn/Volt Switch/Flip Turn/
+  // Chilly Reception — CandidateCapabilityClassifier.ts), sem relação alguma
+  // com QUAL role (`fast-sweeper`, `win-condition` etc.) estava faltando.
+  // Prova: duas rejeições por roles totalmente diferentes produzem a MESMA
+  // request. A hipótese fica descartada por esta rodada, conforme instruído.
+  const aggMissingFastSweeper: FinalistRejectionAggregate = {
+    ...agg1,
+    failuresByReason: [
+      { reasonCode: 'INSUFFICIENT_ROLE_COVERAGE', count: 20, finalistKeys: [] },
+    ],
+    failuresByAttackType: {},
+    dominantFailureReasons: ['INSUFFICIENT_ROLE_COVERAGE'],
+  };
+  const aggMissingWinCondition: FinalistRejectionAggregate = {
+    ...aggMissingFastSweeper,
+    strategyId: 'defensive_core',
+  };
+
+  const planFastSweeper = deriveRecoveryCapabilityPlan(aggMissingFastSweeper, { parityValid: true });
+  const planWinCondition = deriveRecoveryCapabilityPlan(aggMissingWinCondition, { parityValid: true });
+
+  assert(planFastSweeper.eligible === true, '088-D: plano com role ausente deve ser elegível (POSITIONING é um capability real).');
+  assert(
+    planFastSweeper.requests.some(r => r.capability === 'POSITIONING'),
+    '088-D: INSUFFICIENT_ROLE_COVERAGE deve mapear para capability POSITIONING.',
+  );
+  assert(
+    !('role' in planFastSweeper.requests[0]) && !('kind' in planFastSweeper.requests[0]),
+    '088-D: RecoveryCapabilityRequest não tem campo role/kind — confirma que a request não identifica QUAL role faltou.',
+  );
+  assert(
+    JSON.stringify(planFastSweeper.requests) === JSON.stringify(planWinCondition.requests),
+    '088-D: duas rejeições por roles DIFERENTES (fast-sweeper vs win-condition) produzem a MESMA request — a hipótese de role-especificidade está refutada.',
+  );
+
+  console.log('✅ Caso 088-D (INSUFFICIENT_ROLE_COVERAGE não é role-específico — hipótese refutada) PASS');
+
   console.log('✅ RecoveryCapabilityPlanner testado com sucesso!');
 }
 

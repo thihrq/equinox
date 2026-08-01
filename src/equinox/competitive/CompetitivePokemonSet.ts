@@ -90,13 +90,62 @@ function getOffenseProfile(pokemon: PokemonData, format: string): 'physical' | '
   return atk >= spa ? 'physical' : 'special';
 }
 
-function chooseNature(pokemon: PokemonData, format: string): string {
-  const existing = String(pokemon.nature ?? '').split('/')[0]?.trim();
-  if (existing) return existing;
+/**
+ * Stat reduzido/potencializado por cada uma das 25 naturezas.
+ *
+ * `undefined` marca as 5 naturezas neutras (Hardy, Docile, Serious, Bashful,
+ * Quirky), que nunca reduzem nada e por isso nunca podem entrar em conflito
+ * com o moveset final.
+ */
+const NATURE_REDUCED_STAT: Record<string, 'atk' | 'def' | 'spa' | 'spd' | 'spe' | undefined> = {
+  Hardy: undefined, Lonely: 'def', Brave: 'spe', Adamant: 'spa', Naughty: 'spd',
+  Bold: 'atk', Docile: undefined, Relaxed: 'spe', Impish: 'spa', Lax: 'spd',
+  Timid: 'atk', Hasty: 'def', Serious: undefined, Jolly: 'spa', Naive: 'spd',
+  Modest: 'atk', Mild: 'def', Quiet: 'spe', Bashful: undefined, Rash: 'spd',
+  Calm: 'atk', Gentle: 'def', Sassy: 'spe', Careful: 'spa', Quirky: undefined,
+};
 
+const NATURE_BOOSTED_STAT: Record<string, 'atk' | 'def' | 'spa' | 'spd' | 'spe' | undefined> = {
+  Hardy: undefined, Lonely: 'atk', Brave: 'atk', Adamant: 'atk', Naughty: 'atk',
+  Bold: 'def', Docile: undefined, Relaxed: 'def', Impish: 'def', Lax: 'def',
+  Timid: 'spe', Hasty: 'spe', Serious: undefined, Jolly: 'spe', Naive: 'spe',
+  Modest: 'spa', Mild: 'spa', Quiet: 'spa', Bashful: undefined, Rash: 'spa',
+  Calm: 'spd', Gentle: 'spd', Sassy: 'spd', Careful: 'spd', Quirky: undefined,
+};
+
+function chooseNature(pokemon: PokemonData, format: string): string {
   const profile = getOffenseProfile(pokemon, format);
   const trickRoom = isTrickRoomPlan(pokemon);
   const roleText = `${pokemon.role ?? ''}`.toLowerCase();
+  // Único stat ofensivo que o moveset FINAL realmente usa — `mixed` e
+  // `support` não têm um stat único a proteger, então nenhuma natureza pode
+  // contradizê-los por essa checagem.
+  const relevantOffensiveStat = profile === 'physical' ? 'atk' : profile === 'special' ? 'spa' : undefined;
+
+  const existing = String(pokemon.nature ?? '').split('/')[0]?.trim();
+  if (existing) {
+    // A natureza upstream (ex.: `generateBasicKit`, que decide só a partir dos
+    // stats base, sem olhar o moveset) só é reaproveitada se não contradizer
+    // o perfil ofensivo do moveset FINAL. Sem essa checagem, natureza e
+    // moveset eram decididos por caminhos independentes que nunca se
+    // encontravam — o mecanismo exato por trás de casos reais como Unown
+    // (Timid + moveset 100% físico) confirmados na investigação 088.
+    if (!relevantOffensiveStat || NATURE_REDUCED_STAT[existing] !== relevantOffensiveStat) {
+      return existing;
+    }
+
+    // Incoerente: corrige preservando o stat que a natureza original
+    // potencializava (mantém a intenção de velocidade/bulk de quem a
+    // escolheu), trocando apenas o lado que ela reduzia.
+    const boosted = NATURE_BOOSTED_STAT[existing];
+    const otherOffensiveStat = relevantOffensiveStat === 'atk' ? 'spa' : 'atk';
+    const corrected = Object.keys(NATURE_REDUCED_STAT).find(
+      name => NATURE_BOOSTED_STAT[name] === boosted && NATURE_REDUCED_STAT[name] === otherOffensiveStat,
+    );
+    if (corrected) return corrected;
+    // Sem par que preserve o boost original: cai para a escolha padrão do
+    // perfil abaixo, que é sempre coerente por construção.
+  }
 
   if (hasMove(pokemon, 'Body Press')) return trickRoom ? 'Relaxed' : 'Impish';
   if (profile === 'physical') return trickRoom ? 'Brave' : 'Adamant';

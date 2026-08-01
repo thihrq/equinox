@@ -45,6 +45,21 @@ export class LeadBuildPhaseBudget {
   public readonly recoveryMustStartByMs: number;
   public readonly finalizationMustStartByMs: number;
 
+  /**
+   * Prazo próprio da fase de Candidate Fetch, no mesmo relógio monotônico das
+   * demais fases.
+   *
+   * Existe para que o fetch não possa consumir a reserva da busca primária:
+   * passar `recoveryMustStartByMs` direto ao fetcher resolveria o starvation de
+   * candidatos recriando o problema de orçamento. A invariante que este campo
+   * garante é
+   *
+   *   candidateFetchDeadlineAtMs < recoveryMustStartByMs < finalizationMustStartByMs < requestDeadlineAtMs
+   *
+   * e é a mesma condição que `canContinueCandidateFetch()` já aplicava.
+   */
+  public readonly candidateFetchDeadlineAtMs: number;
+
   public constructor(
     private readonly startedAtMs: number,
     public readonly config: LeadBuildPhaseBudgetConfig = RENDER_FREE_PHASE_BUDGET_CONFIG,
@@ -53,6 +68,10 @@ export class LeadBuildPhaseBudget {
     this.requestDeadlineAtMs = startedAtMs + config.totalBudgetMs;
     this.recoveryMustStartByMs = this.requestDeadlineAtMs - config.recoveryReserveMs - config.finalizationReserveMs;
     this.finalizationMustStartByMs = this.requestDeadlineAtMs - config.finalizationReserveMs;
+    this.candidateFetchDeadlineAtMs = Math.min(
+      startedAtMs + config.candidateFetchMaximumMs,
+      this.recoveryMustStartByMs,
+    );
   }
 
   public elapsedMs(now = this.clock.now()): number {

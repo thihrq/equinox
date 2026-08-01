@@ -54,9 +54,9 @@ export function deriveRecoveryCapabilityPlan(
     ineligibilityReasons.push('PRIMARY_SEARCH_SUCCEEDED');
   }
 
-  const eligible = ineligibilityReasons.length === 0;
+  const provisionallyEligible = ineligibilityReasons.length === 0;
 
-  if (eligible) {
+  if (provisionallyEligible) {
     eligibilityReasons.push('PRIMARY_SEARCH_EXHAUSTED_QUALITY_GATES');
 
     // Mapear razões para solicitações de capacidade
@@ -127,6 +127,22 @@ export function deriveRecoveryCapabilityPlan(
 
   // Limite máximo de 6 solicitações por estratégia
   const truncatedRequests = deduplicatedRequests.slice(0, 6);
+
+  // Invariante: `eligible` nunca pode ser `true` com `requests` vazio.
+  //
+  // Um plano provisoriamente elegível (nenhuma inelegibilidade fatal) mas sem
+  // nenhuma capability request mapeada é um estado contraditório: o recovery
+  // é autorizado a rodar e estruturalmente incapaz de aceitar qualquer
+  // candidato, porque o filtro de correspondência é `requests.some(...)`, que
+  // é `false` para todo candidato quando `requests` está vazio. Isso gastava
+  // passes do orçamento global sem produzir nenhum efeito (achado real da
+  // investigação 087-E, estratégia `sun_offense`: 2 passes consumidos, 0
+  // candidatos alcançando o builder).
+  if (provisionallyEligible && truncatedRequests.length === 0) {
+    ineligibilityReasons.push('NO_CAPABILITY_REQUESTS_DERIVED');
+  }
+
+  const eligible = ineligibilityReasons.length === 0;
 
   return {
     strategyId: aggregate.strategyId,

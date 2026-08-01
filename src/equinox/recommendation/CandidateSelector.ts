@@ -16,6 +16,8 @@ import {
 } from '../format-solvers/FormatPlanResolver';
 import { FormatLegalityRules } from './FormatLegalityRules';
 
+import { LeadBuildRequestContext } from '../lead-build/LeadBuildRequestContext';
+
 interface CandidateSelectorParams {
   allPokemon: PokemonData[];
   currentMembers: string[];
@@ -24,6 +26,7 @@ interface CandidateSelectorParams {
   limit?: number;
   baseTeam?: PokemonData[];
   formatSolverMode?: EquinoxFormatMode;
+  requestContext?: LeadBuildRequestContext;
 }
 
 export class CandidateSelector {
@@ -39,6 +42,7 @@ export class CandidateSelector {
       limit = 300,
       baseTeam = [],
       formatSolverMode = 'vanilla',
+      requestContext,
     } = params;
 
     const currentNames = new Set(
@@ -52,23 +56,62 @@ export class CandidateSelector {
       .filter(pokemon => {
         const normalizedName = pokemon.name.toLowerCase().trim();
 
-        if (this.isBanned(normalizedName)) return false;
-        if (this.isUnsupportedSpecies(pokemon.name)) return false;
-        if (!this.legalityRules.isEligible({ pokemon, format })) return false;
-        if (currentNames.has(normalizedName)) return false;
-        if (currentSpeciesKeys.has(getSpeciesClauseKey(pokemon.name))) return false;
-        if (!allowLegendaries && pokemon.isLegendary) return false;
-        if (!this.vanillaGameProfiles.isPokemonAllowed(format, pokemon)) return false;
+        if (currentNames.has(normalizedName)) {
+          if (requestContext?.invocationCounters) requestContext.invocationCounters.candidateRejectedLeadMember += 1;
+          return false;
+        }
+
+        if (currentSpeciesKeys.has(getSpeciesClauseKey(pokemon.name))) {
+          if (requestContext?.invocationCounters) requestContext.invocationCounters.candidateRejectedSpeciesClause += 1;
+          return false;
+        }
+
+        if (this.isBanned(normalizedName) || this.isUnsupportedSpecies(pokemon.name)) {
+          if (requestContext?.invocationCounters) requestContext.invocationCounters.candidateRejectedIllegal += 1;
+          return false;
+        }
+
+        if (!this.legalityRules.isEligible({ pokemon, format })) {
+          if (requestContext?.invocationCounters) {
+            if (!pokemon.competitiveSet) {
+              requestContext.invocationCounters.candidateRejectedMissingCompetitiveSet += 1;
+            } else {
+              requestContext.invocationCounters.candidateRejectedFormat += 1;
+            }
+          }
+          return false;
+        }
+
+        if (!allowLegendaries && pokemon.isLegendary) {
+          if (requestContext?.invocationCounters) requestContext.invocationCounters.candidateRejectedIllegal += 1;
+          return false;
+        }
+
+        if (!this.vanillaGameProfiles.isPokemonAllowed(format, pokemon)) {
+          if (requestContext?.invocationCounters) requestContext.invocationCounters.candidateRejectedFormat += 1;
+          return false;
+        }
 
         const variant = getVariant(pokemon, format);
-        if (!variant) return false;
+        if (!variant) {
+          if (requestContext?.invocationCounters) requestContext.invocationCounters.candidateRejectedMissingTypes += 1;
+          return false;
+        }
 
         const bst = calculateBST(variant.baseStats);
-
         const bstRange = this.legalityRules.getBstRange(format);
 
-        return bst >= bstRange.min && bst <= bstRange.max;
+        if (bst < bstRange.min || bst > bstRange.max) {
+          if (requestContext?.invocationCounters) requestContext.invocationCounters.candidateRejectedOther += 1;
+          return false;
+        }
+
+        return true;
       });
+
+    if (requestContext?.invocationCounters) {
+      requestContext.invocationCounters.candidateUsableBeforeSelection = filtered.length;
+    }
 
     const plan = baseTeam.length > 0
       ? resolveFormatPlan(baseTeam, format, formatSolverMode)

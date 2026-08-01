@@ -7,7 +7,62 @@ import { CandidateCapabilityClassifier } from './CandidateCapabilityClassifier';
 import { LeadBuildRequestContext } from './LeadBuildRequestContext';
 import { RecoveryCapabilityPlan } from './RecoveryCapabilityPlanner';
 import { RecoveryCandidateSource } from './ProductionRecoveryCandidateSource';
+import { CandidatePageCursor } from '../recommendation/ProgressiveCandidateFetcher';
 import { executePrimaryStrategySearch, PrimaryStrategySearchResult } from './PrimaryStrategySearch';
+import { RecoveryStrategyDiagnostic, RecoveryStrategyStopReason } from './RecoveryDiagnostics';
+
+/**
+ * Estado mutável de uma tentativa de recovery para UMA estratégia,
+ * preservado entre chamadas sucessivas a `execute()`.
+ *
+ * Existe para permitir que o orquestrador dê passes de 1 em 1 a várias
+ * estratégias intercaladamente (rodada justa + redistribuição), em vez de uma
+ * única chamada esgotar sozinha o orçamento global de passes — o mecanismo
+ * exato da starvation confirmada na investigação 087-D.
+ */
+export interface RecoverySessionState {
+  accumulated: Map<string, PokemonData>;
+  cursor: CandidatePageCursor | null;
+  rawCandidatesFetched: number;
+  usableCandidatesAdded: number;
+  passesConsumed: number;
+  candidatesExamined: number;
+  candidatesMatched: number;
+  builderAttemptCount: number;
+  completeTeamsBuilt: number;
+  acceptanceDecisionCount: number;
+  acceptanceAcceptedCount: number;
+  acceptanceRejectionReasons: string[];
+  everExecuted: boolean;
+  done: boolean;
+  lastSearchResult?: PrimaryStrategySearchResult;
+}
+
+export function createRecoverySessionState(primaryCandidates: PokemonData[]): RecoverySessionState {
+  const accumulated = new Map<string, PokemonData>();
+
+  for (const candidate of primaryCandidates) {
+    const setId = candidate.competitiveSet?.setId ?? candidate.name;
+    accumulated.set(`${candidate.name}:${setId}`, candidate);
+  }
+
+  return {
+    accumulated,
+    cursor: null,
+    rawCandidatesFetched: 0,
+    usableCandidatesAdded: 0,
+    passesConsumed: 0,
+    candidatesExamined: 0,
+    candidatesMatched: 0,
+    builderAttemptCount: 0,
+    completeTeamsBuilt: 0,
+    acceptanceDecisionCount: 0,
+    acceptanceAcceptedCount: 0,
+    acceptanceRejectionReasons: [],
+    everExecuted: false,
+    done: false,
+  };
+}
 
 export interface AdaptiveRecoveryResult {
   executed: boolean;
@@ -16,13 +71,9 @@ export interface AdaptiveRecoveryResult {
   usableCandidatesAdded: number;
   accepted: PrimaryStrategySearchResult['accepted'];
   searchResult?: PrimaryStrategySearchResult;
-  stopReason:
-    | 'NOT_ELIGIBLE'
-    | 'NO_REMAINING_TIME_BUDGET'
-    | 'SOURCE_EXHAUSTED'
-    | 'NO_CAPABILITY_MATCH'
-    | 'QUALITY_GATES_NOT_SATISFIED'
-    | 'RECOVERY_SUCCEEDED';
+  stopReason: RecoveryStrategyStopReason;
+  diagnostic: RecoveryStrategyDiagnostic;
+  state: RecoverySessionState;
 }
 
 function candidateMatchesPlan(
@@ -60,11 +111,29 @@ function candidateMatchesPlan(
   );
 }
 
+function formatCapabilityRequest(request: RecoveryCapabilityPlan['requests'][number]): string {
+  return request.attackType ? `${request.capability}:${request.attackType}` : request.capability;
+}
+
 export class AdaptiveStrategyRecovery {
   private readonly classifier = new CandidateCapabilityClassifier();
 
   public constructor(private readonly source: RecoveryCandidateSource) {}
 
+  /**
+   * Executa até `maxPassesThisCall` passes de recovery para uma estratégia.
+   *
+   * Cada chamada é autocontida em termos de orçamento — debita
+   * `context.recoveryBudget` diretamente, o mesmo objeto compartilhado entre
+   * estratégias na mesma requisição — mas o progresso da varredura
+   * (candidatos acumulados, cursor, contadores) é preservado via
+   * `priorState`/`state`, para que chamadas sucessivas continuem de onde a
+   * anterior parou em vez de recomeçar.
+   *
+   * Sem `maxPassesThisCall`/`priorState`, o comportamento é idêntico ao de
+   * antes desta mudança: uma única chamada consome sozinha até
+   * `plan.maximumPasses` (no máximo 2) passes do orçamento.
+   */
   public async execute(params: {
     plan: RecoveryCapabilityPlan;
     strategy: LeadStrategyCandidate;
@@ -73,22 +142,71 @@ export class AdaptiveStrategyRecovery {
     format: string;
     context: LeadBuildRequestContext;
     resolveCompetitiveTeam: (team: PokemonData[], format: string) => PokemonData[];
+    maxPassesThisCall?: number;
+    priorState?: RecoverySessionState;
   }): Promise<AdaptiveRecoveryResult> {
     const { plan, strategy, lead, primaryCandidates, format, context, resolveCompetitiveTeam } = params;
 
+    const state = params.priorState ?? createRecoverySessionState(primaryCandidates);
+
+    const capabilityRequests = plan.requests.map(formatCapabilityRequest);
+
+    const buildDiagnostic = (
+      stopReason: RecoveryStrategyStopReason,
+    ): RecoveryStrategyDiagnostic => ({
+      strategyId: strategy.id,
+      planEligible: plan.eligible,
+      capabilityRequestCount: plan.requests.length,
+      capabilityRequests,
+      ineligibilityReasons: [...plan.ineligibilityReasons],
+      passesAvailableAtStart: context.recoveryBudget.passesRemaining + state.passesConsumed,
+      passesConsumed: state.passesConsumed,
+      candidatesExamined: state.candidatesExamined,
+      candidatesMatched: state.candidatesMatched,
+      builderAttemptCount: state.builderAttemptCount,
+      completeTeamsBuilt: state.completeTeamsBuilt,
+      acceptanceDecisionCount: state.acceptanceDecisionCount,
+      acceptanceAcceptedCount: state.acceptanceAcceptedCount,
+      acceptanceRejectionReasons: [...state.acceptanceRejectionReasons],
+      recoveryExecuted: state.everExecuted,
+      stopReason,
+    });
+
+    const stopHere = (
+      stopReason: RecoveryStrategyStopReason,
+      passesExecutedThisCall: number,
+    ): AdaptiveRecoveryResult => ({
+      executed: state.everExecuted,
+      passesExecuted: passesExecutedThisCall,
+      rawCandidatesFetched: state.rawCandidatesFetched,
+      usableCandidatesAdded: state.usableCandidatesAdded,
+      accepted: state.lastSearchResult?.accepted.length ? state.lastSearchResult.accepted : [],
+      searchResult: state.lastSearchResult,
+      stopReason,
+      diagnostic: buildDiagnostic(stopReason),
+      state,
+    });
+
+    // Plano incoerente ou fatalmente inelegível: nenhum candidato pode chegar
+    // ao builder, então nenhum passe é gasto. Ver RecoveryCapabilityPlanner —
+    // a invariante `eligible => requests.length > 0` garante que, quando
+    // `eligible` é `true`, sempre há ao menos uma capability request real.
+    if (!plan.eligible) {
+      state.done = true;
+      const reason: RecoveryStrategyStopReason = plan.ineligibilityReasons.includes(
+        'NO_CAPABILITY_REQUESTS_DERIVED',
+      )
+        ? 'NO_CAPABILITY_REQUESTS_DERIVED'
+        : 'PLAN_NOT_ELIGIBLE';
+      return stopHere(reason, 0);
+    }
+
     if (
-      !plan.eligible ||
       context.recoveryBudget.passesRemaining <= 0 ||
       context.recoveryBudget.rawCandidatesRemaining <= 0
     ) {
-      return {
-        executed: false,
-        passesExecuted: 0,
-        rawCandidatesFetched: 0,
-        usableCandidatesAdded: 0,
-        accepted: [],
-        stopReason: 'NOT_ELIGIBLE',
-      };
+      state.done = true;
+      return stopHere('PASS_BUDGET_EXHAUSTED', 0);
     }
 
     if (context.invocationCounters) {
@@ -96,47 +214,53 @@ export class AdaptiveStrategyRecovery {
       context.invocationCounters.anytimeRecoveryCoordinatorInvocationCount = 1;
     }
 
-    let rawCandidatesFetched = 0;
-    let usableCandidatesAdded = 0;
+    // Teto por SESSÃO (não por chamada): sem isso, chamadas repetidas com
+    // `maxPassesThisCall: 1` (o mecanismo da rodada justa) poderiam ultrapassar
+    // `plan.maximumPasses` cumulativamente, já que cada chamada isolada não
+    // sabe quantos passes as chamadas anteriores já gastaram.
+    const passesAllowedRemainingInSession = Math.max(0, plan.maximumPasses - state.passesConsumed);
 
-    const accumulated = new Map<string, PokemonData>();
-
-    for (const candidate of primaryCandidates) {
-      const setId = candidate.competitiveSet?.setId ?? candidate.name;
-      accumulated.set(`${candidate.name}:${setId}`, candidate);
+    if (passesAllowedRemainingInSession <= 0) {
+      state.done = true;
+      return stopHere('PASS_BUDGET_EXHAUSTED', 0);
     }
 
-    const maxPassesAllowed = Math.min(plan.maximumPasses, context.recoveryBudget.passesRemaining, 2);
+    const maxPassesAllowed = Math.min(
+      params.maxPassesThisCall ?? passesAllowedRemainingInSession,
+      passesAllowedRemainingInSession,
+      context.recoveryBudget.passesRemaining,
+      2,
+    );
 
-    for (let pass = 1; pass <= maxPassesAllowed; pass += 1) {
+    let passesExecutedThisCall = 0;
+
+    for (let i = 0; i < maxPassesAllowed; i += 1) {
       if (context.recoveryBudget.passesRemaining <= 0) {
-        break;
+        return stopHere('PASS_BUDGET_EXHAUSTED', passesExecutedThisCall);
       }
+
       context.recoveryBudget.passesRemaining -= 1;
+      state.passesConsumed += 1;
+      passesExecutedThisCall += 1;
+      state.everExecuted = true;
 
       const remaining = context.phaseBudget
         ? Math.max(0, context.phaseBudget.requestDeadlineAtMs - systemMonotonicClock.now())
         : context.timeBudget.totalBudgetMs - (Date.now() - context.startedAtMs);
 
       if (remaining <= context.timeBudget.finalizationReserveMs) {
-        return {
-          executed: pass > 1,
-          passesExecuted: pass - 1,
-          rawCandidatesFetched,
-          usableCandidatesAdded,
-          accepted: [],
-          stopReason: 'NO_REMAINING_TIME_BUDGET',
-        };
+        state.done = true;
+        return stopHere('DEADLINE_REACHED', passesExecutedThisCall);
       }
 
       const excludedSpecies = [
         ...new Set([
           ...lead.map(member => member.name),
-          ...Array.from(accumulated.values()).map(candidate => candidate.name),
+          ...Array.from(state.accumulated.values()).map(candidate => candidate.name),
         ]),
       ];
 
-      const excludedSetIds = Array.from(accumulated.values())
+      const excludedSetIds = Array.from(state.accumulated.values())
         .map(candidate => candidate.competitiveSet?.setId)
         .filter((value): value is string => Boolean(value));
 
@@ -151,9 +275,13 @@ export class AdaptiveStrategyRecovery {
         excludedSpecies,
         excludedSetIds,
         maximumRawCandidates: rawLimit,
+        startCursor: state.cursor,
       });
 
-      rawCandidatesFetched += sourceResult.rawCount;
+      state.cursor = sourceResult.endCursor ?? state.cursor;
+
+      state.rawCandidatesFetched += sourceResult.rawCount;
+      state.candidatesExamined += sourceResult.rawCount;
       context.recoveryBudget.rawCandidatesRemaining = Math.max(
         0,
         context.recoveryBudget.rawCandidatesRemaining - sourceResult.rawCount,
@@ -163,16 +291,12 @@ export class AdaptiveStrategyRecovery {
         candidateMatchesPlan(candidate, plan, this.classifier),
       );
 
+      state.candidatesMatched += capabilityMatches.length;
+
       if (capabilityMatches.length === 0) {
         if (sourceResult.sourceExhausted) {
-          return {
-            executed: true,
-            passesExecuted: pass,
-            rawCandidatesFetched,
-            usableCandidatesAdded,
-            accepted: [],
-            stopReason: 'SOURCE_EXHAUSTED',
-          };
+          state.done = true;
+          return stopHere('CANDIDATE_SOURCE_EXHAUSTED', passesExecutedThisCall);
         }
 
         continue;
@@ -192,9 +316,9 @@ export class AdaptiveStrategyRecovery {
         const setId = candidate.competitiveSet?.setId ?? candidate.name;
         const key = `${candidate.name}:${setId}`;
 
-        if (!accumulated.has(key)) {
-          accumulated.set(key, candidate);
-          usableCandidatesAdded += 1;
+        if (!state.accumulated.has(key)) {
+          state.accumulated.set(key, candidate);
+          state.usableCandidatesAdded += 1;
           context.recoveryBudget.usableCandidatesRemaining = Math.max(
             0,
             context.recoveryBudget.usableCandidatesRemaining - 1,
@@ -206,7 +330,7 @@ export class AdaptiveStrategyRecovery {
         continue;
       }
 
-      const recoveryCandidates = Array.from(accumulated.values());
+      const recoveryCandidates = Array.from(state.accumulated.values());
 
       const input: LeadCompletionSearchInput = {
         lead,
@@ -220,29 +344,37 @@ export class AdaptiveStrategyRecovery {
         input,
         strategy,
         context,
-        resolveCompetitiveTeam: resolveCompetitiveTeam,
+        resolveCompetitiveTeam,
       });
 
+      state.lastSearchResult = searchResult;
+      state.builderAttemptCount += searchResult.completionsGenerated;
+      state.completeTeamsBuilt += searchResult.evaluated.length;
+      state.acceptanceDecisionCount += searchResult.traces.length;
+      state.acceptanceAcceptedCount += searchResult.accepted.length;
+      for (const trace of searchResult.traces) {
+        if (!trace.valid) {
+          state.acceptanceRejectionReasons.push(trace.primaryReason);
+        }
+      }
+
       if (searchResult.accepted.length > 0) {
-        return {
-          executed: true,
-          passesExecuted: pass,
-          rawCandidatesFetched,
-          usableCandidatesAdded,
-          accepted: searchResult.accepted,
-          searchResult,
-          stopReason: 'RECOVERY_SUCCEEDED',
-        };
+        state.done = true;
+        return stopHere('TEAM_ACCEPTED', passesExecutedThisCall);
       }
     }
 
-    return {
-      executed: true,
-      passesExecuted: maxPassesAllowed,
-      rawCandidatesFetched,
-      usableCandidatesAdded,
-      accepted: [],
-      stopReason: 'QUALITY_GATES_NOT_SATISFIED',
-    };
+    // A cota de passes DESTA chamada terminou sem aceitar, esgotar a fonte ou
+    // estourar o prazo. `state.done` continua `false` de propósito: o
+    // orçamento GLOBAL pode ainda ter passes para outras estratégias
+    // rodarem antes de uma segunda rodada devolver mais passes a esta.
+    const reason: RecoveryStrategyStopReason =
+      state.builderAttemptCount > 0
+        ? 'ALL_TEAMS_REJECTED'
+        : state.candidatesMatched > 0
+          ? 'NO_COMPLETE_TEAM'
+          : 'NO_CAPABILITY_MATCH';
+
+    return stopHere(reason, passesExecutedThisCall);
   }
 }
