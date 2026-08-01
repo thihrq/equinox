@@ -43,7 +43,10 @@ export function testEvaluateStrategyQuality() {
   });
 
   assert(balancedResult.valid === false, 'Deve rejeitar o mesmo breakdown quando avaliado como Balanced');
-  assert(balancedResult.reasons.includes('INSUFFICIENT_COVERAGE'), 'Deve registrar INSUFFICIENT_COVERAGE para Balanced');
+  assert(
+    balancedResult.reasons.some(r => r.reasonCode === 'INSUFFICIENT_COVERAGE'),
+    'Deve registrar INSUFFICIENT_COVERAGE para Balanced',
+  );
 
   // 3. Ilegalidade: sempre REJEITADO
   const illegalResult = evaluateStrategyQuality({

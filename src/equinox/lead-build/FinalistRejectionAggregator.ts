@@ -1,5 +1,12 @@
 import { PokemonType } from './TeamDefensiveProfile';
 import { FinalistDecisionTrace } from './FinalistDecisionTrace';
+import {
+  StructuredGateReason,
+  OffensivePressureMetadata,
+  OffensiveCoverageMetadata,
+} from './StrategyQualityDiagnostics';
+
+export type RejectionReasonMetadata = OffensivePressureMetadata | OffensiveCoverageMetadata;
 
 export interface RejectionReasonAggregate {
   reasonCode: string;
@@ -7,6 +14,7 @@ export interface RejectionReasonAggregate {
   attackType?: PokemonType;
   capability?: string;
   gate?: string;
+  metadata?: RejectionReasonMetadata;
   finalistKeys: readonly string[];
 }
 
@@ -29,6 +37,61 @@ export interface FinalistRejectionAggregate {
   dominantFailureReasons: readonly string[];
 }
 
+const CANONICAL_ATTACK_TYPES = [
+  'Normal', 'Fire', 'Water', 'Electric', 'Grass', 'Ice',
+  'Fighting', 'Poison', 'Ground', 'Flying', 'Psychic', 'Bug',
+  'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel', 'Fairy',
+];
+
+function isPressureMetadata(metadata: RejectionReasonMetadata): metadata is OffensivePressureMetadata {
+  return 'primaryPressure' in metadata;
+}
+
+function isCoverageMetadata(metadata: RejectionReasonMetadata): metadata is OffensiveCoverageMetadata {
+  return 'offensiveTypesPresent' in metadata;
+}
+
+/**
+ * Assinatura explícita de deduplicação — nunca `JSON.stringify` de objeto
+ * arbitrário. Cada reasonCode com metadata estruturada tem sua própria
+ * chave semântica; os demais (sem metadata) caem na chave legada
+ * (reasonCode + attackType + gate), preservando o comportamento anterior.
+ */
+function buildReasonMetadataKey(
+  reasonCode: string,
+  gate: string,
+  metadata: RejectionReasonMetadata | undefined,
+  attackType: PokemonType | undefined,
+): string {
+  if (metadata && isPressureMetadata(metadata)) {
+    return `${reasonCode}|${gate}|deficient=${metadata.deficientSides.join(',')}|strongest=${metadata.strongestSide}`;
+  }
+  if (metadata && isCoverageMetadata(metadata)) {
+    return `${reasonCode}|${gate}|present=${[...metadata.offensiveTypesPresent].sort().join(',')}`;
+  }
+  return `${reasonCode}_${attackType || ''}_${gate}`;
+}
+
+/** Menor primaryPressure = déficit pior (mais longe do mínimo exigido). */
+function isWorsePressure(candidate: OffensivePressureMetadata, current: OffensivePressureMetadata): boolean {
+  return candidate.primaryPressure < current.primaryPressure;
+}
+
+/** Menos tipos presentes = déficit pior (cobertura mais estreita). */
+function isWorseCoverage(candidate: OffensiveCoverageMetadata, current: OffensiveCoverageMetadata): boolean {
+  return candidate.offensiveTypesPresent.length < current.offensiveTypesPresent.length;
+}
+
+function isWorseMetadata(candidate: RejectionReasonMetadata, current: RejectionReasonMetadata): boolean {
+  if (isPressureMetadata(candidate) && isPressureMetadata(current)) {
+    return isWorsePressure(candidate, current);
+  }
+  if (isCoverageMetadata(candidate) && isCoverageMetadata(current)) {
+    return isWorseCoverage(candidate, current);
+  }
+  return false;
+}
+
 export function aggregateFinalistRejections(
   strategyId: string,
   traces: readonly FinalistDecisionTrace[],
@@ -42,7 +105,14 @@ export function aggregateFinalistRejections(
   let setCoherentFinalists = 0;
 
   const failuresByGateMap: Record<string, number> = {};
-  const failuresByReasonMap = new Map<string, { reasonCode: string; count: number; attackType?: PokemonType; gate?: string; keys: Set<string> }>();
+  const failuresByReasonMap = new Map<string, {
+    reasonCode: string;
+    count: number;
+    attackType?: PokemonType;
+    gate?: string;
+    metadata?: RejectionReasonMetadata;
+    keys: Set<string>;
+  }>();
   const failuresByAttackTypeMap: Partial<Record<PokemonType, number>> = {};
 
   for (const trace of traces) {
@@ -76,30 +146,36 @@ export function aggregateFinalistRejections(
           isSetCoherent = false;
         }
 
-        // Processar razões de falha dentro do gate
-        const uniqueReasonsInGate = new Set(gTrace.reasons);
-        for (const rawReason of uniqueReasonsInGate) {
-          let reasonCode = rawReason;
+        // Processar razões de falha dentro do gate — deduplicado por
+        // reasonCode (cada reasonCode aparece no máximo uma vez por gate,
+        // por construção de FullTeamAcceptanceDecision/evaluateStrategyQuality).
+        const seenReasonCodes = new Set<string>();
+        for (const structuredReason of gTrace.reasons as readonly StructuredGateReason[]) {
+          if (seenReasonCodes.has(structuredReason.reasonCode)) continue;
+          seenReasonCodes.add(structuredReason.reasonCode);
+
+          let reasonCode = structuredReason.reasonCode;
           let attackType: PokemonType | undefined = undefined;
 
-          if (rawReason.includes(':')) {
-            const parts = rawReason.split(':');
+          if (reasonCode.includes(':')) {
+            const parts = reasonCode.split(':');
             reasonCode = parts[0];
             const candidateType = parts[1] as PokemonType;
-            if ([
-              'Normal', 'Fire', 'Water', 'Electric', 'Grass', 'Ice',
-              'Fighting', 'Poison', 'Ground', 'Flying', 'Psychic', 'Bug',
-              'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel', 'Fairy',
-            ].includes(candidateType)) {
+            if (CANONICAL_ATTACK_TYPES.includes(candidateType)) {
               attackType = candidateType;
             }
           }
 
-          const mapKey = `${reasonCode}_${attackType || ''}_${gTrace.gate}`;
+          const metadata = structuredReason.metadata as RejectionReasonMetadata | undefined;
+          const mapKey = buildReasonMetadataKey(reasonCode, gTrace.gate, metadata, attackType);
+
           let entry = failuresByReasonMap.get(mapKey);
           if (!entry) {
-            entry = { reasonCode, count: 0, attackType, gate: gTrace.gate, keys: new Set() };
+            entry = { reasonCode, count: 0, attackType, gate: gTrace.gate, metadata, keys: new Set() };
             failuresByReasonMap.set(mapKey, entry);
+          } else if (metadata && entry.metadata && isWorseMetadata(metadata, entry.metadata)) {
+            // Preserva como representante o pior déficit observado no bucket.
+            entry.metadata = metadata;
           }
           entry.count++;
           entry.keys.add(trace.teamKey);
@@ -122,13 +198,13 @@ export function aggregateFinalistRejections(
   }
 
   // `reasonCode` vem do próprio valor guardado na entrada — reconstruí-lo a
-  // partir da chave composta (`key.split('_')[0]`) cortava tudo após o
-  // primeiro `_`, corrompendo qualquer reason code que contenha `_`, que é o
-  // caso de todos os reason codes reais do planner
-  // (`UNANSWERED_REPEATED_WEAKNESS`, `NO_DEFENSIVE_SWITCH_IN`,
-  // `CRITICAL_SPREAD_EXPOSURE`, `INSUFFICIENT_ROLE_COVERAGE`). O resultado era
-  // um `reasonCode` truncado (`UNANSWERED`) que nunca casava com nenhum branch
-  // de `deriveRecoveryCapabilityPlan`, produzindo planos "elegíveis" sem
+  // partir da chave composta cortava tudo após o primeiro `_`, corrompendo
+  // qualquer reason code que contenha `_`, que é o caso de todos os reason
+  // codes reais do planner (`UNANSWERED_REPEATED_WEAKNESS`,
+  // `NO_DEFENSIVE_SWITCH_IN`, `CRITICAL_SPREAD_EXPOSURE`,
+  // `INSUFFICIENT_ROLE_COVERAGE`). O resultado era um `reasonCode` truncado
+  // (`UNANSWERED`) que nunca casava com nenhum branch de
+  // `deriveRecoveryCapabilityPlan`, produzindo planos "elegíveis" sem
   // nenhuma capability request — a causa raiz confirmada nas investigações
   // 087-D/087-E, agora coberta por um teste que a detecta.
   const failuresByReason: RejectionReasonAggregate[] = Array.from(failuresByReasonMap.values()).map(
@@ -137,6 +213,7 @@ export function aggregateFinalistRejections(
       count: value.count,
       attackType: value.attackType,
       gate: value.gate,
+      metadata: value.metadata,
       finalistKeys: Array.from(value.keys),
     }),
   );

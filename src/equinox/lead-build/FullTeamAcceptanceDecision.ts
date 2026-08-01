@@ -1,12 +1,13 @@
 import { FullTeamEvaluation } from '../vgc/LeadBuildTypes';
 import { validateCompetitiveTeam, TeamLegalityResult } from '../competitive/CompetitiveTeamLegalityValidator';
+import { StructuredGateReason, toStructuredGateReason } from './StrategyQualityDiagnostics';
 
 export interface FinalistGateDecision {
   gate: string;
   valid: boolean;
   score?: number;
   threshold?: number;
-  reasons: string[];
+  reasons: StructuredGateReason[];
 }
 
 export interface FullTeamAcceptanceDecision {
@@ -23,30 +24,34 @@ export function decideFullTeamAcceptance(params: {
   const quality = evaluation.qualityResult;
   const defensive = evaluation.defensiveQuality;
 
+  const hasSetCoherenceFailure = quality?.reasons?.some(
+    (r: StructuredGateReason) => r.reasonCode === 'SET_COHERENCE_FAILURE',
+  ) ?? false;
+
   const gates: FinalistGateDecision[] = [
     {
       gate: 'Legality',
       valid: legality.legal,
-      reasons: legality.issues.map((issue: { message: string }) => issue.message),
+      reasons: legality.issues.map((issue: { message: string }) => toStructuredGateReason(issue.message)),
     },
     {
       gate: 'StrategyCompleteness',
       valid: evaluation.strategyComplete,
-      reasons: evaluation.strategyComplete ? [] : ['INCOMPLETE_STRATEGY'],
+      reasons: evaluation.strategyComplete ? [] : [toStructuredGateReason('INCOMPLETE_STRATEGY')],
     },
     {
       gate: 'OverallScore',
       valid: evaluation.overallScore >= 60,
       score: evaluation.overallScore,
       threshold: 60,
-      reasons: evaluation.overallScore >= 60 ? [] : ['OVERALL_SCORE_BELOW_THRESHOLD'],
+      reasons: evaluation.overallScore >= 60 ? [] : [toStructuredGateReason('OVERALL_SCORE_BELOW_THRESHOLD')],
     },
     {
       gate: 'RoleCoverage',
       valid: evaluation.roleCoverageScore >= 55,
       score: evaluation.roleCoverageScore,
       threshold: 55,
-      reasons: evaluation.roleCoverageScore >= 55 ? [] : ['INSUFFICIENT_ROLE_COVERAGE'],
+      reasons: evaluation.roleCoverageScore >= 55 ? [] : [toStructuredGateReason('INSUFFICIENT_ROLE_COVERAGE')],
     },
     {
       gate: 'OffensiveQuality',
@@ -59,22 +64,20 @@ export function decideFullTeamAcceptance(params: {
       gate: 'DefensiveQuality',
       valid: defensive?.valid ?? true,
       score: defensive?.score,
-      reasons: defensive?.reasons.map(reason => {
+      reasons: (defensive?.reasons.map(reason => {
         const type = defensive.highestExposureType;
-        return type ? `${reason}:${type}` : reason;
-      }) ?? [],
+        return toStructuredGateReason(type ? `${reason}:${type}` : reason);
+      }) ?? []),
     },
     {
       gate: 'SetCoherence',
-      valid: !quality?.reasons?.includes('SET_COHERENCE_FAILURE' as never),
-      reasons: quality?.reasons?.includes('SET_COHERENCE_FAILURE' as never)
-        ? ['SET_COHERENCE_FAILURE']
-        : [],
+      valid: !hasSetCoherenceFailure,
+      reasons: hasSetCoherenceFailure ? [toStructuredGateReason('SET_COHERENCE_FAILURE')] : [],
     },
   ];
 
   const accepted = gates.every(g => g.valid);
-  const failedReasonCodes = gates.filter(g => !g.valid).flatMap(g => g.reasons);
+  const failedReasonCodes = gates.filter(g => !g.valid).flatMap(g => g.reasons.map(r => r.reasonCode));
 
   return {
     accepted,

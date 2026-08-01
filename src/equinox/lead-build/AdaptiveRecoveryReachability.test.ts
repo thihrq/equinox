@@ -3,6 +3,7 @@ import { deriveRecoveryCapabilityPlan } from './RecoveryCapabilityPlanner';
 import { aggregateFinalistRejections } from './FinalistRejectionAggregator';
 import { createLeadBuildRequestContext } from './LeadBuildRequestContext';
 import { createFinalistDecisionTrace } from './FinalistDecisionTrace';
+import { toStructuredGateReason } from './StrategyQualityDiagnostics';
 import { PokemonData } from '../core/AnalysisContext';
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -56,7 +57,7 @@ export async function testAdaptiveRecoveryReachabilityUnit() {
       gate: 'DefensiveQuality',
       valid: false,
       score: 0,
-      reasons: ['UNANSWERED_REPEATED_WEAKNESS:Ice'],
+      reasons: [toStructuredGateReason('UNANSWERED_REPEATED_WEAKNESS:Ice')],
     },
   ]);
 

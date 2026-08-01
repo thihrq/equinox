@@ -4,8 +4,12 @@ import {
 } from './StrategyOffensiveProfile';
 import {
   OffensiveScoreBreakdown,
-  StrategyQualityReason,
+  StructuredGateReason,
+  OffensivePressureMetadata,
+  OffensiveCoverageMetadata,
+  toStructuredGateReason,
 } from './StrategyQualityDiagnostics';
+import { ALL_POKEMON_TYPES, PokemonType } from './TeamDefensiveProfile';
 
 export interface StrategyQualityResult {
   valid: boolean;
@@ -14,7 +18,53 @@ export interface StrategyQualityResult {
   generalOffensiveScore: number;
   contextualOffensiveScore: number;
   breakdown: OffensiveScoreBreakdown;
-  reasons: readonly StrategyQualityReason[];
+  reasons: readonly StructuredGateReason[];
+}
+
+function buildPressureReason(
+  breakdown: OffensiveScoreBreakdown,
+  minimumPrimaryPressure: number,
+): StructuredGateReason {
+  const { physicalPressure, specialPressure } = breakdown;
+  const primaryPressure = Math.max(physicalPressure, specialPressure);
+
+  // O gate testa max(physical, special) < threshold. Se ele falhou, os DOIS
+  // lados são necessariamente < threshold (o maior dos dois já é menor que
+  // o limite) — não é seguro inferir que só um lado está deficiente.
+  const metadata: OffensivePressureMetadata = {
+    physicalPressure,
+    specialPressure,
+    minimumPrimaryPressure,
+    primaryPressure,
+    deficientSides: ['physical', 'special'],
+    strongestSide:
+      physicalPressure > specialPressure
+        ? 'physical'
+        : specialPressure > physicalPressure
+          ? 'special'
+          : 'balanced',
+  };
+
+  return { reasonCode: 'INSUFFICIENT_PRIMARY_PRESSURE', metadata };
+}
+
+function buildCoverageReason(
+  breakdown: OffensiveScoreBreakdown,
+  minimumCoverageBreadth: number,
+): StructuredGateReason {
+  const present = breakdown.offensiveTypesPresent ?? [];
+  const presentSet = new Set<string>(present);
+  const uncoveredTypes = (ALL_POKEMON_TYPES as readonly string[])
+    .filter(type => !presentSet.has(type)) as PokemonType[];
+
+  const metadata: OffensiveCoverageMetadata = {
+    coverageBreadth: breakdown.coverageBreadth,
+    minimumCoverageBreadth,
+    offensiveTypesPresent: present,
+    uncoveredTypes,
+  };
+
+  return { reasonCode: 'INSUFFICIENT_COVERAGE', metadata };
 }
 
 /**
@@ -39,7 +89,7 @@ export function evaluateStrategyQuality(input: {
       generalOffensiveScore: breakdown.finalScore,
       contextualOffensiveScore: 0,
       breakdown,
-      reasons: ['ILLEGAL_TEAM' as any],
+      reasons: [toStructuredGateReason('ILLEGAL_TEAM')],
     };
   }
 
@@ -51,7 +101,7 @@ export function evaluateStrategyQuality(input: {
       generalOffensiveScore: breakdown.finalScore,
       contextualOffensiveScore: 0,
       breakdown,
-      reasons: ['INCOMPLETE_STRATEGY' as any],
+      reasons: [toStructuredGateReason('INCOMPLETE_STRATEGY')],
     };
   }
 
@@ -60,29 +110,29 @@ export function evaluateStrategyQuality(input: {
     breakdown.specialPressure,
   );
 
-  const reasons: StrategyQualityReason[] = [];
+  const reasons: StructuredGateReason[] = [];
 
   if (primaryPressure < profile.minimumPrimaryPressure) {
-    reasons.push('INSUFFICIENT_PHYSICAL_PRESSURE');
+    reasons.push(buildPressureReason(breakdown, profile.minimumPrimaryPressure));
   }
 
   if (breakdown.coverageBreadth < profile.minimumCoverageBreadth) {
-    reasons.push('INSUFFICIENT_COVERAGE');
+    reasons.push(buildCoverageReason(breakdown, profile.minimumCoverageBreadth));
   }
 
   if (breakdown.strategyConversion < profile.minimumStrategyConversion) {
-    reasons.push('INSUFFICIENT_STRATEGY_CONVERSION');
+    reasons.push(toStructuredGateReason('INSUFFICIENT_STRATEGY_CONVERSION'));
   }
 
   if (breakdown.outsideStrategyPlan < profile.minimumOutsideStrategyPlan) {
-    reasons.push('NO_OUTSIDE_STRATEGY_PLAN');
+    reasons.push(toStructuredGateReason('NO_OUTSIDE_STRATEGY_PLAN'));
   }
 
   if (
     profile.physicalSpecialSymmetryRequired &&
     Math.min(breakdown.physicalPressure, breakdown.specialPressure) < 40
   ) {
-    reasons.push('PHYSICAL_SPECIAL_ASYMMETRY');
+    reasons.push(toStructuredGateReason('PHYSICAL_SPECIAL_ASYMMETRY'));
   }
 
   const contextualOffensiveScore = Math.round(
