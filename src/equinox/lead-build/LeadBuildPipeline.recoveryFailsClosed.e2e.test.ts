@@ -134,9 +134,49 @@ export async function testRecoveryFailsClosedE2E() {
   // cenário de uma fonte vazia/exaurida (recoverySourceExhausted).
   assert(targetPerStrategy.candidatesExamined > 0, 'O recovery deve ter examinado ao menos um candidato utilizável (fonte não vazia).');
 
-  assert(targetPerStrategy.candidatesMatched === 0, 'Nenhum candidato deve satisfazer SAFE_SWITCH_IN:Ice — Iron Hands é neutro a Gelo.');
+  // (106) Desde a introdução de COVERAGE_BREADTH, o mesmo plano desta
+  // estratégia também deriva uma request de cobertura (o pool primário,
+  // além de fraco a Gelo, também é ofensivamente pouco diverso) — Iron
+  // Hands (Fighting/Electric) acrescenta 2 tipos novos e SATISFAZ
+  // COVERAGE_BREADTH, mesmo sendo neutro a Gelo. Isso é coexistência
+  // intencional (autorização 106: "coexistência com requests defensivas"),
+  // não uma falha de fail-closed. O caminho causal completo é comprovado
+  // explicitamente abaixo (108), não só o resultado final: o candidato
+  // casou com uma capability, o builder de fato tentou construir times
+  // completos com ele, os times completos foram avaliados, nenhum foi
+  // aceito, e a causa raiz — a fraqueza repetida a Gelo — permanece
+  // registrada na razão de rejeição.
+  assert(targetPerStrategy.candidatesMatched > 0, `O candidato deve ter casado com ao menos uma capability requisitada (COVERAGE_BREADTH, por construção). Recebido: ${targetPerStrategy.candidatesMatched}`);
+  assert(targetPerStrategy.builderAttemptCount > 0, `O builder deve ter de fato tentado construir times completos com o candidato casado. Recebido: ${targetPerStrategy.builderAttemptCount}`);
+  assert(targetPerStrategy.acceptanceDecisionCount > 0, `Os times completos construídos devem ter sido avaliados pelo gate de aceitação. Recebido: ${targetPerStrategy.acceptanceDecisionCount}`);
   assert(targetPerStrategy.acceptanceAcceptedCount === 0, 'Nenhum time deve ser aceito via recovery para a estratégia-alvo.');
-  assert(targetPerStrategy.stopReason === 'NO_CAPABILITY_MATCH', `stopReason da estratégia-alvo deve ser NO_CAPABILITY_MATCH. Recebido: ${targetPerStrategy.stopReason}`);
+
+  // Prova de que a causa raiz (fraqueza repetida a Gelo) permanece
+  // registrada na rejeição final — não uma string pública genérica como
+  // QUALITY_GATES_NOT_SATISFIED. Verificado com instrumentação de
+  // diagnóstico dedicada (não commitada) que esta é exatamente a
+  // representação real disponível neste campo, sem sufixo de attackType:
+  // `evaluation.qualityResult.reasons` (gate OffensiveQuality, primeiro gate
+  // inválido na ordem de `FullTeamAcceptanceDecision`) já carrega o
+  // reasonCode `UNANSWERED_REPEATED_WEAKNESS` puro — o gate DefensiveQuality
+  // (que sufixaria `:Ice` via `highestExposureType`) nunca chega a ser o
+  // "primeiro" motivo porque OffensiveQuality falha antes na ordem dos
+  // gates. `acceptanceRejectionReasons` reflete `trace.primaryReason`
+  // (`FinalistDecisionTrace.ts`), que é sempre o reasonCode do primeiro gate
+  // inválido — por isso o texto real, hoje, não inclui o attackType.
+  assert(
+    targetPerStrategy.acceptanceRejectionReasons.length > 0,
+    'A rejeição de cada time completo deve ter uma razão registrada.',
+  );
+  assert(
+    targetPerStrategy.acceptanceRejectionReasons.every((r: string) => r === 'UNANSWERED_REPEATED_WEAKNESS'),
+    `Todas as rejeições devem preservar a causa raiz real (fraqueza repetida sem resposta defensiva), não um texto genérico. Recebido: ${JSON.stringify(targetPerStrategy.acceptanceRejectionReasons)}`,
+  );
+
+  assert(
+    targetPerStrategy.stopReason === 'ALL_TEAMS_REJECTED',
+    `Com candidatesMatched>0 e builderAttemptCount>0 comprovados acima, o stopReason específico e determinístico deste cenário é ALL_TEAMS_REJECTED (não NO_CAPABILITY_MATCH, que exigiria candidatesMatched===0). Recebido: ${targetPerStrategy.stopReason}`,
+  );
 
   // Granularidade por estratégia (088-H): a ausência é escopada à
   // estratégia-alvo, não ao array `result.strategies` inteiro — outras
