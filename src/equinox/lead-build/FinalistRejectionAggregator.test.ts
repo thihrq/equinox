@@ -1,5 +1,6 @@
 import { aggregateFinalistRejections } from './FinalistRejectionAggregator';
 import { FinalistDecisionTrace } from './FinalistDecisionTrace';
+import { toStructuredGateReason } from './StrategyQualityDiagnostics';
 
 function assert(condition: boolean, message: string): void {
   if (!condition) throw new Error(`ASSERTION_FAILED: ${message}`);
@@ -18,7 +19,7 @@ export function testFinalistRejectionAggregator() {
       gates: [
         { gate: 'Legality', valid: true, reasons: [] },
         { gate: 'StrategyCompleteness', valid: true, reasons: [] },
-        { gate: 'DefensiveQuality', valid: false, reasons: ['UNANSWERED_REPEATED_WEAKNESS:Ice'] },
+        { gate: 'DefensiveQuality', valid: false, reasons: [toStructuredGateReason('UNANSWERED_REPEATED_WEAKNESS:Ice')] },
       ],
     },
     {
@@ -30,7 +31,7 @@ export function testFinalistRejectionAggregator() {
       gates: [
         { gate: 'Legality', valid: true, reasons: [] },
         { gate: 'StrategyCompleteness', valid: true, reasons: [] },
-        { gate: 'DefensiveQuality', valid: false, reasons: ['UNANSWERED_REPEATED_WEAKNESS:Ice'] },
+        { gate: 'DefensiveQuality', valid: false, reasons: [toStructuredGateReason('UNANSWERED_REPEATED_WEAKNESS:Ice')] },
       ],
     },
   ];

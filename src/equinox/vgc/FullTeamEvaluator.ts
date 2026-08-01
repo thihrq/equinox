@@ -14,7 +14,7 @@ import { getDamageMultiplier } from '../utils/DamageMultiplier';
 import { isMegaOption } from '../utils/VgcSetOptimizer';
 import { FormatSolverRegistry } from '../format-solvers/FormatSolverRegistry';
 import { validateCompetitiveTeam } from '../competitive/CompetitiveTeamLegalityValidator';
-import { diagnoseOffensiveScore } from '../lead-build/StrategyQualityDiagnostics';
+import { diagnoseOffensiveScore, toStructuredGateReason } from '../lead-build/StrategyQualityDiagnostics';
 import { evaluateStrategyQuality } from '../lead-build/evaluateStrategyQuality';
 import { calculateTeamDefensiveProfile } from '../lead-build/TeamDefensiveProfile';
 import { evaluateDefensiveQuality } from '../lead-build/evaluateDefensiveQuality';
@@ -667,8 +667,8 @@ export function evaluateFullTeam(
     valid: rawQualityResult.valid && defensiveQuality.valid && allSetCoherenceValid,
     reasons: [
       ...rawQualityResult.reasons,
-      ...(defensiveQuality.reasons as any[]),
-      ...(allSetCoherenceValid ? [] : ['SET_COHERENCE_FAILURE']),
+      ...defensiveQuality.reasons.map(toStructuredGateReason),
+      ...(allSetCoherenceValid ? [] : [toStructuredGateReason('SET_COHERENCE_FAILURE')]),
     ],
   };
 

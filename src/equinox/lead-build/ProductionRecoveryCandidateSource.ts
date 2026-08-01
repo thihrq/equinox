@@ -1,7 +1,7 @@
 import { Pokemon } from '../../models/Pokemon';
 import { PokemonSet } from '../../models/PokemonSet';
 import { PokemonData } from '../core/AnalysisContext';
-import { RecoveryCapabilityRequest } from './RecoveryCapabilityPlanner';
+import { AnyRecoveryCapabilityRequest } from './RecoveryCapabilityPlanner';
 import {
   buildCursorPredicate,
   CANDIDATE_PAGE_SORT,
@@ -17,7 +17,7 @@ export interface CandidateFetchRuntimeControl {
 
 export interface RecoveryCandidateSourceQuery {
   format: string;
-  requestedCapabilities: readonly RecoveryCapabilityRequest[];
+  requestedCapabilities: readonly AnyRecoveryCapabilityRequest[];
   excludedSpecies: readonly string[];
   excludedSetIds: readonly string[];
   maximumRawCandidates: number;

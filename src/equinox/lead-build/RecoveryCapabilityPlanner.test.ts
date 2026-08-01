@@ -29,8 +29,8 @@ export function testRecoveryCapabilityPlanner() {
   const plan1 = deriveRecoveryCapabilityPlan(agg1);
 
   assert(plan1.eligible === true, 'Caso com falha por Gelo deve ser elegível para recovery');
-  assert(plan1.requests.some(r => r.capability === 'TYPE_RESISTANCE' && r.attackType === 'Ice'), 'Deve solicitar TYPE_RESISTANCE contra Ice');
-  assert(plan1.requests.some(r => r.capability === 'SAFE_SWITCH_IN' && r.attackType === 'Ice'), 'Deve solicitar SAFE_SWITCH_IN contra Ice');
+  assert(plan1.requests.some(r => 'capability' in r && r.capability === 'TYPE_RESISTANCE' && r.attackType === 'Ice'), 'Deve solicitar TYPE_RESISTANCE contra Ice');
+  assert(plan1.requests.some(r => 'capability' in r && r.capability === 'SAFE_SWITCH_IN' && r.attackType === 'Ice'), 'Deve solicitar SAFE_SWITCH_IN contra Ice');
   assert(plan1.maximumPasses <= 2, 'maximumPasses deve ser <= 2');
 
   // 2. Busca primária teve sucesso -> NÃO elegível para recovery
@@ -101,7 +101,7 @@ export function testRecoveryCapabilityPlanner() {
 
   assert(planFastSweeper.eligible === true, '088-D: plano com role ausente deve ser elegível (POSITIONING é um capability real).');
   assert(
-    planFastSweeper.requests.some(r => r.capability === 'POSITIONING'),
+    planFastSweeper.requests.some(r => 'capability' in r && r.capability === 'POSITIONING'),
     '088-D: INSUFFICIENT_ROLE_COVERAGE deve mapear para capability POSITIONING.',
   );
   assert(

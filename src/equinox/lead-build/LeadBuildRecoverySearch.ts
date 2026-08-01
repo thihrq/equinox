@@ -1,4 +1,4 @@
-import { RecoveryCapabilityPlan } from './RecoveryCapabilityPlanner';
+import { RecoveryCapabilityPlan, RecoveryCapabilityRequest } from './RecoveryCapabilityPlanner';
 import { RecoveryCandidateFetcher } from './RecoveryCandidateFetcher';
 import { calculateEffectiveRecoveryBudget, LeadBuildTimeBudget, DEFAULT_LEAD_BUILD_TIME_BUDGET } from './RecoverySearchBudget';
 
@@ -62,7 +62,7 @@ export class LeadBuildRecoverySearch {
           executed: false,
           accepted: false,
           passesExecuted: 0,
-          requestedCapabilities: plan.requests.map(r => r.capability),
+          requestedCapabilities: plan.requests.map(r => 'kind' in r ? r.kind : r.capability),
           stopReason: 'NO_REMAINING_TIME_BUDGET',
         },
         recoveredCandidatesCount: 0,
@@ -76,7 +76,10 @@ export class LeadBuildRecoverySearch {
         format: 'gen9vgc2024',
         strategyId: plan.strategyId,
         leadCandidateIds: [],
-        requiredCapabilities: plan.requests,
+        // Módulo legado sem nenhum chamador de produção (confirmado via
+        // grep) — não estendido para o novo request de COVERAGE_BREADTH;
+        // cast preserva o comportamento anterior sem herdar a mudança de tipo.
+        requiredCapabilities: plan.requests as RecoveryCapabilityRequest[],
         excludedCandidateIds: [],
         excludedCapabilityKeys: [],
         maximumRawCandidates: plan.maximumAdditionalRawCandidates,
@@ -98,7 +101,7 @@ export class LeadBuildRecoverySearch {
         executed: true,
         accepted: hasRecoveredCandidates,
         passesExecuted: 1,
-        requestedCapabilities: plan.requests.map(r => r.capability),
+        requestedCapabilities: plan.requests.map(r => 'kind' in r ? r.kind : r.capability),
         stopReason,
       },
       recoveredCandidatesCount: fetchResult.usableCandidates.length,

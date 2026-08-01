@@ -1,9 +1,11 @@
+import { StructuredGateReason } from './StrategyQualityDiagnostics';
+
 export interface GateTrace {
   gate: string;
   valid: boolean;
   score?: number;
   threshold?: number;
-  reasons: readonly string[];
+  reasons: readonly StructuredGateReason[];
 }
 
 export interface FinalistDecisionTrace {
@@ -29,7 +31,7 @@ export function createFinalistDecisionTrace(
   if (!valid) {
     const firstFailed = gates.find(g => !g.valid);
     if (firstFailed && firstFailed.reasons.length > 0) {
-      primaryReason = firstFailed.reasons[0];
+      primaryReason = firstFailed.reasons[0].reasonCode;
     } else if (firstFailed) {
       primaryReason = `${firstFailed.gate}_FAILURE`;
     } else {
