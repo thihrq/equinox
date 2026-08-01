@@ -16,6 +16,18 @@ export interface FullTeamAcceptanceDecision {
   failedReasonCodes: readonly string[];
 }
 
+/**
+ * Só anexa a metadata das 5 dimensões quando ela existe E o gate realmente
+ * falhou — evita transportar evidência de déficit para um time aprovado.
+ */
+function buildOverallScoreReasons(evaluation: FullTeamEvaluation): StructuredGateReason[] {
+  if (evaluation.overallScore >= 60) return [];
+  if (!evaluation.overallScoreDeficitMetadata) {
+    return [toStructuredGateReason('OVERALL_SCORE_BELOW_THRESHOLD')];
+  }
+  return [{ reasonCode: 'OVERALL_SCORE_BELOW_THRESHOLD', metadata: evaluation.overallScoreDeficitMetadata }];
+}
+
 export function decideFullTeamAcceptance(params: {
   legality: TeamLegalityResult;
   evaluation: FullTeamEvaluation;
@@ -44,7 +56,7 @@ export function decideFullTeamAcceptance(params: {
       valid: evaluation.overallScore >= 60,
       score: evaluation.overallScore,
       threshold: 60,
-      reasons: evaluation.overallScore >= 60 ? [] : [toStructuredGateReason('OVERALL_SCORE_BELOW_THRESHOLD')],
+      reasons: buildOverallScoreReasons(evaluation),
     },
     {
       gate: 'RoleCoverage',

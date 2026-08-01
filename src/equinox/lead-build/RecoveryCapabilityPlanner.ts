@@ -1,7 +1,11 @@
 import { PokemonType } from './TeamDefensiveProfile';
 import { DefensiveCapability, StrategicCapability } from './CandidateCapabilityClassifier';
 import { FinalistRejectionAggregate } from './FinalistRejectionAggregator';
-import { OffensiveCoverageMetadata, calculateMinimumAdditionalTypes } from './StrategyQualityDiagnostics';
+import {
+  OffensiveCoverageMetadata,
+  OverallScoreDeficitMetadata,
+  calculateMinimumAdditionalTypes,
+} from './StrategyQualityDiagnostics';
 
 export interface RecoveryCapabilityRequest {
   capability: DefensiveCapability | StrategicCapability;
@@ -54,6 +58,16 @@ function isCoverageMetadata(metadata: unknown): metadata is OffensiveCoverageMet
     'minimumCoverageBreadth' in metadata &&
     'coverageBreadth' in metadata &&
     Array.isArray((metadata as OffensiveCoverageMetadata).offensiveTypesPresent)
+  );
+}
+
+function isOverallScoreDeficitMetadata(metadata: unknown): metadata is OverallScoreDeficitMetadata {
+  return (
+    !!metadata &&
+    typeof metadata === 'object' &&
+    'weakestDimension' in metadata &&
+    'roleCoverageScore' in metadata &&
+    'offensiveBalanceScore' in metadata
   );
 }
 
@@ -162,6 +176,58 @@ export function deriveRecoveryCapabilityPlan(
             currentCoverageBreadth: metadata.coverageBreadth,
           });
         }
+      } else if (reasonAgg.reasonCode === 'OVERALL_SCORE_BELOW_THRESHOLD') {
+        // Fail-closed: sem metadata válida, nenhuma request é criada — este
+        // reasonCode por si só não diz QUAL dimensão está fraca.
+        if (!isOverallScoreDeficitMetadata(reasonAgg.metadata)) {
+          continue;
+        }
+
+        const metadata = reasonAgg.metadata;
+
+        // Achado de produção: times podem ser rejeitados só por
+        // overallScore<60 mesmo com todo gate granular (RoleCoverage,
+        // OffensiveQuality, DefensiveQuality) individualmente válido — sem
+        // este branch, NENHUMA capability é derivável e o recovery fica
+        // estruturalmente incapaz de agir (NO_CAPABILITY_REQUESTS_DERIVED),
+        // mesmo quando existe um candidato real que reforçaria exatamente a
+        // dimensão mais fraca. Reaproveita as duas capabilities já
+        // existentes e validadas — nenhuma capability nova é introduzida.
+        if (metadata.weakestDimension === 'roleCoverage') {
+          requests.push({
+            capability: 'POSITIONING',
+            priority: 'MODERATE',
+            minimumDistinctAnswers: 1,
+            desiredDistinctAnswers: 1,
+            appliesTo: 'BOTH',
+            evidenceReasonCodes: ['OVERALL_SCORE_BELOW_THRESHOLD'],
+          });
+        } else if (
+          metadata.weakestDimension === 'offensiveBalance' &&
+          metadata.offensiveTypesPresent &&
+          metadata.targetOffensiveCoverageBreadth !== undefined
+        ) {
+          const minimumAdditionalTypes = calculateMinimumAdditionalTypes(
+            metadata.offensiveTypesPresent.length,
+            metadata.targetOffensiveCoverageBreadth,
+          );
+
+          if (minimumAdditionalTypes > 0) {
+            coverageRequests.push({
+              kind: 'COVERAGE_BREADTH',
+              minimumAdditionalTypes,
+              offensiveTypesPresent: [...metadata.offensiveTypesPresent],
+              minimumCoverageBreadth: metadata.targetOffensiveCoverageBreadth,
+              currentCoverageBreadth: Math.round(
+                (metadata.offensiveTypesPresent.length / 18) * 100,
+              ),
+            });
+          }
+        }
+        // speedControl/defensiveCoverage/matchupFlexibility como dimensão
+        // mais fraca: nenhuma capability é derivada de propósito — são
+        // métricas agregadas sem sinal confiável por candidato individual
+        // (mesmo risco já identificado e bloqueado para PRIMARY_PRESSURE).
       }
     }
   }

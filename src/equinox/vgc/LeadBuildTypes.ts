@@ -173,6 +173,7 @@ import type { StrategyQualityResult } from '../lead-build/evaluateStrategyQualit
 import type { TeamDefensiveProfile } from '../lead-build/TeamDefensiveProfile';
 import type { DefensiveQualityResult } from '../lead-build/evaluateDefensiveQuality';
 import type { SpreadMoveExposure } from '../lead-build/SpreadMoveExposureEvaluator';
+import type { OverallScoreDeficitMetadata } from '../lead-build/StrategyQualityDiagnostics';
 
 export interface FullTeamEvaluation {
   legal: boolean;
@@ -199,6 +200,7 @@ export interface FullTeamEvaluation {
   spreadMoveExposure?: readonly SpreadMoveExposure[];
 
   overallScore: number;               // Média ponderada
+  overallScoreDeficitMetadata?: OverallScoreDeficitMetadata;
 
   weaknesses: TeamWeakness[];
   warnings: string[];

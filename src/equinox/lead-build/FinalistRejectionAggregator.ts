@@ -4,9 +4,13 @@ import {
   StructuredGateReason,
   OffensivePressureMetadata,
   OffensiveCoverageMetadata,
+  OverallScoreDeficitMetadata,
 } from './StrategyQualityDiagnostics';
 
-export type RejectionReasonMetadata = OffensivePressureMetadata | OffensiveCoverageMetadata;
+export type RejectionReasonMetadata =
+  | OffensivePressureMetadata
+  | OffensiveCoverageMetadata
+  | OverallScoreDeficitMetadata;
 
 export interface RejectionReasonAggregate {
   reasonCode: string;
@@ -48,7 +52,11 @@ function isPressureMetadata(metadata: RejectionReasonMetadata): metadata is Offe
 }
 
 function isCoverageMetadata(metadata: RejectionReasonMetadata): metadata is OffensiveCoverageMetadata {
-  return 'offensiveTypesPresent' in metadata;
+  return 'offensiveTypesPresent' in metadata && !('weakestDimension' in metadata);
+}
+
+function isOverallScoreDeficitMetadata(metadata: RejectionReasonMetadata): metadata is OverallScoreDeficitMetadata {
+  return 'weakestDimension' in metadata;
 }
 
 /**
@@ -69,6 +77,9 @@ function buildReasonMetadataKey(
   if (metadata && isCoverageMetadata(metadata)) {
     return `${reasonCode}|${gate}|present=${[...metadata.offensiveTypesPresent].sort().join(',')}`;
   }
+  if (metadata && isOverallScoreDeficitMetadata(metadata)) {
+    return `${reasonCode}|${gate}|weakest=${metadata.weakestDimension}`;
+  }
   return `${reasonCode}_${attackType || ''}_${gate}`;
 }
 
@@ -82,12 +93,23 @@ function isWorseCoverage(candidate: OffensiveCoverageMetadata, current: Offensiv
   return candidate.offensiveTypesPresent.length < current.offensiveTypesPresent.length;
 }
 
+/** Menor overallScore = déficit pior (mais longe do corte de aceitação). */
+function isWorseOverallScoreDeficit(
+  candidate: OverallScoreDeficitMetadata,
+  current: OverallScoreDeficitMetadata,
+): boolean {
+  return candidate.overallScore < current.overallScore;
+}
+
 function isWorseMetadata(candidate: RejectionReasonMetadata, current: RejectionReasonMetadata): boolean {
   if (isPressureMetadata(candidate) && isPressureMetadata(current)) {
     return isWorsePressure(candidate, current);
   }
   if (isCoverageMetadata(candidate) && isCoverageMetadata(current)) {
     return isWorseCoverage(candidate, current);
+  }
+  if (isOverallScoreDeficitMetadata(candidate) && isOverallScoreDeficitMetadata(current)) {
+    return isWorseOverallScoreDeficit(candidate, current);
   }
   return false;
 }
