@@ -155,19 +155,19 @@ function describeRoleMatches(scenario: Scenario): void {
   }
 }
 
-function runScenario(scenario: Scenario): void {
+function runScenario(scenario: Scenario, weaknessPenaltyWeight: number): void {
   const builder = new FirstCompleteTeamBuilder();
 
-  const baseInput: Omit<FirstCompleteTeamBuilderInput, 'applyWeaknessPenalty'> = {
+  const baseInput: Omit<FirstCompleteTeamBuilderInput, 'weaknessPenaltyWeight'> = {
     lead: scenario.lead,
     candidates: scenario.candidates,
     ...(scenario.strategy ? { strategy: scenario.strategy } : {}),
   };
 
-  const baseline = builder.build({ ...baseInput, applyWeaknessPenalty: false });
-  const experiment = builder.build({ ...baseInput, applyWeaknessPenalty: true });
+  const baseline = builder.build({ ...baseInput, weaknessPenaltyWeight: 0 });
+  const experiment = builder.build({ ...baseInput, weaknessPenaltyWeight });
 
-  console.log(`\n=== ${scenario.name} ===`);
+  console.log(`\n=== ${scenario.name} (W=${weaknessPenaltyWeight}) ===`);
 
   describeRoleMatches(scenario);
 
@@ -179,28 +179,47 @@ function runScenario(scenario: Scenario): void {
   const baselineSummary = summarizeStacking(baseline.members);
   const experimentSummary = summarizeStacking(experiment.members);
 
-  console.log(`  Baseline   (applyWeaknessPenalty=false): time=[${baseline.members.map(m => m.name).join(', ')}]`);
+  console.log(`  Baseline   (W=0): time=[${baseline.members.map(m => m.name).join(', ')}]`);
   console.log(`             tipos com empilhamento crítico (4+/0 resp.): ${baselineSummary.typesWithCriticalStacking}, totalScore=${baselineSummary.totalScore}`);
   console.log(`             [contexto, não é a métrica principal] pior tipo sem nenhuma resposta defensiva: ${baselineSummary.worstUnansweredType} (${baselineSummary.worstUnansweredCount} membros fracos, 0 respostas)`);
 
-  console.log(`  Experimento (applyWeaknessPenalty=true): time=[${experiment.members.map(m => m.name).join(', ')}]`);
+  console.log(`  Experimento (W=${weaknessPenaltyWeight}): time=[${experiment.members.map(m => m.name).join(', ')}]`);
   console.log(`             tipos com empilhamento crítico (4+/0 resp.): ${experimentSummary.typesWithCriticalStacking}, totalScore=${experimentSummary.totalScore}`);
   console.log(`             [contexto, não é a métrica principal] pior tipo sem nenhuma resposta defensiva: ${experimentSummary.worstUnansweredType} (${experimentSummary.worstUnansweredCount} membros fracos, 0 respostas)`);
 
-  // Finding 2: a métrica principal é a contagem de tipos com empilhamento
-  // crítico — não uma comparação entre "pior tipo" de baseline e
-  // experimento, que podem ser tipos diferentes (ex.: Fire no baseline,
-  // Poison no experimento) e portanto não formam um delta válido de
-  // "melhora"/"piora". Essa comparação NÃO é impressa.
   const criticalDelta = experimentSummary.typesWithCriticalStacking - baselineSummary.typesWithCriticalStacking;
   console.log(`  Δ tipos com empilhamento crítico: ${criticalDelta > 0 ? '+' : ''}${criticalDelta} (negativo = melhora)`);
 }
 
+/**
+ * Calibração do Cenário C: testa uma faixa de pesos e reporta, para cada
+ * um, em que posição `StrategicPick` termina na primeira rodada de escolha
+ * (posição 1 = não foi deslocado). Determinado nesta sessão: W=0.6 é o
+ * maior peso testado que mantém StrategicPick em 1ª posição — W=0.8 e W=1.0
+ * o derrubam para 2º lugar (o "DefensiveResistC4" assume a 1ª escolha).
+ */
+function calibrateScenarioC(): void {
+  console.log('\n=== Calibração do Cenário C — posição de StrategicPick na 1ª rodada por peso ===');
+  for (const w of [0, 0.25, 0.4, 0.6, 0.8, 1.0]) {
+    const builder = new FirstCompleteTeamBuilder();
+    const result = builder.build({
+      lead: scenarioC.lead,
+      candidates: [...scenarioC.candidates],
+      strategy: scenarioC.strategy,
+      weaknessPenaltyWeight: w,
+    });
+    const backline = result ? result.members.slice(2) : [];
+    const position = backline.findIndex(m => m.name === 'StrategicPick') + 1;
+    console.log(`  W=${w}: StrategicPick termina na posição ${position || 'ausente'} do time final (1ª rodada de escolha determina isso quando position<=1)`);
+  }
+}
+
 function main(): void {
   console.log('🧪 Experimento: penalidade de empilhamento de fraquezas no FirstCompleteTeamBuilder');
-  runScenario(scenarioA);
-  runScenario(scenarioB);
-  runScenario(scenarioC);
+  calibrateScenarioC();
+  runScenario(scenarioA, 0.6);
+  runScenario(scenarioB, 0.6);
+  runScenario(scenarioC, 0.6);
 }
 
 main();
