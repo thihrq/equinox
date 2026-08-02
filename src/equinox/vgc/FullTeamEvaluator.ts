@@ -713,6 +713,24 @@ export function evaluateFullTeam(
   const setCoherenceResults = team.map(member => evaluateSetCoherence(member));
   const allSetCoherenceValid = setCoherenceResults.every(r => r.valid);
 
+  // Diagnóstico temporário: identificar qual membro/regra causa
+  // SET_COHERENCE_FAILURE em produção. Remover após identificar a causa.
+  if (!allSetCoherenceValid) {
+    team.forEach((member, i) => {
+      const result = setCoherenceResults[i];
+      if (!result.valid) {
+        console.log(
+          '[DEBUG_SET_COHERENCE] strategyId=' + strategy.id +
+          ' member=' + member.name +
+          ' item=' + (member as any).item + '/' + (member as any).competitiveSet?.item +
+          ' nature=' + (member as any).nature + '/' + (member as any).competitiveSet?.nature +
+          ' moves=' + JSON.stringify((member as any).moves ?? (member as any).competitiveSet?.moves) +
+          ' criticalIssues=' + JSON.stringify(result.criticalIssues),
+        );
+      }
+    });
+  }
+
   const qualityResult = {
     ...rawQualityResult,
     valid: rawQualityResult.valid && defensiveQuality.valid && allSetCoherenceValid,
