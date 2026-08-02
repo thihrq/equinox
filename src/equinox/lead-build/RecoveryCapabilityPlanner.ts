@@ -228,19 +228,6 @@ export function deriveRecoveryCapabilityPlan(
         // mais fraca: nenhuma capability é derivada de propósito — são
         // métricas agregadas sem sinal confiável por candidato individual
         // (mesmo risco já identificado e bloqueado para PRIMARY_PRESSURE).
-      } else {
-        // Diagnóstico temporário (sem gate de env var — não temos acesso ao
-        // dashboard do Render para setar variáveis novas): nenhum branch
-        // acima tratou este reasonCode. Precisa ser removido após
-        // identificar a causa real de NO_CAPABILITY_REQUESTS_DERIVED em
-        // produção.
-        console.log(
-          '[DEBUG_RECOVERY_UNMAPPED] strategyId=' + aggregate.strategyId +
-          ' reasonCode=' + reasonAgg.reasonCode +
-          ' count=' + reasonAgg.count +
-          ' gate=' + reasonAgg.gate +
-          ' hasMetadata=' + (reasonAgg.metadata !== undefined),
-        );
       }
     }
   }
