@@ -67,12 +67,12 @@ export function runWeaknessPenaltyExperimentTest() {
     `Baseline (sem penalidade) deveria excluir FireResistMon por ter usageScore mais baixo, mas o time foi: ${baselineNames.join(', ')}`,
   );
 
-  const withPenalty = builder.build({ lead, candidates, applyWeaknessPenalty: true });
+  const withPenalty = builder.build({ lead, candidates, weaknessPenaltyWeight: 1 });
   assert(withPenalty !== null, 'Com penalidade deve retornar um time completo.');
   const withPenaltyNames = withPenalty!.members.map(m => m.name);
   assert(
     withPenaltyNames.includes('FireResistMon'),
-    `Com applyWeaknessPenalty=true, FireResistMon deveria ser incluído para reduzir o empilhamento de Fire, mas o time foi: ${withPenaltyNames.join(', ')}`,
+    `Com weaknessPenaltyWeight=1, FireResistMon deveria ser incluído para reduzir o empilhamento de Fire, mas o time foi: ${withPenaltyNames.join(', ')}`,
   );
 
   console.log('✅ FirstCompleteTeamBuilder weakness-penalty experiment test PASS');

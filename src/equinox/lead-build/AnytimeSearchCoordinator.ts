@@ -19,6 +19,7 @@ export interface AnytimeSearchCoordinatorInput {
   startedAtMs: number;
   globalDeadlineMs: number;
   nowMs: () => number;
+  weaknessPenaltyWeight?: number;
 }
 
 export class AnytimeSearchCoordinator {
@@ -32,7 +33,7 @@ export class AnytimeSearchCoordinator {
     roundResults: StrategyRoundResult[];
     allEligibleStrategiesReceivedFirstPass: boolean;
   }> {
-    const { lead, strategies, candidates, format, requestContext, resolveCompetitiveTeam, globalDeadlineMs, nowMs } = input;
+    const { lead, strategies, candidates, format, requestContext, resolveCompetitiveTeam, globalDeadlineMs, nowMs, weaknessPenaltyWeight } = input;
 
     if (requestContext?.invocationCounters) {
       requestContext.invocationCounters.anytimeCoordinatorInvocationCount = 1;
@@ -110,6 +111,7 @@ export class AnytimeSearchCoordinator {
           candidateCapabilityIndex: capabilityIndex,
           candidates: availableForAttempt,
           requestContext,
+          weaknessPenaltyWeight,
         });
 
         if (!candidateStruct) break;

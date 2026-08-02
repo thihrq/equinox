@@ -65,6 +65,7 @@ export async function executePrimaryStrategySearch(params: {
       startedAtMs: context.startedAtMs,
       globalDeadlineMs: context.phaseBudget ? context.phaseBudget.recoveryMustStartByMs : Date.now() + 6000,
       nowMs: () => systemMonotonicClock.now(),
+      weaknessPenaltyWeight: flags.weaknessPenaltyWeight,
     });
 
     const evaluated: EvaluatedCompletion[] = [];
