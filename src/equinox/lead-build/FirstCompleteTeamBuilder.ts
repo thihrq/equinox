@@ -15,19 +15,19 @@ export interface FirstCompleteTeamBuilderInput {
   requestContext?: LeadBuildRequestContext;
   format?: string;
   /**
-   * Experimental (default false, sem efeito em produção hoje): quando
-   * true, subtrai do score de cada candidato a penalidade de
-   * `evaluatePartialTeamDefensiveQuality` para o time parcial resultante
-   * de escolhê-lo, fazendo o builder preferir candidatos que reduzam o
-   * empilhamento de fraqueza elemental sem resposta. Ver
-   * docs/superpowers/specs/2026-08-02-weakness-stacking-penalty-experiment-design.md.
+   * Peso da penalidade de empilhamento de fraqueza elemental (default 0,
+   * sem efeito). Multiplica `evaluatePartialTeamDefensiveQuality(...).totalPenalty`
+   * antes de subtrair do score de cada candidato durante a montagem do
+   * time — 0 desliga completamente, 1 aplica a penalidade em força total.
+   * Peso de produção calibrado: 0.6 (ver
+   * docs/superpowers/specs/2026-08-02-weakness-penalty-production-promotion-design.md).
    */
-  applyWeaknessPenalty?: boolean;
+  weaknessPenaltyWeight?: number;
 }
 
 export class FirstCompleteTeamBuilder {
   public build(input: FirstCompleteTeamBuilderInput): CompleteTeamCandidate | null {
-    const { lead, candidates, strategy, compositionPlan, candidateCapabilityIndex, requestContext, format = 'champions_reg_m_b_doubles', applyWeaknessPenalty = false } = input;
+    const { lead, candidates, strategy, compositionPlan, candidateCapabilityIndex, requestContext, format = 'champions_reg_m_b_doubles', weaknessPenaltyWeight = 0 } = input;
     if (lead.length !== 2) return null;
 
     if (requestContext?.invocationCounters) {
@@ -54,11 +54,11 @@ export class FirstCompleteTeamBuilder {
         const hasSetB = b.competitiveSet ? 1 : 0;
 
         const remainingSlots = 6 - chosen.length - 1;
-        const penaltyA = applyWeaknessPenalty
-          ? evaluatePartialTeamDefensiveQuality([...chosen, a], remainingSlots, pool).totalPenalty
+        const penaltyA = weaknessPenaltyWeight > 0
+          ? evaluatePartialTeamDefensiveQuality([...chosen, a], remainingSlots, pool).totalPenalty * weaknessPenaltyWeight
           : 0;
-        const penaltyB = applyWeaknessPenalty
-          ? evaluatePartialTeamDefensiveQuality([...chosen, b], remainingSlots, pool).totalPenalty
+        const penaltyB = weaknessPenaltyWeight > 0
+          ? evaluatePartialTeamDefensiveQuality([...chosen, b], remainingSlots, pool).totalPenalty * weaknessPenaltyWeight
           : 0;
 
         return (scoreB + hasSetB * 200 - penaltyB) - (scoreA + hasSetA * 200 - penaltyA) ||
