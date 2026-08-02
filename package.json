@@ -53,6 +53,7 @@
     "synergy:check": "ts-node src/scripts/validateSynergyEngine.ts",
     "lead:pipeline:check": "ts-node src/scripts/validateLeadBuildPipeline.ts",
     "regression:check": "ts-node src/scripts/validateLegacyRegression.ts",
+    "experiment:weakness-penalty": "ts-node src/scripts/experimentWeaknessPenalty.ts",
     "release:check": "npm run preflight && npm --prefix frontend run build",
     "format:check": "ts-node src/scripts/auditFormatScope.ts",
     "preflight": "npm run typecheck && npm run check:competitive-pipeline-runtime-boundary && npm run data-mode:test && npm run sets:offline-guards:check && npm run data:check && npm run data:audit && npm run sets:structure:check && npm run sets:legality:check && npm run sets:coherence:check && npm run sets:coverage:check && npm run sets:import:dry && npm run sets:migrate:dry && npm run sets:publish:staging:dry && npm run sets:shadow:compare && npm run sets:shadow:homologate && npm run sets:staging:homologate:fixture && npm run sets:v2-shadow-selection:check && npm run sets:verified:readiness && npm run format:check && npm run synergy:check && npm run recommendation:check && npm run balance:check && npm run vgc:playbook:check && npm run lead:pipeline:check && npm run regression:check",
