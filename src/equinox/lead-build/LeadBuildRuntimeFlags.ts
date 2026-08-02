@@ -1,6 +1,14 @@
 export interface LeadBuildRuntimeFlags {
   anytimeCompositionSearchEnabled: boolean;
   legacySearchFallbackEnabled: boolean;
+  weaknessPenaltyWeight: number;
+}
+
+function parseWeaknessPenaltyWeight(value: string | undefined): number {
+  if (value === undefined) return 0;
+  const parsed = Number.parseFloat(value);
+  if (Number.isNaN(parsed) || parsed < 0) return 0;
+  return parsed;
 }
 
 export function getLeadBuildRuntimeFlags(env: Record<string, string | undefined> = process.env): LeadBuildRuntimeFlags {
@@ -10,5 +18,6 @@ export function getLeadBuildRuntimeFlags(env: Record<string, string | undefined>
   return {
     anytimeCompositionSearchEnabled: !anytimeDisabled,
     legacySearchFallbackEnabled: legacyEnabled,
+    weaknessPenaltyWeight: parseWeaknessPenaltyWeight(env.EQUINOX_WEAKNESS_PENALTY_WEIGHT),
   };
 }
