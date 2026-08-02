@@ -1,6 +1,6 @@
 // src/scripts/experimentWeaknessPenalty.ts
 // Script de comparação standalone (nao roda em producao): mede o efeito de
-// `applyWeaknessPenalty` no FirstCompleteTeamBuilder sobre o empilhamento
+// `weaknessPenaltyWeight` no FirstCompleteTeamBuilder sobre o empilhamento
 // de fraqueza elemental do time final, rodando cada cenario duas vezes
 // (baseline vs experimento) e comparando `calculateTeamDefensiveProfile`.
 //

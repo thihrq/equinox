@@ -72,7 +72,7 @@ export function runWeaknessPenaltyExperimentTest() {
   const withPenaltyNames = withPenalty!.members.map(m => m.name);
   assert(
     withPenaltyNames.includes('FireResistMon'),
-    `Com applyWeaknessPenalty=true, FireResistMon deveria ser incluído para reduzir o empilhamento de Fire, mas o time foi: ${withPenaltyNames.join(', ')}`,
+    `Com weaknessPenaltyWeight=1, FireResistMon deveria ser incluído para reduzir o empilhamento de Fire, mas o time foi: ${withPenaltyNames.join(', ')}`,
   );
 
   console.log('✅ FirstCompleteTeamBuilder weakness-penalty experiment test PASS');

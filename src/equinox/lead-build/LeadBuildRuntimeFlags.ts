@@ -6,8 +6,8 @@ export interface LeadBuildRuntimeFlags {
 
 function parseWeaknessPenaltyWeight(value: string | undefined): number {
   if (value === undefined) return 0;
-  const parsed = Number.parseFloat(value);
-  if (Number.isNaN(parsed) || parsed < 0) return 0;
+  const parsed = Number(value);
+  if (Number.isNaN(parsed) || parsed < 0 || parsed > 1) return 0;
   return parsed;
 }
 

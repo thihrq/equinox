@@ -23,6 +23,18 @@ function main(): void {
   const negativeValue = getLeadBuildRuntimeFlags({ EQUINOX_WEAKNESS_PENALTY_WEIGHT: '-0.5' });
   assert(negativeValue.weaknessPenaltyWeight === 0, `Com valor negativo, esperado fallback para 0, mas foi ${negativeValue.weaknessPenaltyWeight}`);
 
+  // Valor limite valido: 1 e o maximo aceito, nao deve cair para 0.
+  const boundaryValue = getLeadBuildRuntimeFlags({ EQUINOX_WEAKNESS_PENALTY_WEIGHT: '1' });
+  assert(boundaryValue.weaknessPenaltyWeight === 1, `Com EQUINOX_WEAKNESS_PENALTY_WEIGHT=1, esperado 1, mas foi ${boundaryValue.weaknessPenaltyWeight}`);
+
+  // Fail-safe: valor acima de 1 (ex: typo de 6 em vez de 0.6) cai para 0.
+  const tooLargeValue = getLeadBuildRuntimeFlags({ EQUINOX_WEAKNESS_PENALTY_WEIGHT: '10' });
+  assert(tooLargeValue.weaknessPenaltyWeight === 0, `Com valor acima de 1, esperado fallback para 0, mas foi ${tooLargeValue.weaknessPenaltyWeight}`);
+
+  // Fail-safe: string malformada (numero + lixo) cai para 0, nao trunca silenciosamente.
+  const malformedValue = getLeadBuildRuntimeFlags({ EQUINOX_WEAKNESS_PENALTY_WEIGHT: '0.6abc' });
+  assert(malformedValue.weaknessPenaltyWeight === 0, `Com valor malformado '0.6abc', esperado fallback para 0, mas foi ${malformedValue.weaknessPenaltyWeight}`);
+
   console.log('✅ LeadBuildRuntimeFlags.test PASS');
 }
 

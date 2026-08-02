@@ -4,7 +4,7 @@ process.env.EQUINOX_WEAKNESS_PENALTY_WEIGHT = '0.6';
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { connectIsolatedTestDatabase, IsolatedTestDatabase } from './testing/IsolatedTestDatabase';
+import { connectIsolatedTestDatabase } from './testing/IsolatedTestDatabase';
 import { LeadStrategyRecommendationService } from '../../services/LeadStrategyRecommendationService';
 import { Pokemon } from '../../models/Pokemon';
 import { PokemonSet } from '../../models/PokemonSet';
@@ -40,7 +40,7 @@ function set(pokemonName: string, item: string, ability: string, nature: string,
  * Com EQUINOX_WEAKNESS_PENALTY_WEIGHT=0.6 ligado, cada lead precisa
  * continuar aceitando pelo menos 1 estratégia.
  */
-async function testSunTailwindDefensiveCore(db: IsolatedTestDatabase): Promise<void> {
+async function testSunTailwindDefensiveCore(): Promise<void> {
   await Pokemon.create([
     mon(6, 'Charizard-Mega-Y', ['Fire', 'Flying'], { hp: 78, atk: 104, def: 78, spa: 159, spd: 115, spe: 100 }),
     mon(547, 'Whimsicott', ['Grass', 'Fairy'], { hp: 60, atk: 67, def: 85, spa: 77, spd: 75, spe: 116 }),
@@ -83,7 +83,7 @@ async function testSunTailwindDefensiveCore(db: IsolatedTestDatabase): Promise<v
   console.log(`  ✅ sun_offense/tailwind_rush/defensive_core: aceitas (${strategyIds.join(', ')})`);
 }
 
-async function testTrickRoom(db: IsolatedTestDatabase): Promise<void> {
+async function testTrickRoom(): Promise<void> {
   await Pokemon.create([
     mon(3212, 'Farigiraf', ['Normal', 'Psychic'], { hp: 120, atk: 90, def: 70, spa: 110, spd: 70, spe: 60 }),
     mon(992, 'Iron Hands', ['Fighting', 'Electric'], { hp: 154, atk: 140, def: 108, spa: 50, spd: 68, spe: 50 }),
@@ -120,7 +120,7 @@ async function testTrickRoom(db: IsolatedTestDatabase): Promise<void> {
   console.log(`  ✅ trick_room: aceita (${strategyIds.join(', ')})`);
 }
 
-async function testRainOffense(db: IsolatedTestDatabase): Promise<void> {
+async function testRainOffense(): Promise<void> {
   await Pokemon.create([
     mon(279, 'Pelipper', ['Water', 'Flying'], { hp: 60, atk: 50, def: 100, spa: 95, spd: 70, spe: 65 }),
     mon(902, 'Basculegion-M', ['Water', 'Ghost'], { hp: 120, atk: 112, def: 65, spa: 80, spd: 75, spe: 78 }),
@@ -162,21 +162,21 @@ async function main(): Promise<void> {
 
   let db = await connectIsolatedTestDatabase();
   try {
-    await testSunTailwindDefensiveCore(db);
+    await testSunTailwindDefensiveCore();
   } finally {
     await db.dispose();
   }
 
   db = await connectIsolatedTestDatabase();
   try {
-    await testTrickRoom(db);
+    await testTrickRoom();
   } finally {
     await db.dispose();
   }
 
   db = await connectIsolatedTestDatabase();
   try {
-    await testRainOffense(db);
+    await testRainOffense();
   } finally {
     await db.dispose();
   }
