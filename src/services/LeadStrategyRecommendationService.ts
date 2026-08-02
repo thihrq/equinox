@@ -518,6 +518,19 @@ export class LeadStrategyRecommendationService {
         ...(recoveryResult?.searchResult?.traces ?? []),
       ]);
 
+      // Diagnóstico temporário: identificar o(s) reasonCode(s) interno(s)
+      // reais por trás do fallback público genérico QUALITY_GATES_NOT_SATISFIED.
+      // Remover após identificar a causa real em produção.
+      for (const r of aggregate.failuresByReason) {
+        console.log(
+          '[DEBUG_QUALITY_GATE] strategyId=' + strategy.id +
+          ' reasonCode=' + r.reasonCode +
+          ' gate=' + r.gate +
+          ' count=' + r.count +
+          ' metadata=' + JSON.stringify(r.metadata),
+        );
+      }
+
       const publicDiagnostic = projectPublicFailClosedMetadata(
         aggregate.failuresByReason,
         recoveryResult?.executed ?? false,
