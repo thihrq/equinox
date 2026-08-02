@@ -15,6 +15,7 @@ import { FormatSolverRegistry } from '../equinox/format-solvers/FormatSolverRegi
 import { resolveFormatPlan } from '../equinox/format-solvers/FormatPlanResolver';
 import { FormatPerformanceProfileRegistry } from '../equinox/performance/FormatPerformanceProfile';
 import { FormatLegalityRules } from '../equinox/recommendation/FormatLegalityRules';
+import { evaluateSetCoherence } from '../equinox/lead-build/SetCoherenceEvaluator';
 import { appConfig } from '../config/env';
 
 import type {
@@ -833,6 +834,25 @@ export class LeadStrategyRecommendationService {
       const megaStone = getMegaStone(candidate.name);
       if (sets.length > 0) {
         const bestSet = sets[0];
+
+        // Validar coerência interna do set ARMAZENADO antes de aceitá-lo no
+        // pool primário. `evaluateSetCoherence` precisa dos EVs/IVs reais do
+        // set (ex.: Nature que reduz o stat usado pelo movimento principal)
+        // — `normalizePokemonSet`, chamado logo abaixo, não propaga
+        // `evs`/`ivs` para o `PokemonData` resultante (eles só são atribuídos
+        // depois, na etapa de composição do time), então a checagem precisa
+        // ocorrer aqui, sobre `bestSet`, e não sobre o candidato já
+        // normalizado. Achado real de produção: lead Charizard-Mega-Y +
+        // Whimsicott, set armazenado de Sandslash-Alola com Nature Adamant
+        // (-SpA) + 124 EVs em SpA + Blizzard (movimento especial) — um
+        // candidato assim pontua bem o suficiente para ser escolhido em
+        // praticamente toda tentativa do builder, reprovando o time inteiro
+        // em SetCoherence de forma sistemática e impossível de contornar via
+        // recovery.
+        if (!evaluateSetCoherence(bestSet).valid) {
+          continue;
+        }
+
         finalCandidates.push(formatSolver.normalizePokemonSet({
           pokemon: {
             ...candidate,
@@ -878,7 +898,6 @@ export class LeadStrategyRecommendationService {
         selected.set(key, candidate);
       }
     }
-
     return [...selected.values()];
   }
 }
