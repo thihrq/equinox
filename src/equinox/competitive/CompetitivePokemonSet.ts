@@ -117,28 +117,35 @@ function chooseNature(pokemon: PokemonData, format: string): string {
   const profile = getOffenseProfile(pokemon, format);
   const trickRoom = isTrickRoomPlan(pokemon);
   const roleText = `${pokemon.role ?? ''}`.toLowerCase();
-  // Único stat ofensivo que o moveset FINAL realmente usa — `mixed` e
-  // `support` não têm um stat único a proteger, então nenhuma natureza pode
-  // contradizê-los por essa checagem.
-  const relevantOffensiveStat = profile === 'physical' ? 'atk' : profile === 'special' ? 'spa' : undefined;
+  // `physical`/`special` têm um único stat ofensivo a proteger. `mixed`
+  // investe EVs relevantes em AMBOS (ver `chooseEvs`: 124/124 em atk e spa),
+  // então uma natureza herdada que reduza qualquer um dos dois ainda é
+  // incoerente com o moveset final — só `support` de fato não protege
+  // nenhum stat ofensivo específico.
+  const relevantOffensiveStats: Array<'atk' | 'spa'> =
+    profile === 'physical' ? ['atk'] : profile === 'special' ? ['spa'] : profile === 'mixed' ? ['atk', 'spa'] : [];
 
   const existing = String(pokemon.nature ?? '').split('/')[0]?.trim();
   if (existing) {
+    const reducedStat = NATURE_REDUCED_STAT[existing];
     // A natureza upstream (ex.: `generateBasicKit`, que decide só a partir dos
     // stats base, sem olhar o moveset) só é reaproveitada se não contradizer
     // o perfil ofensivo do moveset FINAL. Sem essa checagem, natureza e
     // moveset eram decididos por caminhos independentes que nunca se
     // encontravam — o mecanismo exato por trás de casos reais como Unown
-    // (Timid + moveset 100% físico) confirmados na investigação 088.
-    if (!relevantOffensiveStat || NATURE_REDUCED_STAT[existing] !== relevantOffensiveStat) {
+    // (Timid + moveset 100% físico) confirmados na investigação 088, e de
+    // Sandslash-Alola (Adamant + moveset misto físico/especial) em produção.
+    if (relevantOffensiveStats.length === 0 || !relevantOffensiveStats.includes(reducedStat as 'atk' | 'spa')) {
       return existing;
     }
 
     // Incoerente: corrige preservando o stat que a natureza original
     // potencializava (mantém a intenção de velocidade/bulk de quem a
-    // escolheu), trocando apenas o lado que ela reduzia.
+    // escolheu), trocando apenas o lado que ela reduzia. Para `mixed`, o
+    // stat "protegido" é sempre o outro lado ofensivo (atk<->spa), já que
+    // ambos recebem EVs relevantes.
     const boosted = NATURE_BOOSTED_STAT[existing];
-    const otherOffensiveStat = relevantOffensiveStat === 'atk' ? 'spa' : 'atk';
+    const otherOffensiveStat = reducedStat === 'atk' ? 'spa' : 'atk';
     const corrected = Object.keys(NATURE_REDUCED_STAT).find(
       name => NATURE_BOOSTED_STAT[name] === boosted && NATURE_REDUCED_STAT[name] === otherOffensiveStat,
     );
