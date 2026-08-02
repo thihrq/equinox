@@ -141,12 +141,18 @@ aceitando pelo menos 1 estratégia cada.
 Essa verificação **não foi feita** nesta fase experimental — o script de
 comparação (`src/scripts/experimentWeaknessPenalty.ts`) roda inteiramente
 em memória, fora do pipeline de produção, e não exercita nenhum dos
-arquétipos citados. Isso não é opcional: o Cenário C do script (adicionado
-para corrigir a finding #1 da revisão final) mostra que a penalidade de
-empilhamento de fraqueza pode ter magnitude uma ordem de grandeza maior que
-um score de estratégia real (dezenas contra centenas), o que é exatamente o
-tipo de efeito que poderia zerar resultados de arquétipos hoje validados
-sem nenhum aviso — o mesmo risco já observado nesta sessão com
-`NO_CAPABILITY_REQUESTS_DERIVED` ao adicionar filtros novos. Esta
-precondição fica registrada aqui como bloqueio explícito para qualquer
-plano futuro de promoção.
+arquétipos citados. Isso não é opcional: no Cenário C do script (adicionado
+para corrigir a finding #1 da revisão final), a penalidade de empilhamento
+de fraqueza (40 pontos) cancelou por completo o score de estratégia de um
+candidato que preenchia duas roles obrigatórias (também 40 pontos líquidos,
+já descontada a penalidade de repetição de tipo com a lead), derrubando-o
+da 1ª para a 4ª colocação na primeira rodada de escolha — ele só permaneceu
+no time final porque, numa rodada posterior, um outro candidato já havia
+absorvido parte da exposição e a penalidade dele caiu de 40 para 8. Ou
+seja: a penalidade já demonstrou capacidade de neutralizar inteiramente um
+score estratégico real numa rodada individual, mesmo num pool pequeno e
+favorável — o tipo de efeito que poderia zerar resultados de arquétipos
+hoje validados sem nenhum aviso, em pools maiores/menos favoráveis — o
+mesmo risco já observado nesta sessão com `NO_CAPABILITY_REQUESTS_DERIVED`
+ao adicionar filtros novos. Esta precondição fica registrada aqui como
+bloqueio explícito para qualquer plano futuro de promoção.
