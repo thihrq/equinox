@@ -126,3 +126,27 @@ experimento) ao final.
 3. Confirmar que `applyWeaknessPenalty` default `false` não muda nenhum
    resultado hoje já validado (rodar os testes E2E existentes desta sessão
    sem passar o parâmetro).
+
+## Precondição antes de qualquer promoção a produção
+
+Antes de `applyWeaknessPenalty` ser um dia definido como `true` por padrão
+em código de produção (ou seja, antes de qualquer plano futuro que o
+conecte em `AnytimeSearchCoordinator.ts` e/ou
+`LeadStrategyRecommendationService.ts`), os arquétipos já validados
+(sun_offense, tailwind_rush, defensive_core, hard_trick_room, rain_offense)
+precisam ser re-executados contra o pipeline real de produção (via curl na
+API implantada, ou pelo caminho E2E completo) e confirmados a continuar
+aceitando pelo menos 1 estratégia cada.
+
+Essa verificação **não foi feita** nesta fase experimental — o script de
+comparação (`src/scripts/experimentWeaknessPenalty.ts`) roda inteiramente
+em memória, fora do pipeline de produção, e não exercita nenhum dos
+arquétipos citados. Isso não é opcional: o Cenário C do script (adicionado
+para corrigir a finding #1 da revisão final) mostra que a penalidade de
+empilhamento de fraqueza pode ter magnitude uma ordem de grandeza maior que
+um score de estratégia real (dezenas contra centenas), o que é exatamente o
+tipo de efeito que poderia zerar resultados de arquétipos hoje validados
+sem nenhum aviso — o mesmo risco já observado nesta sessão com
+`NO_CAPABILITY_REQUESTS_DERIVED` ao adicionar filtros novos. Esta
+precondição fica registrada aqui como bloqueio explícito para qualquer
+plano futuro de promoção.

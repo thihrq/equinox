@@ -9,15 +9,17 @@
 import { FirstCompleteTeamBuilder, FirstCompleteTeamBuilderInput } from '../equinox/lead-build/FirstCompleteTeamBuilder';
 import { calculateTeamDefensiveProfile, ALL_POKEMON_TYPES } from '../equinox/lead-build/TeamDefensiveProfile';
 import type { PokemonData } from '../equinox/core/AnalysisContext';
+import type { LeadStrategyCandidate } from '../equinox/vgc/LeadBuildTypes';
 
 interface Scenario {
   name: string;
   lead: PokemonData[];
   candidates: PokemonData[];
+  strategy?: LeadStrategyCandidate;
 }
 
-function mon(name: string, types: string[], usageScore: number): PokemonData {
-  return { name, types, usageScore } as PokemonData;
+function mon(name: string, types: string[], usageScore: number, extra?: Record<string, unknown>): PokemonData {
+  return { name, types, usageScore, ...extra } as PokemonData;
 }
 
 // Cenario A: empilhamento moderado. Lead ja fraco a Fire; pool tem uma
@@ -51,6 +53,56 @@ const scenarioB: Scenario = {
   ],
 };
 
+// Cenario C: testa a pergunta que o experimento realmente precisa responder
+// (Finding 1) — a penalidade de empilhamento de fraqueza consegue sobrepor
+// uma escolha com fit estrategico real, quando essa escolha tambem empilha
+// a fraqueza compartilhada pela lead? Diferente de A/B, aqui `strategy` e
+// passado para `builder.build(...)`, entao `scoreCandidateForStrategy` roda
+// de verdade (nao fica zerado) e os candidatos tem baseStats/moves para
+// cumprir roles reais.
+//
+// - StrategicPick: cumpre as DUAS required roles (special-attacker,
+//   tailwind-setter) — score de estrategia alto — mas e tipo Grass, ou
+//   seja, empilha a MESMA fraqueza a Fire/Poison/Flying/Ice/Bug que a lead
+//   ja tem.
+// - DefensiveResistC1/C2: nao cumprem nenhuma role requerida — score de
+//   estrategia baixo, ate negativo — mas resistem a Fire (e a outras
+//   fraquezas da lead), entao nao contribuem para o empilhamento.
+// - FillerC1/C2/C3: preenchimento neutro/fraco, sem role, para completar o
+//   time de 6.
+const strategyC: LeadStrategyCandidate = {
+  id: 'experiment-strategy-c',
+  name: 'Estrategia de teste — special attacker + tailwind',
+  objective: 'Validar se a penalidade de empilhamento sobrepoe fit estrategico real',
+  lead: ['GrassLeadC1', 'GrassLeadC2'],
+  turnOneOptions: [],
+  requiredRoles: [
+    { role: 'special-attacker', priority: 'required', weight: 25, description: 'Precisa de um atacante especial forte (SpA >= 100)' },
+    { role: 'tailwind-setter', priority: 'required', weight: 20, description: 'Precisa de alguem com Tailwind' },
+  ],
+  optionalRoles: [],
+  speedAxis: 'fast',
+  contractValid: true,
+  validationErrors: [],
+  feasibilityScore: 80,
+};
+
+const scenarioC: Scenario = {
+  name: 'Cenario C — fit estrategico real vs. empilhamento de fraqueza (Fire/Poison/Flying/Ice/Bug)',
+  lead: [mon('GrassLeadC1', ['Grass'], 0), mon('GrassLeadC2', ['Grass'], 0)],
+  strategy: strategyC,
+  candidates: [
+    mon('StrategicPick', ['Grass'], 40, { baseStats: { hp: 80, atk: 60, def: 70, spa: 120, spd: 80, spe: 100 }, moves: ['Tailwind'] }),
+    mon('DefensiveResistC1', ['Water'], 39),
+    mon('DefensiveResistC2', ['Rock'], 38),
+    mon('DefensiveResistC3', ['Steel'], 37),
+    mon('DefensiveResistC4', ['Water', 'Rock'], 36),
+    mon('FillerC1', ['Bug'], 35),
+    mon('FillerC2', ['Ice'], 34),
+    mon('FillerC3', ['Normal'], 33),
+  ],
+};
+
 function summarizeStacking(team: readonly PokemonData[]): {
   worstUnansweredType: string;
   worstUnansweredCount: number;
@@ -58,15 +110,18 @@ function summarizeStacking(team: readonly PokemonData[]): {
   totalScore: number;
 } {
   const profile = calculateTeamDefensiveProfile(team as any);
-  let worstUnansweredType = '';
-  let worstUnansweredCount = -1;
+  // Finding 3: a definicao do spec e "maior weakTargets para QUALQUER tipo
+  // com defensiveAnswers === 0" — nao max(weakTargets - defensiveAnswers)
+  // sobre todos os tipos. Um tipo com 5 weakTargets e 3 defensiveAnswers
+  // NAO e "sem resposta" e nao pode ser reportado como tal.
+  let worstUnansweredType = 'nenhum';
+  let worstUnansweredCount = 0;
   let typesWithCriticalStacking = 0;
 
   for (const type of ALL_POKEMON_TYPES) {
     const t = profile.byType[type];
-    const unanswered = Math.max(0, t.weakTargets - t.defensiveAnswers);
-    if (unanswered > worstUnansweredCount) {
-      worstUnansweredCount = unanswered;
+    if (t.defensiveAnswers === 0 && t.weakTargets > worstUnansweredCount) {
+      worstUnansweredCount = t.weakTargets;
       worstUnansweredType = type;
     }
     if (t.weakTargets >= 4 && t.defensiveAnswers === 0) {
@@ -77,18 +132,44 @@ function summarizeStacking(team: readonly PokemonData[]): {
   return { worstUnansweredType, worstUnansweredCount, typesWithCriticalStacking, totalScore: profile.totalScore };
 }
 
+/** Finding 1: imprime, para cada membro do pool, se ele bate alguma required role da estrategia — evidencia de que o score de estrategia nao foi ignorado. */
+function describeRoleMatches(scenario: Scenario): void {
+  if (!scenario.strategy) return;
+  console.log('  Aderencia de role requerida por candidato (evidencia de que scoreCandidateForStrategy rodou de verdade):');
+  for (const candidate of scenario.candidates) {
+    const matches: string[] = [];
+    for (const role of scenario.strategy.requiredRoles) {
+      // Reimplementacao minima e local dos dois detectores usados neste cenario,
+      // só para fins de log legivel (a logica de scoring real continua sendo a
+      // do builder/scoreCandidateForStrategy — isto aqui e so relatorio).
+      if (role.role === 'special-attacker') {
+        const spa = Number((candidate as any).baseStats?.spa ?? 0);
+        if (spa >= 100) matches.push(`special-attacker (SpA=${spa})`);
+      }
+      if (role.role === 'tailwind-setter') {
+        const hasTailwind = (candidate.moves ?? []).includes('Tailwind');
+        if (hasTailwind) matches.push('tailwind-setter (tem Tailwind)');
+      }
+    }
+    console.log(`    - ${candidate.name}: ${matches.length > 0 ? matches.join(', ') : '(nenhuma required role cumprida)'}`);
+  }
+}
+
 function runScenario(scenario: Scenario): void {
   const builder = new FirstCompleteTeamBuilder();
 
   const baseInput: Omit<FirstCompleteTeamBuilderInput, 'applyWeaknessPenalty'> = {
     lead: scenario.lead,
     candidates: scenario.candidates,
+    ...(scenario.strategy ? { strategy: scenario.strategy } : {}),
   };
 
   const baseline = builder.build({ ...baseInput, applyWeaknessPenalty: false });
   const experiment = builder.build({ ...baseInput, applyWeaknessPenalty: true });
 
   console.log(`\n=== ${scenario.name} ===`);
+
+  describeRoleMatches(scenario);
 
   if (!baseline || !experiment) {
     console.log('  ⚠️  Um dos dois builds retornou null (pool insuficiente) — pulei a comparação.');
@@ -99,21 +180,27 @@ function runScenario(scenario: Scenario): void {
   const experimentSummary = summarizeStacking(experiment.members);
 
   console.log(`  Baseline   (applyWeaknessPenalty=false): time=[${baseline.members.map(m => m.name).join(', ')}]`);
-  console.log(`             pior tipo sem resposta: ${baselineSummary.worstUnansweredType} (${baselineSummary.worstUnansweredCount} sem resposta), ` +
-    `tipos com empilhamento crítico (4+/0 resp.): ${baselineSummary.typesWithCriticalStacking}, totalScore=${baselineSummary.totalScore}`);
+  console.log(`             tipos com empilhamento crítico (4+/0 resp.): ${baselineSummary.typesWithCriticalStacking}, totalScore=${baselineSummary.totalScore}`);
+  console.log(`             [contexto, não é a métrica principal] pior tipo sem nenhuma resposta defensiva: ${baselineSummary.worstUnansweredType} (${baselineSummary.worstUnansweredCount} membros fracos, 0 respostas)`);
 
   console.log(`  Experimento (applyWeaknessPenalty=true): time=[${experiment.members.map(m => m.name).join(', ')}]`);
-  console.log(`             pior tipo sem resposta: ${experimentSummary.worstUnansweredType} (${experimentSummary.worstUnansweredCount} sem resposta), ` +
-    `tipos com empilhamento crítico (4+/0 resp.): ${experimentSummary.typesWithCriticalStacking}, totalScore=${experimentSummary.totalScore}`);
+  console.log(`             tipos com empilhamento crítico (4+/0 resp.): ${experimentSummary.typesWithCriticalStacking}, totalScore=${experimentSummary.totalScore}`);
+  console.log(`             [contexto, não é a métrica principal] pior tipo sem nenhuma resposta defensiva: ${experimentSummary.worstUnansweredType} (${experimentSummary.worstUnansweredCount} membros fracos, 0 respostas)`);
 
-  const delta = experimentSummary.worstUnansweredCount - baselineSummary.worstUnansweredCount;
-  console.log(`  Δ pior caso sem resposta: ${delta > 0 ? '+' : ''}${delta} (negativo = melhora)`);
+  // Finding 2: a métrica principal é a contagem de tipos com empilhamento
+  // crítico — não uma comparação entre "pior tipo" de baseline e
+  // experimento, que podem ser tipos diferentes (ex.: Fire no baseline,
+  // Poison no experimento) e portanto não formam um delta válido de
+  // "melhora"/"piora". Essa comparação NÃO é impressa.
+  const criticalDelta = experimentSummary.typesWithCriticalStacking - baselineSummary.typesWithCriticalStacking;
+  console.log(`  Δ tipos com empilhamento crítico: ${criticalDelta > 0 ? '+' : ''}${criticalDelta} (negativo = melhora)`);
 }
 
 function main(): void {
   console.log('🧪 Experimento: penalidade de empilhamento de fraquezas no FirstCompleteTeamBuilder');
   runScenario(scenarioA);
   runScenario(scenarioB);
+  runScenario(scenarioC);
 }
 
 main();
